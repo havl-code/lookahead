@@ -199,6 +199,144 @@ class TrainingLogger:
         
         return df
     
+    def list_all_sessions(self):
+        """List all sessions with summary"""
+        query = """
+        SELECT 
+            id, date, event_id, solve_count,
+            best_single/1000.0 as best, 
+            session_mean/1000.0 as mean,
+            ao5/1000.0 as ao5,
+            notes
+        FROM training_sessions
+        ORDER BY date DESC, id DESC
+        """
+        
+        df = pd.read_sql_query(query, self.conn)
+        return df
+    
+    def view_session_details(self, session_id):
+        """View all solves in a session"""
+        query = """
+        SELECT 
+            id,
+            solve_number,
+            time_ms/1000.0 as time_seconds,
+            scramble,
+            penalty,
+            dnf,
+            plus_two,
+            notes
+        FROM personal_solves
+        WHERE session_id = ?
+        ORDER BY solve_number
+        """
+        
+        df = pd.read_sql_query(query, self.conn, params=(session_id,))
+        return df
+    
+    def edit_solve(self, solve_id, new_time_seconds=None, new_scramble=None, 
+                   new_penalty=None, new_notes=None):
+        """Edit an existing solve"""
+        cursor = self.conn.cursor()
+        
+        # Get current solve
+        cursor.execute("SELECT * FROM personal_solves WHERE id = ?", (solve_id,))
+        solve = cursor.fetchone()
+        
+        if not solve:
+            print(f"❌ Solve ID {solve_id} not found")
+            return False
+        
+        session_id = solve[1]  # session_id is 2nd column
+        
+        # Build update query
+        updates = []
+        params = []
+        
+        if new_time_seconds is not None:
+            updates.append("time_ms = ?")
+            params.append(int(new_time_seconds * 1000))
+        
+        if new_scramble is not None:
+            updates.append("scramble = ?")
+            params.append(new_scramble)
+        
+        if new_penalty is not None:
+            updates.append("penalty = ?")
+            params.append(new_penalty)
+            updates.append("dnf = ?")
+            params.append(1 if new_penalty == 'DNF' else 0)
+            updates.append("plus_two = ?")
+            params.append(1 if new_penalty == '+2' else 0)
+        
+        if new_notes is not None:
+            updates.append("notes = ?")
+            params.append(new_notes)
+        
+        if not updates:
+            print("No changes specified")
+            return False
+        
+        # Execute update
+        query = f"UPDATE personal_solves SET {', '.join(updates)} WHERE id = ?"
+        params.append(solve_id)
+        
+        cursor.execute(query, params)
+        self.conn.commit()
+        
+        print(f"✓ Updated solve #{solve_id}")
+        
+        # Recalculate session stats
+        self.update_session_stats(session_id)
+        
+        return True
+    
+    def delete_solve(self, solve_id):
+        """Delete a specific solve"""
+        cursor = self.conn.cursor()
+        
+        # Get session_id before deleting
+        cursor.execute("SELECT session_id FROM personal_solves WHERE id = ?", (solve_id,))
+        result = cursor.fetchone()
+        
+        if not result:
+            print(f"❌ Solve ID {solve_id} not found")
+            return False
+        
+        session_id = result[0]
+        
+        # Delete the solve
+        cursor.execute("DELETE FROM personal_solves WHERE id = ?", (solve_id,))
+        self.conn.commit()
+        
+        print(f"✓ Deleted solve #{solve_id}")
+        
+        # Renumber remaining solves
+        cursor.execute("""
+            SELECT id FROM personal_solves 
+            WHERE session_id = ? 
+            ORDER BY solve_number
+        """, (session_id,))
+        
+        solves = cursor.fetchall()
+        for idx, (sid,) in enumerate(solves, 1):
+            cursor.execute("UPDATE personal_solves SET solve_number = ? WHERE id = ?", (idx, sid))
+        
+        self.conn.commit()
+        
+        # Recalculate session stats
+        self.update_session_stats(session_id)
+        
+        return True
+    
+    def edit_session_notes(self, session_id, new_notes):
+        """Edit session notes"""
+        cursor = self.conn.cursor()
+        cursor.execute("UPDATE training_sessions SET notes = ? WHERE id = ?", (new_notes, session_id))
+        self.conn.commit()
+        print(f"✓ Updated notes for session #{session_id}")
+
     def delete_session(self, session_id):
         """Delete a training session and all its solves"""
         cursor = self.conn.cursor()
@@ -288,18 +426,113 @@ def quick_session_example():
     logger.disconnect()
     return session_id
 
+def manage_sessions():
+    """Interactive session management"""
+    logger = TrainingLogger()
+    logger.connect()
+    
+    while True:
+        print("\n" + "="*60)
+        print("SESSION MANAGEMENT")
+        print("="*60)
+        print("1. List all sessions")
+        print("2. View session details")
+        print("3. Edit a solve")
+        print("4. Delete a solve")
+        print("5. Delete entire session")
+        print("6. Edit session notes")
+        print("7. Exit")
+        
+        choice = input("\nChoice: ").strip()
+        
+        if choice == '1':
+            # List sessions
+            sessions = logger.list_all_sessions()
+            print("\n" + sessions.to_string(index=False))
+        
+        elif choice == '2':
+            # View session details
+            session_id = int(input("Session ID: "))
+            solves = logger.view_session_details(session_id)
+            if len(solves) > 0:
+                print("\n" + solves.to_string(index=False))
+            else:
+                print("❌ Session not found or has no solves")
+        
+        elif choice == '3':
+            # Edit solve
+            solve_id = int(input("Solve ID to edit: "))
+            
+            # Show current solve
+            cursor = logger.conn.cursor()
+            cursor.execute("""
+                SELECT solve_number, time_ms/1000.0, scramble, penalty 
+                FROM personal_solves WHERE id = ?
+            """, (solve_id,))
+            current = cursor.fetchone()
+            
+            if current:
+                print(f"\nCurrent: Solve #{current[0]}: {current[1]:.2f}s, Penalty: {current[3]}")
+                
+                new_time = input("New time (seconds, or press Enter to skip): ").strip()
+                new_penalty = input("New penalty (DNF/+2/none, or press Enter to skip): ").strip()
+                new_notes = input("New notes (or press Enter to skip): ").strip()
+                
+                logger.edit_solve(
+                    solve_id,
+                    new_time_seconds=float(new_time) if new_time else None,
+                    new_penalty=new_penalty.upper() if new_penalty and new_penalty.lower() != 'none' else None,
+                    new_notes=new_notes if new_notes else None
+                )
+            else:
+                print("❌ Solve not found")
+        
+        elif choice == '4':
+            # Delete solve
+            solve_id = int(input("Solve ID to delete: "))
+            confirm = input(f"Really delete solve #{solve_id}? (yes/no): ")
+            if confirm.lower() == 'yes':
+                logger.delete_solve(solve_id)
+        
+        elif choice == '5':
+            # Delete session
+            session_id = int(input("Session ID to delete: "))
+            confirm = input(f"Really delete entire session #{session_id}? (yes/no): ")
+            if confirm.lower() == 'yes':
+                logger.delete_session(session_id)
+        
+        elif choice == '6':
+            # Edit session notes
+            session_id = int(input("Session ID: "))
+            new_notes = input("New notes: ")
+            logger.edit_session_notes(session_id, new_notes)
+        
+        elif choice == '7':
+            break
+        
+        else:
+            print("Invalid choice")
+    
+    logger.disconnect()
+    print("\n✓ Exited session management")
 
 def main():
     """Main function"""
     import sys
     
-    if len(sys.argv) > 1 and sys.argv[1] == '--interactive':
-        interactive_session()
+    if len(sys.argv) > 1:
+        if sys.argv[1] == '--interactive':
+            interactive_session()
+        elif sys.argv[1] == '--manage':
+            manage_sessions()
+        else:
+            print("Unknown option. Use --interactive or --manage")
     else:
-        print("\n💡 TIP: Run with --interactive for manual entry")
-        print("   Example: python src/python/training_logger.py --interactive\n")
+        print("\n💡 Options:")
+        print("  --interactive : Add new training session")
+        print("  --manage      : Manage/edit existing sessions")
+        print("\nRunning example...\n")
         quick_session_example()
-
 
 if __name__ == "__main__":
     main()

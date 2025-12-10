@@ -66,10 +66,10 @@ class CSTimerImporter:
                         time_seconds = 999.99
                     elif penalty_code == 2000:
                         penalty = '+2'
-                        time_seconds = time_cs / 100
+                        time_seconds = time_cs / 1000
                     else:
                         penalty = None
-                        time_seconds = time_cs / 100
+                        time_seconds = time_cs / 1000
                     
                     self.logger.add_solve(session_id, time_seconds, scramble, penalty)
                     imported += 1

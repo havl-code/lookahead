@@ -84,3 +84,15 @@ logs/
 *.tmp
 *.temp
 .cache/
+data/raw/my_cstimer_data.txt
+
+# CSTimer personal data
+data/raw/my_cstimer_data.txt
+data/raw/*cstimer*.txt
+
+# Large WCA files (use API instead)
+data/raw/WCA_export*.tsv
+data/raw/WCA_export*.zip
+
+# Personal training database
+data/speedcube.db
