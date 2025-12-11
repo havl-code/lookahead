@@ -67,3 +67,4 @@ htmlcov/
 # Keep directory structure but ignore contents
 !data/raw/.gitkeep
 !data/processed/.gitkeep
+git_cleanup_script.sh
