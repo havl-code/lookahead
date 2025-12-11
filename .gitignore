@@ -4,9 +4,6 @@ __pycache__/
 *$py.class
 *.so
 .Python
-env/
-venv/
-ENV/
 build/
 develop-eggs/
 dist/
@@ -22,30 +19,11 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-pip-log.txt
-pip-delete-this-directory.txt
 
-# C
-*.o
-*.out
-*.exe
-a.out
-*.so
-*.dylib
-
-# R
-.Rhistory
-.RData
-.Rproj.user
-*.Rproj
-
-# Data files (large)
-data/raw/*.tsv
-data/raw/*.csv
-data/raw/*.zip
-data/raw/*.sql
-data/cache/*
-!data/cache/.gitkeep
+# Virtual Environment
+venv/
+ENV/
+env/
 
 # IDE
 .vscode/
@@ -53,46 +31,39 @@ data/cache/*
 *.swp
 *.swo
 *~
-.VSCodeCounter/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Data Files
+data/raw/*.txt
+data/raw/*.json
+data/raw/*.csv
+data/speedcube.db
+data/speedcube.db-journal
+
+# Generated/Processed Files - Users will generate their own
+data/processed/*.png
+data/processed/*.jpg
+data/processed/*.pdf
+data/processed/*.html
 
 # OS
 .DS_Store
 Thumbs.db
-Desktop.ini
 
-# Jupyter
-.ipynb_checkpoints
-*/.ipynb_checkpoints/*
-
-# Environment
+# Config with sensitive info
+config/config.yaml
 .env
-.envrc
-config/secrets.yaml
-*.secret
 
 # Logs
 *.log
-logs/
-*.out
 
-# Database
-*.db
-*.sqlite
-*.sqlite3
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
 
-# Temporary files
-*.tmp
-*.temp
-.cache/
-data/raw/my_cstimer_data.txt
-
-# CSTimer personal data
-data/raw/my_cstimer_data.txt
-data/raw/*cstimer*.txt
-
-# Large WCA files (use API instead)
-data/raw/WCA_export*.tsv
-data/raw/WCA_export*.zip
-
-# Personal training database
-data/speedcube.db
+# Keep directory structure but ignore contents
+!data/raw/.gitkeep
+!data/processed/.gitkeep
