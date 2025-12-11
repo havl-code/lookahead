@@ -91,15 +91,53 @@ class WCAApiClient:
         
         return None
     
+    # def estimate_percentile(self, time_seconds, event='333', type='single', region='world'):
+    #     """
+    #     Estimate percentile by comparing to rankings
+        
+    #     Args:
+    #         time_seconds: Your time in seconds
+    #         event: Event ID
+    #         type: 'single' or 'average'  
+    #         region: 'world', continent, or country
+    #     """
+    #     print(f"  Fetching {region} {type} rankings for {event}...")
+        
+    #     rankings = self.get_rankings(region, type, event)
+        
+    #     if not rankings:
+    #         print("  Rankings unavailable, using approximate statistics...")
+    #         return self._approximate_percentile(time_seconds)
+        
+    #     print(f"  Loaded {len(rankings):,} ranked competitors...")
+        
+    #     # Extract times from rankings
+    #     times = []
+    #     for rank_data in rankings:
+    #         result = rank_data.get('best', 0)
+    #         if result > 0:
+    #             times.append(result / 100)  # Convert centiseconds to seconds
+        
+    #     if not times:
+    #         return self._approximate_percentile(time_seconds)
+        
+    #     # Calculate percentile
+    #     faster_count = sum(1 for t in times if t < time_seconds)
+    #     total_ranked = len(times)
+    #     percentile = (faster_count / total_ranked) * 100
+        
+    #     return {
+    #         'percentile': percentile,
+    #         'faster_than': f"{percentile:.1f}%",
+    #         'rank_estimate': faster_count + 1,
+    #         'total_ranked': total_ranked,
+    #         'note': f'Compared to {total_ranked:,} ranked competitors ({region})'
+    #     }
+
     def estimate_percentile(self, time_seconds, event='333', type='single', region='world'):
         """
         Estimate percentile by comparing to rankings
-        
-        Args:
-            time_seconds: Your time in seconds
-            event: Event ID
-            type: 'single' or 'average'  
-            region: 'world', continent, or country
+        Uses top 1000 + statistical extrapolation for broader comparison
         """
         print(f"  Fetching {region} {type} rankings for {event}...")
         
@@ -114,25 +152,57 @@ class WCAApiClient:
         # Extract times from rankings
         times = []
         for rank_data in rankings:
-            result = rank_data.get('best', 0)
+            result = rank_data.get('best' if type == 'single' else 'average', 0)
             if result > 0:
-                times.append(result / 100)  # Convert centiseconds to seconds
+                times.append(result / 100)
         
         if not times:
             return self._approximate_percentile(time_seconds)
         
-        # Calculate percentile
+        # Calculate within top 1000
         faster_count = sum(1 for t in times if t < time_seconds)
         total_ranked = len(times)
-        percentile = (faster_count / total_ranked) * 100
         
-        return {
-            'percentile': percentile,
-            'faster_than': f"{percentile:.1f}%",
-            'rank_estimate': faster_count + 1,
-            'total_ranked': total_ranked,
-            'note': f'Compared to {total_ranked:,} ranked competitors ({region})'
-        }
+        # Extrapolate to broader competitor base
+        # WCA has ~200,000 ranked competitors for 3x3 single
+        # Top 1000 represents elite tier
+        estimated_total = 200000  # Approximate total WCA ranked competitors
+        
+        if faster_count >= total_ranked:
+            # Outside top 1000
+            # Use statistical model based on known distribution
+            if time_seconds < 10:
+                estimated_rank = int(1000 + (time_seconds - times[-1]) * 2000)
+            elif time_seconds < 15:
+                estimated_rank = int(5000 + (time_seconds - 10) * 5000)
+            elif time_seconds < 20:
+                estimated_rank = int(30000 + (time_seconds - 15) * 10000)
+            elif time_seconds < 30:
+                estimated_rank = int(80000 + (time_seconds - 20) * 8000)
+            else:
+                estimated_rank = int(150000 + (time_seconds - 30) * 2000)
+            
+            estimated_rank = min(estimated_rank, estimated_total)
+            percentile = (estimated_rank / estimated_total) * 100
+            
+            return {
+                'percentile': percentile,
+                'faster_than': f"{percentile:.1f}%",
+                'rank_estimate': estimated_rank,
+                'total_ranked': f"~{estimated_total:,}",
+                'note': f'Estimated among ~{estimated_total:,} worldwide ranked competitors'
+            }
+        else:
+            # Within top 1000
+            percentile = (faster_count / estimated_total) * 100
+            
+            return {
+                'percentile': percentile,
+                'faster_than': f"{percentile:.2f}%",
+                'rank_estimate': faster_count + 1,
+                'total_ranked': f"~{estimated_total:,}",
+                'note': f'Top {faster_count + 1} out of ~{estimated_total:,} ranked competitors worldwide'
+            }
     
     def _approximate_percentile(self, time_seconds):
         """Fallback: Approximate percentile"""
@@ -210,12 +280,31 @@ def main():
             
             print(f"  #{world_rank}. {name} ({country}): {time_s:.2f}s")
     
-    # Test 4: Percentile estimation
-    print("\n4. Percentile Estimation:")
-    test_times = [8.0, 12.0, 18.0]
+    # Test 4: Percentile estimation with more times
+    print("\n4. Percentile Estimation (various times):")
+    test_times = [2.5, 3.5, 5.0, 6.0, 8.0, 10.0, 12.0, 15.0, 18.0, 20.0]
+    
+    print(f"\n{'Time':<8} {'Rank':<12} {'Percentile':<15} {'Level'}")
+    print("-" * 60)
+    
     for time in test_times:
         result = client.estimate_percentile(time, '333', 'single')
-        print(f"  {time}s → Rank ~{result['rank_estimate']} ({result['faster_than']})")
+        rank = result.get('rank_estimate', 'N/A')
+        pct = result.get('faster_than', 'N/A')
+        
+        # Determine level
+        if time < 6:
+            level = "Elite"
+        elif time < 10:
+            level = "Advanced"
+        elif time < 15:
+            level = "Competitive"
+        elif time < 20:
+            level = "Intermediate"
+        else:
+            level = "Beginner"
+        
+        print(f"{time:<8.2f} ~{str(rank):<10} {pct:<15} {level}")
     
     print("\n✓ API client test complete!")
 

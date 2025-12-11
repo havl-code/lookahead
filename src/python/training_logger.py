@@ -25,16 +25,16 @@ class TrainingLogger:
         if self.conn:
             self.conn.close()
     
-    def create_session(self, event_id='333', notes=''):
+    def create_session(self, event_id='333', notes='', cube_id=None):
         """Create a new training session"""
         cursor = self.conn.cursor()
         
         query = """
-        INSERT INTO training_sessions (date, event_id, notes)
-        VALUES (DATE('now'), ?, ?)
+        INSERT INTO training_sessions (date, event_id, cube_id, notes)
+        VALUES (DATE('now'), ?, ?, ?)
         """
         
-        cursor.execute(query, (event_id, notes))
+        cursor.execute(query, (event_id, cube_id, notes))
         self.conn.commit()
         
         session_id = cursor.lastrowid
@@ -357,10 +357,33 @@ def interactive_session():
     
     # Get event
     event_id = input("\nEvent (default: 333): ").strip() or '333'
+    
+    # Ask about cube
+    use_cube = input("Track cube used? (y/n, default: n): ").strip().lower()
+    cube_id = None
+    
+    if use_cube == 'y':
+        # Show available cubes
+        from cube_manager import CubeManager
+        cube_mgr = CubeManager()
+        cube_mgr.connect()
+        
+        cubes = cube_mgr.list_cubes()
+        if len(cubes) > 0:
+            print("\nAvailable cubes:")
+            print(cubes[['id', 'name', 'brand', 'model']].to_string(index=False))
+            cube_id = int(input("\nCube ID (or 0 for none): ").strip() or 0)
+            if cube_id == 0:
+                cube_id = None
+        else:
+            print("No cubes in inventory. Add one in main menu > Cube Management")
+        
+        cube_mgr.disconnect()
+    
     notes = input("Session notes (optional): ").strip()
     
     # Create session
-    session_id = logger.create_session(event_id, notes)
+    session_id = logger.create_session(event_id, notes, cube_id)
     
     print("\nEnter solve times (in seconds)")
     print("Type 'dnf' for DNF, '+2' for +2 penalty")
