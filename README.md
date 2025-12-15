@@ -34,7 +34,7 @@ Personal speedcubing training analysis tool that combines your training data wit
 - Percentile calculations against ~200,000 ranked competitors
 - Top 1000 rankings for all events
 
-## Installation
+## 🚀 Installation
 
 ### Requirements
 - Python 3.9+
@@ -276,23 +276,27 @@ speedcube-training-explorer/
 Uses the unofficial WCA REST API (static JSON files):
 - **Base URL**: `https://raw.githubusercontent.com/robiningelbrecht/wca-rest-api/master/api`
 - **Authentication**: None required
-- **Rate Limits**: None
-- **Update Frequency**: Daily
+- **Rate Limits**: None (static files)
+- **Update Frequency**: Updated periodically
 
-### API Capabilities
-
+### Features
 - World rankings (top 1000 per event)
 - World records for all events
 - Person lookup by WCA ID
-- Country and continent data
-- Percentile estimation
+- Percentile estimation against ~200,000 ranked competitors
 
-### API Limitations
-
+### Limitations
 - Rankings limited to top 1000 competitors per event
-- Data updated once daily (not real-time)
 - Broader rankings (beyond top 1000) estimated using statistical models
-- No historical data (current rankings only)
+- Data not real-time (updated periodically)
+
+## Technology Stack
+
+- **Backend**: Python 3.9+, Flask, SQLite
+- **Frontend**: HTML, CSS (Montserrat font), JavaScript
+- **Charts**: Plotly (interactive), Matplotlib (CLI)
+- **Data**: Pandas, NumPy
+- **API**: Requests (for WCA data)
 
 ## Privacy
 

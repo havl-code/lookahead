@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speedcube Training Explorer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <h1>Speedcube Training Explorer</h1>
+            <p class="subtitle">Personal training analysis with WCA rankings comparison</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        
+        <!-- Navigation Tabs -->
+        <nav class="tabs">
+            <button class="tab active" onclick="switchTab('dashboard')">Dashboard</button>
+            <button class="tab" onclick="switchTab('sessions')">Sessions</button>
+            <button class="tab" onclick="switchTab('cubes')">Cubes</button>
+            <button class="tab" onclick="switchTab('import')">Import</button>
+            <button class="tab" onclick="switchTab('charts')">Charts</button>
+        </nav>
+
+        <!-- Dashboard Tab -->
+        <div id="tab-dashboard" class="tab-content active">
+        
+        <!-- Stats Dashboard -->
+        <section class="dashboard" id="dashboard">
+            <h2>Your Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-pb">--</div>
+                    <div class="stat-label">Personal Best</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-avg">--</div>
+                    <div class="stat-label">Average Time</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-solves">--</div>
+                    <div class="stat-label">Total Solves</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-sessions">--</div>
+                    <div class="stat-label">Total Sessions</div>
+                </div>
+                <div class="stat-card highlight">
+                    <div class="stat-value" id="stat-rank">--</div>
+                    <div class="stat-label">Your World Rank</div>
+                    <div class="stat-note">vs WCA competitors</div>
+                </div>
+                <div class="stat-card highlight">
+                    <div class="stat-value" id="stat-percentile">--</div>
+                    <div class="stat-label">Your Percentile</div>
+                    <div class="stat-note">Top X% worldwide</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recent Sessions (Dashboard) -->
+        <section class="sessions-section">
+            <h2>Recent Sessions</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Event</th>
+                            <th>Solves</th>
+                            <th>Best</th>
+                            <th>Mean</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recent-sessions-tbody">
+                        <tr>
+                            <td colspan="5" class="loading">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        </div>
+
+        <!-- Sessions Tab -->
+        <div id="tab-sessions" class="tab-content">
+            <section class="sessions-section">
+                <div class="section-header">
+                    <h2>Training Sessions</h2>
+                    <button class="btn-primary" onclick="showAddSessionForm()">Add Session</button>
+                </div>
+                
+                <!-- Add Session Form (hidden by default) -->
+                <div id="add-session-form" class="form-card" style="display: none;">
+                    <h3>Add New Session</h3>
+                    <form onsubmit="addSession(event)">
+                        <div class="form-group">
+                            <label>Event ID:</label>
+                            <input type="text" id="new-event-id" value="333" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Cube (optional):</label>
+                            <select id="new-cube-id">
+                                <option value="">None</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Notes:</label>
+                            <input type="text" id="new-session-notes">
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">Create Session</button>
+                            <button type="button" class="btn-secondary" onclick="hideAddSessionForm()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="table-container">
+                    <table id="sessions-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Date</th>
+                                <th>Event</th>
+                                <th>Solves</th>
+                                <th>Best</th>
+                                <th>Mean</th>
+                                <th>Ao5</th>
+                                <th>Ao12</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sessions-tbody">
+                            <tr>
+                                <td colspan="9" class="loading">Loading sessions...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Solve Details Modal (hidden by default) -->
+                <div id="solve-details-modal" class="modal" style="display: none;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 id="solve-modal-title">Session Solves</h3>
+                            <button class="modal-close" onclick="closeSolveModal()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Add Solve Form -->
+                            <div class="form-card">
+                                <h4>Add Solve</h4>
+                                <form onsubmit="addSolveToSession(event)" id="add-solve-form">
+                                    <input type="hidden" id="current-session-id">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Time (seconds):</label>
+                                            <input type="number" step="0.01" id="new-solve-time" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Penalty:</label>
+                                            <select id="new-solve-penalty">
+                                                <option value="">None</option>
+                                                <option value="+2">+2</option>
+                                                <option value="DNF">DNF</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Scramble (optional):</label>
+                                        <input type="text" id="new-solve-scramble">
+                                    </div>
+                                    <button type="submit" class="btn-primary">Add Solve</button>
+                                </form>
+                            </div>
+
+                            <!-- Solves Table -->
+                            <table class="solves-table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Time</th>
+                                        <th>Penalty</th>
+                                        <th>Scramble</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="solves-tbody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Cubes Tab -->
+        <div id="tab-cubes" class="tab-content">
+            <section class="cubes-section">
+                <div class="section-header">
+                    <h2>Cube Inventory</h2>
+                    <button class="btn-primary" onclick="showAddCubeForm()">Add Cube</button>
+                </div>
+
+                <!-- Add Cube Form -->
+                <div id="add-cube-form" class="form-card" style="display: none;">
+                    <h3>Add New Cube</h3>
+                    <form onsubmit="addCube(event)">
+                        <div class="form-group">
+                            <label>Name:</label>
+                            <input type="text" id="new-cube-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Brand:</label>
+                            <input type="text" id="new-cube-brand">
+                        </div>
+                        <div class="form-group">
+                            <label>Model:</label>
+                            <input type="text" id="new-cube-model">
+                        </div>
+                        <div class="form-group">
+                            <label>Purchase Date:</label>
+                            <input type="date" id="new-cube-date">
+                        </div>
+                        <div class="form-group">
+                            <label>Notes:</label>
+                            <input type="text" id="new-cube-notes">
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">Add Cube</button>
+                            <button type="button" class="btn-secondary" onclick="hideAddCubeForm()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="table-container">
+                    <table id="cubes-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Brand</th>
+                                <th>Model</th>
+                                <th>Purchase Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cubes-tbody">
+                            <tr>
+                                <td colspan="7" class="loading">Loading cubes...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <!-- Import Tab -->
+        <div id="tab-import" class="tab-content">
+        <section class="import-section" id="import">
+            <h2>Import Data</h2>
+            <div class="import-card">
+                <p>Upload your CSTimer export file (.txt, .json)</p>
+                <input type="file" id="file-input" accept=".txt,.json" style="display: none;">
+                <button class="btn-primary" onclick="document.getElementById('file-input').click()">
+                    Choose File
+                </button>
+                <span id="file-name"></span>
+                <button class="btn-secondary" id="preview-btn" style="display: none;">
+                    Preview Sessions
+                </button>
+                <div id="import-status"></div>
+
+                <!-- Session Selection -->
+                <div id="session-selection" style="display: none; margin-top: 20px;">
+                    <h3>Select Sessions to Import</h3>
+                    <div id="session-checkboxes"></div>
+                    <div style="margin-top: 20px;">
+                        <button class="btn-primary" onclick="importSelectedSessions()">Import Selected</button>
+                        <button class="btn-secondary" onclick="cancelImport()">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        </div>
+
+        <!-- Charts Tab -->
+        <div id="tab-charts" class="tab-content">
+        <section class="charts-section" id="charts">
+            <h2>Progress Analysis</h2>
+            
+            <div class="chart-card">
+                <h3>Training Progress Over Time</h3>
+                <div id="progress-chart" class="chart-container">
+                    <div class="loading">Loading chart...</div>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h3>Solve Time Distribution</h3>
+                <div id="distribution-chart" class="chart-container">
+                    <div class="loading">Loading chart...</div>
+                </div>
+            </div>
+        </section>
+        </div>
+
+    </main>
+    <footer>
+        <div class="container">
+            <p>Speedcube Training Explorer</p>
+            <p class="footer-links">
+                <a href="https://github.com/havl-code/speedcube-training-explorer" target="_blank">GitHub</a>
+                <span>|</span>
+                <a href="https://github.com/robiningelbrecht/wca-rest-api" target="_blank">WCA API</a>
+            </p>
+            <p class="footer-credit">Created by Viet Ha Ly</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

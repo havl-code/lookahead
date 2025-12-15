@@ -166,7 +166,7 @@ def main_menu():
         elif choice == '0':
             clear_screen()
             print("Thanks for using Speedcube Training Explorer!")
-            print("Keep cubing! 🎲")
+            print("Keep cubing!")
             sys.exit(0)
         
         else:
@@ -175,12 +175,14 @@ def main_menu():
 
 
 def main():
-    """Entry point"""
+    """Entry point - Choose Web or CLI"""
     if len(sys.argv) > 1 and sys.argv[1] == '--help':
         show_banner()
         print("Usage:")
-        print("  python main.py              - Interactive menu")
+        print("  python main.py              - Choose Web or CLI interface")
         print("  python main.py --help       - Show this help")
+        print("  python main.py --web        - Start web server directly")
+        print("  python main.py --cli        - Start CLI menu directly")
         print()
         print("Direct commands:")
         print("  python src/python/import_cstimer.py <file>")
@@ -188,13 +190,71 @@ def main():
         print("  python src/python/my_progress.py")
         print("  python src/python/cube_manager.py")
         print("  python src/python/visualizer.py")
-    else:
-        try:
-            main_menu()
-        except KeyboardInterrupt:
+        return
+    
+    # Check for direct flags
+    if len(sys.argv) > 1:
+        if sys.argv[1] == '--web':
             clear_screen()
-            print("\n\nExiting... Goodbye! 👋")
+            show_banner()
+            print("Starting web server...")
+            print()
+            subprocess.run(['python', 'website_server.py'])
+            return
+        elif sys.argv[1] == '--cli':
+            try:
+                main_menu()
+            except KeyboardInterrupt:
+                clear_screen()
+                print("\n\nExiting... Goodbye!")
+                sys.exit(0)
+            return
+    
+    # Ask user preference
+    try:
+        clear_screen()
+        show_banner()
+        print("How would you like to use Speedcube Training Explorer?")
+        print()
+        print("  1. Web Interface (Browser) - Recommended")
+        print("     • Clean visual interface")
+        print("     • Interactive charts with zoom/pan")
+        print("     • Manage sessions and solves")
+        print("     • Preview and select CSTimer sessions")
+        print()
+        print("  2. CLI Interface (Terminal)")
+        print("     • Command-line menu")
+        print("     • Fast for experienced users")
+        print("     • All features available")
+        print()
+        print("  0. Exit")
+        print()
+        
+        choice = input("Select option (1, 2, or 0): ").strip()
+        
+        if choice == '1':
+            # Start web server
+            clear_screen()
+            show_banner()
+            print("Starting web server...")
+            print("Once started, open your browser to: http://localhost:5000")
+            print()
+            print("Press Ctrl+C to stop the server")
+            print()
+            subprocess.run(['python', 'website_server.py'])
+        elif choice == '2':
+            # Start CLI menu
+            main_menu()
+        elif choice == '0':
+            clear_screen()
+            print("Goodbye!")
             sys.exit(0)
+        else:
+            print("\nInvalid choice. Please run again and select 1, 2, or 0.")
+    except KeyboardInterrupt:
+        clear_screen()
+        print("\n\nExiting... Goodbye!")
+        sys.exit(0)
 
 
 if __name__ == "__main__":

@@ -68,3 +68,7 @@ htmlcov/
 !data/raw/.gitkeep
 !data/processed/.gitkeep
 git_cleanup_script.sh
+
+website/images/*.png
+website/images/*.jpg*.backup
+*.backup
