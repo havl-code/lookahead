@@ -253,7 +253,7 @@ def main():
             print("\nInvalid choice. Please run again and select 1, 2, or 0.")
     except KeyboardInterrupt:
         clear_screen()
-        print("\n\nExiting... Goodbye!")
+        print("\n\nHappy Cubing!")
         sys.exit(0)
 
 

@@ -1,47 +1,35 @@
 # Speedcube Training Explorer
 
-Personal speedcubing training analysis tool that combines your training data with WCA (World Cube Association) rankings for comprehensive performance tracking and improvement analysis.
+Personal speedcubing training analysis tool with WCA rankings comparison and interactive web interface.
 
-## Features
+## ✨ Features
 
-### Core Features
+### 🌐 Web Interface (New!)
+- **Modern Dashboard**: Real-time statistics with WCA world rankings
+- **Interactive Charts**: Colorful Plotly visualizations with zoom/pan
+- **Session Management**: Advanced filtering and sorting
+- **Cube Inventory**: Track multiple speedcubes with edit functionality
+- **CSTimer Import**: Preview and selectively import sessions
+- **Responsive Design**: Clean black & white theme
+
+### 📊 Core Features
 - **Training Session Management**: Log solves manually or import from CSTimer
 - **Automatic Statistics**: Ao5, Ao12, Ao50, Ao100 calculated automatically  
-- **WCA Comparison**: Compare your times against world rankings via REST API
-- **Progress Tracking**: Visualize improvement over time with charts
-- **Cube Inventory**: Track performance across different speedcubes
-- **Session Management**: Edit/delete solves and sessions
+- **WCA Comparison**: Compare times against ~200,000 world rankings via REST API
+- **Progress Tracking**: Visualize improvement over time
+- **Cube Performance**: Track and compare different speedcubes
 - **Statistical Analysis**: Percentile rankings, personal bests, trends
 
-### New in Latest Version
-- Cube inventory management with performance tracking
-- WCA REST API integration (no database download needed)
-- Enhanced visualizations using live WCA data
-- Cube-specific performance comparisons
-- Improved percentile calculations
+### 🎨 Web Interface Highlights
+- **Dashboard Tab**: Overview statistics with WCA percentile rankings
+- **Sessions Tab**: Filter by event, date, time range; sort multiple ways
+- **Cubes Tab**: Full CRUD operations (create, read, update, deactivate)
+- **Import Tab**: Preview CSTimer sessions before importing
+- **Charts Tab**: 4 interactive charts (progress, distribution, rolling averages, consistency)
 
-## Data Sources
+## 🚀 Quick Start
 
-### Personal Training Data
-- Manual entry via interactive session logger
-- Import from CSTimer TXT/JSON/CSV exports
-- Edit and manage historical data
-
-### WCA Comparison Data  
-- Live rankings via [WCA REST API](https://github.com/robiningelbrecht/wca-rest-api)
-- No 2GB database download required
-- Real-time world record information
-- Percentile calculations against ~200,000 ranked competitors
-- Top 1000 rankings for all events
-
-## 🚀 Installation
-
-### Requirements
-- Python 3.9+
-- SQLite3 (included with Python)
-- Git
-
-### Setup
+### Installation
 
 ```bash
 # Clone repository
@@ -50,8 +38,8 @@ cd speedcube-training-explorer
 
 # Create virtual environment
 python -m venv venv
-source venv/bin/activate  # On Linux/Mac
-# venv\Scripts\activate  # On Windows
+source venv/bin/activate  # Linux/Mac
+# venv\Scripts\activate  # Windows
 
 # Install dependencies
 pip install -r requirements.txt
@@ -60,327 +48,225 @@ pip install -r requirements.txt
 python src/python/db_manager.py
 ```
 
-## Quick Start
+### Launch Application
 
-### First Time Users
-
-1. **Clone and setup**:
-```bash
-git clone https://github.com/havl-code/speedcube-training-explorer.git
-cd speedcube-training-explorer
-python -m venv venv
-source venv/bin/activate  # Linux/Mac
-pip install -r requirements.txt
-python src/python/db_manager.py
-```
-
-2. **Launch the interactive menu**:
 ```bash
 python main.py
 ```
 
-3. **Add your cubes** (optional):
-   - Select option `5` from menu
-   - Add your speedcubes with brand/model info
+Choose interface:
+- **Option 1: Web Interface** (Recommended) - Modern browser-based UI
+- **Option 2: CLI Interface** - Terminal-based menu system
 
-4. **Import CSTimer data**:
-   - Select option `1` from menu  
-   - Place your CSTimer export in `data/raw/`
-   - Enter the filename
-
-5. **View your progress**:
-   - Select option `6` for detailed statistics
-   - Select option `7` for WCA comparison
-   - Select option `8` to generate visualizations
-
-### Daily Usage
+#### Web Interface
 ```bash
-cd speedcube-training-explorer
-source venv/bin/activate
 python main.py
+# Select 1 (Web Interface)
+# Open http://localhost:5000
 ```
 
-## Usage Guide
+Features:
+- Interactive dashboard with real-time stats
+- Advanced session filtering and sorting
+- Colorful interactive charts (zoom, pan, hover)
+- Cube inventory management with edit
+- CSTimer import with session preview
 
-### 1. Import CSTimer Data
-
-**Export from CSTimer**:
-1. Go to [cstimer.net](https://cstimer.net)
-2. Click "Export" in the menu
-3. Save the file (will be a .txt file containing JSON data)
-
-**Import the file**:
+#### CLI Interface
 ```bash
-python src/python/import_cstimer.py data/raw/your_cstimer_file.txt
+python main.py
+# Select 2 (CLI Interface)
 ```
 
-Or use the interactive menu (option 1).
+Features:
+- Fast keyboard navigation
+- Batch operations
+- Direct Python API access
+- Matplotlib static charts
 
-### 2. Manual Session Logging
+## 📖 Usage Guide
 
-Log a training session interactively:
+### Web Interface
+
+#### Dashboard
+1. View overall statistics (PB, average, solve count)
+2. See WCA world rankings comparison
+3. Filter by event using dropdown
+4. View recent sessions table
+
+#### Sessions Management
+1. **Filter Sessions**: By event, date range, time range
+2. **Sort Sessions**: By date, best time, solve count (ascending/descending)
+3. **View Solves**: Click "View" to see individual solves
+4. **Add Solves**: Add new solves to existing sessions
+5. **Delete**: Remove solves or entire sessions
+
+#### Cube Inventory
+1. **Add Cube**: Name, brand, model, purchase date, notes
+2. **Edit Cube**: Click "Edit" to modify any field
+3. **Deactivate**: Hide cubes without deleting data
+4. **Reactivate**: Bring inactive cubes back
+
+#### Import Data
+1. **Export from CSTimer**: Menu → Export → Save .txt file
+2. **Choose File**: Select your CSTimer export
+3. **Preview Sessions**: See all sessions with statistics
+4. **Select**: Check/uncheck sessions to import
+5. **Choose Event**: Set puzzle type (333, 222, etc.)
+6. **Import**: Process selected sessions
+
+#### Charts
+1. **Progress Over Time**: Best single, mean, Ao5 trends
+2. **Distribution**: Histogram with mean/median markers
+3. **Rolling Averages**: Ao5 and Ao12 progression
+4. **Consistency**: Box plots across sessions
+
+**Chart Controls**:
+- Zoom: Click and drag
+- Pan: Hold Shift + drag
+- Reset: Double-click
+- Hover: See exact values
+
+### CLI Interface
+
+#### Import CSTimer Data
+```bash
+python src/python/import_cstimer.py data/raw/your_file.txt
+```
+
+#### Log Training Session
 ```bash
 python src/python/training_logger.py --interactive
 ```
 
-**Enter times**:
-- Regular solve: `18.5`
-- Plus two: `20.3+2`  
-- DNF: `dnf`
-- Finish: `done`
-
-**With cube tracking**:
-- Answer "y" when asked about tracking cube
-- Select from your cube inventory
-
-### 3. Manage Cube Inventory
-
-Add and track your speedcubes:
-```bash
-python src/python/cube_manager.py
-```
-
-**Features**:
-- Add cubes with brand/model info
-- Track which cube was used in each session
-- Compare performance across different cubes
-- View cube-specific statistics
-
-### 4. Manage Sessions
-
-Edit or delete existing sessions/solves:
+#### Manage Sessions
 ```bash
 python src/python/training_logger.py --manage
 ```
 
-**Options**:
-- View all sessions
-- View solve details  
-- Edit individual solves
-- Delete solves or entire sessions
-- Edit session notes
-
-### 5. View Progress & Statistics
-
-Analyze your training data:
+#### View Progress & Stats
 ```bash
 python src/python/my_progress.py
 ```
 
-**Shows**:
-- Personal bests and averages
-- Total session and solve counts
-- Comparison to WCA world rankings
-- Estimated world rank and percentile
-- Improvement over time
-- Gap analysis (PB vs average)
+#### Manage Cubes
+```bash
+python src/python/cube_manager.py
+```
 
-### 6. Generate Visualizations
-
-Create charts and graphs:
+#### Generate Charts
 ```bash
 python src/python/visualizer.py
 ```
 
-**Generates**:
-- Time distribution (top ranked)
-- Top 10 solvers bar chart
-- Percentile comparison chart
-- Personal progress over time
-
-All images saved to `data/processed/`.
-
-### 7. Test WCA API
-
-Verify API connectivity:
-```bash
-python src/python/wca_api_client.py
-```
-
-Shows world records, top rankings, and percentile calculations.
-
-## Updating Your Data
-
-### Replace All Data
-```bash
-# 1. Export new data from CSTimer
-# 2. Clear existing data
-sqlite3 data/speedcube.db "DELETE FROM personal_solves; DELETE FROM training_sessions;"
-
-# 3. Import new file
-python src/python/import_cstimer.py data/raw/my_new_export.txt
-
-# 4. Regenerate visualizations
-python src/python/visualizer.py
-```
-
-### Add New Sessions
-```bash
-# Import additional file (adds to existing data)
-python src/python/import_cstimer.py data/raw/december_solves.txt
-```
-
-### Use Interactive Menu
-```bash
-python main.py
-# Select option 1, follow prompts
-```
-
-## Project Structure
+## 📁 Project Structure
 
 ```
 speedcube-training-explorer/
 ├── data/
-│   ├── raw/                    # CSTimer exports go here
-│   ├── processed/              # Generated charts (gitignored)
-│   └── speedcube.db            # Personal training database
+│   ├── raw/                    # CSTimer exports
+│   ├── processed/              # Generated charts (CLI)
+│   └── speedcube.db            # SQLite database
 ├── src/
-│   └── python/
-│       ├── import_cstimer.py   # Import CSTimer data
-│       ├── training_logger.py  # Log/manage sessions
-│       ├── cube_manager.py     # Manage cube inventory
-│       ├── my_progress.py      # Analyze progress
-│       ├── wca_api_client.py   # WCA API integration
-│       ├── analyzer.py         # Statistical analysis
-│       ├── visualizer.py       # Create charts
-│       └── db_manager.py       # Database management
+│   ├── python/                 # Backend logic
+│   │   ├── import_cstimer.py
+│   │   ├── training_logger.py
+│   │   ├── cube_manager.py
+│   │   ├── wca_api_client.py
+│   │   ├── my_progress.py
+│   │   ├── visualizer.py
+│   │   ├── analyzer.py
+│   │   └── db_manager.py
+│   └── web/                    # Web interface
+│       ├── css/
+│       │   └── style.css
+│       ├── js/
+│       │   ├── config.js
+│       │   ├── dashboard.js
+│       │   ├── sessions.js
+│       │   ├── cubes.js
+│       │   ├── charts.js
+│       │   ├── import.js
+│       │   └── app.js
+│       └── index.html
 ├── sql/
 │   └── schema.sql              # Database schema
-├── config/
-│   └── config.yaml             # Configuration
-├── main.py                     # Interactive menu
-├── requirements.txt            # Dependencies
-├── setup.py                    # Package installation
-└── README.md                   # This file
+├── main.py                     # Main entry point
+├── website_server.py           # Flask web server
+└── requirements.txt
 ```
 
-## Database Schema
-
-### Personal Training Tables
-
-- **cubes**: Speedcube inventory with brand/model info
-- **training_sessions**: Session metadata (date, event, cube used, stats)
-- **personal_solves**: Individual solve times with scrambles and penalties
-- **training_goals**: Performance goals and tracking
-- **user_profile**: User settings and WCA ID
-
-### Views
-
-- **view_personal_bests**: Personal best times by event
-- **view_session_stats**: Session statistics with cube info
-- **view_progress_timeline**: Progress over time
-- **view_cube_comparison**: Performance comparison across cubes
-
-## WCA API Integration
-
-Uses the unofficial WCA REST API (static JSON files):
-- **Base URL**: `https://raw.githubusercontent.com/robiningelbrecht/wca-rest-api/master/api`
-- **Authentication**: None required
-- **Rate Limits**: None (static files)
-- **Update Frequency**: Updated periodically
-
-### Features
-- World rankings (top 1000 per event)
-- World records for all events
-- Person lookup by WCA ID
-- Percentile estimation against ~200,000 ranked competitors
-
-### Limitations
-- Rankings limited to top 1000 competitors per event
-- Broader rankings (beyond top 1000) estimated using statistical models
-- Data not real-time (updated periodically)
-
-## Technology Stack
+## 🎨 Technology Stack
 
 - **Backend**: Python 3.9+, Flask, SQLite
-- **Frontend**: HTML, CSS (Montserrat font), JavaScript
-- **Charts**: Plotly (interactive), Matplotlib (CLI)
+- **Frontend**: HTML5, CSS3, Vanilla JavaScript
+- **Charts**: Plotly (web), Matplotlib (CLI)
 - **Data**: Pandas, NumPy
-- **API**: Requests (for WCA data)
+- **API**: WCA REST API (public rankings)
 
-## Privacy
+## 🔒 Privacy
 
-- All personal data stays local (SQLite database)
-- No data uploaded to any server
-- CSTimer files excluded from git
-- No API keys or authentication required
-- Generated charts not tracked in git
+- All data stored locally (SQLite)
+- No data uploaded to servers
+- No authentication required
+- Open source - verify yourself
 
-## Example Workflow
+## 🆕 Recent Updates
 
-1. **Add your cubes**: Track which speedcube you're using
-2. **Import history**: Load your CSTimer data from past sessions
-3. **Log sessions**: Record new training sessions with cube info
-4. **Check progress**: View improvement over time
-5. **Compare to WCA**: See how you rank globally
-6. **Generate charts**: Create visualizations to share
-7. **Set goals**: Track progress toward target times
+### Version 1.1 (Latest)
+- ✨ Complete web interface with modern UI
+- 🎨 Interactive Plotly charts with zoom/pan
+- 🔍 Advanced session filtering and sorting
+- ✏️ Full cube editing functionality
+- 📥 CSTimer import with session preview
+- 🎯 Colorful charts (black & white theme)
+- 📱 Responsive design for all screen sizes
+- ⚡ Modular JavaScript architecture
 
-## Advanced Usage
+### Version 1.0
+- Initial release with CLI interface
+- CSTimer import functionality
+- WCA API integration
+- Basic statistics and charts
 
-### Direct Python API
+## 🐛 Troubleshooting
 
-```python
-from src.python.training_logger import TrainingLogger
-from src.python.wca_api_client import WCAApiClient
+### Charts Not Loading
+- Check browser console (F12)
+- Ensure Plotly CDN is accessible
+- Clear browser cache (Ctrl+Shift+R)
 
-# Log a session
-logger = TrainingLogger()
-logger.connect()
-session_id = logger.create_session(event_id='333', cube_id=1)
-logger.add_solve(session_id, 18.5)
-logger.update_session_stats(session_id)
-logger.disconnect()
+### Import Errors
+- Verify CSTimer file format (.txt with JSON)
+- Check file is in `data/raw/`
+- Ensure valid JSON structure
 
-# Compare to WCA
-wca = WCAApiClient()
-result = wca.estimate_percentile(18.5, '333', 'single')
-print(f"Rank: ~{result['rank_estimate']}")
-print(f"Percentile: {result['faster_than']}")
-```
-
-### SQL Queries
-
+### Database Issues
 ```bash
-# View all sessions
-sqlite3 data/speedcube.db "SELECT * FROM training_sessions;"
-
-# Check cube performance
-sqlite3 data/speedcube.db "SELECT * FROM view_cube_comparison;"
-
-# Export to CSV
-sqlite3 -header -csv data/speedcube.db "SELECT * FROM personal_solves;" > my_solves.csv
+# Reinitialize database
+python src/python/db_manager.py
 ```
 
-## Contributing
+## 🤝 Contributing
 
-This is a personal project for portfolio purposes. Feel free to:
-- Fork and adapt for your own use
-- Submit bug reports via Issues
+This is a personal portfolio project. Feel free to:
+- Fork and adapt for your use
+- Report bugs via Issues
 - Suggest features via Issues
-- Share your improvements via Pull Requests
+- Submit improvements via Pull Requests
 
-## License
+## 📄 License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+MIT License - See [LICENSE](LICENSE) for details.
 
-You are free to:
-- Use commercially
-- Modify
-- Distribute  
-- Use privately
+## 🙏 Acknowledgments
 
-Under the conditions:
-- Include original license and copyright notice
+- **WCA** - Competition data standards
+- **[CSTimer](https://cstimer.net)** - Timer interface
+- **[WCA REST API](https://github.com/robiningelbrecht/wca-rest-api)** - Easy API access
+- **Speedcubing Community** - Inspiration and support
 
-## Acknowledgments
-
-- **WCA** for competition data standards and events
-- **[CSTimer](https://cstimer.net)** for the excellent timer interface
-- **[Unofficial WCA REST API](https://github.com/robiningelbrecht/wca-rest-api)** by Robin Ingelbrecht for making WCA data easily accessible
-- **Speedcubing community** for inspiration and support
-
-## Contact
+## 📧 Contact
 
 **Viet Ha Ly**
 - GitHub: [@havl-code](https://github.com/havl-code)
@@ -389,4 +275,4 @@ Under the conditions:
 
 ---
 
-**Happy Cubing!**
+**Happy Cubing! 🎲**

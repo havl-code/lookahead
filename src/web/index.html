@@ -35,7 +35,16 @@
         
         <!-- Stats Dashboard -->
         <section class="dashboard" id="dashboard">
-            <h2>Your Statistics</h2>
+            <div class="section-header">
+                <h2>Your Statistics</h2>
+                <div class="event-filter">
+                    <label for="event-select">Event:</label>
+                    <select id="event-select" onchange="changeEvent()">
+                        <option value="all">All Events</option>
+                        <option value="333" selected>3x3x3</option>
+                    </select>
+                </div>
+            </div>
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-value" id="stat-pb">--</div>
@@ -66,7 +75,7 @@
             </div>
         </section>
 
-        <!-- Recent Sessions (Dashboard) -->
+        <!-- Recent Sessions -->
         <section class="sessions-section">
             <h2>Recent Sessions</h2>
             <div class="table-container">
@@ -98,13 +107,27 @@
                     <button class="btn-primary" onclick="showAddSessionForm()">Add Session</button>
                 </div>
                 
-                <!-- Add Session Form (hidden by default) -->
+                <!-- Add Session Form -->
                 <div id="add-session-form" class="form-card" style="display: none;">
                     <h3>Add New Session</h3>
                     <form onsubmit="addSession(event)">
                         <div class="form-group">
-                            <label>Event ID:</label>
-                            <input type="text" id="new-event-id" value="333" required>
+                            <label>Event Type:</label>
+                            <select id="new-event-id" required>
+                                <option value="222">2x2x2</option>
+                                <option value="333" selected>3x3x3</option>
+                                <option value="444">4x4x4</option>
+                                <option value="555">5x5x5</option>
+                                <option value="666">6x6x6</option>
+                                <option value="777">7x7x7</option>
+                                <option value="333oh">3x3x3 One-Handed</option>
+                                <option value="333bf">3x3x3 Blindfolded</option>
+                                <option value="clock">Clock</option>
+                                <option value="minx">Megaminx</option>
+                                <option value="pyram">Pyraminx</option>
+                                <option value="skewb">Skewb</option>
+                                <option value="sq1">Square-1</option>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label>Cube (optional):</label>
@@ -123,11 +146,12 @@
                     </form>
                 </div>
 
+                <!-- Filters will be inserted here by JavaScript -->
+
                 <div class="table-container">
                     <table id="sessions-table">
                         <thead>
                             <tr>
-                                <th>ID</th>
                                 <th>Date</th>
                                 <th>Event</th>
                                 <th>Solves</th>
@@ -140,13 +164,13 @@
                         </thead>
                         <tbody id="sessions-tbody">
                             <tr>
-                                <td colspan="9" class="loading">Loading sessions...</td>
+                                <td colspan="8" class="loading">Loading sessions...</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
 
-                <!-- Solve Details Modal (hidden by default) -->
+                <!-- Solve Details Modal -->
                 <div id="solve-details-modal" class="modal" style="display: none;">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -214,24 +238,24 @@
                     <h3>Add New Cube</h3>
                     <form onsubmit="addCube(event)">
                         <div class="form-group">
-                            <label>Name:</label>
-                            <input type="text" id="new-cube-name" required>
+                            <label>Name: <span style="color: red;">*</span></label>
+                            <input type="text" id="new-cube-name" required placeholder="e.g., Main 3x3">
                         </div>
                         <div class="form-group">
                             <label>Brand:</label>
-                            <input type="text" id="new-cube-brand">
+                            <input type="text" id="new-cube-brand" placeholder="e.g., GAN, MoYu">
                         </div>
                         <div class="form-group">
                             <label>Model:</label>
-                            <input type="text" id="new-cube-model">
+                            <input type="text" id="new-cube-model" placeholder="e.g., 14 MagLev">
                         </div>
                         <div class="form-group">
-                            <label>Purchase Date:</label>
+                            <label>Purchase Date / Started Using:</label>
                             <input type="date" id="new-cube-date">
                         </div>
                         <div class="form-group">
                             <label>Notes:</label>
-                            <input type="text" id="new-cube-notes">
+                            <textarea id="new-cube-notes" rows="3" placeholder="Any additional notes..."></textarea>
                         </div>
                         <div class="form-actions">
                             <button type="submit" class="btn-primary">Add Cube</button>
@@ -240,11 +264,12 @@
                     </form>
                 </div>
 
+                <!-- Edit form will be inserted here by JavaScript -->
+
                 <div class="table-container">
                     <table id="cubes-table">
                         <thead>
                             <tr>
-                                <th>ID</th>
                                 <th>Name</th>
                                 <th>Brand</th>
                                 <th>Model</th>
@@ -255,7 +280,7 @@
                         </thead>
                         <tbody id="cubes-tbody">
                             <tr>
-                                <td colspan="7" class="loading">Loading cubes...</td>
+                                <td colspan="6" class="loading">Loading cubes...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -282,6 +307,26 @@
                 <!-- Session Selection -->
                 <div id="session-selection" style="display: none; margin-top: 20px;">
                     <h3>Select Sessions to Import</h3>
+                    
+                    <div class="form-group" style="max-width: 300px; margin-bottom: 20px;">
+                        <label for="import-event-select">Import as Event:</label>
+                        <select id="import-event-select" class="event-select">
+                            <option value="222">2x2x2</option>
+                            <option value="333" selected>3x3x3</option>
+                            <option value="444">4x4x4</option>
+                            <option value="555">5x5x5</option>
+                            <option value="666">6x6x6</option>
+                            <option value="777">7x7x7</option>
+                            <option value="333oh">3x3x3 One-Handed</option>
+                            <option value="333bf">3x3x3 Blindfolded</option>
+                            <option value="clock">Clock</option>
+                            <option value="minx">Megaminx</option>
+                            <option value="pyram">Pyraminx</option>
+                            <option value="skewb">Skewb</option>
+                            <option value="sq1">Square-1</option>
+                        </select>
+                    </div>
+                    
                     <div id="session-checkboxes"></div>
                     <div style="margin-top: 20px;">
                         <button class="btn-primary" onclick="importSelectedSessions()">Import Selected</button>
@@ -294,26 +339,43 @@
 
         <!-- Charts Tab -->
         <div id="tab-charts" class="tab-content">
-        <section class="charts-section" id="charts">
-            <h2>Progress Analysis</h2>
-            
-            <div class="chart-card">
-                <h3>Training Progress Over Time</h3>
-                <div id="progress-chart" class="chart-container">
-                    <div class="loading">Loading chart...</div>
+            <section class="charts-section" id="charts">
+                <h2>Progress Analysis</h2>
+                
+                <!-- Event & Session selectors inserted by JavaScript -->
+                
+                <div class="chart-card">
+                    <h3>Training Progress Over Time</h3>
+                    <div id="progress-chart" class="chart-container">
+                        <div class="loading">Loading chart...</div>
+                    </div>
                 </div>
-            </div>
 
-            <div class="chart-card">
-                <h3>Solve Time Distribution</h3>
-                <div id="distribution-chart" class="chart-container">
-                    <div class="loading">Loading chart...</div>
+                <div class="chart-card">
+                    <h3>Solve Time Distribution</h3>
+                    <div id="distribution-chart" class="chart-container">
+                        <div class="loading">Loading chart...</div>
+                    </div>
                 </div>
-            </div>
-        </section>
+
+                <div class="chart-card">
+                    <h3>Rolling Averages (Ao5 & Ao12)</h3>
+                    <div id="breakdown-chart" class="chart-container">
+                        <div class="loading">Loading chart...</div>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <h3>Consistency Across Sessions</h3>
+                    <div id="consistency-chart" class="chart-container">
+                        <div class="loading">Loading chart...</div>
+                    </div>
+                </div>
+            </section>
         </div>
 
     </main>
+    
     <footer>
         <div class="container">
             <p>Speedcube Training Explorer</p>
@@ -326,6 +388,13 @@
         </div>
     </footer>
 
-    <script src="js/main.js"></script>
+    <!-- Load JavaScript modules in order -->
+    <script src="js/config.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/sessions.js"></script>
+    <script src="js/cubes.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/import.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>

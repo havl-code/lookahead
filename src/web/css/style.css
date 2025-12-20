@@ -71,6 +71,65 @@ body {
     margin-bottom: 0;
 }
 
+.event-filter {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.event-filter label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+}
+
+.event-filter select, .chart-select {
+    font-family: 'Montserrat', sans-serif;
+    padding: 8px 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.event-filter select:hover, .chart-select:hover {
+    border-color: #000;
+}
+
+.event-filter select:focus, .chart-select:focus {
+    outline: none;
+    border-color: #000;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Filters Container */
+.filters-container {
+    background: #f8f8f8;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+}
+
+.filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 0;
+}
+
+.filters-container .form-group {
+    margin-bottom: 0;
+}
+
+/* Chart Filters */
+.chart-filters {
+    background: #f8f8f8;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 32px;
+}
+
 /* Header */
 header {
     padding: 60px 0 40px;
@@ -107,6 +166,12 @@ section h3 {
     font-size: 20px;
     font-weight: 500;
     margin-bottom: 20px;
+}
+
+section h4 {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 16px;
 }
 
 /* Stats Dashboard */
@@ -343,7 +408,8 @@ tbody tr:hover {
 }
 
 .form-group input,
-.form-group select {
+.form-group select,
+.form-group textarea {
     font-family: 'Montserrat', sans-serif;
     width: 100%;
     padding: 10px 12px;
@@ -354,9 +420,14 @@ tbody tr:hover {
 }
 
 .form-group input:focus,
-.form-group select:focus {
+.form-group select:focus,
+.form-group textarea:focus {
     outline: none;
     border-color: #000000;
+}
+
+.form-group textarea {
+    resize: vertical;
 }
 
 .form-actions {
@@ -459,6 +530,7 @@ tbody tr:hover {
 
 .session-info {
     flex: 1;
+    cursor: pointer;
 }
 
 .session-info strong {
@@ -542,6 +614,10 @@ footer {
     th, td {
         padding: 12px;
     }
+    
+    .filters-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* Animations */
@@ -556,7 +632,7 @@ footer {
     }
 }
 
-.stat-card, .chart-card, .import-card {
+.stat-card, .chart-card, .import-card, .form-card, .filters-container {
     animation: fadeIn 0.5s ease;
 }
 
