@@ -5,6 +5,9 @@ Interactive menu for all features
 
 import subprocess
 import sys
+import webbrowser
+import time
+import threading
 from pathlib import Path
 
 sys.path.insert(0, 'src/python')
@@ -26,6 +29,12 @@ def show_banner():
     print("         SPEEDCUBE TRAINING EXPLORER")
     print("="*60)
     print()
+
+
+def open_browser():
+    """Open browser after a short delay"""
+    time.sleep(1.5)  # Wait for server to start
+    webbrowser.open('http://localhost:5000')
 
 
 def main_menu():
@@ -198,7 +207,10 @@ def main():
             clear_screen()
             show_banner()
             print("Starting web server...")
+            print("Opening browser automatically...")
             print()
+            # Open browser in background thread
+            threading.Thread(target=open_browser, daemon=True).start()
             subprocess.run(['python', 'website_server.py'])
             return
         elif sys.argv[1] == '--cli':
@@ -219,6 +231,7 @@ def main():
         print("  1. Web Interface (Browser) - Recommended")
         print("     • Clean visual interface")
         print("     • Interactive charts with zoom/pan")
+        print("     • Dark mode support")
         print("     • Manage sessions and solves")
         print("     • Preview and select CSTimer sessions")
         print()
@@ -237,10 +250,13 @@ def main():
             clear_screen()
             show_banner()
             print("Starting web server...")
-            print("Once started, open your browser to: http://localhost:5000")
+            print("Opening browser automatically...")
+            print("Server will run at: http://localhost:5000")
             print()
             print("Press Ctrl+C to stop the server")
             print()
+            # Open browser in background thread
+            threading.Thread(target=open_browser, daemon=True).start()
             subprocess.run(['python', 'website_server.py'])
         elif choice == '2':
             # Start CLI menu

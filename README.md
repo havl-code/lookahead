@@ -4,13 +4,14 @@ Personal speedcubing training analysis tool with WCA rankings comparison and int
 
 ## ✨ Features
 
-### 🌐 Web Interface (New!)
+### 🌐 Web Interface
 - **Modern Dashboard**: Real-time statistics with WCA world rankings
 - **Interactive Charts**: Colorful Plotly visualizations with zoom/pan
 - **Session Management**: Advanced filtering and sorting
 - **Cube Inventory**: Track multiple speedcubes with edit functionality
 - **CSTimer Import**: Preview and selectively import sessions
 - **Responsive Design**: Clean black & white theme
+- **Dark Mode**: Toggle between light/dark themes with persistent preference
 
 ### 📊 Core Features
 - **Training Session Management**: Log solves manually or import from CSTimer

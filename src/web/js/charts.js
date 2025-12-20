@@ -99,6 +99,33 @@ async function renderAllCharts() {
     ]);
 }
 
+function getThemedChartLayout() {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    
+    return {
+        font: { family: 'Montserrat', size: 12, color: isDark ? '#ffffff' : '#000000' },
+        plot_bgcolor: isDark ? '#2a2a2a' : '#ffffff',
+        paper_bgcolor: isDark ? '#2a2a2a' : '#ffffff',
+        xaxis: { 
+            gridcolor: isDark ? '#404040' : '#e0e0e0', 
+            showline: true, 
+            linecolor: isDark ? '#555555' : '#cccccc', 
+            linewidth: 1,
+            type: 'linear',
+            title: { font: { color: isDark ? '#ffffff' : '#000000' } }
+        },
+        yaxis: { 
+            gridcolor: isDark ? '#404040' : '#e0e0e0', 
+            showline: true, 
+            linecolor: isDark ? '#555555' : '#cccccc', 
+            linewidth: 1,
+            title: { text: 'Time (seconds)', font: { color: isDark ? '#ffffff' : '#000000' } }
+        },
+        margin: { l: 60, r: 30, t: 80, b: 60 },
+        hovermode: 'closest'
+    };
+}
+
 async function loadProgressChart() {
     const eventId = document.getElementById('chart-event-select')?.value || '333';
     const sessionId = document.getElementById('chart-session-select')?.value || 'all';
@@ -121,9 +148,9 @@ async function loadProgressChart() {
         
         const traces = [];
         const isSessionView = sessionId !== 'all';
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
         
         if (isSessionView) {
-            // Single session view
             traces.push({
                 x: data.data.map(d => d.solve_number),
                 y: data.data.map(d => d.time),
@@ -156,7 +183,6 @@ async function loadProgressChart() {
                 });
             }
         } else {
-            // All sessions view
             traces.push({
                 x: data.data.map((_, i) => i + 1),
                 y: data.data.map(d => d.best),
@@ -191,21 +217,17 @@ async function loadProgressChart() {
         }
         
         const layout = {
-            ...chartLayout,
+            ...getThemedChartLayout(),
             title: {
                 text: sessionId === 'all' ? 
                     `Progress Over Time - ${getEventName(eventId)}` : 
                     `Session Detail - ${getEventName(eventId)}`,
-                font: { size: 16, color: '#000', family: 'Montserrat', weight: 600 }
+                font: { size: 16, color: isDark ? '#ffffff' : '#000000', family: 'Montserrat', weight: 600 }
             },
             xaxis: { 
-                ...chartLayout.xaxis, 
-                title: { text: sessionId === 'all' ? 'Session Number' : 'Solve Number', font: { size: 13 } },
+                ...getThemedChartLayout().xaxis, 
+                title: { text: sessionId === 'all' ? 'Session Number' : 'Solve Number', font: { size: 13, color: isDark ? '#ffffff' : '#000000' } },
                 type: 'linear'
-            },
-            yaxis: {
-                ...chartLayout.yaxis,
-                title: { text: 'Time (seconds)', font: { size: 13 } }
             }
         };
         
@@ -242,6 +264,7 @@ async function loadDistributionChart() {
         const sorted = [...times].sort((a, b) => a - b);
         const median = sorted[Math.floor(times.length / 2)];
         const stdDev = Math.sqrt(times.reduce((sq, n) => sq + Math.pow(n - mean, 2), 0) / times.length);
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
         
         const trace = {
             x: times,
@@ -249,26 +272,26 @@ async function loadDistributionChart() {
             nbinsx: Math.min(30, Math.max(10, Math.floor(times.length / 5))),
             marker: {
                 color: COLORS.primary,
-                line: { color: '#fff', width: 1 }
+                line: { color: isDark ? '#2a2a2a' : '#ffffff', width: 1 }
             },
             name: 'Times',
             opacity: 0.85
         };
         
         const layout = {
-            ...chartLayout,
+            ...getThemedChartLayout(),
             title: {
                 text: `Time Distribution - ${getEventName(eventId)}<br><sub style="font-size: 12px;">Mean: ${mean.toFixed(2)}s | Median: ${median.toFixed(2)}s | Std Dev: ${stdDev.toFixed(2)}s</sub>`,
-                font: { size: 16, color: '#000', family: 'Montserrat', weight: 600 }
+                font: { size: 16, color: isDark ? '#ffffff' : '#000000', family: 'Montserrat', weight: 600 }
             },
             xaxis: { 
-                ...chartLayout.xaxis, 
-                title: { text: 'Time (seconds)', font: { size: 13 } },
+                ...getThemedChartLayout().xaxis, 
+                title: { text: 'Time (seconds)', font: { size: 13, color: isDark ? '#ffffff' : '#000000' } },
                 type: 'linear'
             },
             yaxis: { 
-                ...chartLayout.yaxis, 
-                title: { text: 'Frequency', font: { size: 13 } }
+                ...getThemedChartLayout().yaxis, 
+                title: { text: 'Frequency', font: { size: 13, color: isDark ? '#ffffff' : '#000000' } }
             },
             shapes: [{
                 type: 'line',
@@ -340,6 +363,8 @@ async function loadRollingChart() {
             }
         }
         
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        
         const traces = [
             {
                 x: times.map((_, i) => i + 1),
@@ -368,19 +393,15 @@ async function loadRollingChart() {
         ];
         
         const layout = {
-            ...chartLayout,
+            ...getThemedChartLayout(),
             title: {
                 text: `Rolling Averages - ${getEventName(eventId)}`,
-                font: { size: 16, color: '#000', family: 'Montserrat', weight: 600 }
+                font: { size: 16, color: isDark ? '#ffffff' : '#000000', family: 'Montserrat', weight: 600 }
             },
             xaxis: { 
-                ...chartLayout.xaxis, 
-                title: { text: 'Solve Number', font: { size: 13 } },
+                ...getThemedChartLayout().xaxis, 
+                title: { text: 'Solve Number', font: { size: 13, color: isDark ? '#ffffff' : '#000000' } },
                 type: 'linear'
-            },
-            yaxis: {
-                ...chartLayout.yaxis,
-                title: { text: 'Time (seconds)', font: { size: 13 } }
             }
         };
         
@@ -415,6 +436,8 @@ async function loadConsistencyChart() {
             return;
         }
         
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        
         const traces = data.sessions.map((session, idx) => ({
             y: session.times,
             type: 'box',
@@ -424,14 +447,14 @@ async function loadConsistencyChart() {
         }));
         
         const layout = {
-            ...chartLayout,
+            ...getThemedChartLayout(),
             title: {
                 text: `Consistency Across Sessions - ${getEventName(eventId)}`,
-                font: { size: 16, color: '#000', family: 'Montserrat', weight: 600 }
+                font: { size: 16, color: isDark ? '#ffffff' : '#000000', family: 'Montserrat', weight: 600 }
             },
             yaxis: { 
-                ...chartLayout.yaxis, 
-                title: { text: 'Time (seconds)', font: { size: 13 } }
+                ...getThemedChartLayout().yaxis, 
+                title: { text: 'Time (seconds)', font: { size: 13, color: isDark ? '#ffffff' : '#000000' } }
             },
             showlegend: false
         };
