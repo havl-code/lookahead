@@ -209,11 +209,40 @@ header {
     margin-bottom: 60px;
 }
 
+.header-title {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 8px;
+}
+
+.header-logo {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+}
+
+.logo-light {
+    display: block;
+}
+
+.logo-dark {
+    display: none;
+}
+
+[data-theme="dark"] .logo-light {
+    display: none;
+}
+
+[data-theme="dark"] .logo-dark {
+    display: block;
+}
+
 header h1 {
     font-size: 36px;
     font-weight: 600;
-    margin-bottom: 8px;
     letter-spacing: -0.5px;
+    margin: 0;
 }
 
 header .subtitle {
@@ -456,6 +485,45 @@ tbody tr:hover {
     background: var(--error-bg);
 }
 
+/* Sortable column styles */
+.solves-table th.sortable {
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    padding-right: 30px;
+    transition: background-color 0.2s ease;
+}
+
+.solves-table th.sortable:hover {
+    background-color: rgba(74, 144, 226, 0.1);
+}
+
+.sort-arrow {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.75em;
+    color: #4a90e2;
+    opacity: 0.5;
+    transition: opacity 0.2s ease;
+}
+
+.sort-arrow.asc,
+.sort-arrow.desc {
+    opacity: 1;
+    font-weight: bold;
+}
+
+.scramble-cell {
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12px;
+    font-family: monospace;
+}
+
 /* Forms */
 .form-card {
     background: var(--bg-secondary);
@@ -556,6 +624,7 @@ tbody tr:hover {
     cursor: pointer;
     color: var(--text-secondary);
     line-height: 1;
+    transition: color 0.2s ease;
 }
 
 .modal-close:hover {

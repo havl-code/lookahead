@@ -1,6 +1,7 @@
 """
 CSTimer Data Importer
 Import solve times from CSTimer export files
+FIXED: Proper DNF handling (DNF = 0ms in database, not 999999ms)
 """
 
 import json
@@ -23,6 +24,11 @@ class CSTimerImporter:
         
         CSTimer JSON format (in .txt file):
         {"session1": [[[penalty, time_cs], "scramble", "", timestamp], ...]}
+        
+        Penalty codes:
+        - 0 = OK
+        - 2000 = +2
+        - -1 = DNF
         """
         print(f"Reading CSTimer file: {json_file}")
         
@@ -63,7 +69,7 @@ class CSTimerImporter:
                     # 0 = OK, 2000 = +2, -1 = DNF
                     if penalty_code == -1:
                         penalty = 'DNF'
-                        time_seconds = 999.99
+                        time_seconds = 0  # DNF stored as 0
                     elif penalty_code == 2000:
                         penalty = '+2'
                         time_seconds = time_cs / 1000
@@ -119,7 +125,7 @@ class CSTimerImporter:
                 scramble_col = col
         
         if not time_col:
-            print("❌ Could not find time column")
+            print("✗ Could not find time column")
             return None
         
         # Create session
@@ -137,7 +143,7 @@ class CSTimerImporter:
                 # Handle penalties
                 if 'DNF' in time_str.upper():
                     penalty = 'DNF'
-                    time_seconds = 999.99
+                    time_seconds = 0  # DNF stored as 0
                 elif '+2' in time_str:
                     penalty = '+2'
                     time_seconds = float(time_str.replace('+2', '').strip())
@@ -196,7 +202,7 @@ class CSTimerImporter:
                 # Handle penalties
                 if 'DNF' in time_str.upper():
                     penalty = 'DNF'
-                    time_seconds = 999.99
+                    time_seconds = 0  # DNF stored as 0
                 elif '+2' in time_str:
                     penalty = '+2'
                     time_seconds = float(time_str.replace('+2', ''))
@@ -241,7 +247,7 @@ def main():
     file_path = Path(file_path)
     
     if not file_path.exists():
-        print(f"❌ File not found: {file_path}")
+        print(f"✗ File not found: {file_path}")
         return
     
     # Get event
@@ -253,7 +259,7 @@ def main():
     elif file_path.suffix == '.csv':
         session_id = importer.import_from_csv(file_path, event_id)
     else:
-        print("❌ Unknown file type. Use .txt, .json or .csv")
+        print("✗ Unknown file type. Use .txt, .json or .csv")
         return
     
     # Show summary

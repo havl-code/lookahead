@@ -1,6 +1,7 @@
 """
 Training Logger
 Log personal speedcubing training sessions
+FIXED: DNF handling according to WCA rules
 """
 
 import sqlite3
@@ -42,15 +43,21 @@ class TrainingLogger:
         return session_id
     
     def add_solve(self, session_id, time_seconds, scramble='', penalty=None, notes=''):
-        """Add a solve to a session"""
+        """
+        Add a solve to a session
+        DNF solves store time_ms as 0 (not 999999)
+        """
         cursor = self.conn.cursor()
-        
-        # Convert to milliseconds
-        time_ms = int(time_seconds * 1000)
         
         # Determine DNF/+2
         dnf = 1 if penalty == 'DNF' else 0
         plus_two = 1 if penalty == '+2' else 0
+        
+        # IMPORTANT: Store DNF as 0ms, not 999999ms
+        if dnf:
+            time_ms = 0
+        else:
+            time_ms = int(time_seconds * 1000)
         
         # Get current solve number
         cursor.execute(
@@ -85,39 +92,89 @@ class TrainingLogger:
         self.update_session_stats(session_id)
     
     def update_session_stats(self, session_id):
-        """Calculate and update session statistics"""
+        """
+        Calculate and update session statistics
+        Following WCA rules for DNF handling
+        """
         cursor = self.conn.cursor()
         
-        # Get all solves for this session (excluding DNF)
+        # Get all solves for this session (including DNFs)
         query = """
-        SELECT time_ms FROM personal_solves
-        WHERE session_id = ? AND dnf = 0
-        ORDER BY time_ms
+        SELECT time_ms, dnf FROM personal_solves
+        WHERE session_id = ?
+        ORDER BY solve_number
         """
         
         cursor.execute(query, (session_id,))
-        times = [row[0] for row in cursor.fetchall()]
+        all_solves = cursor.fetchall()
         
-        if not times:
-            print("No valid solves to calculate stats")
+        if not all_solves:
+            print("No solves to calculate stats")
             return
         
-        # Calculate stats
-        best_single = min(times)
-        worst_single = max(times)
-        session_mean = sum(times) / len(times)
+        # Separate valid times from DNFs
+        times = []
+        dnf_count = 0
         
-        # Calculate Ao5 (average of 5, remove best and worst)
+        for time_ms, is_dnf in all_solves:
+            if is_dnf:
+                dnf_count += 1
+            else:
+                times.append(time_ms)
+        
+        total_solves = len(all_solves)
+        
+        # Calculate basic stats (only from valid solves)
+        if times:
+            best_single = min(times)
+            worst_single = max(times)
+            session_mean = sum(times) / len(times)
+        else:
+            best_single = None
+            worst_single = None
+            session_mean = None
+        
+        # Calculate Ao5 (WCA rules: remove best and worst, average middle 3)
         ao5 = None
-        if len(times) >= 5:
-            ao5_times = times[-5:]  # Last 5 solves
-            ao5 = sum(sorted(ao5_times)[1:-1]) / 3  # Remove best and worst
+        if total_solves >= 5:
+            last_5 = all_solves[-5:]
+            last_5_times = [t for t, dnf in last_5 if not dnf]
+            
+            # If we have DNF in the middle 3 (after removing best/worst), Ao5 is DNF
+            if len(last_5_times) < 3:
+                ao5 = None  # Can't calculate with too many DNFs
+            elif len(last_5_times) >= 3:
+                sorted_times = sorted(last_5_times)
+                # Remove best and worst
+                if len(sorted_times) == 3:
+                    middle = sorted_times
+                elif len(sorted_times) == 4:
+                    middle = sorted_times[1:3]  # Remove worst only (best DNF'd)
+                else:  # len == 5
+                    middle = sorted_times[1:4]  # Remove best and worst
+                
+                ao5 = sum(middle) / len(middle)
         
-        # Calculate Ao12
+        # Calculate Ao12 (WCA rules: remove best and worst, average middle 10)
         ao12 = None
-        if len(times) >= 12:
-            ao12_times = times[-12:]
-            ao12 = sum(sorted(ao12_times)[1:-1]) / 10
+        if total_solves >= 12:
+            last_12 = all_solves[-12:]
+            last_12_times = [t for t, dnf in last_12 if not dnf]
+            
+            # Need at least 10 valid times for Ao12
+            if len(last_12_times) < 10:
+                ao12 = None  # Can't calculate with too many DNFs
+            elif len(last_12_times) >= 10:
+                sorted_times = sorted(last_12_times)
+                # Remove best and worst
+                if len(sorted_times) == 10:
+                    middle = sorted_times
+                elif len(sorted_times) == 11:
+                    middle = sorted_times[1:11]  # Remove worst only
+                else:  # len == 12
+                    middle = sorted_times[1:11]  # Remove best and worst
+                
+                ao12 = sum(middle) / len(middle)
         
         # Update session
         query = """
@@ -132,20 +189,27 @@ class TrainingLogger:
         """
         
         cursor.execute(query, (
-            len(times), best_single, worst_single,
+            total_solves, best_single, worst_single,
             session_mean, ao5, ao12, session_id
         ))
         self.conn.commit()
         
         print(f"\n✓ Session stats updated:")
-        print(f"  Total solves: {len(times)}")
-        print(f"  Best: {best_single/1000:.2f}s")
-        print(f"  Worst: {worst_single/1000:.2f}s")
-        print(f"  Mean: {session_mean/1000:.2f}s")
+        print(f"  Total solves: {total_solves} ({dnf_count} DNFs)")
+        if best_single:
+            print(f"  Best: {best_single/1000:.2f}s")
+        if worst_single:
+            print(f"  Worst: {worst_single/1000:.2f}s")
+        if session_mean:
+            print(f"  Mean: {session_mean/1000:.2f}s (excluding DNFs)")
         if ao5:
             print(f"  Ao5: {ao5/1000:.2f}s")
+        elif total_solves >= 5:
+            print(f"  Ao5: DNF (too many DNFs)")
         if ao12:
             print(f"  Ao12: {ao12/1000:.2f}s")
+        elif total_solves >= 12:
+            print(f"  Ao12: DNF (too many DNFs)")
     
     def get_session_solves(self, session_id):
         """Get all solves from a session"""
@@ -221,7 +285,7 @@ class TrainingLogger:
         SELECT 
             id,
             solve_number,
-            time_ms/1000.0 as time_seconds,
+            CASE WHEN dnf = 1 THEN NULL ELSE time_ms/1000.0 END as time_seconds,
             scramble,
             penalty,
             dnf,
@@ -245,7 +309,7 @@ class TrainingLogger:
         solve = cursor.fetchone()
         
         if not solve:
-            print(f"❌ Solve ID {solve_id} not found")
+            print(f"✗ Solve ID {solve_id} not found")
             return False
         
         session_id = solve[1]  # session_id is 2nd column
@@ -269,6 +333,11 @@ class TrainingLogger:
             params.append(1 if new_penalty == 'DNF' else 0)
             updates.append("plus_two = ?")
             params.append(1 if new_penalty == '+2' else 0)
+            
+            # If changing to DNF, set time_ms to 0
+            if new_penalty == 'DNF':
+                updates.append("time_ms = ?")
+                params.append(0)
         
         if new_notes is not None:
             updates.append("notes = ?")
@@ -301,7 +370,7 @@ class TrainingLogger:
         result = cursor.fetchone()
         
         if not result:
-            print(f"❌ Solve ID {solve_id} not found")
+            print(f"✗ Solve ID {solve_id} not found")
             return False
         
         session_id = result[0]
@@ -400,7 +469,7 @@ def interactive_session():
         try:
             if time_input == 'dnf':
                 penalty = 'DNF'
-                time_val = 999.99  # Placeholder
+                time_val = 0  # Placeholder, won't be used
             elif time_input.endswith('+2'):
                 penalty = '+2'
                 time_val = float(time_input.replace('+2', ''))
@@ -480,7 +549,7 @@ def manage_sessions():
             if len(solves) > 0:
                 print("\n" + solves.to_string(index=False))
             else:
-                print("❌ Session not found or has no solves")
+                print("✗ Session not found or has no solves")
         
         elif choice == '3':
             # Edit solve
@@ -508,7 +577,7 @@ def manage_sessions():
                     new_notes=new_notes if new_notes else None
                 )
             else:
-                print("❌ Solve not found")
+                print("✗ Solve not found")
         
         elif choice == '4':
             # Delete solve

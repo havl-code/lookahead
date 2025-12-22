@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Speedcube Training Explorer</title>
+    <link rel="icon" type="image/png" href="images/favicon_w.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -23,7 +24,11 @@
     <!-- Header -->
     <header>
         <div class="container">
-            <h1>Speedcube Training Explorer</h1>
+            <div class="header-title">
+                <img src="images/favicon_b.png" alt="Logo" class="header-logo logo-light">
+                <img src="images/favicon_w.png" alt="Logo" class="header-logo logo-dark">
+                <h1>Speedcube Training Explorer</h1>
+            </div>
             <p class="subtitle">Personal training analysis with WCA rankings comparison</p>
         </div>
     </header>
@@ -71,6 +76,10 @@
                 <div class="stat-card">
                     <div class="stat-value" id="stat-sessions">--</div>
                     <div class="stat-label">Total Sessions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-cubes">--</div>
+                    <div class="stat-label">Total Cubes</div>
                 </div>
                 <div class="stat-card highlight">
                     <div class="stat-value" id="stat-rank">--</div>
@@ -162,7 +171,7 @@
                     <table id="sessions-table">
                         <thead>
                             <tr>
-                                <th>Date</th>
+                                <th>Date Imported</th>
                                 <th>Event</th>
                                 <th>Solves</th>
                                 <th>Best</th>
@@ -215,13 +224,13 @@
                                 </form>
                             </div>
 
-                            <!-- Solves Table -->
+                            <!-- Solves Table with Sortable Headers -->
                             <table class="solves-table">
                                 <thead>
                                     <tr>
-                                        <th>#</th>
-                                        <th>Time</th>
-                                        <th>Penalty</th>
+                                        <th class="sortable" onclick="sortSolves('number')"># <span class="sort-arrow"></span></th>
+                                        <th class="sortable" onclick="sortSolves('time')">Time <span class="sort-arrow"></span></th>
+                                        <th class="sortable" onclick="sortSolves('penalty')">Penalty <span class="sort-arrow"></span></th>
                                         <th>Scramble</th>
                                         <th>Actions</th>
                                     </tr>

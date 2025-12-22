@@ -1,5 +1,10 @@
 // sessions.js - Session management with filters and solve management
 
+// Global variables for sorting
+let currentSolves = [];
+let currentSortColumn = 'number';
+let currentSortDirection = 'asc';
+
 async function loadSessionsTab() {
     try {
         const response = await fetch(`${API_BASE}/sessions`);
@@ -34,26 +39,10 @@ function addSessionFilters() {
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Date From:</label>
-                    <input type="date" id="filter-date-from" onchange="applySessionFilters()">
-                </div>
-                <div class="form-group">
-                    <label>Date To:</label>
-                    <input type="date" id="filter-date-to" onchange="applySessionFilters()">
-                </div>
-                <div class="form-group">
-                    <label>Min Best (s):</label>
-                    <input type="number" step="0.1" id="filter-min-time" onchange="applySessionFilters()" placeholder="10">
-                </div>
-                <div class="form-group">
-                    <label>Max Best (s):</label>
-                    <input type="number" step="0.1" id="filter-max-time" onchange="applySessionFilters()" placeholder="30">
-                </div>
-                <div class="form-group">
                     <label>Sort By:</label>
                     <select id="filter-sort" onchange="applySessionFilters()">
-                        <option value="date-desc">Date (Newest First)</option>
-                        <option value="date-asc">Date (Oldest First)</option>
+                        <option value="date-desc">Date Imported (Newest First)</option>
+                        <option value="date-asc">Date Imported (Oldest First)</option>
                         <option value="best-asc">Best Time (Fastest First)</option>
                         <option value="best-desc">Best Time (Slowest First)</option>
                         <option value="solves-desc">Most Solves First</option>
@@ -61,7 +50,7 @@ function addSessionFilters() {
                     </select>
                 </div>
             </div>
-            <button class="btn-secondary" onclick="clearSessionFilters()" style="margin-top: 16px;">Clear All Filters</button>
+            <button class="btn-secondary" onclick="clearSessionFilters()" style="margin-top: 16px;">Clear Filters</button>
         </div>
     `;
     
@@ -80,10 +69,6 @@ function addSessionFilters() {
 
 function applySessionFilters() {
     const eventFilter = document.getElementById('filter-event').value;
-    const dateFrom = document.getElementById('filter-date-from').value;
-    const dateTo = document.getElementById('filter-date-to').value;
-    const minTime = parseFloat(document.getElementById('filter-min-time').value);
-    const maxTime = parseFloat(document.getElementById('filter-max-time').value);
     const sortBy = document.getElementById('filter-sort').value;
     
     let filtered = [...AppState.allSessions];
@@ -91,22 +76,6 @@ function applySessionFilters() {
     // Apply filters
     if (eventFilter) {
         filtered = filtered.filter(s => s.event_id === eventFilter);
-    }
-    
-    if (dateFrom) {
-        filtered = filtered.filter(s => s.date >= dateFrom);
-    }
-    
-    if (dateTo) {
-        filtered = filtered.filter(s => s.date <= dateTo);
-    }
-    
-    if (!isNaN(minTime)) {
-        filtered = filtered.filter(s => s.best_single && s.best_single >= minTime);
-    }
-    
-    if (!isNaN(maxTime)) {
-        filtered = filtered.filter(s => s.best_single && s.best_single <= maxTime);
     }
     
     // Apply sorting
@@ -134,10 +103,6 @@ function applySessionFilters() {
 
 function clearSessionFilters() {
     document.getElementById('filter-event').value = '';
-    document.getElementById('filter-date-from').value = '';
-    document.getElementById('filter-date-to').value = '';
-    document.getElementById('filter-min-time').value = '';
-    document.getElementById('filter-max-time').value = '';
     document.getElementById('filter-sort').value = 'date-desc';
     displayFilteredSessions(AppState.allSessions);
 }
@@ -233,7 +198,7 @@ async function addSession(event) {
 }
 
 // ============================================
-// SOLVE MANAGEMENT
+// SOLVE MANAGEMENT WITH SORTING
 // ============================================
 
 async function viewSessionSolves(sessionId) {
@@ -245,28 +210,113 @@ async function viewSessionSolves(sessionId) {
         const response = await fetch(`${API_BASE}/sessions/${sessionId}/solves`);
         const solves = await response.json();
         
-        const tbody = document.getElementById('solves-tbody');
+        // Store solves globally and reset sort
+        currentSolves = solves.map(solve => ({
+            id: solve.id,
+            solve_number: solve.solve_number,
+            time: solve.time_seconds,
+            penalty: solve.penalty || '',
+            scramble: solve.scramble || ''
+        }));
         
-        if (solves.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="loading">No solves yet. Add some below!</td></tr>';
-        } else {
-            tbody.innerHTML = solves.map(solve => `
-                <tr>
-                    <td>${solve.solve_number}</td>
-                    <td>${formatTime(solve.time_seconds)}</td>
-                    <td>${solve.penalty || '-'}</td>
-                    <td style="font-size: 11px; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">${solve.scramble || '-'}</td>
-                    <td>
-                        <button class="action-btn danger" onclick="deleteSolve(${solve.id})">Delete</button>
-                    </td>
-                </tr>
-            `).join('');
-        }
+        currentSortColumn = 'number';
+        currentSortDirection = 'asc';
+        
+        renderSolvesTable();
         
         document.getElementById('solve-details-modal').style.display = 'flex';
     } catch (error) {
         showError('Error loading solves: ' + error.message);
     }
+}
+
+function renderSolvesTable() {
+    const tbody = document.getElementById('solves-tbody');
+    
+    if (currentSolves.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="loading">No solves yet. Add some below!</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = currentSolves.map(solve => `
+        <tr>
+            <td>${solve.solve_number}</td>
+            <td>${solve.penalty === 'DNF' ? 'DNF' : formatTime(solve.time)}</td>
+            <td>${solve.penalty || '-'}</td>
+            <td class="scramble-cell">${solve.scramble || '-'}</td>
+            <td>
+                <button class="action-btn danger" onclick="deleteSolve(${solve.id})">Delete</button>
+            </td>
+        </tr>
+    `).join('');
+    
+    updateSortArrows();
+}
+
+function sortSolves(column) {
+    // Toggle direction if same column, otherwise default to ascending
+    if (currentSortColumn === column) {
+        currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+        currentSortColumn = column;
+        currentSortDirection = 'asc';
+    }
+    
+    // Sort the solves array
+    currentSolves.sort((a, b) => {
+        let valA, valB;
+        
+        switch(column) {
+            case 'number':
+                valA = a.solve_number;
+                valB = b.solve_number;
+                break;
+            case 'time':
+                // Handle DNF as infinitely large
+                valA = a.penalty === 'DNF' ? Infinity : parseFloat(a.time);
+                valB = b.penalty === 'DNF' ? Infinity : parseFloat(b.time);
+                break;
+            case 'penalty':
+                // Sort order: None < +2 < DNF
+                const penaltyOrder = { '': 0, '+2': 1, 'DNF': 2 };
+                valA = penaltyOrder[a.penalty || ''];
+                valB = penaltyOrder[b.penalty || ''];
+                break;
+            default:
+                return 0;
+        }
+        
+        if (valA < valB) return currentSortDirection === 'asc' ? -1 : 1;
+        if (valA > valB) return currentSortDirection === 'asc' ? 1 : -1;
+        return 0;
+    });
+    
+    // Re-render the table
+    renderSolvesTable();
+}
+
+function updateSortArrows() {
+    // Clear all arrows
+    document.querySelectorAll('.sort-arrow').forEach(arrow => {
+        arrow.textContent = '';
+        arrow.className = 'sort-arrow';
+    });
+    
+    // Add arrow to current column
+    const headers = document.querySelectorAll('.solves-table th.sortable');
+    headers.forEach(header => {
+        const onclickAttr = header.getAttribute('onclick');
+        if (onclickAttr) {
+            const match = onclickAttr.match(/sortSolves\('(\w+)'\)/);
+            if (match && match[1] === currentSortColumn) {
+                const arrow = header.querySelector('.sort-arrow');
+                if (arrow) {
+                    arrow.textContent = currentSortDirection === 'asc' ? '▲' : '▼';
+                    arrow.className = `sort-arrow ${currentSortDirection}`;
+                }
+            }
+        }
+    });
 }
 
 function closeSolveModal() {
