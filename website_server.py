@@ -6,10 +6,11 @@ Entry point for Flask application
 import sys
 from pathlib import Path
 
-# Add src/web/api to path
-sys.path.insert(0, str(Path(__file__).parent / 'src' / 'web' / 'api'))
+project_root = str(Path(__file__).parent)
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
 
-from __init__ import create_app
+from src.web.api import create_app
 
 if __name__ == '__main__':
     app = create_app()
