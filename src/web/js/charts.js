@@ -1,5 +1,9 @@
 // charts.js - Chart visualization functions
 
+async function loadChartsTab() {
+    await loadCharts();
+}
+
 async function loadCharts() {
     if (!AppState.plotlyLoaded) {
         await new Promise((resolve, reject) => {

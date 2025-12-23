@@ -1,38 +1,54 @@
-// app.js - Main application initialization and tab management
+// app.js - Main application initialization
 
-// Initialize app on page load
-document.addEventListener('DOMContentLoaded', () => {
+// Initialize app
+async function init() {
+    await loadGreeting();  // Load personalized greeting first
+    switchTab('dashboard');
     loadDashboard();
-    setupFileUpload();
-});
+}
 
-// Tab Switching
+// Switch between tabs
 function switchTab(tabName) {
-    // Hide all tab contents
+    // Hide all tabs
     document.querySelectorAll('.tab-content').forEach(tab => {
         tab.classList.remove('active');
     });
     
-    // Remove active class from all tabs
+    // Remove active class from all tab buttons
     document.querySelectorAll('.tab').forEach(tab => {
         tab.classList.remove('active');
     });
     
-    // Show selected tab content
+    // Show selected tab
     document.getElementById(`tab-${tabName}`).classList.add('active');
     
-    // Add active class to clicked tab
-    event.target.classList.add('active');
-    
-    // Load data for specific tabs
-    if (tabName === 'sessions') {
-        loadSessionsTab();
-    } else if (tabName === 'cubes') {
-        loadCubesTab();
-    } else if (tabName === 'charts') {
-        if (!AppState.chartsLoaded) {
-            loadCharts();
-            AppState.chartsLoaded = true;
+    // Add active class to clicked tab button
+    const tabButtons = document.querySelectorAll('.tab');
+    tabButtons.forEach(tab => {
+        if (tab.textContent.toLowerCase() === tabName) {
+            tab.classList.add('active');
         }
+    });
+    
+    // Load tab content
+    switch(tabName) {
+        case 'dashboard':
+            loadDashboard();
+            break;
+        case 'sessions':
+            loadSessionsTab();
+            break;
+        case 'cubes':
+            loadCubesTab();
+            break;
+        case 'import':
+            loadImportTab(); // Initialize import tab
+            break;
+        case 'charts':
+            loadChartsTab();
+            break;
     }
 }
+
+// Start app when page loads
+document.addEventListener('DOMContentLoaded', init);

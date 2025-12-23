@@ -1,5 +1,10 @@
 // import.js - File upload and import functionality
 
+// Initialize file upload listeners when tab loads
+function loadImportTab() {
+    setupFileUpload();
+}
+
 function setupFileUpload() {
     const fileInput = document.getElementById('file-input');
     const fileNameSpan = document.getElementById('file-name');
@@ -8,12 +13,20 @@ function setupFileUpload() {
     
     if (!previewBtn) return;
     
-    fileInput.addEventListener('change', (e) => {
+    // Remove old listeners to prevent duplicates
+    const newFileInput = fileInput.cloneNode(true);
+    fileInput.parentNode.replaceChild(newFileInput, fileInput);
+    
+    const newPreviewBtn = previewBtn.cloneNode(true);
+    previewBtn.parentNode.replaceChild(newPreviewBtn, previewBtn);
+    
+    // Add fresh listeners
+    newFileInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (file) {
             AppState.selectedFile = file;
             fileNameSpan.textContent = file.name;
-            previewBtn.style.display = 'inline-block';
+            newPreviewBtn.style.display = 'inline-block';
             statusDiv.textContent = '';
             statusDiv.className = '';
             const sessionSelection = document.getElementById('session-selection');
@@ -23,7 +36,7 @@ function setupFileUpload() {
         }
     });
     
-    previewBtn.addEventListener('click', previewSessions);
+    newPreviewBtn.addEventListener('click', previewSessions);
 }
 
 async function previewSessions() {
@@ -66,6 +79,7 @@ async function previewSessions() {
         document.getElementById('session-selection').style.display = 'block';
         document.getElementById('import-status').textContent = '';
     } catch (error) {
+        console.error('Preview error:', error);
         document.getElementById('import-status').textContent = `Error: ${error.message}`;
         document.getElementById('import-status').className = 'error';
     }
@@ -118,6 +132,7 @@ async function importSelectedSessions() {
             AppState.selectedFile = null;
         }
     } catch (error) {
+        console.error('Import error:', error);
         statusDiv.textContent = `Error: ${error.message}`;
         statusDiv.className = 'error';
     }
