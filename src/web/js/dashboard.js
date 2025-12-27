@@ -72,10 +72,18 @@ async function loadStats() {
             sessionsElement.onclick = null;
         }
         
-        // Make Total Cubes clickable
+        // Make Total Cubes clickable and show active count
         const cubesElement = document.getElementById('stat-cubes');
+        const cubesNote = document.getElementById('stat-cubes-note');
         cubesElement.style.cursor = data.total_cubes > 0 ? 'pointer' : 'default';
         cubesElement.textContent = data.total_cubes || '0';
+        
+        // Update note to show active cubes
+        if (data.active_cubes !== undefined) {
+            cubesNote.textContent = `${data.active_cubes} active`;
+        } else {
+            cubesNote.textContent = '0 active';
+        }
         
         if (data.total_cubes > 0) {
             cubesElement.onclick = () => jumpToCubesTab();

@@ -117,7 +117,6 @@ SELECT
     ts.id as session_id,
     ts.date,
     ts.event_id,
-    c.name as cube_name,
     c.brand as cube_brand,
     ts.solve_count,
     ts.best_single,
@@ -146,7 +145,6 @@ ORDER BY date;
 CREATE VIEW IF NOT EXISTS view_cube_comparison AS
 SELECT 
     c.id as cube_id,
-    c.name as cube_name,
     c.brand,
     c.model,
     COUNT(ts.id) as total_sessions,

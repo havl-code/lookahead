@@ -20,7 +20,6 @@ def get_progress_chart():
         event_id = request.args.get('event_id', '333')
         
         logger = TrainingLogger()
-        logger.connect()
         
         query = """
         SELECT 
@@ -33,8 +32,8 @@ def get_progress_chart():
         ORDER BY date
         """
         
-        df = pd.read_sql_query(query, logger.conn, params=(event_id,))
-        logger.disconnect()
+        with logger.db_manager.get_connection() as conn:
+            df = pd.read_sql_query(query, conn, params=(event_id,))
         
         if len(df) < 1:
             return jsonify({'error': 'Need at least 1 session for this event'}), 400
@@ -65,7 +64,6 @@ def get_session_progress():
             return jsonify({'error': 'Missing session_id parameter'}), 400
         
         logger = TrainingLogger()
-        logger.connect()
         
         query = """
         SELECT 
@@ -76,8 +74,8 @@ def get_session_progress():
         ORDER BY solve_number
         """
         
-        df = pd.read_sql_query(query, logger.conn, params=(int(session_id),))
-        logger.disconnect()
+        with logger.db_manager.get_connection() as conn:
+            df = pd.read_sql_query(query, conn, params=(int(session_id),))
         
         if len(df) < 1:
             return jsonify({'error': 'No solves in this session'}), 400
@@ -113,7 +111,6 @@ def get_distribution_chart():
         event_id = request.args.get('event_id', '333')
         
         logger = TrainingLogger()
-        logger.connect()
         
         query = """
         SELECT ps.time_ms/1000.0 as time 
@@ -123,8 +120,8 @@ def get_distribution_chart():
         ORDER BY ps.time_ms
         """
         
-        df = pd.read_sql_query(query, logger.conn, params=(event_id,))
-        logger.disconnect()
+        with logger.db_manager.get_connection() as conn:
+            df = pd.read_sql_query(query, conn, params=(event_id,))
         
         if len(df) < 5:
             return jsonify({'error': 'Need at least 5 solves'}), 400
@@ -156,7 +153,6 @@ def get_session_distribution():
         session_id = request.args.get('session_id')
         
         logger = TrainingLogger()
-        logger.connect()
         
         query = """
         SELECT time_ms/1000.0 as time 
@@ -165,8 +161,8 @@ def get_session_distribution():
         ORDER BY time_ms
         """
         
-        df = pd.read_sql_query(query, logger.conn, params=(int(session_id),))
-        logger.disconnect()
+        with logger.db_manager.get_connection() as conn:
+            df = pd.read_sql_query(query, conn, params=(int(session_id),))
         
         if len(df) < 5:
             return jsonify({'error': 'Need at least 5 solves'}), 400
@@ -191,7 +187,6 @@ def get_rolling_average():
         event_id = request.args.get('event_id', '333')
         
         logger = TrainingLogger()
-        logger.connect()
         
         query = """
         SELECT ps.time_ms/1000.0 as time 
@@ -201,8 +196,8 @@ def get_rolling_average():
         ORDER BY ps.timestamp
         """
         
-        df = pd.read_sql_query(query, logger.conn, params=(event_id,))
-        logger.disconnect()
+        with logger.db_manager.get_connection() as conn:
+            df = pd.read_sql_query(query, conn, params=(event_id,))
         
         if len(df) < 12:
             return jsonify({'error': 'Need at least 12 solves'}), 400
@@ -222,7 +217,6 @@ def get_session_rolling():
         session_id = request.args.get('session_id')
         
         logger = TrainingLogger()
-        logger.connect()
         
         query = """
         SELECT time_ms/1000.0 as time 
@@ -231,8 +225,8 @@ def get_session_rolling():
         ORDER BY solve_number
         """
         
-        df = pd.read_sql_query(query, logger.conn, params=(session_id,))
-        logger.disconnect()
+        with logger.db_manager.get_connection() as conn:
+            df = pd.read_sql_query(query, conn, params=(session_id,))
         
         if len(df) < 12:
             return jsonify({'error': 'Need at least 12 solves'}), 400
@@ -252,34 +246,32 @@ def get_consistency_chart():
         event_id = request.args.get('event_id', '333')
         
         logger = TrainingLogger()
-        logger.connect()
         
-        session_query = """
-        SELECT id, date 
-        FROM training_sessions
-        WHERE event_id = ? AND solve_count >= 5
-        ORDER BY date
-        LIMIT 10
-        """
-        
-        sessions = pd.read_sql_query(session_query, logger.conn, params=(event_id,))
-        
-        result = []
-        for _, session in sessions.iterrows():
-            solve_query = """
-            SELECT time_ms/1000.0 as time
-            FROM personal_solves
-            WHERE session_id = ? AND dnf = 0
+        with logger.db_manager.get_connection() as conn:
+            session_query = """
+            SELECT id, date 
+            FROM training_sessions
+            WHERE event_id = ? AND solve_count >= 5
+            ORDER BY date
+            LIMIT 10
             """
-            solves = pd.read_sql_query(solve_query, logger.conn, params=(int(session['id']),))
             
-            if len(solves) >= 5:
-                result.append({
-                    'date': session['date'],
-                    'times': solves['time'].tolist()
-                })
-        
-        logger.disconnect()
+            sessions = pd.read_sql_query(session_query, conn, params=(event_id,))
+            
+            result = []
+            for _, session in sessions.iterrows():
+                solve_query = """
+                SELECT time_ms/1000.0 as time
+                FROM personal_solves
+                WHERE session_id = ? AND dnf = 0
+                """
+                solves = pd.read_sql_query(solve_query, conn, params=(int(session['id']),))
+                
+                if len(solves) >= 5:
+                    result.append({
+                        'date': session['date'],
+                        'times': solves['time'].tolist()
+                    })
         
         if len(result) < 2:
             return jsonify({'error': 'Need at least 2 sessions'}), 400

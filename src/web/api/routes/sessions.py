@@ -18,9 +18,8 @@ def get_sessions():
     """Get all training sessions"""
     try:
         logger = TrainingLogger()
-        logger.connect()
-        sessions = logger.get_all_sessions()
-        logger.disconnect()
+        with logger.db_manager.get_connection() as conn:
+            sessions = logger.get_all_sessions()
         
         sessions_dict = sessions.to_dict('records')
         for session in sessions_dict:
@@ -32,6 +31,8 @@ def get_sessions():
         
         return jsonify(sessions_dict)
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         return jsonify({'error': str(e)}), 500
 
 
@@ -40,12 +41,14 @@ def delete_session(session_id):
     """Delete a session"""
     try:
         logger = TrainingLogger()
-        logger.connect()
-        logger.delete_session(session_id)
-        logger.disconnect()
+        with logger.db_manager.get_connection() as conn:
+            logger.delete_session(session_id)
+            conn.commit()
         
         return jsonify({'success': True, 'message': 'Session deleted'})
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         return jsonify({'error': str(e)}), 500
 
 
@@ -59,12 +62,14 @@ def add_session():
         notes = data.get('notes', '')
         
         logger = TrainingLogger()
-        logger.connect()
-        session_id = logger.create_session(event_id, notes, cube_id)
-        logger.disconnect()
+        with logger.db_manager.get_connection() as conn:
+            session_id = logger.create_session(event_id, notes, cube_id)
+            conn.commit()
         
         return jsonify({'success': True, 'session_id': session_id})
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         return jsonify({'error': str(e)}), 500
 
 
@@ -73,7 +78,6 @@ def get_session_solves(session_id):
     """Get all solves for a session"""
     try:
         logger = TrainingLogger()
-        logger.connect()
         
         query = """
         SELECT id, solve_number, 
@@ -84,8 +88,8 @@ def get_session_solves(session_id):
         ORDER BY solve_number
         """
         
-        solves = pd.read_sql_query(query, logger.conn, params=(session_id,))
-        logger.disconnect()
+        with logger.db_manager.get_connection() as conn:
+            solves = pd.read_sql_query(query, conn, params=(session_id,))
         
         solves_dict = solves.to_dict('records')
         for solve in solves_dict:
@@ -97,6 +101,8 @@ def get_session_solves(session_id):
         
         return jsonify(solves_dict)
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         return jsonify({'error': str(e)}), 500
 
 
@@ -111,13 +117,15 @@ def add_solve(session_id):
         notes = data.get('notes', '')
         
         logger = TrainingLogger()
-        logger.connect()
-        logger.add_solve(session_id, time_seconds, scramble, penalty, notes)
-        logger.update_session_stats(session_id)
-        logger.disconnect()
+        with logger.db_manager.get_connection() as conn:
+            logger.add_solve(session_id, time_seconds, scramble, penalty, notes)
+            logger.update_session_stats(session_id)
+            conn.commit()
         
         return jsonify({'success': True})
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         return jsonify({'error': str(e)}), 500
 
 
@@ -126,19 +134,20 @@ def delete_solve(solve_id):
     """Delete a solve"""
     try:
         logger = TrainingLogger()
-        logger.connect()
         
-        cursor = logger.conn.cursor()
-        cursor.execute("SELECT session_id FROM personal_solves WHERE id = ?", (solve_id,))
-        result = cursor.fetchone()
-        
-        if result:
-            session_id = result[0]
-            logger.delete_solve(solve_id)
-            logger.update_session_stats(session_id)
-        
-        logger.disconnect()
+        with logger.db_manager.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT session_id FROM personal_solves WHERE id = ?", (solve_id,))
+            result = cursor.fetchone()
+            
+            if result:
+                session_id = result[0]
+                logger.delete_solve(solve_id)
+                logger.update_session_stats(session_id)
+                conn.commit()
         
         return jsonify({'success': True, 'message': 'Solve deleted'})
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         return jsonify({'error': str(e)}), 500

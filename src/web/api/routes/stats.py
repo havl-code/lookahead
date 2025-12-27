@@ -75,10 +75,15 @@ def get_stats():
         
         total_sessions = int(session_result['total_sessions'].values[0])
         
-        # Get total cubes count
-        cube_query = "SELECT COUNT(*) as total_cubes FROM cubes WHERE is_active = 1"
-        cube_result = pd.read_sql_query(cube_query, logger.conn)
-        total_cubes = int(cube_result['total_cubes'].values[0])
+        # Get total cubes count (all cubes)
+        cube_query_all = "SELECT COUNT(*) as total_cubes FROM cubes"
+        cube_result_all = pd.read_sql_query(cube_query_all, logger.conn)
+        total_cubes = int(cube_result_all['total_cubes'].values[0])
+        
+        # Get active cubes count
+        cube_query_active = "SELECT COUNT(*) as active_cubes FROM cubes WHERE is_active = 1"
+        cube_result_active = pd.read_sql_query(cube_query_active, logger.conn)
+        active_cubes = int(cube_result_active['active_cubes'].values[0])
         
         logger.disconnect()
         
@@ -102,6 +107,7 @@ def get_stats():
             'total_solves': total_solves,
             'total_sessions': total_sessions,
             'total_cubes': total_cubes,
+            'active_cubes': active_cubes,  # NEW: Active cubes count
             'wca_rank': wca_rank if wca_rank else None,
             'wca_percentile': round(wca_percentile, 2) if isinstance(wca_percentile, float) else None,
             'event_id': event_id

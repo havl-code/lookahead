@@ -1,5 +1,10 @@
 // cubes.js - Cube inventory management
 
+let cubeSortState = {
+    column: null,
+    direction: 'asc'
+};
+
 async function loadCubesTab() {
     try {
         const response = await fetch(`${API_BASE}/cubes`);
@@ -10,36 +15,98 @@ async function loadCubesTab() {
             return;
         }
         
-        const tbody = document.getElementById('cubes-tbody');
-        
-        if (AppState.allCubes.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" class="loading">No cubes in inventory yet.</td></tr>';
-            return;
-        }
-        
-        tbody.innerHTML = AppState.allCubes.map(cube => `
-            <tr>
-                <td><strong>${cube.name || 'N/A'}</strong></td>
-                <td>${cube.brand || '-'}</td>
-                <td>${cube.model || '-'}</td>
-                <td>${cube.purchase_date || '-'}</td>
-                <td>${cube.is_active ? 
-                    '<span style="color: #10b981; font-size: 16px;">●</span> Active' : 
-                    '<span style="color: #999; font-size: 16px;">○</span> Inactive'
-                }</td>
-                <td>
-                    <button class="action-btn" onclick="showEditCubeForm(${cube.id})">Edit</button>
-                    ${cube.is_active ? 
-                        `<button class="action-btn danger" onclick="deleteCube(${cube.id})">Deactivate</button>` :
-                        `<button class="action-btn" onclick="reactivateCube(${cube.id})">Reactivate</button>`
-                    }
-                </td>
-            </tr>
-        `).join('');
+        renderCubesTable();
         
     } catch (error) {
         console.error('Failed to load cubes:', error);
     }
+}
+
+function renderCubesTable() {
+    const tbody = document.getElementById('cubes-tbody');
+    
+    if (AppState.allCubes.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="loading">No cubes in inventory yet.</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = AppState.allCubes.map(cube => `
+        <tr>
+            <td><strong>${cube.cube_type || '-'}</strong></td>
+            <td>${cube.brand || '-'}</td>
+            <td>${cube.model || '-'}</td>
+            <td>${cube.purchase_date || '-'}</td>
+            <td>${cube.is_active ? 
+                '<span style="color: #10b981; font-size: 16px;">●</span> Active' : 
+                '<span style="color: #999; font-size: 16px;">○</span> Inactive'
+            }</td>
+            <td>
+                <button class="action-btn" onclick="showEditCubeForm(${cube.id})">Edit</button>
+                ${cube.is_active ? 
+                    `<button class="action-btn danger" onclick="deleteCube(${cube.id})">Deactivate</button>` :
+                    `<button class="action-btn" onclick="reactivateCube(${cube.id})">Reactivate</button>`
+                }
+            </td>
+        </tr>
+    `).join('');
+}
+
+function sortCubes(column) {
+    // Toggle direction if same column, otherwise reset to ascending
+    if (cubeSortState.column === column) {
+        cubeSortState.direction = cubeSortState.direction === 'asc' ? 'desc' : 'asc';
+    } else {
+        cubeSortState.column = column;
+        cubeSortState.direction = 'asc';
+    }
+    
+    // Sort the cubes array
+    AppState.allCubes.sort((a, b) => {
+        let aVal, bVal;
+        
+        switch(column) {
+            case 'type':
+                aVal = a.cube_type || '';
+                bVal = b.cube_type || '';
+                break;
+            case 'brand':
+                aVal = a.brand || '';
+                bVal = b.brand || '';
+                break;
+            case 'model':
+                aVal = a.model || '';
+                bVal = b.model || '';
+                break;
+            case 'date':
+                aVal = a.purchase_date || '';
+                bVal = b.purchase_date || '';
+                break;
+            default:
+                return 0;
+        }
+        
+        if (aVal < bVal) return cubeSortState.direction === 'asc' ? -1 : 1;
+        if (aVal > bVal) return cubeSortState.direction === 'asc' ? 1 : -1;
+        return 0;
+    });
+    
+    // Update sort arrows
+    document.querySelectorAll('.sort-arrow-cube').forEach(arrow => {
+        arrow.textContent = '';
+        arrow.classList.remove('asc', 'desc');
+    });
+    
+    const activeHeader = Array.from(document.querySelectorAll('.sortable-cube')).find(th => {
+        return th.textContent.trim().toLowerCase().includes(column);
+    });
+    
+    if (activeHeader) {
+        const arrow = activeHeader.querySelector('.sort-arrow-cube');
+        arrow.textContent = cubeSortState.direction === 'asc' ? '▲' : '▼';
+        arrow.classList.add(cubeSortState.direction);
+    }
+    
+    renderCubesTable();
 }
 
 function showAddCubeForm() {
@@ -55,7 +122,13 @@ function hideAddCubeForm() {
 async function addCube(event) {
     event.preventDefault();
     
-    const name = document.getElementById('new-cube-name').value;
+    let cubeType = document.getElementById('new-cube-type').value;
+    
+    // If "Other" is selected, use custom type
+    if (cubeType === 'other') {
+        cubeType = document.getElementById('new-cube-custom-type').value;
+    }
+    
     const brand = document.getElementById('new-cube-brand').value;
     const model = document.getElementById('new-cube-model').value;
     const purchaseDate = document.getElementById('new-cube-date').value;
@@ -66,7 +139,7 @@ async function addCube(event) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                name: name,
+                cube_type: cubeType,
                 brand: brand,
                 model: model,
                 purchase_date: purchaseDate,
@@ -83,7 +156,9 @@ async function addCube(event) {
             hideAddCubeForm();
             loadCubesTab();
             // Clear form
-            document.getElementById('new-cube-name').value = '';
+            document.getElementById('new-cube-type').value = '';
+            document.getElementById('new-cube-custom-type').value = '';
+            document.getElementById('custom-type-group').style.display = 'none';
             document.getElementById('new-cube-brand').value = '';
             document.getElementById('new-cube-model').value = '';
             document.getElementById('new-cube-date').value = '';
@@ -109,8 +184,28 @@ function showEditCubeForm(cubeId) {
                 <form onsubmit="updateCube(event)">
                     <input type="hidden" id="edit-cube-id">
                     <div class="form-group">
-                        <label>Name: <span style="color: red;">*</span></label>
-                        <input type="text" id="edit-cube-name" required placeholder="e.g., Main 3x3">
+                        <label>Event Type: <span style="color: red;">*</span></label>
+                        <select id="edit-cube-type" required>
+                            <option value="">Select Type</option>
+                            <option value="222">2x2x2</option>
+                            <option value="333">3x3x3</option>
+                            <option value="444">4x4x4</option>
+                            <option value="555">5x5x5</option>
+                            <option value="666">6x6x6</option>
+                            <option value="777">7x7x7</option>
+                            <option value="333oh">3x3x3 One-Handed</option>
+                            <option value="333bf">3x3x3 Blindfolded</option>
+                            <option value="clock">Clock</option>
+                            <option value="minx">Megaminx</option>
+                            <option value="pyram">Pyraminx</option>
+                            <option value="skewb">Skewb</option>
+                            <option value="sq1">Square-1</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="edit-custom-type-group" style="display: none;">
+                        <label>Custom Type:</label>
+                        <input type="text" id="edit-cube-custom-type" placeholder="Enter custom type">
                     </div>
                     <div class="form-group">
                         <label>Brand:</label>
@@ -138,11 +233,38 @@ function showEditCubeForm(cubeId) {
         
         addForm.insertAdjacentHTML('afterend', editFormHTML);
         editForm = document.getElementById('edit-cube-form');
+        
+        // Add event listener for custom type toggle
+        document.getElementById('edit-cube-type').addEventListener('change', function() {
+            const customTypeGroup = document.getElementById('edit-custom-type-group');
+            if (this.value === 'other') {
+                customTypeGroup.style.display = 'block';
+                document.getElementById('edit-cube-custom-type').required = true;
+            } else {
+                customTypeGroup.style.display = 'none';
+                document.getElementById('edit-cube-custom-type').required = false;
+            }
+        });
     }
     
     // Populate form with cube data
     document.getElementById('edit-cube-id').value = cube.id;
-    document.getElementById('edit-cube-name').value = cube.name || '';
+    
+    // Handle cube type - check if it's a standard type or custom
+    const standardTypes = ['222', '333', '444', '555', '666', '777', '333oh', '333bf', 'clock', 'minx', 'pyram', 'skewb', 'sq1'];
+    const typeSelect = document.getElementById('edit-cube-type');
+    
+    if (cube.cube_type && standardTypes.includes(cube.cube_type)) {
+        typeSelect.value = cube.cube_type;
+        document.getElementById('edit-custom-type-group').style.display = 'none';
+    } else if (cube.cube_type) {
+        typeSelect.value = 'other';
+        document.getElementById('edit-custom-type-group').style.display = 'block';
+        document.getElementById('edit-cube-custom-type').value = cube.cube_type;
+    } else {
+        typeSelect.value = '';
+    }
+    
     document.getElementById('edit-cube-brand').value = cube.brand || '';
     document.getElementById('edit-cube-model').value = cube.model || '';
     document.getElementById('edit-cube-date').value = cube.purchase_date || '';
@@ -161,7 +283,13 @@ async function updateCube(event) {
     event.preventDefault();
     
     const cubeId = document.getElementById('edit-cube-id').value;
-    const name = document.getElementById('edit-cube-name').value;
+    let cubeType = document.getElementById('edit-cube-type').value;
+    
+    // If "Other" is selected, use custom type
+    if (cubeType === 'other') {
+        cubeType = document.getElementById('edit-cube-custom-type').value;
+    }
+    
     const brand = document.getElementById('edit-cube-brand').value;
     const model = document.getElementById('edit-cube-model').value;
     const purchaseDate = document.getElementById('edit-cube-date').value;
@@ -172,7 +300,7 @@ async function updateCube(event) {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                name: name,
+                cube_type: cubeType,
                 brand: brand,
                 model: model,
                 purchase_date: purchaseDate,
@@ -247,7 +375,10 @@ async function loadCubesForDropdown() {
             if (cube.is_active) {
                 const option = document.createElement('option');
                 option.value = cube.id;
-                option.textContent = `${cube.name}${cube.brand ? ' - ' + cube.brand : ''}`;
+                const displayText = cube.cube_type ? 
+                    `${cube.cube_type}${cube.brand ? ' - ' + cube.brand : ''}${cube.model ? ' ' + cube.model : ''}` :
+                    `${cube.brand || 'Unknown'}${cube.model ? ' ' + cube.model : ''}`;
+                option.textContent = displayText;
                 select.appendChild(option);
             }
         });

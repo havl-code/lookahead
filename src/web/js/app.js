@@ -35,6 +35,9 @@ function switchTab(tabName) {
         case 'dashboard':
             loadDashboard();
             break;
+        case 'timer':
+            loadTimerTab();
+            break;
         case 'sessions':
             loadSessionsTab();
             break;
@@ -42,7 +45,7 @@ function switchTab(tabName) {
             loadCubesTab();
             break;
         case 'import':
-            loadImportTab(); // Initialize import tab
+            loadImportTab();
             break;
         case 'charts':
             loadChartsTab();

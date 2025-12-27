@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/timer.css">
 </head>
 <body>
     <!-- Dark Mode Toggle Button -->
@@ -21,9 +22,30 @@
         </svg>
     </button>
 
-    <!-- Persistent Header with Greeting -->
+    <!-- Simple Header
     <header>
         <div class="container">
+            <h1 style="font-size: 28px; font-weight: 600;">Speedcube Training Explorer</h1>
+        </div>
+    </header> -->
+
+    <!-- Main Content -->
+    <main class="container">
+        
+        <nav class="tabs">
+            <button class="tab active" onclick="switchTab('dashboard')">Dashboard</button>
+            <button class="tab" onclick="switchTab('timer')">Timer</button>
+            <button class="tab" onclick="switchTab('sessions')">Sessions</button>
+            <button class="tab" onclick="switchTab('cubes')">Cubes</button>
+            <button class="tab" onclick="switchTab('import')">Import</button>
+            <button class="tab" onclick="switchTab('charts')">Charts</button>
+        </nav>
+
+        <!-- Dashboard Tab -->
+        <div id="tab-dashboard" class="tab-content active">
+        
+        <!-- Greeting Section (Dashboard Only) -->
+        <section class="greeting-section">
             <div class="greeting-container">
                 <div class="greeting-content">
                     <h1 id="greeting-text">Welcome to Speedcube Training Explorer</h1>
@@ -44,23 +66,7 @@
             <div id="wca-display" style="display: none;">
                 <span class="wca-id-badge" id="wca-id-display" onclick="showWCASetupModal()" style="cursor: pointer;"></span>
             </div>
-        </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="container">
-        
-        <!-- Navigation Tabs -->
-        <nav class="tabs">
-            <button class="tab active" onclick="switchTab('dashboard')">Dashboard</button>
-            <button class="tab" onclick="switchTab('sessions')">Sessions</button>
-            <button class="tab" onclick="switchTab('cubes')">Cubes</button>
-            <button class="tab" onclick="switchTab('import')">Import</button>
-            <button class="tab" onclick="switchTab('charts')">Charts</button>
-        </nav>
-
-        <!-- Dashboard Tab -->
-        <div id="tab-dashboard" class="tab-content active">
+        </section>
         
         <!-- Stats Dashboard -->
         <section class="dashboard" id="dashboard">
@@ -94,6 +100,7 @@
                 <div class="stat-card">
                     <div class="stat-value" id="stat-cubes">--</div>
                     <div class="stat-label">Total Cubes</div>
+                    <div class="stat-note" id="stat-cubes-note">0 active</div>
                 </div>
                 <div class="stat-card highlight">
                     <div class="stat-value" id="stat-rank">--</div>
@@ -130,6 +137,104 @@
                 </table>
             </div>
         </section>
+        </div>
+
+        <!-- Timer Tab -->
+        <div id="tab-timer" class="tab-content">
+            <section class="timer-section">
+                <!-- Fullscreen Toggle -->
+                <button class="fullscreen-toggle" id="fullscreen-btn" onclick="toggleFullscreen()">
+                    Fullscreen
+                </button>
+
+                <!-- Header with Event, Session, Settings -->
+                <div class="timer-header">
+                    <div class="timer-controls-left">
+                        <div class="timer-control-group">
+                            <label class="timer-control-label">Event:</label>
+                            <select class="timer-control-select" id="timer-event-select" onchange="changeTimerEvent(this.value)">
+                                <option value="333" selected>3x3x3</option>
+                                <option value="222">2x2x2</option>
+                                <option value="444">4x4x4</option>
+                                <option value="555">5x5x5</option>
+                                <option value="666">6x6x6</option>
+                                <option value="777">7x7x7</option>
+                                <option value="333oh">3x3x3 One-Handed</option>
+                                <option value="333bf">3x3x3 Blindfolded</option>
+                                <option value="clock">Clock</option>
+                                <option value="minx">Megaminx</option>
+                                <option value="pyram">Pyraminx</option>
+                                <option value="skewb">Skewb</option>
+                                <option value="sq1">Square-1</option>
+                            </select>
+                        </div>
+                        
+                        <div class="timer-control-group">
+                            <label class="timer-control-label">Session:</label>
+                            <select class="timer-control-select" id="timer-session-select">
+                                <option value="new">+ Create New Session</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button class="timer-settings-button" onclick="showTimerSettings()" title="Timer Settings">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M12 15.5A3.5 3.5 0 0 1 8.5 12 3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5m7.43-2.53c.04-.32.07-.64.07-.97 0-.33-.03-.66-.07-1l2.11-1.63c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.31-.61-.22l-2.49 1c-.52-.39-1.06-.73-1.69-.98l-.37-2.65A.506.506 0 0 0 14 2h-4c-.25 0-.46.18-.5.42l-.37 2.65c-.63.25-1.17.59-1.69.98l-2.49-1c-.22-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64L4.57 11c-.04.34-.07.67-.07 1 0 .33.03.65.07.97l-2.11 1.66c-.19.15-.25.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1.01c.52.4 1.06.74 1.69.99l.37 2.65c.04.24.25.42.5.42h4c.25 0 .46-.18.5-.42l.37-2.65c.63-.26 1.17-.59 1.69-.99l2.49 1.01c.22.08.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.66z"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="timer-main-content">
+                    <!-- Timer Container -->
+                    <div class="timer-container">
+                        <!-- Scramble Display -->
+                        <div class="scramble-display">
+                            <div class="scramble-label">Scramble</div>
+                            <div class="scramble-text" id="scramble-text">Press spacebar to start</div>
+                            <!-- Scramble Context Menu -->
+                            <div class="scramble-menu">
+                                <div class="scramble-menu-item" onclick="copyScramble()">Copy Scramble</div>
+                                <div class="scramble-menu-item" onclick="newScramble()">New Scramble</div>
+                            </div>
+                        </div>
+
+                        <!-- Timer Display -->
+                        <div class="timer-display" id="timer-display">0.00</div>
+
+                        <!-- Session Stats -->
+                        <div class="timer-session-stats">
+                            <div class="stats-row">
+                                <div class="stat-item">
+                                    <div class="stat-item-label">Solves</div>
+                                    <div class="stat-item-value" id="stat-count">0</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-item-label">Best</div>
+                                    <div class="stat-item-value" id="stat-best">-</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-item-label">Mean</div>
+                                    <div class="stat-item-value" id="stat-mean">-</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-item-label">Ao5</div>
+                                    <div class="stat-item-value" id="stat-ao5">-</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Solves List -->
+                    <div class="timer-solves-list">
+                        <h3>Recent Solves</h3>
+                        <div class="solves-list-container">
+                            <div style="padding: 20px; text-align: center; color: var(--text-tertiary);">
+                                No solves yet
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </div>
 
         <!-- Sessions Tab -->
@@ -271,8 +376,28 @@
                     <h3>Add New Cube</h3>
                     <form onsubmit="addCube(event)">
                         <div class="form-group">
-                            <label>Name: <span style="color: red;">*</span></label>
-                            <input type="text" id="new-cube-name" required placeholder="e.g., Main 3x3">
+                            <label>Event Type: <span style="color: red;">*</span></label>
+                            <select id="new-cube-type" required>
+                                <option value="">Select Type</option>
+                                <option value="222">2x2x2</option>
+                                <option value="333">3x3x3</option>
+                                <option value="444">4x4x4</option>
+                                <option value="555">5x5x5</option>
+                                <option value="666">6x6x6</option>
+                                <option value="777">7x7x7</option>
+                                <option value="333oh">3x3x3 One-Handed</option>
+                                <option value="333bf">3x3x3 Blindfolded</option>
+                                <option value="clock">Clock</option>
+                                <option value="minx">Megaminx</option>
+                                <option value="pyram">Pyraminx</option>
+                                <option value="skewb">Skewb</option>
+                                <option value="sq1">Square-1</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="custom-type-group" style="display: none;">
+                            <label>Custom Type:</label>
+                            <input type="text" id="new-cube-custom-type" placeholder="Enter custom type">
                         </div>
                         <div class="form-group">
                             <label>Brand:</label>
@@ -303,10 +428,10 @@
                     <table id="cubes-table">
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Brand</th>
-                                <th>Model</th>
-                                <th>Purchase Date</th>
+                                <th class="sortable-cube" onclick="sortCubes('type')">Type <span class="sort-arrow-cube"></span></th>
+                                <th class="sortable-cube" onclick="sortCubes('brand')">Brand <span class="sort-arrow-cube"></span></th>
+                                <th class="sortable-cube" onclick="sortCubes('model')">Model <span class="sort-arrow-cube"></span></th>
+                                <th class="sortable-cube" onclick="sortCubes('date')">Purchase Date <span class="sort-arrow-cube"></span></th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
@@ -467,7 +592,22 @@
     <script src="js/charts.js"></script>
     <script src="js/import.js"></script>
     <script src="js/greeting.js"></script>
+    <script src="js/timer.js"></script>
     <script src="js/app.js"></script>
     <script src="js/theme.js"></script>
+    
+    <script>
+        // Show custom type field when "Other" is selected
+        document.getElementById('new-cube-type').addEventListener('change', function() {
+            const customTypeGroup = document.getElementById('custom-type-group');
+            if (this.value === 'other') {
+                customTypeGroup.style.display = 'block';
+                document.getElementById('new-cube-custom-type').required = true;
+            } else {
+                customTypeGroup.style.display = 'none';
+                document.getElementById('new-cube-custom-type').required = false;
+            }
+        });
+    </script>
 </body>
 </html>
