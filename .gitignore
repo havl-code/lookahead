@@ -72,3 +72,9 @@ git_cleanup_script.sh
 website/images/*.png
 website/images/*.jpg*.backup
 *.backup
+
+.megaignore
+.directory
+
+cleanup_backup_*
+cleanup.sh
