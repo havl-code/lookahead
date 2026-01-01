@@ -37,6 +37,11 @@ A comprehensive web-based training tracker for speedcubers. Track your solving s
 
 4. Your browser will automatically open to `http://localhost:5000`
 
+> **Windows Users Note:**
+> - If you see security warnings when running `.bat` files, click **"More info"** → **"Run anyway"**
+> - Allow Python through Windows Firewall when prompted (required for the web server)
+> - If browser opens to a blank page, wait 2-3 seconds and **refresh (F5)** - the server needs time to start
+
 #### macOS / Linux
 
 1. **Download or clone** this repository:
