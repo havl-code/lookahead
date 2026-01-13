@@ -17,7 +17,7 @@ def create_app():
     CORS(app)
     
     # Register blueprints
-    from .routes import stats, sessions, cubes, charts, imports, user_settings, timer
+    from .routes import stats, sessions, cubes, charts, imports, user_settings, timer, analytics
     
     app.register_blueprint(stats.bp)
     app.register_blueprint(sessions.bp)
@@ -26,6 +26,7 @@ def create_app():
     app.register_blueprint(imports.bp)
     app.register_blueprint(user_settings.bp)
     app.register_blueprint(timer.bp)
+    app.register_blueprint(analytics.analytics_bp)
     
     # Root route
     @app.route('/')

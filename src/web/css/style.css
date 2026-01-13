@@ -885,3 +885,418 @@ footer {
         grid-template-columns: 1fr;
     }
 }
+
+/* ===== ANALYTICS / HEATMAP STYLES ===== */
+
+/* Solve Grid Container */
+.solve-grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 4px;
+    margin-bottom: 24px;
+    padding: 20px;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+}
+
+/* Individual Solve Cell */
+.solve-cell {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 11px;
+    font-weight: 500;
+    border: 1px solid transparent;
+}
+
+.solve-cell:hover {
+    transform: scale(1.1);
+    z-index: 10;
+    box-shadow: 0 2px 8px var(--shadow);
+    border-color: var(--text-primary);
+}
+
+.solve-time {
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Performance Categories */
+.solve-cell-excellent {
+    background: linear-gradient(135deg, #66bb6a 0%, #4caf50 100%);
+}
+
+.solve-cell-good {
+    background: linear-gradient(135deg, #9ccc65 0%, #8bc34a 100%);
+}
+
+.solve-cell-average {
+    background: linear-gradient(135deg, #ffca28 0%, #ffc107 100%);
+}
+
+.solve-cell-slow {
+    background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+}
+
+.solve-cell-penalty {
+    background: linear-gradient(135deg, #ffa726 0%, #ff9800 100%);
+    border: 2px solid #f57c00;
+}
+
+.solve-cell-dnf {
+    background: linear-gradient(135deg, #ef5350 0%, #e53935 100%);
+    border: 2px solid #c62828;
+}
+
+/* Grid Legend */
+.solve-grid-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 16px;
+    background: var(--bg-tertiary);
+    border-radius: 8px;
+    margin-top: 16px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.legend-color {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+/* Performance Metrics Cards */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 32px;
+}
+
+.metric-card {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-primary);
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.metric-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+.metric-title {
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.metric-value {
+    font-size: 32px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.metric-trend {
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.metric-trend.positive {
+    color: #4caf50;
+}
+
+.metric-trend.negative {
+    color: #ef5350;
+}
+
+.metric-trend.neutral {
+    color: var(--text-tertiary);
+}
+
+.trend-arrow {
+    font-size: 16px;
+}
+
+/* Score Badges */
+.score-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: white;
+}
+
+.score-badge.excellent {
+    background: linear-gradient(135deg, #66bb6a 0%, #4caf50 100%);
+}
+
+.score-badge.good {
+    background: linear-gradient(135deg, #9ccc65 0%, #8bc34a 100%);
+}
+
+.score-badge.average {
+    background: linear-gradient(135deg, #ffca28 0%, #ffc107 100%);
+}
+
+.score-badge.poor {
+    background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+}
+
+/* Heatmap Tooltip Enhancement */
+.heatmap-tooltip {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-primary);
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 13px;
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+.heatmap-tooltip-title {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+}
+
+.heatmap-tooltip-stat {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 4px 0;
+    color: var(--text-secondary);
+}
+
+.heatmap-tooltip-stat strong {
+    color: var(--text-primary);
+}
+
+/* Performance Indicator Bars */
+.performance-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.performance-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.performance-bar-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.performance-bar-track {
+    height: 8px;
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+
+.performance-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.6s ease;
+    position: relative;
+}
+
+.performance-bar-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255, 255, 255, 0.3) 50%, 
+        transparent 100%);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.performance-bar-fill.excellent {
+    background: linear-gradient(90deg, #66bb6a 0%, #4caf50 100%);
+}
+
+.performance-bar-fill.good {
+    background: linear-gradient(90deg, #9ccc65 0%, #8bc34a 100%);
+}
+
+.performance-bar-fill.average {
+    background: linear-gradient(90deg, #ffca28 0%, #ffc107 100%);
+}
+
+.performance-bar-fill.poor {
+    background: linear-gradient(90deg, #ff9800 0%, #f57c00 100%);
+}
+
+/* Insights Panel */
+.insights-panel {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    border-radius: 12px;
+    padding: 24px;
+    margin-top: 32px;
+}
+
+.insights-panel h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.insight-icon {
+    font-size: 20px;
+}
+
+.insight-item {
+    display: flex;
+    gap: 12px;
+    padding: 16px;
+    background: var(--bg-primary);
+    border-radius: 8px;
+    margin-bottom: 12px;
+    transition: all 0.2s ease;
+}
+
+.insight-item:hover {
+    transform: translateX(4px);
+    box-shadow: 0 2px 8px var(--shadow);
+}
+
+.insight-item:last-child {
+    margin-bottom: 0;
+}
+
+.insight-bullet {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 6px;
+}
+
+.insight-bullet.positive {
+    background: #4caf50;
+}
+
+.insight-bullet.negative {
+    background: #ef5350;
+}
+
+.insight-bullet.neutral {
+    background: var(--text-tertiary);
+}
+
+.insight-content {
+    flex: 1;
+}
+
+.insight-text {
+    font-size: 14px;
+    color: var(--text-primary);
+    line-height: 1.5;
+}
+
+.insight-detail {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    margin-top: 4px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .solve-grid-container {
+        grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+        gap: 3px;
+        padding: 12px;
+    }
+    
+    .solve-cell {
+        font-size: 10px;
+    }
+    
+    .metrics-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .solve-grid-legend {
+        flex-direction: column;
+        gap: 12px;
+    }
+}
+
+/* Dark mode specific adjustments */
+[data-theme="dark"] .solve-time {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="dark"] .heatmap-tooltip {
+    background: var(--bg-secondary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Animation for grid loading */
+@keyframes fadeInGrid {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.solve-grid-container {
+    animation: fadeInGrid 0.4s ease;
+}
+
+.solve-cell {
+    animation: fadeIn 0.3s ease;
+}
+
+.solve-cell:nth-child(1) { animation-delay: 0.01s; }
+.solve-cell:nth-child(2) { animation-delay: 0.02s; }
+.solve-cell:nth-child(3) { animation-delay: 0.03s; }

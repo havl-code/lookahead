@@ -50,6 +50,9 @@ function switchTab(tabName) {
         case 'charts':
             loadChartsTab();
             break;
+        case 'analytics':
+            loadAnalyticsTab();
+            break;
     }
 }
 

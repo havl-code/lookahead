@@ -22,13 +22,6 @@
         </svg>
     </button>
 
-    <!-- Simple Header
-    <header>
-        <div class="container">
-            <h1 style="font-size: 28px; font-weight: 600;">Speedcube Training Explorer</h1>
-        </div>
-    </header> -->
-
     <!-- Main Content -->
     <main class="container">
         
@@ -39,6 +32,7 @@
             <button class="tab" onclick="switchTab('cubes')">Cubes</button>
             <button class="tab" onclick="switchTab('import')">Import</button>
             <button class="tab" onclick="switchTab('charts')">Charts</button>
+            <button class="tab" onclick="switchTab('analytics')">Analytics</button>
         </nav>
 
         <!-- Dashboard Tab -->
@@ -531,6 +525,161 @@
                 </div>
             </section>
         </div>
+
+        <!-- Analytics Tab -->
+        <div id="tab-analytics" class="tab-content">
+            <section class="analytics-section" id="analytics">
+                <h2>Performance Analytics</h2>
+                
+                <!-- Event selector will be inserted here by JavaScript -->
+                
+                <!-- Key Performance Metrics -->
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-title">Average Speed</div>
+                        <div class="metric-value" id="metric-speed">--</div>
+                        <div class="metric-trend neutral" id="metric-speed-trend">
+                            <span class="trend-arrow">→</span>
+                            <span>No change</span>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-title">Consistency</div>
+                        <div class="metric-value" id="metric-consistency">--</div>
+                        <div class="metric-trend neutral" id="metric-consistency-trend">
+                            <span class="trend-arrow">→</span>
+                            <span>No change</span>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-title">Accuracy</div>
+                        <div class="metric-value" id="metric-accuracy">--</div>
+                        <div class="metric-trend neutral" id="metric-accuracy-trend">
+                            <span class="trend-arrow">→</span>
+                            <span>No change</span>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-title">Overall Score</div>
+                        <div class="metric-value" id="metric-overall">--</div>
+                        <div class="metric-trend neutral" id="metric-overall-trend">
+                            <span class="trend-arrow">→</span>
+                            <span>No change</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Session Performance Heatmap -->
+                <div class="chart-card">
+                    <h3>Session Performance Heatmap</h3>
+                    <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 20px;">
+                        Visual breakdown of speed, consistency, and accuracy across your training sessions. 
+                        Greener cells indicate better performance.
+                    </p>
+                    <div id="session-heatmap" class="chart-container">
+                        <div class="loading">Loading heatmap...</div>
+                    </div>
+                </div>
+                
+                <!-- Performance Profile Radar -->
+                <div class="chart-card">
+                    <h3>Performance Profile</h3>
+                    <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 20px;">
+                        Compare your overall average performance with your recent sessions (last 10).
+                    </p>
+                    <div id="performance-radar" class="chart-container" style="min-height: 500px;">
+                        <div class="loading">Loading radar chart...</div>
+                    </div>
+                </div>
+                
+                <!-- Time of Day Performance -->
+                <div class="chart-card">
+                    <h3>Performance by Time of Day</h3>
+                    <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 20px;">
+                        Discover when you perform best. Color intensity shows average solve time.
+                    </p>
+                    <div id="time-of-day-chart" class="chart-container">
+                        <div class="loading">Loading time analysis...</div>
+                    </div>
+                </div>
+                
+                <!-- Recent Solves Grid -->
+                <div class="chart-card">
+                    <h3>Recent Solves Heatmap</h3>
+                    <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 20px;">
+                        Visual representation of your last 100 solves. Click any cell to view the full session.
+                    </p>
+                    <div id="solve-grid">
+                        <div class="loading">Loading solve grid...</div>
+                    </div>
+                </div>
+                
+                <!-- AI-Generated Insights -->
+                <div class="insights-panel">
+                    <h3>
+                        <span class="insight-icon">💡</span>
+                        Performance Insights
+                    </h3>
+                    <div id="insights-container">
+                        <div class="insight-item">
+                            <div class="insight-bullet neutral"></div>
+                            <div class="insight-content">
+                                <div class="insight-text">Loading insights...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Performance Breakdown Bars -->
+                <div class="chart-card">
+                    <h3>Detailed Performance Breakdown</h3>
+                    <div class="performance-bars" id="performance-breakdown">
+                        <div class="performance-bar">
+                            <div class="performance-bar-label">
+                                <span>Speed Score</span>
+                                <span id="speed-score-value">--/100</span>
+                            </div>
+                            <div class="performance-bar-track">
+                                <div class="performance-bar-fill" id="speed-bar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="performance-bar">
+                            <div class="performance-bar-label">
+                                <span>Consistency Score</span>
+                                <span id="consistency-score-value">--/100</span>
+                            </div>
+                            <div class="performance-bar-track">
+                                <div class="performance-bar-fill" id="consistency-bar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="performance-bar">
+                            <div class="performance-bar-label">
+                                <span>Accuracy Score</span>
+                                <span id="accuracy-score-value">--/100</span>
+                            </div>
+                            <div class="performance-bar-track">
+                                <div class="performance-bar-fill" id="accuracy-bar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="performance-bar">
+                            <div class="performance-bar-label">
+                                <span>Overall Performance</span>
+                                <span id="overall-score-value">--/100</span>
+                            </div>
+                            <div class="performance-bar-track">
+                                <div class="performance-bar-fill" id="overall-bar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
     
         <!-- WCA ID Setup Modal -->
         <div id="wca-setup-modal" class="modal" style="display: none;">
@@ -593,6 +742,7 @@
     <script src="js/import.js"></script>
     <script src="js/greeting.js"></script>
     <script src="js/timer.js"></script>
+    <script src="js/analytics.js"></script>
     <script src="js/app.js"></script>
     <script src="js/theme.js"></script>
     
