@@ -60,9 +60,7 @@ def preview_cstimer():
         
         return jsonify({'sessions': sessions_preview, 'filename': file.filename})
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'An error occurred processing the import file'}), 500
 
 @bp.route('/selected', methods=['POST'])
 def import_selected_sessions():
@@ -80,8 +78,9 @@ def import_selected_sessions():
         if not file_path.exists():
             return jsonify({'error': 'File not found'}), 400
         
-        # Initialize the importer
-        importer = CSTimerImporter()
+        # Initialize the importer with logger
+        logger = TrainingLogger()
+        importer = CSTimerImporter(logger)
         
         # Perform the import for specific sessions
         results = importer.import_file(str(file_path), event_id=event_id, session_keys=selected_sessions)
@@ -93,6 +92,4 @@ def import_selected_sessions():
         })
         
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'An error occurred during import'}), 500

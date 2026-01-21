@@ -11,7 +11,7 @@ PRAGMA foreign_keys = ON;
 -- Cubes table (NEW!)
 CREATE TABLE IF NOT EXISTS cubes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
+    cube_type TEXT NOT NULL,
     brand TEXT,
     model TEXT,
     purchase_date DATE,
@@ -91,9 +91,11 @@ CREATE TABLE IF NOT EXISTS user_profile (
 CREATE INDEX IF NOT EXISTS idx_training_date ON training_sessions(date);
 CREATE INDEX IF NOT EXISTS idx_training_event ON training_sessions(event_id);
 CREATE INDEX IF NOT EXISTS idx_training_cube ON training_sessions(cube_id);
+CREATE INDEX IF NOT EXISTS idx_training_event_date ON training_sessions(event_id, date);
 CREATE INDEX IF NOT EXISTS idx_solves_session ON personal_solves(session_id);
 CREATE INDEX IF NOT EXISTS idx_solves_time ON personal_solves(time_ms);
 CREATE INDEX IF NOT EXISTS idx_solves_timestamp ON personal_solves(timestamp);
+CREATE INDEX IF NOT EXISTS idx_solves_session_dnf ON personal_solves(session_id, dnf);
 CREATE INDEX IF NOT EXISTS idx_goals_event ON training_goals(event_id);
 CREATE INDEX IF NOT EXISTS idx_goals_achieved ON training_goals(achieved);
 CREATE INDEX IF NOT EXISTS idx_cubes_active ON cubes(is_active);

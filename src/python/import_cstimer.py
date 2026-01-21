@@ -15,7 +15,9 @@ from training_logger import TrainingLogger
 class CSTimerImporter:
     """Import data from CSTimer exports"""
     
-    def __init__(self, logger):
+    def __init__(self, logger=None):
+        if logger is None:
+            logger = TrainingLogger()
         self.logger = logger
     
     def import_from_json(self, json_file, event_id='333', session_name=''):
@@ -30,8 +32,6 @@ class CSTimerImporter:
         - 2000 = +2
         - -1 = DNF
         """
-        print(f"Reading CSTimer file: {json_file}")
-        
         with open(json_file, 'r', encoding='utf-8') as f:
             data = json.load(f)
         
@@ -42,9 +42,6 @@ class CSTimerImporter:
         for session_key, session_data in data.items():
             if not isinstance(session_data, list):
                 continue
-            
-            print(f"\n--- Importing {session_key} ---")
-            print(f"Found {len(session_data)} solves")
             
             # Create session name
             if not session_name:
@@ -80,23 +77,14 @@ class CSTimerImporter:
                     self.logger.add_solve(session_id, time_seconds, scramble, penalty)
                     imported += 1
                     
-                except Exception as e:
-                    print(f"⚠️  Skipped solve: {e}")
+                except Exception:
                     continue
-            
-            print(f"✓ Imported {imported} solves from {session_key}")
             
             # Calculate stats for this session
             self.logger.update_session_stats(session_id)
             
             sessions_imported += 1
             total_solves += imported
-        
-        print(f"\n{'='*60}")
-        print(f"IMPORT COMPLETE")
-        print(f"{'='*60}")
-        print(f"  Sessions imported: {sessions_imported}")
-        print(f"  Total solves: {total_solves}")
         
         return sessions_imported
     
@@ -125,7 +113,6 @@ class CSTimerImporter:
                 scramble_col = col
         
         if not time_col:
-            print("✗ Could not find time column")
             return None
         
         # Create session
@@ -177,8 +164,6 @@ class CSTimerImporter:
             pass
         
         # Fall back to text parsing
-        print(f"Reading as plain text: {txt_file}")
-        
         with open(txt_file, 'r', encoding='utf-8') as f:
             lines = f.readlines()
         
@@ -216,11 +201,103 @@ class CSTimerImporter:
             except:
                 continue
         
-        print(f"\n✓ Imported {imported} solves")
         if imported > 0:
             self.logger.update_session_stats(session_id)
         
         return session_id
+    
+    def import_file(self, file_path, event_id='333', session_keys=None):
+        """
+        Import selected sessions from a CSTimer export file
+        
+        Args:
+            file_path: Path to the CSTimer export file
+            event_id: Event ID to assign to imported sessions
+            session_keys: List of session keys to import (if None, imports all)
+        
+        Returns:
+            dict with import statistics
+        """
+        file_path = Path(file_path)
+        
+        if not file_path.exists():
+            raise FileNotFoundError(f"File not found: {file_path}")
+        
+        # Determine file type and load data
+        if file_path.suffix == '.json' or (file_path.suffix == '.txt' and self._is_json_file(file_path)):
+            with open(file_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            
+            # Filter sessions if session_keys provided
+            if session_keys:
+                data = {k: v for k, v in data.items() if k in session_keys}
+            
+            sessions_imported = 0
+            total_solves = 0
+            
+            for session_key, session_data in data.items():
+                if not isinstance(session_data, list):
+                    continue
+                
+                session_name = f"CSTimer {session_key} - {datetime.now().strftime('%Y-%m-%d')}"
+                session_id = self.logger.create_session(event_id, session_name)
+                
+                imported = 0
+                for solve_data in session_data:
+                    try:
+                        solve_info = solve_data[0]
+                        scramble = solve_data[1] if len(solve_data) > 1 else ''
+                        
+                        penalty_code = solve_info[0]
+                        time_cs = solve_info[1]
+                        
+                        if penalty_code == -1:
+                            penalty = 'DNF'
+                            time_seconds = 0
+                        elif penalty_code == 2000:
+                            penalty = '+2'
+                            time_seconds = time_cs / 1000
+                        else:
+                            penalty = None
+                            time_seconds = time_cs / 1000
+                        
+                        self.logger.add_solve(session_id, time_seconds, scramble, penalty)
+                        imported += 1
+                    except Exception:
+                        continue
+                
+                self.logger.update_session_stats(session_id)
+                sessions_imported += 1
+                total_solves += imported
+            
+            return {
+                'sessions_imported': sessions_imported,
+                'total_solves': total_solves
+            }
+        
+        elif file_path.suffix == '.csv':
+            # CSV import doesn't support session selection
+            session_id = self.import_from_csv(file_path, event_id)
+            return {
+                'sessions_imported': 1 if session_id else 0,
+                'total_solves': 0  # Count would need to be tracked
+            }
+        else:
+            # Try as text file
+            session_id = self.import_from_txt(file_path, event_id)
+            return {
+                'sessions_imported': 1 if session_id else 0,
+                'total_solves': 0
+            }
+    
+    def _is_json_file(self, file_path):
+        """Check if a .txt file contains JSON data"""
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                json.load(f)
+            return True
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            return False
 
 
 def main():
