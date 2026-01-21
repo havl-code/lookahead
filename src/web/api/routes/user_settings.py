@@ -51,9 +51,7 @@ def get_user_settings():
             })
             
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'An error occurred loading user settings'}), 500
 
 
 @bp.route('/user/settings', methods=['POST'])
@@ -128,9 +126,7 @@ def update_user_settings():
         })
         
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'An error occurred updating user settings'}), 500
 
 
 @bp.route('/user/settings', methods=['DELETE'])
@@ -148,6 +144,4 @@ def delete_user_settings():
         return jsonify({'success': True})
         
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'An error occurred deleting user settings'}), 500

@@ -31,9 +31,7 @@ def get_sessions():
         
         return jsonify(sessions_dict)
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'An error occurred loading sessions'}), 500
 
 
 @bp.route('/sessions/<int:session_id>', methods=['DELETE'])
@@ -47,9 +45,7 @@ def delete_session(session_id):
         
         return jsonify({'success': True, 'message': 'Session deleted'})
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'An error occurred deleting session'}), 500
 
 
 @bp.route('/sessions/add', methods=['POST'])
@@ -68,9 +64,7 @@ def add_session():
         
         return jsonify({'success': True, 'session_id': session_id})
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'An error occurred creating session'}), 500
 
 
 @bp.route('/sessions/<int:session_id>/solves', methods=['GET'])
@@ -101,9 +95,7 @@ def get_session_solves(session_id):
         
         return jsonify(solves_dict)
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'An error occurred loading solves'}), 500
 
 
 @bp.route('/sessions/<int:session_id>/solves/add', methods=['POST'])
@@ -124,9 +116,7 @@ def add_solve(session_id):
         
         return jsonify({'success': True})
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'An error occurred adding solve'}), 500
 
 
 @bp.route('/solves/<int:solve_id>', methods=['DELETE'])
@@ -148,6 +138,4 @@ def delete_solve(solve_id):
         
         return jsonify({'success': True, 'message': 'Solve deleted'})
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'An error occurred deleting solve'}), 500

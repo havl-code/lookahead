@@ -14,15 +14,16 @@ const AppState = {
     allCubes: []
 };
 
-// Color palette for charts
+// Color palette for charts - subtle, professional, color-blind friendly
+// Used ONLY for data series in charts, not for UI elements
 const COLORS = {
-    primary: '#2563eb',      // Blue
-    secondary: '#10b981',    // Green
-    tertiary: '#f59e0b',     // Amber
-    quaternary: '#8b5cf6',   // Purple
-    danger: '#ef4444',       // Red
-    gray: '#6b7280',         // Gray
-    info: '#06b6d4'          // Cyan
+    primary: '#4A90E2',      // Soft blue - main data series
+    secondary: '#6BA84F',    // Soft green - secondary series
+    tertiary: '#D97706',     // Muted orange - tertiary series
+    quaternary: '#7B68EE',   // Soft purple - quaternary series
+    danger: '#E74C3C',       // Soft red - highlights/warnings
+    gray: '#95A5A6',         // Neutral gray - reference lines
+    info: '#4ECDC4'          // Soft teal - additional series
 };
 
 // Event name mapping
@@ -82,6 +83,40 @@ function getEventName(eventId) {
 
 function formatTime(seconds) {
     return seconds ? `${seconds}s` : 'N/A';
+}
+
+// API helper function
+async function apiRequest(endpoint, options = {}) {
+    try {
+        const response = await fetch(`${API_BASE}${endpoint}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers
+            },
+            ...options
+        });
+        
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({ error: 'Request failed' }));
+            throw new Error(error.error || 'Request failed');
+        }
+        
+        return await response.json();
+    } catch (error) {
+        throw error;
+    }
+}
+
+// Generic sorting helper
+function sortArray(array, column, direction, getValue) {
+    return array.sort((a, b) => {
+        const valA = getValue(a, column);
+        const valB = getValue(b, column);
+        
+        if (valA < valB) return direction === 'asc' ? -1 : 1;
+        if (valA > valB) return direction === 'asc' ? 1 : -1;
+        return 0;
+    });
 }
 
 function showError(message) {

@@ -85,11 +85,8 @@ class DatabaseManager:
     
     def create_schema(self, schema_file="sql/schema.sql"):
         """Create database schema"""
-        print("Creating database schema...")
-        
         schema_path = Path(schema_file)
         if not schema_path.exists():
-            print(f"✗ Schema file not found: {schema_file}")
             return False
         
         with open(schema_path, 'r') as f:
@@ -99,7 +96,6 @@ class DatabaseManager:
             conn.executescript(schema_sql)
             conn.commit()
         
-        print("✓ Schema created")
         return True
     
     def get_table_info(self):

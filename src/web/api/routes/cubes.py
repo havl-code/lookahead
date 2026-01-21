@@ -29,9 +29,7 @@ def get_cubes():
         
         return jsonify(cubes_dict)
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'An error occurred loading cubes'}), 500
 
 
 @bp.route('/cubes/add', methods=['POST'])
@@ -55,9 +53,7 @@ def add_cube():
         
         return jsonify({'success': True, 'cube_id': cube_id})
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'An error occurred adding cube'}), 500
 
 
 @bp.route('/cubes/<int:cube_id>', methods=['PUT'])
@@ -91,9 +87,7 @@ def update_cube(cube_id):
             return jsonify({'error': 'Failed to update cube'}), 400
             
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'An error occurred updating cube'}), 500
 
 
 @bp.route('/cubes/<int:cube_id>', methods=['DELETE'])
@@ -107,6 +101,4 @@ def delete_cube(cube_id):
         
         return jsonify({'success': True, 'message': 'Cube deactivated'})
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'An error occurred deactivating cube'}), 500

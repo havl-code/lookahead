@@ -37,7 +37,7 @@ function renderCubesTable() {
             <td>${cube.model || '-'}</td>
             <td>${cube.purchase_date || '-'}</td>
             <td>${cube.is_active ? 
-                '<span style="color: #10b981; font-size: 16px;">●</span> Active' : 
+                '<span style="color: #000; font-size: 16px;">●</span> Active' : 
                 '<span style="color: #999; font-size: 16px;">○</span> Inactive'
             }</td>
             <td>
@@ -61,49 +61,39 @@ function sortCubes(column) {
     }
     
     // Sort the cubes array
-    AppState.allCubes.sort((a, b) => {
-        let aVal, bVal;
-        
-        switch(column) {
+    const getValue = (cube, col) => {
+        switch(col) {
             case 'type':
-                aVal = a.cube_type || '';
-                bVal = b.cube_type || '';
-                break;
+                return cube.cube_type || '';
             case 'brand':
-                aVal = a.brand || '';
-                bVal = b.brand || '';
-                break;
+                return cube.brand || '';
             case 'model':
-                aVal = a.model || '';
-                bVal = b.model || '';
-                break;
+                return cube.model || '';
             case 'date':
-                aVal = a.purchase_date || '';
-                bVal = b.purchase_date || '';
-                break;
+                return cube.purchase_date || '';
             default:
-                return 0;
+                return '';
         }
-        
-        if (aVal < bVal) return cubeSortState.direction === 'asc' ? -1 : 1;
-        if (aVal > bVal) return cubeSortState.direction === 'asc' ? 1 : -1;
-        return 0;
-    });
+    };
     
-    // Update sort arrows
-    document.querySelectorAll('.sort-arrow-cube').forEach(arrow => {
-        arrow.textContent = '';
-        arrow.classList.remove('asc', 'desc');
-    });
+    sortArray(AppState.allCubes, column, cubeSortState.direction, getValue);
     
+    // Update sort arrows using generic helper
     const activeHeader = Array.from(document.querySelectorAll('.sortable-cube')).find(th => {
         return th.textContent.trim().toLowerCase().includes(column);
     });
     
     if (activeHeader) {
+        document.querySelectorAll('.sort-arrow-cube').forEach(arrow => {
+            arrow.textContent = '';
+            arrow.classList.remove('asc', 'desc');
+        });
+        
         const arrow = activeHeader.querySelector('.sort-arrow-cube');
-        arrow.textContent = cubeSortState.direction === 'asc' ? '▲' : '▼';
-        arrow.classList.add(cubeSortState.direction);
+        if (arrow) {
+            arrow.textContent = cubeSortState.direction === 'asc' ? '▲' : '▼';
+            arrow.classList.add(cubeSortState.direction);
+        }
     }
     
     renderCubesTable();

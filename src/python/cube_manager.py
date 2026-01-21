@@ -45,7 +45,6 @@ class CubeManager:
             conn.commit()
             
             cube_id = cursor.lastrowid
-            print(f"✓ Added cube: {cube_type} (ID: {cube_id})")
             return cube_id
     
     def list_cubes(self, active_only=True):
@@ -104,7 +103,6 @@ class CubeManager:
             cursor = conn.cursor()
             cursor.execute("UPDATE cubes SET is_active = 0 WHERE id = ?", (cube_id,))
             conn.commit()
-        print(f"✓ Deactivated cube ID {cube_id}")
     
     def get_cube_stats(self, cube_id):
         """Get performance stats for a cube"""

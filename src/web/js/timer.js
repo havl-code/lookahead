@@ -120,10 +120,8 @@ function setupScrambleMenu() {
 }
 
 function copyScramble() {
-    navigator.clipboard.writeText(TimerState.scramble).then(() => {
-        console.log('Scramble copied to clipboard');
-    }).catch(err => {
-        console.error('Failed to copy scramble:', err);
+    navigator.clipboard.writeText(TimerState.scramble).catch(() => {
+        // Silently handle clipboard errors
     });
     document.querySelector('.scramble-menu').classList.remove('show');
 }
@@ -268,6 +266,22 @@ function setupTimerKeyboard() {
     document.addEventListener('keyup', handleTimerKeyUp);
 }
 
+// Helper function to start hold timer
+function startHoldTimer() {
+    TimerState.spacePressed = true;
+    TimerState.readyToStart = false;
+    
+    const display = document.getElementById('timer-display');
+    
+    TimerState.holdTimer = setTimeout(() => {
+        if (TimerState.spacePressed && !TimerState.running) {
+            TimerState.readyToStart = true;
+            display.classList.remove('holding');
+            display.classList.add('ready');
+        }
+    }, 300);
+}
+
 function handleTimerKeyDown(e) {
     if (e.key !== ' ') return;
     e.preventDefault();
@@ -282,40 +296,21 @@ function handleTimerKeyDown(e) {
     
     // If in inspection, prepare to start timer
     if (TimerState.inspection) {
-        TimerState.spacePressed = true;
-        TimerState.readyToStart = false;
-        
         const display = document.getElementById('timer-display');
         display.classList.remove('inspection');
         display.classList.add('holding');
-        
-        TimerState.holdTimer = setTimeout(() => {
-            if (TimerState.spacePressed && TimerState.inspection) {
-                TimerState.readyToStart = true;
-                display.classList.remove('holding');
-                display.classList.add('ready');
-            }
-        }, 300);
+        startHoldTimer();
         return;
     }
     
-    // If showing result, go directly to inspection/ready (no need to show 0.00)
+    // If showing result, go directly to inspection/ready
     if (TimerState.showingResult) {
         TimerState.showingResult = false;
         
         if (TimerState.settings.inspectionEnabled) {
             startInspection();
         } else {
-            // Start holding immediately
-            TimerState.spacePressed = true;
-            TimerState.readyToStart = false;
-            
-            TimerState.holdTimer = setTimeout(() => {
-                if (TimerState.spacePressed) {
-                    TimerState.readyToStart = true;
-                    document.getElementById('timer-display').classList.add('ready');
-                }
-            }, 300);
+            startHoldTimer();
         }
         return;
     }
@@ -325,15 +320,7 @@ function handleTimerKeyDown(e) {
         if (TimerState.settings.inspectionEnabled) {
             startInspection();
         } else {
-            TimerState.spacePressed = true;
-            TimerState.readyToStart = false;
-            
-            TimerState.holdTimer = setTimeout(() => {
-                if (TimerState.spacePressed && !TimerState.running) {
-                    TimerState.readyToStart = true;
-                    document.getElementById('timer-display').classList.add('ready');
-                }
-            }, 300);
+            startHoldTimer();
         }
     }
 }

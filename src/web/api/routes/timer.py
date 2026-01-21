@@ -6,7 +6,6 @@ from flask import Blueprint, jsonify, request
 import sys
 from pathlib import Path
 from datetime import datetime
-import traceback
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent / 'python'))
 from training_logger import TrainingLogger
@@ -39,8 +38,7 @@ def create_timer_session():
         })
         
     except Exception as e:
-        traceback.print_exc()
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'An error occurred creating timer session'}), 500
 
 
 @bp.route('/solve', methods=['POST'])
@@ -92,8 +90,7 @@ def save_timer_solve():
         })
         
     except Exception as e:
-        traceback.print_exc()
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'An error occurred creating timer session'}), 500
 
 
 @bp.route('/solve/<int:solve_id>', methods=['DELETE'])
@@ -124,8 +121,7 @@ def delete_timer_solve(solve_id):
         return jsonify({'success': True})
         
     except Exception as e:
-        traceback.print_exc()
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'An error occurred deleting solve'}), 500
 
 
 @bp.route('/solve/<int:solve_id>/penalty', methods=['PUT'])
@@ -168,8 +164,7 @@ def update_solve_penalty(solve_id):
         return jsonify({'success': True})
         
     except Exception as e:
-        traceback.print_exc()
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'An error occurred updating solve penalty'}), 500
 
 
 @bp.route('/session/<int:session_id>/solves', methods=['GET'])
@@ -209,8 +204,7 @@ def get_session_solves(session_id):
         return jsonify({'solves': solves})
         
     except Exception as e:
-        traceback.print_exc()
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'An error occurred loading session solves'}), 500
 
 
 def _update_session_stats(cursor, session_id):

@@ -44,7 +44,6 @@ class TrainingLogger:
             conn.commit()
             
             session_id = cursor.lastrowid
-            print(f"✓ Created session #{session_id}")
             return session_id
     
     def add_solve(self, session_id, time_seconds, scramble='', penalty=None, notes=''):
@@ -80,9 +79,6 @@ class TrainingLogger:
                 penalty, dnf, plus_two, notes
             ))
             conn.commit()
-            
-            print(f"  Solve #{solve_number}: {time_seconds:.2f}s" + 
-                  (f" ({penalty})" if penalty else ""))
     
     def update_session_stats(self, session_id):
         """Calculate and update session statistics"""

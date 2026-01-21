@@ -263,33 +263,23 @@ function sortSolves(column) {
     }
     
     // Sort the solves array
-    currentSolves.sort((a, b) => {
-        let valA, valB;
-        
-        switch(column) {
+    const getValue = (solve, col) => {
+        switch(col) {
             case 'number':
-                valA = a.solve_number;
-                valB = b.solve_number;
-                break;
+                return solve.solve_number;
             case 'time':
                 // Handle DNF as infinitely large
-                valA = a.penalty === 'DNF' ? Infinity : parseFloat(a.time);
-                valB = b.penalty === 'DNF' ? Infinity : parseFloat(b.time);
-                break;
+                return solve.penalty === 'DNF' ? Infinity : parseFloat(solve.time);
             case 'penalty':
                 // Sort order: None < +2 < DNF
                 const penaltyOrder = { '': 0, '+2': 1, 'DNF': 2 };
-                valA = penaltyOrder[a.penalty || ''];
-                valB = penaltyOrder[b.penalty || ''];
-                break;
+                return penaltyOrder[solve.penalty || ''];
             default:
                 return 0;
         }
-        
-        if (valA < valB) return currentSortDirection === 'asc' ? -1 : 1;
-        if (valA > valB) return currentSortDirection === 'asc' ? 1 : -1;
-        return 0;
-    });
+    };
+    
+    sortArray(currentSolves, column, currentSortDirection, getValue);
     
     // Re-render the table
     renderSolvesTable();
@@ -302,7 +292,7 @@ function updateSortArrows() {
         arrow.className = 'sort-arrow';
     });
     
-    // Add arrow to current column
+    // Add arrow to current column using generic helper
     const headers = document.querySelectorAll('.solves-table th.sortable');
     headers.forEach(header => {
         const onclickAttr = header.getAttribute('onclick');
