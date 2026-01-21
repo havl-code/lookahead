@@ -22,70 +22,55 @@ def get_stats():
         event_id = request.args.get('event_id', '333')
         
         logger = TrainingLogger()
-        logger.connect()
         
-        if event_id == 'all':
-            pb_query = "SELECT MIN(ps.time_ms)/1000.0 as pb FROM personal_solves ps WHERE ps.dnf = 0"
-            pb_result = pd.read_sql_query(pb_query, logger.conn)
-        else:
-            pb_query = """
-            SELECT MIN(ps.time_ms)/1000.0 as pb 
-            FROM personal_solves ps
-            JOIN training_sessions ts ON ps.session_id = ts.id
-            WHERE ps.dnf = 0 AND ts.event_id = ?
-            """
-            pb_result = pd.read_sql_query(pb_query, logger.conn, params=(event_id,))
-        
-        pb = pb_result['pb'].values[0] if len(pb_result) > 0 and not pd.isna(pb_result['pb'].values[0]) else None
-        
-        if event_id == 'all':
-            avg_query = "SELECT AVG(ps.time_ms)/1000.0 as avg FROM personal_solves ps WHERE ps.dnf = 0"
-            avg_result = pd.read_sql_query(avg_query, logger.conn)
-        else:
-            avg_query = """
-            SELECT AVG(ps.time_ms)/1000.0 as avg 
-            FROM personal_solves ps
-            JOIN training_sessions ts ON ps.session_id = ts.id
-            WHERE ps.dnf = 0 AND ts.event_id = ?
-            """
-            avg_result = pd.read_sql_query(avg_query, logger.conn, params=(event_id,))
-        
-        avg = avg_result['avg'].values[0] if len(avg_result) > 0 and not pd.isna(avg_result['avg'].values[0]) else None
-        
-        if event_id == 'all':
-            count_query = "SELECT COUNT(ps.id) as total_solves FROM personal_solves ps"
-            count_result = pd.read_sql_query(count_query, logger.conn)
-        else:
-            count_query = """
-            SELECT COUNT(ps.id) as total_solves 
-            FROM personal_solves ps
-            JOIN training_sessions ts ON ps.session_id = ts.id
-            WHERE ts.event_id = ?
-            """
-            count_result = pd.read_sql_query(count_query, logger.conn, params=(event_id,))
-        
-        total_solves = int(count_result['total_solves'].values[0])
-        
-        if event_id == 'all':
-            session_query = "SELECT COUNT(*) as total_sessions FROM training_sessions"
-            session_result = pd.read_sql_query(session_query, logger.conn)
-        else:
-            session_query = "SELECT COUNT(*) as total_sessions FROM training_sessions WHERE event_id = ?"
-            session_result = pd.read_sql_query(session_query, logger.conn, params=(event_id,))
-        
-        total_sessions = int(session_result['total_sessions'].values[0])
-        
-        # Get total cubes count (all cubes)
-        cube_query_all = "SELECT COUNT(*) as total_cubes FROM cubes"
-        cube_result_all = pd.read_sql_query(cube_query_all, logger.conn)
-        total_cubes = int(cube_result_all['total_cubes'].values[0])
-        
-        # Get active cubes count
-        cube_query_active = "SELECT COUNT(*) as active_cubes FROM cubes WHERE is_active = 1"
-        cube_result_active = pd.read_sql_query(cube_query_active, logger.conn)
-        active_cubes = int(cube_result_active['active_cubes'].values[0])
-        
-        logger.disconnect()
+        with logger.db_manager.get_connection() as conn:
+            # Single optimized query for all solve stats
+            if event_id == 'all':
+                solve_query = """
+                SELECT 
+                    MIN(CASE WHEN ps.dnf = 0 THEN ps.time_ms END)/1000.0 as pb,
+                    AVG(CASE WHEN ps.dnf = 0 THEN ps.time_ms END)/1000.0 as avg,
+                    COUNT(ps.id) as total_solves
+                FROM personal_solves ps
+                """
+                solve_result = pd.read_sql_query(solve_query, conn)
+            else:
+                solve_query = """
+                SELECT 
+                    MIN(CASE WHEN ps.dnf = 0 THEN ps.time_ms END)/1000.0 as pb,
+                    AVG(CASE WHEN ps.dnf = 0 THEN ps.time_ms END)/1000.0 as avg,
+                    COUNT(ps.id) as total_solves
+                FROM personal_solves ps
+                JOIN training_sessions ts ON ps.session_id = ts.id
+                WHERE ts.event_id = ?
+                """
+                solve_result = pd.read_sql_query(solve_query, conn, params=(event_id,))
+            
+            pb = solve_result['pb'].values[0] if len(solve_result) > 0 and not pd.isna(solve_result['pb'].values[0]) else None
+            avg = solve_result['avg'].values[0] if len(solve_result) > 0 and not pd.isna(solve_result['avg'].values[0]) else None
+            total_solves = int(solve_result['total_solves'].values[0])
+            
+            # Single query for session and cube counts
+            if event_id == 'all':
+                meta_query = """
+                SELECT 
+                    (SELECT COUNT(*) FROM training_sessions) as total_sessions,
+                    (SELECT COUNT(*) FROM cubes) as total_cubes,
+                    (SELECT COUNT(*) FROM cubes WHERE is_active = 1) as active_cubes
+                """
+                meta_result = pd.read_sql_query(meta_query, conn)
+            else:
+                meta_query = """
+                SELECT 
+                    (SELECT COUNT(*) FROM training_sessions WHERE event_id = ?) as total_sessions,
+                    (SELECT COUNT(*) FROM cubes) as total_cubes,
+                    (SELECT COUNT(*) FROM cubes WHERE is_active = 1) as active_cubes
+                """
+                meta_result = pd.read_sql_query(meta_query, conn, params=(event_id,))
+            
+            total_sessions = int(meta_result['total_sessions'].values[0])
+            total_cubes = int(meta_result['total_cubes'].values[0])
+            active_cubes = int(meta_result['active_cubes'].values[0])
         
         wca_rank = None
         wca_percentile = None
@@ -98,8 +83,8 @@ def get_stats():
                 if wca_result:
                     wca_rank = wca_result.get('rank_estimate')
                     wca_percentile = wca_result.get('percentile')
-            except Exception as e:
-                print(f"WCA API error: {e}")
+            except Exception:
+                pass
         
         return jsonify({
             'pb': round(pb, 2) if pb else None,
@@ -113,9 +98,7 @@ def get_stats():
             'event_id': event_id
         })
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'An error occurred loading statistics'}), 500
 
 
 @bp.route('/pb-details', methods=['GET'])
@@ -165,9 +148,7 @@ def get_pb_details():
         })
         
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'An error occurred loading PB details'}), 500
 
 
 @bp.route('/events', methods=['GET'])

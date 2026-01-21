@@ -4,32 +4,85 @@ Uses static JSON files from: https://github.com/robiningelbrecht/wca-rest-api
 """
 
 import requests
+import json
+import os
+from pathlib import Path
+from datetime import datetime, timedelta
 
 
 class WCAApiClient:
     """Client for WCA REST API (static JSON files)"""
     
     BASE_URL = "https://raw.githubusercontent.com/robiningelbrecht/wca-rest-api/master/api"
+    CACHE_TTL_HOURS = 24
+    CACHE_DIR = Path("data/cache")
     
     def __init__(self):
         self.session = requests.Session()
-        self._cache = {}
+        self._memory_cache = {}
+        self.CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    
+    def _get_cache_path(self, path):
+        """Get cache file path for a given API path"""
+        safe_name = path.replace('/', '_').replace('\\', '_')
+        return self.CACHE_DIR / f"wca_{safe_name}.json"
+    
+    def _is_cache_valid(self, cache_path):
+        """Check if cache file exists and is still valid"""
+        if not cache_path.exists():
+            return False
+        
+        try:
+            mtime = datetime.fromtimestamp(cache_path.stat().st_mtime)
+            age = datetime.now() - mtime
+            return age < timedelta(hours=self.CACHE_TTL_HOURS)
+        except Exception:
+            return False
+    
+    def _load_from_cache(self, cache_path):
+        """Load data from cache file"""
+        try:
+            with open(cache_path, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except Exception:
+            return None
+    
+    def _save_to_cache(self, cache_path, data):
+        """Save data to cache file"""
+        try:
+            with open(cache_path, 'w', encoding='utf-8') as f:
+                json.dump(data, f)
+        except Exception:
+            pass
     
     def _get_json(self, path):
-        """Get JSON from path with caching"""
-        if path in self._cache:
-            return self._cache[path]
+        """Get JSON from path with file-based caching"""
+        # Check memory cache first
+        if path in self._memory_cache:
+            return self._memory_cache[path]
         
+        # Check file cache
+        cache_path = self._get_cache_path(path)
+        if self._is_cache_valid(cache_path):
+            data = self._load_from_cache(cache_path)
+            if data:
+                self._memory_cache[path] = data
+                return data
+        
+        # Fetch from API
         url = f"{self.BASE_URL}/{path}"
         
         try:
             response = self.session.get(url, timeout=30)
             response.raise_for_status()
             data = response.json()
-            self._cache[path] = data
+            
+            # Save to both caches
+            self._memory_cache[path] = data
+            self._save_to_cache(cache_path, data)
+            
             return data
-        except Exception as e:
-            print(f"Error fetching {path}: {e}")
+        except Exception:
             return None
     
     # General endpoints
@@ -91,63 +144,15 @@ class WCAApiClient:
         
         return None
     
-    # def estimate_percentile(self, time_seconds, event='333', type='single', region='world'):
-    #     """
-    #     Estimate percentile by comparing to rankings
-        
-    #     Args:
-    #         time_seconds: Your time in seconds
-    #         event: Event ID
-    #         type: 'single' or 'average'  
-    #         region: 'world', continent, or country
-    #     """
-    #     print(f"  Fetching {region} {type} rankings for {event}...")
-        
-    #     rankings = self.get_rankings(region, type, event)
-        
-    #     if not rankings:
-    #         print("  Rankings unavailable, using approximate statistics...")
-    #         return self._approximate_percentile(time_seconds)
-        
-    #     print(f"  Loaded {len(rankings):,} ranked competitors...")
-        
-    #     # Extract times from rankings
-    #     times = []
-    #     for rank_data in rankings:
-    #         result = rank_data.get('best', 0)
-    #         if result > 0:
-    #             times.append(result / 100)  # Convert centiseconds to seconds
-        
-    #     if not times:
-    #         return self._approximate_percentile(time_seconds)
-        
-    #     # Calculate percentile
-    #     faster_count = sum(1 for t in times if t < time_seconds)
-    #     total_ranked = len(times)
-    #     percentile = (faster_count / total_ranked) * 100
-        
-    #     return {
-    #         'percentile': percentile,
-    #         'faster_than': f"{percentile:.1f}%",
-    #         'rank_estimate': faster_count + 1,
-    #         'total_ranked': total_ranked,
-    #         'note': f'Compared to {total_ranked:,} ranked competitors ({region})'
-    #     }
-
     def estimate_percentile(self, time_seconds, event='333', type='single', region='world'):
         """
         Estimate percentile by comparing to rankings
         Uses top 1000 + statistical extrapolation for broader comparison
         """
-        print(f"  Fetching {region} {type} rankings for {event}...")
-        
         rankings = self.get_rankings(region, type, event)
         
         if not rankings:
-            print("  Rankings unavailable, using approximate statistics...")
             return self._approximate_percentile(time_seconds)
-        
-        print(f"  Loaded {len(rankings):,} ranked competitors...")
         
         # Extract times from rankings
         times = []

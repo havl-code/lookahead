@@ -348,24 +348,8 @@ async function loadRollingChart() {
         }
         
         const times = data.times;
-        const rolling5 = [];
-        const rolling12 = [];
-        
-        for (let i = 0; i < times.length; i++) {
-            if (i >= 4) {
-                const slice5 = times.slice(i - 4, i + 1);
-                rolling5.push(slice5.reduce((a, b) => a + b) / 5);
-            } else {
-                rolling5.push(null);
-            }
-            
-            if (i >= 11) {
-                const slice12 = times.slice(i - 11, i + 1);
-                rolling12.push(slice12.reduce((a, b) => a + b) / 12);
-            } else {
-                rolling12.push(null);
-            }
-        }
+        const rolling5 = data.rolling5 || [];
+        const rolling12 = data.rolling12 || [];
         
         const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
         
