@@ -243,7 +243,7 @@
 }
 
 .scramble-display:hover {
-    box-shadow: 0 4px 12px var(--shadow);
+    border-color: var(--text-primary);
 }
 
 .scramble-label {
@@ -317,16 +317,16 @@
 }
 
 .timer-display.ready {
-    color: #4caf50;
+    color: var(--text-primary);
 }
 
 .timer-display.inspection {
-    color: #f44336;
+    color: var(--text-secondary);
     font-size: 140px;
 }
 
 .timer-display.holding {
-    color: #ff9800;
+    color: var(--text-tertiary);
 }
 
 .timer-display.running {
@@ -334,7 +334,7 @@
 }
 
 .timer-display.stopped {
-    color: #2196f3;
+    color: var(--text-primary);
 }
 
 /* Session Stats (mini) */
@@ -442,11 +442,12 @@
 }
 
 .solve-time.best {
-    color: #4caf50;
+    color: var(--text-primary);
+    font-weight: 700;
 }
 
 .solve-time.worst {
-    color: #f44336;
+    color: var(--text-secondary);
 }
 
 .solve-scramble {
