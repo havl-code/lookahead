@@ -211,9 +211,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📧 Contact & Support
 
 **Creator:** Viet Ha Ly
+
 **GitHub:** [@havl-code](https://github.com/havl-code)
-**Email:** [vha.ly@outlook.com](mailto:vha.ly@outlook.com)
-**Repository:** [speedcube-training-explorer](https://github.com/havl-code/speedcube-training-explorer)
+
 **Issues:** [Report bugs or request features](https://github.com/havl-code/speedcube-training-explorer/issues)
 
 > 🔧 **Having trouble?** Check the [troubleshooting guide](INSTALLATION.md#troubleshooting) in INSTALLATION.md first!
