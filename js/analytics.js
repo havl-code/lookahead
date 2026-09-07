@@ -67,13 +67,20 @@ async function renderAllHeatmaps() {
 
 async function updateMetricsCards() {
     const eventId = document.getElementById('analytics-event-select')?.value || '333';
-    
+
     try {
         const response = await fetch(`${API_BASE}/analytics/session-heatmap?event_id=${eventId}`);
         const data = await response.json();
-        
-        if (data.error || !data.sessions || data.sessions.length < 2) return;
-        
+
+        if (data.error || !data.sessions || data.sessions.length === 0) {
+            showAnalyticsEmptyState(`No ${getEventName(eventId)} sessions yet. Log a few solves to see analytics here.`);
+            return;
+        }
+        if (data.sessions.length < 2) {
+            showAnalyticsEmptyState(`Analytics need at least 2 sessions to compare - you have 1 so far. Keep training!`);
+            return;
+        }
+
         const sessions = data.sessions;
         const recent = sessions.slice(0, 10);
         const older = sessions.slice(10, 20);
@@ -102,6 +109,32 @@ async function updateMetricsCards() {
         
     } catch (error) {
         console.error('Error updating metrics:', error);
+        showAnalyticsEmptyState('Could not load analytics right now.');
+    }
+}
+
+function showAnalyticsEmptyState(message) {
+    ['speed', 'consistency', 'accuracy', 'overall'].forEach(metric => {
+        const valueEl = document.getElementById(`metric-${metric}`);
+        const trendEl = document.getElementById(`metric-${metric}-trend`);
+        if (valueEl) valueEl.textContent = '--';
+        if (trendEl) {
+            trendEl.className = 'metric-trend neutral';
+            trendEl.innerHTML = `<span class="trend-arrow">&rarr;</span><span>No data yet</span>`;
+        }
+        updatePerformanceBar(metric, 0);
+    });
+
+    const container = document.getElementById('insights-container');
+    if (container) {
+        container.innerHTML = `
+            <div class="insight-item">
+                <div class="insight-bullet neutral"></div>
+                <div class="insight-content">
+                    <div class="insight-text">${message}</div>
+                </div>
+            </div>
+        `;
     }
 }
 

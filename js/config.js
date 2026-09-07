@@ -1,7 +1,9 @@
 // config.js - Global configuration and constants
 
-// API Base URL
-const API_BASE = 'http://localhost:5000/api';
+// API_BASE is no longer a real server - it's just the URL prefix local-api.js watches for
+// and intercepts (see js/local-api.js), so every existing fetch(`${API_BASE}/...`) call
+// below in the UI files transparently reads/writes IndexedDB instead of hitting a server.
+const API_BASE = 'http://localhost/api';
 
 // Global state variables
 const AppState = {
@@ -83,28 +85,6 @@ function getEventName(eventId) {
 
 function formatTime(seconds) {
     return seconds ? `${seconds}s` : 'N/A';
-}
-
-// API helper function
-async function apiRequest(endpoint, options = {}) {
-    try {
-        const response = await fetch(`${API_BASE}${endpoint}`, {
-            headers: {
-                'Content-Type': 'application/json',
-                ...options.headers
-            },
-            ...options
-        });
-        
-        if (!response.ok) {
-            const error = await response.json().catch(() => ({ error: 'Request failed' }));
-            throw new Error(error.error || 'Request failed');
-        }
-        
-        return await response.json();
-    } catch (error) {
-        throw error;
-    }
 }
 
 // Generic sorting helper

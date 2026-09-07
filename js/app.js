@@ -3,8 +3,7 @@
 // Initialize app
 async function init() {
     await loadGreeting();  // Load personalized greeting first
-    switchTab('dashboard');
-    loadDashboard();
+    switchTab('dashboard'); // this already loads the dashboard's data - don't do it twice
 }
 
 // Switch between tabs

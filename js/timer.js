@@ -187,6 +187,7 @@ async function loadSessionSolves(sessionId) {
 // Settings modal
 function showTimerSettings() {
     const modal = document.createElement('div');
+    modal.id = 'timer-settings-modal';
     modal.className = 'modal';
     modal.style.display = 'flex';
     modal.innerHTML = `
@@ -253,7 +254,11 @@ function changeInspectionTime(value) {
 }
 
 function closeTimerSettings() {
-    const modal = document.querySelector('.modal');
+    // Was document.querySelector('.modal') - the *first* element with class "modal" in
+    // DOM order, which on the Sessions tab is #solve-details-modal, not this one. That
+    // meant closing Timer Settings could delete the Sessions "view solves" modal from the
+    // page entirely, permanently breaking its "View" button until reload.
+    const modal = document.getElementById('timer-settings-modal');
     if (modal) modal.remove();
 }
 
@@ -553,7 +558,7 @@ function updateSolvesList() {
                         <option value="+2" ${solve.penalty === '+2' ? 'selected' : ''}>+2</option>
                         <option value="DNF" ${solve.penalty === 'DNF' ? 'selected' : ''}>DNF</option>
                     </select>
-                    <button class="solve-action-btn delete" onclick="deleteSolve(${solve.id})">Delete</button>
+                    <button class="solve-action-btn delete" onclick="deleteTimerSolve(${solve.id})">Delete</button>
                 </div>
             </div>
         `;
@@ -576,9 +581,9 @@ async function changeSolvePenalty(solveId, newPenalty) {
     }
 }
 
-async function deleteSolve(solveId) {
+async function deleteTimerSolve(solveId) {
     if (!confirm('Delete this solve?')) return;
-    
+
     try {
         const response = await fetch(`${API_BASE}/timer/solve/${solveId}`, {
             method: 'DELETE'

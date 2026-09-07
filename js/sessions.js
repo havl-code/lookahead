@@ -245,7 +245,7 @@ function renderSolvesTable() {
             <td>${solve.penalty || '-'}</td>
             <td class="scramble-cell">${solve.scramble || '-'}</td>
             <td>
-                <button class="action-btn danger" onclick="deleteSolve(${solve.id})">Delete</button>
+                <button class="action-btn danger" onclick="deleteSessionSolve(${solve.id})">Delete</button>
             </td>
         </tr>
     `).join('');
@@ -349,9 +349,9 @@ async function addSolveToSession(event) {
     }
 }
 
-async function deleteSolve(solveId) {
+async function deleteSessionSolve(solveId) {
     if (!confirm('Delete this solve?')) return;
-    
+
     try {
         const response = await fetch(`${API_BASE}/solves/${solveId}`, {
             method: 'DELETE'

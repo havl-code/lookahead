@@ -1,18 +1,21 @@
 # Speedcube Training Explorer 🎲
 
-**Track your progress. Analyze your solves. Compare with the world.**
+**Track your progress. Analyse your solves. Compare with the world.**
 
-A comprehensive web-based training tracker for speedcubers. Track your solving sessions, analyze your progress with beautiful charts, manage your cube inventory, and see how you stack up against WCA world rankings—all stored locally on your machine.
+A comprehensive, fully browser-based training tracker for speedcubers. Track your solving
+sessions, analyse your progress with beautiful charts, manage your cube inventory, and see
+how you stack up against WCA world rankings, all stored locally in your browser, with
+nothing to install.
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
-![Python](https://img.shields.io/badge/python-3.8+-green.svg)
+![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
 ---
 
 ## 📸 Screenshots
 
-> **Note:** Screenshots coming soon! The app features a clean, minimalist black-and-white interface with subtle color accents in charts.
+> **Note:** Screenshots coming soon! The app features a clean interface with a friendly
+> accent colour and colour-coded charts, in light or dark mode.
 
 - **Dashboard** - Overview of your stats, PBs, and recent sessions
 - **Live Timer** - Competition-ready timer with inspection mode
@@ -28,6 +31,7 @@ A comprehensive web-based training tracker for speedcubers. Track your solving s
 - **Session Statistics** - Ao5, Ao12, mean, and best/worst times per session
 - **WCA Comparison** - See your estimated world rank and percentile based on your PB
 - **Event Filtering** - Filter stats by specific events (3x3, 4x4, etc.) or view all combined
+- **Quick Actions** - Jump straight into the timer, or add a session or cube, from the dashboard
 
 ### ⏱️ Live Timer
 - **Competition-Ready Timer** - WCA-style space bar timer (hold to start, release to stop)
@@ -38,11 +42,12 @@ A comprehensive web-based training tracker for speedcubers. Track your solving s
 - **Fullscreen Mode** - Distraction-free solving environment
 
 ### 📈 Advanced Charts & Analytics
-- **Progress Over Time** - Visualize improvement across sessions
+- **Progress Over Time** - Visualise improvement across sessions
 - **Time Distribution** - Histogram showing solve time patterns
 - **Rolling Averages** - Track Ao5 and Ao12 trends over time
 - **Consistency Analysis** - Box plots comparing performance across sessions
-- **Performance Metrics** - Speed, consistency, accuracy, and overall scores
+- **Performance Metrics** - Speed, consistency, accuracy, and overall scores, colour-coded
+  from red (needs work) to green (excellent)
 
 ### 📦 Cube Inventory
 - **Cube Database** - Track all your cubes by type, brand, and model
@@ -52,51 +57,50 @@ A comprehensive web-based training tracker for speedcubers. Track your solving s
 ### 📥 Import/Export
 - **CSTimer Import** - Import your existing CSTimer sessions (JSON/TXT formats)
 - **Selective Import** - Choose which sessions to import
-- **Batch Processing** - Import hundreds of solves at once
+- **Backup/Restore** - Export all your data to one JSON file, or restore from one
 
 ### 🎨 User Experience
 - **Dark/Light Mode** - Toggle between themes with one click
-- **Minimalist Design** - Clean black-and-white interface with subtle chart colors
-- **Personalized Greeting** - Optional WCA ID integration for personalized features
+- **Friendly, Uncluttered Design** - A simple layout with just enough colour and personality
+- **Personalised Greeting** - Optional WCA ID integration for personalised features
 - **Responsive Design** - Works great on desktop and mobile
-- **No Login Required** - All data stored locally in SQLite database
+- **No Install, No Login** - Nothing to run, nothing to sign into. All data stays in your browser.
 
 ---
 
 ## 🚀 Quick Start
 
-### Prerequisites
-- **Python 3.8 or higher** - [Download Python](https://www.python.org/downloads/)
-- **pip** (comes with Python)
-- **Modern web browser** (Chrome, Firefox, Safari, Edge)
+There's nothing to install and nothing to run from a terminal.
 
-### Installation
+1. Download or clone this repository
+2. Open **`index.html`** in your browser (double-click it, or drag it into a browser window)
+3. Start tracking!
 
-> 📖 **For complete step-by-step installation instructions, troubleshooting, and configuration options, see [INSTALLATION.md](INSTALLATION.md).**
+That's it. 🎉 See [INSTALLATION.md](INSTALLATION.md) for browser recommendations, backing up
+your data, and troubleshooting.
 
-**Quick version:**
-1. Clone this repository
-2. Run `install.bat` (Windows) or `./install.sh` (macOS/Linux)
-3. Run `start.bat` (Windows) or `./start.sh` (macOS/Linux)
-4. Your browser will open to `http://localhost:5000`
+---
 
-That's it! 🎉
+## 🔄 Why web-only?
 
-> 💡 **Having issues?** Check the [troubleshooting section](INSTALLATION.md#troubleshooting) in INSTALLATION.md.
+Earlier versions of this project were a Python command-line app paired with a small local
+web server: you needed Python installed, a virtual environment, `pip install`, and a
+terminal command just to open the dashboard. That was a lot of friction for what is, at
+heart, a page you look at and click things on. This version drops the CLI and the Python
+server entirely and rebuilds the same features as a single static web app: open
+`index.html` and you're training. Your data now lives in the browser's own local storage
+(IndexedDB) instead of a SQLite file on disk, so there's genuinely nothing to install,
+configure, or keep running in the background.
 
 ---
 
 ## 📖 Usage Guide
 
-> 📋 **New to the app?** Make sure you've completed the [installation steps](INSTALLATION.md) first!
+### First Time
 
-### First Time Setup
-
-1. **Launch the app** - Run `start.bat` (Windows) or `./start.sh` (macOS/Linux)
-   - If you haven't installed yet, see [INSTALLATION.md](INSTALLATION.md)
-2. **The app opens** in your browser at `http://localhost:5000`
-3. **Optional:** Set up your WCA ID in the dashboard for personalized features
-4. **Start tracking** - Use the Timer or import existing data
+1. Open `index.html` in your browser
+2. **Optional:** Set up your WCA ID in the dashboard for personalised features
+3. Start tracking - use the Timer or import existing data
 
 ### Using the Timer
 
@@ -107,7 +111,7 @@ That's it! 🎉
 5. Release **SPACE** to start solving
 6. Press **SPACE** again to stop
 
-Times are automatically saved to the current session!
+Times are automatically saved to the current session, in your browser's local storage.
 
 ### Importing CSTimer Data
 
@@ -127,51 +131,26 @@ Times are automatically saved to the current session!
 - **View all sessions** - Sessions tab shows all your training with filters
 - **Add solves manually** - Click "Add Session" → Add individual solves
 - **Edit/Delete** - Manage existing sessions and solves
-- **Sort & Filter** - Organize by date, event, or performance
+- **Sort & Filter** - Organise by date, event, or performance
 
----
+### Backing Up Your Data
 
-## 🛠️ Advanced Usage
-
-> 📖 **For detailed configuration, database management, and troubleshooting, see [INSTALLATION.md](INSTALLATION.md).**
-
-### Manual Start (Without Scripts)
-
-If you prefer to start the app manually:
-
-```bash
-# Activate virtual environment
-source venv/bin/activate  # macOS/Linux
-venv\Scripts\activate     # Windows
-
-# Start the app
-python main.py
-```
-
-### Database Management
-
-```bash
-# Reset/initialize database
-python main.py --init-db
-
-# Show help
-python main.py --help
-```
-
-### Configuration
-
-The app runs on **port 5000** by default. To change the port or configure other settings, see the [Configuration section](INSTALLATION.md#configuration) in INSTALLATION.md.
+Since your data lives only in this browser (see [INSTALLATION.md](INSTALLATION.md)), use the
+**Export backup** / **Import backup** links in the footer to save a JSON snapshot of
+everything, or restore from one.
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **Backend:** Python 3.8+, Flask 3.1.2
-- **Database:** SQLite (local storage)
-- **Frontend:** Vanilla JavaScript, HTML5, CSS3
-- **Charts:** Plotly.js
-- **Data Processing:** Pandas
-- **External APIs:** WCA REST API (for rankings)
+- **Frontend:** Vanilla JavaScript, HTML5, CSS3 - no build step, no framework, no bundler
+- **Storage:** IndexedDB (your browser's local storage) - nothing leaves your machine
+- **Charts:** Plotly.js (loaded from CDN on first use of Charts/Analytics)
+- **External APIs (optional):** the official WCA API for WCA ID lookups, and the
+  [Unofficial WCA Public API](https://wca-rest-api.robiningelbrecht.be/) for world rankings
+  (there's no official rankings API; this community project, built on the WCA's own results
+  export, is what the WCA's own developer documentation points people to). Used only for the
+  world-rank/percentile stat and the WCA-ID name lookup - everything else works fully offline.
 
 ---
 
@@ -179,30 +158,22 @@ The app runs on **port 5000** by default. To change the port or configure other 
 
 ```
 speedcube-training-explorer/
-├── data/                  # Your training data (SQLite database)
-│   ├── cache/            # WCA API cache
-│   ├── processed/        # Processed import files
-│   └── raw/              # Raw import files
-├── src/
-│   ├── python/           # Backend logic
-│   │   ├── db_manager.py
-│   │   ├── training_logger.py
-│   │   ├── cube_manager.py
-│   │   ├── import_cstimer.py
-│   │   └── wca_api_client.py
-│   └── web/              # Frontend
-│       ├── api/          # Flask API routes
-│       ├── css/          # Stylesheets
-│       ├── js/           # JavaScript modules
-│       └── index.html    # Main page
-├── sql/                  # Database schema
-├── install.bat           # Windows installer
-├── install.sh            # macOS/Linux installer
-├── start.bat             # Windows launcher
-├── start.sh              # macOS/Linux launcher
-├── main.py               # Python entry point
-├── website_server.py     # Flask server entry point
-└── requirements.txt      # Python dependencies
+├── index.html             # The entire app - open this
+├── css/                   # Stylesheets
+├── js/
+│   ├── config.js          # Constants, event names, chart config
+│   ├── db.js               # IndexedDB wrapper
+│   ├── stats.js             # Ao5/Ao12/mean calculation
+│   ├── wca.js                # WCA rank/percentile + WCA ID lookup
+│   ├── local-api.js           # Replaces the old backend - serves every UI data request locally
+│   ├── cstimer-import.js       # CSTimer import parsing
+│   ├── backup.js                # Export/Import a JSON backup
+│   ├── dashboard.js, sessions.js, cubes.js, charts.js,
+│   │   analytics.js, import.js, greeting.js, timer.js,
+│   │   app.js, theme.js         # UI for each tab
+├── images/                # Logo/favicon
+├── LICENSE
+└── README.md / INSTALLATION.md
 ```
 
 ---
@@ -229,8 +200,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- **[WCA REST API](https://github.com/robiningelbrecht/wca-rest-api)** by [@robiningelbrecht](https://github.com/robiningelbrecht) - Unofficial REST API for World Cube Association data
-- **WCA** - World Cube Association for their official database and rankings
+- **[Unofficial WCA Public API](https://wca-rest-api.robiningelbrecht.be/)** by [Robin Ingelbrecht](https://github.com/robiningelbrecht) - the community-run rankings API this app relies on, built from the official WCA results export
+- **WCA** - World Cube Association for their official database, results export, and rankings
 - **CSTimer** - For inspiration and export format compatibility
 - **Plotly.js** - For beautiful interactive charts
 - **Speedcubing Community** - For feedback, support, and keeping the passion alive
@@ -239,15 +210,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📧 Contact & Support
 
-**Creator:** Viet Ha Ly  
-**GitHub:** [@havl-code](https://github.com/havl-code)  
-**Repository:** [speedcube-training-explorer](https://github.com/havl-code/speedcube-training-explorer)  
+**Creator:** Viet Ha Ly
+**GitHub:** [@havl-code](https://github.com/havl-code)
+**Email:** [vha.ly@outlook.com](mailto:vha.ly@outlook.com)
+**Repository:** [speedcube-training-explorer](https://github.com/havl-code/speedcube-training-explorer)
 **Issues:** [Report bugs or request features](https://github.com/havl-code/speedcube-training-explorer/issues)
 
-> 🔧 **Having installation or setup issues?** Check the [troubleshooting guide](INSTALLATION.md#troubleshooting) in INSTALLATION.md first!
+> 🔧 **Having trouble?** Check the [troubleshooting guide](INSTALLATION.md#troubleshooting) in INSTALLATION.md first!
 
 ---
 
 **Happy Cubing! 🎲✨**
-
-*Track your progress, beat your PBs, and join the global speedcubing community.*
