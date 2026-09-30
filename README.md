@@ -2,95 +2,133 @@
 
 **Track your progress. Analyse your solves. Compare with the world.**
 
-A comprehensive, fully browser-based training tracker for speedcubers. Track your solving
-sessions, analyse your progress with beautiful charts, manage your cube inventory, and see
-how you stack up against WCA world rankings, all stored locally in your browser, with
-nothing to install.
+A training tracker for speedcubers that runs on your own computer and opens in your web
+browser. Time your solves, analyse your progress with charts, keep track of your cubes, and
+see how you stack up against the WCA world rankings. Everything is stored on your computer,
+and one command starts it.
 
-![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)
+![Flask](https://img.shields.io/badge/Flask-000000?logo=flask&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-003B57?logo=sqlite&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)
+![CSS](https://img.shields.io/badge/CSS-1572B6?logo=css&logoColor=white)
+![Plotly](https://img.shields.io/badge/Plotly-3F4F75?logo=plotly&logoColor=white)
+![uv](https://img.shields.io/badge/uv-DE5FE9?logo=uv&logoColor=white)
+![Licence: MIT](https://img.shields.io/badge/licence-MIT-FF7A1A)
 
----
-
-## 📸 Screenshots
-
-> **Note:** Screenshots coming soon! The app features a clean interface with a friendly
-> accent colour and colour-coded charts, in light or dark mode.
-
-- **Dashboard** - Overview of your stats, PBs, and recent sessions
-- **Live Timer** - Competition-ready timer with inspection mode
-- **Charts** - Progress tracking, distributions, rolling averages, and consistency analysis
-- **Analytics** - Performance metrics and insights
+![The dashboard in dark mode, greeting the user by name with their personal best, world rank, average time and recent sessions](docs/screenshots/dashboard-dark.png)
 
 ---
 
 ## ✨ Features
 
-### 📊 Dashboard & Statistics
-- **Personal Best Tracking** - Track PB singles for all WCA events
-- **Session Statistics** - Ao5, Ao12, mean, and best/worst times per session
-- **WCA Comparison** - See your estimated world rank and percentile based on your PB
-- **Event Filtering** - Filter stats by specific events (3x3, 4x4, etc.) or view all combined
-- **Quick Actions** - Jump straight into the timer, or add a session or cube, from the dashboard
+### 📊 Dashboard
+
+- **Personal Bests:** your best single for every event you've logged, with its date and scramble
+- **World Rank:** your estimated WCA world rank and percentile, based on your best single
+- **At a Glance:** your average, total solves, sessions and cubes
+- **Recent Sessions:** your latest sessions, sortable by any column
+- **Quick Actions:** jump straight into the timer, or add a session or cube
 
 ### ⏱️ Live Timer
-- **Competition-Ready Timer** - WCA-style space bar timer (hold to start, release to stop)
-- **Inspection Mode** - Optional 15-second inspection countdown (configurable)
-- **Automatic Scrambles** - Generated 3x3 scrambles for each solve
-- **Real-Time Statistics** - Live Ao5, mean, and session stats as you solve
-- **Penalty Support** - Track +2 penalties and DNFs
-- **Fullscreen Mode** - Distraction-free solving environment
 
-### 📈 Advanced Charts & Analytics
-- **Progress Over Time** - Visualise improvement across sessions
-- **Time Distribution** - Histogram showing solve time patterns
-- **Rolling Averages** - Track Ao5 and Ao12 trends over time
-- **Consistency Analysis** - Box plots comparing performance across sessions
-- **Performance Metrics** - Speed, consistency, accuracy, and overall scores, colour-coded
-  from red (needs work) to green (excellent)
+- **Competition-Style Timing:** hold the space bar until the time turns green, let go to
+  start, and press again to stop
+- **Inspection:** an optional inspection countdown (8, 12, 15 or 17 seconds)
+- **Scrambles:** a new random 3x3x3 scramble for every solve
+- **Live Statistics:** solve count, best, mean and Ao5 for the whole session as you solve
+- **Penalties:** mark any solve as +2 or DNF afterwards
+- **Fullscreen Mode:** hides everything except the scramble and the time
 
-### 📦 Cube Inventory
-- **Cube Database** - Track all your cubes by type, brand, and model
-- **Usage History** - Link cubes to training sessions
-- **Active/Inactive Status** - Manage your current rotation
+### 🗂️ Sessions and Cubes
 
-### 📥 Import/Export
-- **CSTimer Import** - Import your existing CSTimer sessions (JSON/TXT formats)
-- **Selective Import** - Choose which sessions to import
-- **Backup/Restore** - Export all your data to one JSON file, or restore from one
+- **Sortable Tables:** click any column heading (date, time, solves and so on) to sort by it,
+  and click again to reverse the order
+- **Every Solve:** open a session to see all its solves, sorted however you like, even if it
+  holds tens of thousands
+- **Add by Hand:** create sessions and add solves yourself
+- **Cube Inventory:** record each cube's type, brand, model and when you got it, and link cubes
+  to sessions
 
-### 🎨 User Experience
-- **Dark/Light Mode** - Toggle between themes with one click
-- **Friendly, Uncluttered Design** - A simple layout with just enough colour and personality
-- **Personalised Greeting** - Optional WCA ID integration for personalised features
-- **Responsive Design** - Works great on desktop and mobile
-- **No Install, No Login** - Nothing to run, nothing to sign into. All data stays in your browser.
+### 📈 Analytics
+
+- **Scores:** speed, consistency, accuracy and overall scores, colour-coded from red (needs
+  work) to green (excellent), with how they've changed recently
+- **Insights:** plain-English tips on what to work on next
+- **Charts:** progress over time, time distribution, rolling Ao5 and Ao12, and consistency across
+  sessions, for a whole event or a single session
+
+### 📥 Import and Backup
+
+- **CSTimer Import:** bring in your existing CSTimer sessions (JSON or TXT export), choosing
+  which ones to import
+- **Backup and Restore:** export all your data to one JSON file, or restore from one
+
+### 🎨 Look and Feel
+
+- **Clean and Simple:** a calm layout with an orange accent and the Space Grotesk font
+- **Dark Mode by Default:** switch to light mode with one click; the app remembers your choice
+- **Personalised Greeting:** add your WCA ID and the app greets you by name
+- **Fast with Big Histories:** long lists load a page at a time, so even tens of thousands of
+  solves stay quick
+- **Works Offline:** everything except the WCA rank and name lookup works without internet
+- **No Accounts:** nothing to sign up for, and your data never leaves your computer
+
+### 📏 Statistics the WCA Way
+
+- **Averages:** Ao5 and Ao12 drop your best and worst results and average the rest. A DNF
+  counts as your worst result, so one DNF is dropped, but two or more make the average a DNF.
+- **Penalties:** a +2 is added to the solve's time everywhere it counts: PBs, means,
+  averages, charts and the world rank comparison.
 
 ---
 
 ## 🚀 Quick Start
 
-There's nothing to install and nothing to run from a terminal.
+1. **Install uv**, a small free tool that sets up Python and everything the app needs. You
+   only do this once; see [INSTALLATION.md](INSTALLATION.md#-1-install-uv) for the one-line
+   installer.
+2. **Download this project:** on GitHub, click **Code**, then **Download ZIP**, and unzip it.
+3. **Open a terminal in the project folder.** On Windows, right-click the folder and choose
+   **Open in Terminal**. On a Mac, right-click it and choose **New Terminal at Folder**.
+4. **Start the app** by typing:
 
-1. Download or clone this repository
-2. Open **`index.html`** in your browser (double-click it, or drag it into a browser window)
-3. Start tracking!
+   ```bash
+   uv run app.py
+   ```
 
-That's it. 🎉 See [INSTALLATION.md](INSTALLATION.md) for browser recommendations, backing up
-your data, and troubleshooting.
+The app opens in your browser. That's the only command you'll ever need. 🎉
+
+The first start takes a few seconds while uv gets everything ready; after that it's quick.
+Leave the terminal window open while you use the app, and close it when you're done.
 
 ---
 
-## 🔄 Why web-only?
+## 🆕 What's New
 
-Earlier versions of this project were a Python command-line app paired with a small local
-web server: you needed Python installed, a virtual environment, `pip install`, and a
-terminal command just to open the dashboard. That was a lot of friction for what is, at
-heart, a page you look at and click things on. This version drops the CLI and the Python
-server entirely and rebuilds the same features as a single static web app: open
-`index.html` and you're training. Your data now lives in the browser's own local storage
-(IndexedDB) instead of a SQLite file on disk, so there's genuinely nothing to install,
-configure, or keep running in the background.
+- **Runs on your computer, not just in the browser.** The older browser-only version (2.x)
+  kept your data inside the browser, so clearing your browsing data (or switching browsers)
+  could lose it. Now a small server on your computer saves everything to one file,
+  `data/speedcube.db`. It's easy to back up, and it doesn't matter which browser you use.
+- **Quick with huge histories.** Importing tens of thousands of solves no longer slows the app
+  down: long lists load a page at a time, and stats are worked out by the database.
+- **Sortable tables.** Every table of sessions, solves and cubes sorts by any column.
+- **Charts are part of Analytics.** One tab now has your scores, insights and charts, all
+  driven by the same event menu.
+- **A fresh look.** Dark mode by default, an orange accent, the Space Grotesk font, and a
+  simpler layout.
+- **More accurate statistics.** Ao5 and Ao12 follow the WCA rules for DNFs, and +2 penalties
+  are counted in your PBs, means and charts. Stats for your existing sessions are recalculated
+  automatically.
+- **Fully offline.** The fonts and the charting library are bundled with the app, so only the
+  WCA rank and name lookup need the internet.
+
+### Bringing Your Data Across from the Browser-Only Version
+
+1. Open your old copy of the app (the 2.x `index.html`) and click **Export backup** in the footer
+2. Start this version with `uv run app.py`
+3. Click **Import backup** in the footer and choose the file from step 1
 
 ---
 
@@ -98,126 +136,129 @@ configure, or keep running in the background.
 
 ### First Time
 
-1. Open `index.html` in your browser
-2. **Optional:** Set up your WCA ID in the dashboard for personalised features
-3. Start tracking - use the Timer or import existing data
+1. Start the app with `uv run app.py`. It opens in your browser.
+2. **Optional:** click **Set up WCA ID** on the dashboard to get a personalised greeting.
+3. Start tracking: use the timer, add sessions by hand, or import your CSTimer data.
 
 ### Using the Timer
 
-1. Navigate to **Timer** tab
-2. Select your event (3x3, 4x4, etc.) and session
-3. Press **SPACE** to start inspection (if enabled)
-4. Hold **SPACE** until timer turns green (ready state)
-5. Release **SPACE** to start solving
-6. Press **SPACE** again to stop
+1. Open the **Timer** tab. (3x3x3 is the only event with a timer so far.)
+2. Pick a session, or choose **+ Create New Session**. Your first solve starts a session
+   automatically if you don't have one.
+3. Press the **space bar** to start inspection (if it's turned on).
+4. Hold the **space bar** until the time turns green.
+5. Let go to start solving.
+6. Press the **space bar** again to stop.
 
-Times are automatically saved to the current session, in your browser's local storage.
+Every solve is saved automatically. The list shows your latest 50 solves; use the menu next to
+a solve to mark it +2 or DNF, and the gear icon for timer settings.
 
 ### Importing CSTimer Data
 
-1. **Export from CSTimer:**
-   - Open CSTimer → Export → Download as JSON or TXT
-
-2. **Import to Speedcube Explorer:**
-   - Go to **Import** tab
-   - Click "Choose File" and select your export
-   - Click "Preview Sessions"
-   - Select which sessions to import
-   - Choose the event type
-   - Click "Import Selected"
+1. **In CSTimer:** open the Export menu and download your data as JSON or TXT.
+2. **In Speedcube Training Explorer:**
+   - Open the **Import** tab
+   - Click **Choose File** and pick your export
+   - Click **Preview Sessions**
+   - Tick the sessions you want and choose which event they're for
+   - Click **Import Selected**
 
 ### Managing Sessions
 
-- **View all sessions** - Sessions tab shows all your training with filters
-- **Add solves manually** - Click "Add Session" → Add individual solves
-- **Edit/Delete** - Manage existing sessions and solves
-- **Sort & Filter** - Organise by date, event, or performance
+- **See all sessions:** the Sessions tab lists your training; pick an event to narrow it down
+- **Sort:** click a column heading to sort by it, and click again to reverse
+- **See every solve:** click **View** on a session, then **Show more** to load further solves
+- **Add solves by hand:** click **Add Session**, then **View** to add individual solves
+- **Delete:** remove sessions or single solves you don't want
 
 ### Backing Up Your Data
 
-Since your data lives only in this browser (see [INSTALLATION.md](INSTALLATION.md)), use the
-**Export backup** / **Import backup** links in the footer to save a JSON snapshot of
-everything, or restore from one.
+Everything lives in one file, `data/speedcube.db`. Copying that file somewhere safe (while the
+app isn't running) is a complete backup. You can also use the **Export backup** link in the
+footer to download everything as one JSON file, and **Import backup** to restore it. See
+[INSTALLATION.md](INSTALLATION.md#-where-your-data-lives) for more.
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **Frontend:** Vanilla JavaScript, HTML5, CSS3 - no build step, no framework, no bundler
-- **Storage:** IndexedDB (your browser's local storage) - nothing leaves your machine
-- **Charts:** Plotly.js (loaded from CDN on first use of Charts/Analytics)
-- **External APIs (optional):** the official WCA API for WCA ID lookups, and the
-  [Unofficial WCA Public API](https://wca-rest-api.robiningelbrecht.be/) for world rankings
-  (there's no official rankings API; this community project, built on the WCA's own results
-  export, is what the WCA's own developer documentation points people to). Used only for the
-  world-rank/percentile stat and the WCA-ID name lookup - everything else works fully offline.
+- **Backend:** Python with [Flask](https://flask.palletsprojects.com/), started by
+  [uv](https://docs.astral.sh/uv/). It's a small server that only accepts connections from
+  your own computer.
+- **Storage:** SQLite (`data/speedcube.db`). Nothing leaves your machine.
+- **Frontend:** plain JavaScript, HTML and CSS, with no build step, framework or bundler.
+- **Charts:** [Plotly.js](https://plotly.com/javascript/), bundled with the app.
+- **Font:** [Space Grotesk](https://github.com/floriankarsten/space-grotesk), bundled with the app.
+- **External APIs (optional):** the official WCA API to look up your name from your WCA ID,
+  and the [Unofficial WCA Public API](https://wca-rest-api.robiningelbrecht.be/) for world
+  rankings. The WCA has no official rankings API; this community project is built from the
+  WCA's own results export, and the WCA's developer documentation points people to it. These
+  are only used for the world rank and the name lookup. Everything else works offline.
 
 ---
 
 ## 📁 Project Structure
 
-```
+```text
 speedcube-training-explorer/
-├── index.html             # The entire app - open this
-├── css/                   # Stylesheets
-├── js/
-│   ├── config.js          # Constants, event names, chart config
-│   ├── db.js               # IndexedDB wrapper
-│   ├── stats.js             # Ao5/Ao12/mean calculation
-│   ├── wca.js                # WCA rank/percentile + WCA ID lookup
-│   ├── local-api.js           # Replaces the old backend - serves every UI data request locally
-│   ├── cstimer-import.js       # CSTimer import parsing
-│   ├── backup.js                # Export/Import a JSON backup
-│   ├── dashboard.js, sessions.js, cubes.js, charts.js,
-│   │   analytics.js, import.js, greeting.js, timer.js,
-│   │   app.js, theme.js         # UI for each tab
-├── images/                # Logo/favicon
+├── app.py                 # Start here: `uv run app.py`
+├── pyproject.toml         # Python version and dependencies (uv.lock pins exact versions)
+├── speedcube/             # The Python backend
+│   ├── __init__.py        # Creates the Flask app and serves web/
+│   ├── api.py             # The JSON API the web page talks to (/api/...)
+│   ├── db.py              # SQLite tables, connections and core data operations
+│   ├── stats.py           # Ao5/Ao12 rules and chart maths
+│   ├── wca.py             # WCA rank and percentile, and WCA ID lookup
+│   ├── cstimer.py         # Reading CSTimer exports
+│   └── backup.py          # JSON backup export and restore
+├── web/                   # The web page, served by the backend
+│   ├── index.html
+│   ├── css/               # Stylesheets
+│   ├── js/
+│   │   ├── config.js      # API address, event names and shared helpers
+│   │   ├── tables.js      # Sortable table headings
+│   │   ├── backup.js      # Export and import backup links
+│   │   ├── dashboard.js, sessions.js, cubes.js, timer.js,
+│   │   │   import.js, analytics.js, charts.js, greeting.js,
+│   │   │   app.js, theme.js   # One file per tab or feature
+│   ├── images/            # Logo and favicon
+│   └── vendor/            # Bundled Plotly.js and Space Grotesk (with their licences)
+├── docs/screenshots/      # Images used in this README
+├── data/                  # Your database (created on first start, never committed)
 ├── LICENSE
-└── README.md / INSTALLATION.md
+└── README.md, INSTALLATION.md
 ```
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Whether you're a speedcuber with feature ideas or a developer looking to help, we'd love to have you.
+Contributions are welcome! Whether you're a speedcuber with feature ideas or a developer who'd
+like to help, we'd love to have you. Fork the repository on GitHub, make your changes on a new
+branch, and open a pull request.
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-Feel free to open an issue for bugs or feature requests!
+Feel free to open an issue for bugs or feature requests too.
 
 ---
 
-## 📝 License
+## 🙏 Acknowledgements
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🙏 Acknowledgments
-
-- **[Unofficial WCA Public API](https://wca-rest-api.robiningelbrecht.be/)** by [Robin Ingelbrecht](https://github.com/robiningelbrecht) - the community-run rankings API this app relies on, built from the official WCA results export
-- **WCA** - World Cube Association for their official database, results export, and rankings
-- **CSTimer** - For inspiration and export format compatibility
-- **Plotly.js** - For beautiful interactive charts
-- **Speedcubing Community** - For feedback, support, and keeping the passion alive
+- **[Unofficial WCA Public API](https://wca-rest-api.robiningelbrecht.be/)** by
+  [Robin Ingelbrecht](https://github.com/robiningelbrecht): the community-run rankings API
+  this app relies on, built from the official WCA results export
+- **WCA:** the World Cube Association, for their official database, results export and rankings
+- **CSTimer:** for the inspiration and the export format
+- **Plotly.js:** for the interactive charts
+- **Space Grotesk:** by Florian Karsten, the font the app uses
 
 ---
 
-## 📧 Contact & Support
+## 📝 Licence
 
-**Creator:** Viet Ha Ly
-
-**GitHub:** [@havl-code](https://github.com/havl-code)
-
-**Issues:** [Report bugs or request features](https://github.com/havl-code/speedcube-training-explorer/issues)
-
-> 🔧 **Having trouble?** Check the [troubleshooting guide](INSTALLATION.md#troubleshooting) in INSTALLATION.md first!
+This project is released under the MIT License. See the [LICENSE](LICENSE) file for details.
+The bundled Plotly.js (MIT) and Space Grotesk (SIL Open Font License) keep their own licences,
+included in `web/vendor/`.
 
 ---
 
-**Happy Cubing! 🎲✨**
+Happy cubing! 🎲✨

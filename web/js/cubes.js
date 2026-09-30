@@ -1,48 +1,57 @@
-// cubes.js - Cube inventory management
+// cubes.js: the Cubes tab (cube inventory)
 
-let cubeSortState = {
-    column: null,
-    direction: 'asc'
+// Column values for sorting the cubes table
+const CUBE_SORT_GETTERS = {
+    type: c => getEventName(c.cube_type),
+    brand: c => c.brand,
+    model: c => c.model,
+    date: c => c.purchase_date,
+    status: c => (c.is_active ? 0 : 1)  // active first
 };
+
+// Show the custom type field when "Other" is picked in the Add Cube form
+document.getElementById('new-cube-type').addEventListener('change', function () {
+    const isOther = this.value === 'other';
+    document.getElementById('custom-type-group').style.display = isOther ? 'block' : 'none';
+    document.getElementById('new-cube-custom-type').required = isOther;
+});
 
 async function loadCubesTab() {
     try {
         const response = await fetch(`${API_BASE}/cubes`);
-        AppState.allCubes = await response.json();
-        
-        if (AppState.allCubes.error) {
-            console.error('Error loading cubes:', AppState.allCubes.error);
+        const cubes = await response.json();
+
+        if (cubes.error) {
+            console.error('Error loading cubes:', cubes.error);
             return;
         }
-        
+
+        AppState.allCubes = cubes;
         renderCubesTable();
-        
     } catch (error) {
         console.error('Failed to load cubes:', error);
     }
 }
 
+// Draw the cubes table in its current sort order
 function renderCubesTable() {
     const tbody = document.getElementById('cubes-tbody');
-    
+
     if (AppState.allCubes.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="loading">No cubes in inventory yet.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="loading">No cubes in your inventory yet.</td></tr>';
         return;
     }
-    
-    tbody.innerHTML = AppState.allCubes.map(cube => `
+
+    tbody.innerHTML = sortRows('cubes-table', AppState.allCubes, CUBE_SORT_GETTERS).map(cube => `
         <tr>
-            <td><strong>${cube.cube_type || '-'}</strong></td>
-            <td>${cube.brand || '-'}</td>
-            <td>${cube.model || '-'}</td>
-            <td>${cube.purchase_date || '-'}</td>
-            <td>${cube.is_active ? 
-                '<span style="color: #000; font-size: 16px;">●</span> Active' : 
-                '<span style="color: #999; font-size: 16px;">○</span> Inactive'
-            }</td>
-            <td>
+            <td><strong>${escapeHtml(getEventName(cube.cube_type) || '-')}</strong></td>
+            <td>${escapeHtml(cube.brand || '-')}</td>
+            <td>${escapeHtml(cube.model || '-')}</td>
+            <td>${escapeHtml(cube.purchase_date || '-')}</td>
+            <td><span class="status ${cube.is_active ? 'active' : 'inactive'}">${cube.is_active ? 'Active' : 'Inactive'}</span></td>
+            <td class="actions-col">
                 <button class="action-btn" onclick="showEditCubeForm(${cube.id})">Edit</button>
-                ${cube.is_active ? 
+                ${cube.is_active ?
                     `<button class="action-btn danger" onclick="deleteCube(${cube.id})">Deactivate</button>` :
                     `<button class="action-btn" onclick="reactivateCube(${cube.id})">Reactivate</button>`
                 }
@@ -51,53 +60,7 @@ function renderCubesTable() {
     `).join('');
 }
 
-function sortCubes(column) {
-    // Toggle direction if same column, otherwise reset to ascending
-    if (cubeSortState.column === column) {
-        cubeSortState.direction = cubeSortState.direction === 'asc' ? 'desc' : 'asc';
-    } else {
-        cubeSortState.column = column;
-        cubeSortState.direction = 'asc';
-    }
-    
-    // Sort the cubes array
-    const getValue = (cube, col) => {
-        switch(col) {
-            case 'type':
-                return cube.cube_type || '';
-            case 'brand':
-                return cube.brand || '';
-            case 'model':
-                return cube.model || '';
-            case 'date':
-                return cube.purchase_date || '';
-            default:
-                return '';
-        }
-    };
-    
-    sortArray(AppState.allCubes, column, cubeSortState.direction, getValue);
-    
-    // Update sort arrows using generic helper
-    const activeHeader = Array.from(document.querySelectorAll('.sortable-cube')).find(th => {
-        return th.textContent.trim().toLowerCase().includes(column);
-    });
-    
-    if (activeHeader) {
-        document.querySelectorAll('.sort-arrow-cube').forEach(arrow => {
-            arrow.textContent = '';
-            arrow.classList.remove('asc', 'desc');
-        });
-        
-        const arrow = activeHeader.querySelector('.sort-arrow-cube');
-        if (arrow) {
-            arrow.textContent = cubeSortState.direction === 'asc' ? '▲' : '▼';
-            arrow.classList.add(cubeSortState.direction);
-        }
-    }
-    
-    renderCubesTable();
-}
+initSortableTable('cubes-table', 'type', 'asc', renderCubesTable);
 
 function showAddCubeForm() {
     document.getElementById('add-cube-form').style.display = 'block';
@@ -173,45 +136,49 @@ function showEditCubeForm(cubeId) {
                 <h3>Edit Cube</h3>
                 <form onsubmit="updateCube(event)">
                     <input type="hidden" id="edit-cube-id">
-                    <div class="form-group">
-                        <label>Event Type: <span style="color: red;">*</span></label>
-                        <select id="edit-cube-type" required>
-                            <option value="">Select Type</option>
-                            <option value="222">2x2x2</option>
-                            <option value="333">3x3x3</option>
-                            <option value="444">4x4x4</option>
-                            <option value="555">5x5x5</option>
-                            <option value="666">6x6x6</option>
-                            <option value="777">7x7x7</option>
-                            <option value="333oh">3x3x3 One-Handed</option>
-                            <option value="333bf">3x3x3 Blindfolded</option>
-                            <option value="clock">Clock</option>
-                            <option value="minx">Megaminx</option>
-                            <option value="pyram">Pyraminx</option>
-                            <option value="skewb">Skewb</option>
-                            <option value="sq1">Square-1</option>
-                            <option value="other">Other</option>
-                        </select>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit-cube-type">Type <span class="required">*</span></label>
+                            <select id="edit-cube-type" required>
+                                <option value="">Select a type</option>
+                                <option value="222">2x2x2</option>
+                                <option value="333">3x3x3</option>
+                                <option value="444">4x4x4</option>
+                                <option value="555">5x5x5</option>
+                                <option value="666">6x6x6</option>
+                                <option value="777">7x7x7</option>
+                                <option value="333oh">3x3x3 One-Handed</option>
+                                <option value="333bf">3x3x3 Blindfolded</option>
+                                <option value="clock">Clock</option>
+                                <option value="minx">Megaminx</option>
+                                <option value="pyram">Pyraminx</option>
+                                <option value="skewb">Skewb</option>
+                                <option value="sq1">Square-1</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="edit-custom-type-group" style="display: none;">
+                            <label for="edit-cube-custom-type">Custom Type</label>
+                            <input type="text" id="edit-cube-custom-type" placeholder="Enter a custom type">
+                        </div>
                     </div>
-                    <div class="form-group" id="edit-custom-type-group" style="display: none;">
-                        <label>Custom Type:</label>
-                        <input type="text" id="edit-cube-custom-type" placeholder="Enter custom type">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit-cube-brand">Brand</label>
+                            <input type="text" id="edit-cube-brand" placeholder="e.g. GAN, MoYu">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-cube-model">Model</label>
+                            <input type="text" id="edit-cube-model" placeholder="e.g. 14 MagLev">
+                        </div>
                     </div>
                     <div class="form-group">
-                        <label>Brand:</label>
-                        <input type="text" id="edit-cube-brand" placeholder="e.g., GAN, MoYu">
-                    </div>
-                    <div class="form-group">
-                        <label>Model:</label>
-                        <input type="text" id="edit-cube-model" placeholder="e.g., 14 MagLev">
-                    </div>
-                    <div class="form-group">
-                        <label>Purchase Date / Started Using:</label>
+                        <label for="edit-cube-date">Purchase Date or Started Using</label>
                         <input type="date" id="edit-cube-date">
                     </div>
                     <div class="form-group">
-                        <label>Notes:</label>
-                        <textarea id="edit-cube-notes" rows="3" placeholder="Any additional notes..."></textarea>
+                        <label for="edit-cube-notes">Notes</label>
+                        <textarea id="edit-cube-notes" rows="3" placeholder="Anything else worth remembering"></textarea>
                     </div>
                     <div class="form-actions">
                         <button type="submit" class="btn-primary">Save Changes</button>
@@ -240,7 +207,7 @@ function showEditCubeForm(cubeId) {
     // Populate form with cube data
     document.getElementById('edit-cube-id').value = cube.id;
     
-    // Handle cube type - check if it's a standard type or custom
+    // Show the cube type in the dropdown, or under "Other" if it's a custom type
     const standardTypes = ['222', '333', '444', '555', '666', '777', '333oh', '333bf', 'clock', 'minx', 'pyram', 'skewb', 'sq1'];
     const typeSelect = document.getElementById('edit-cube-type');
     
@@ -365,10 +332,9 @@ async function loadCubesForDropdown() {
             if (cube.is_active) {
                 const option = document.createElement('option');
                 option.value = cube.id;
-                const displayText = cube.cube_type ? 
-                    `${cube.cube_type}${cube.brand ? ' - ' + cube.brand : ''}${cube.model ? ' ' + cube.model : ''}` :
-                    `${cube.brand || 'Unknown'}${cube.model ? ' ' + cube.model : ''}`;
-                option.textContent = displayText;
+                // e.g. "GAN 14 MagLev (3x3x3)"
+                const name = [cube.brand, cube.model].filter(Boolean).join(' ') || 'Unnamed cube';
+                option.textContent = cube.cube_type ? `${name} (${getEventName(cube.cube_type)})` : name;
                 select.appendChild(option);
             }
         });

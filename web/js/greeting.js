@@ -1,4 +1,4 @@
-// greeting.js - Personalized greeting functionality
+// greeting.js: the personalised greeting and WCA ID setup
 
 // Load user settings and update greeting
 async function loadGreeting() {
@@ -13,7 +13,7 @@ async function loadGreeting() {
         const wcaIdDisplay = document.getElementById('wca-id-display');
         
         if (data.wca_id && data.wca_name) {
-            // User has WCA ID set - show personalized greeting with full name
+            // A WCA ID is set: greet the user by name
             const timeOfDay = getTimeOfDay();
             
             greetingText.textContent = `${timeOfDay}, ${data.wca_name}!`;
@@ -24,7 +24,7 @@ async function loadGreeting() {
             wcaDisplay.style.display = 'flex';
             wcaSetupPrompt.style.display = 'none';
         } else {
-            // No WCA ID set - show generic greeting and setup prompt
+            // No WCA ID yet: show the generic greeting and a prompt to set one up
             greetingText.textContent = 'Welcome to Speedcube Training Explorer';
             greetingSubtext.textContent = 'Track your progress and compare with WCA rankings';
             

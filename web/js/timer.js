@@ -1,6 +1,5 @@
-// timer.js - Speed Timer Functionality
+// timer.js: the live speed timer (3x3x3 only for now)
 
-// Timer state
 const TimerState = {
     event: '333',
     scramble: '',
@@ -13,10 +12,11 @@ const TimerState = {
     spacePressed: false,
     readyToStart: false,
     holdTimer: null,
-    currentSolves: [],
+    currentSolves: [],      // the latest solves in the session, newest first
+    stats: null,            // the session's stats, worked out by the server
     currentSessionId: null,
     isFullscreen: false,
-    showingResult: false, // NEW: Track if showing result
+    showingResult: false,   // true while the last result is on screen
     settings: {
         inspectionEnabled: true,
         inspectionSeconds: 15,
@@ -25,32 +25,32 @@ const TimerState = {
     }
 };
 
-// Generate 3x3 scramble
+// Generate a random-move 3x3x3 scramble
 function generate333Scramble() {
     const moves = ['R', 'L', 'U', 'D', 'F', 'B'];
     const modifiers = ['', "'", '2'];
     const scrambleLength = 20;
-    
-    let scramble = [];
+
+    const scramble = [];
     let lastMove = '';
     let lastAxis = '';
-    
+
     for (let i = 0; i < scrambleLength; i++) {
         let move;
         let axis;
-        
+
         do {
             move = moves[Math.floor(Math.random() * moves.length)];
             axis = getAxis(move);
         } while (move === lastMove || axis === lastAxis);
-        
+
         const modifier = modifiers[Math.floor(Math.random() * modifiers.length)];
         scramble.push(move + modifier);
-        
+
         lastMove = move;
         lastAxis = axis;
     }
-    
+
     return scramble.join(' ');
 }
 
@@ -60,39 +60,46 @@ function getAxis(move) {
     if (move === 'F' || move === 'B') return 'FB';
 }
 
-// Initialize timer tab
+// Set up the timer tab (called every time it's opened)
 async function loadTimerTab() {
-    if (TimerState.event !== '333') {
-        showUnderConstruction();
-        return;
-    }
-    
+    const supported = TimerState.event === '333';
+    setUnderConstruction(!supported);
+    if (!supported) return;
+
     await loadSessionSelector();
-    initializeTimer();
     setupTimerKeyboard();
-    generateNewScramble();
     setupScrambleMenu();
-}
-
-function showUnderConstruction() {
-    const timerContainer = document.querySelector('.timer-main-content');
-    if (timerContainer) {
-        timerContainer.innerHTML = `
-            <div class="under-construction">
-                <div class="under-construction-icon">🚧</div>
-                <h3>Coming Soon</h3>
-                <p>Timer for other events is under construction.</p>
-                <p style="margin-top: 8px;">Currently only 3x3x3 is available.</p>
-            </div>
-        `;
+    // Leave the display and scramble alone if a solve is in progress.
+    if (!TimerState.running && !TimerState.inspection) {
+        resetTimerDisplay();
+        generateNewScramble();
     }
 }
 
-function initializeTimer() {
-    document.getElementById('timer-display').textContent = '0.00';
-    document.getElementById('timer-display').className = 'timer-display';
-    updateTimerStats();
-    updateSolvesList();
+// Only 3x3x3 has a timer so far. For other events, swap the timer for a notice. It's hidden
+// rather than replaced, so switching back to 3x3x3 still works.
+function setUnderConstruction(show) {
+    const content = document.querySelector('.timer-main-content');
+    let notice = document.getElementById('timer-under-construction');
+    if (!notice) {
+        notice = document.createElement('div');
+        notice.id = 'timer-under-construction';
+        notice.className = 'under-construction';
+        notice.innerHTML = `
+            <h3>Coming soon</h3>
+            <p>The timer for other events is still being built. Only 3x3x3 is available for now.</p>
+        `;
+        content.after(notice);
+    }
+    content.style.display = show ? 'none' : '';
+    notice.style.display = show ? '' : 'none';
+}
+
+function resetTimerDisplay() {
+    const display = document.getElementById('timer-display');
+    display.textContent = '0.00';
+    display.className = 'timer-display';
+    TimerState.showingResult = false;
 }
 
 function generateNewScramble() {
@@ -100,28 +107,22 @@ function generateNewScramble() {
     document.getElementById('scramble-text').textContent = TimerState.scramble;
 }
 
-// Scramble menu
+// Scramble menu (copy / new scramble), opened by clicking the scramble
 function setupScrambleMenu() {
-    const scrambleDisplay = document.querySelector('.scramble-display');
-    const scrambleMenu = document.querySelector('.scramble-menu');
-    
-    if (scrambleDisplay) {
-        scrambleDisplay.onclick = (e) => {
-            e.stopPropagation();
-            scrambleMenu.classList.toggle('show');
-        };
-    }
-    
-    document.addEventListener('click', () => {
-        if (scrambleMenu) {
-            scrambleMenu.classList.remove('show');
-        }
-    });
+    document.querySelector('.scramble-display').onclick = (e) => {
+        e.stopPropagation();
+        document.querySelector('.scramble-menu').classList.toggle('show');
+    };
 }
+
+// Clicking anywhere else closes the scramble menu.
+document.addEventListener('click', () => {
+    document.querySelector('.scramble-menu')?.classList.remove('show');
+});
 
 function copyScramble() {
     navigator.clipboard.writeText(TimerState.scramble).catch(() => {
-        // Silently handle clipboard errors
+        // Clipboard access can be refused; there's nothing useful to do about it.
     });
     document.querySelector('.scramble-menu').classList.remove('show');
 }
@@ -131,57 +132,70 @@ function newScramble() {
     document.querySelector('.scramble-menu').classList.remove('show');
 }
 
-// Session selector
+// Session selector: lists this event's sessions and keeps showing the one being timed into.
 async function loadSessionSelector() {
     try {
         const response = await fetch(`${API_BASE}/sessions`);
         const sessions = await response.json();
-        
+
         const selector = document.getElementById('timer-session-select');
-        if (!selector) return;
-        
+        const timerSessions = sessions.filter(s => s.event_id === TimerState.event);
+
+        // Fall back to the most recent session if there's no current one (or it was deleted).
+        if (!timerSessions.some(s => s.id === TimerState.currentSessionId)) {
+            TimerState.currentSessionId = timerSessions.length > 0 ? timerSessions[0].id : null;
+        }
+
         selector.innerHTML = '<option value="new">+ Create New Session</option>';
-        
-        const threeSessions = sessions.filter(s => s.event_id === '333');
-        
-        threeSessions.forEach(session => {
+        if (!TimerState.currentSessionId) {
+            // A selected placeholder, so picking "+ Create New Session" still counts as a change.
+            selector.insertAdjacentHTML('beforeend',
+                '<option value="" disabled>No session yet: your first solve starts one</option>');
+        }
+        timerSessions.forEach(session => {
             const option = document.createElement('option');
             option.value = session.id;
-            option.textContent = `${session.date} - ${session.solve_count} solves`;
+            option.textContent = `${session.date} (${countLabel(session.solve_count, 'solve')})`;
             selector.appendChild(option);
         });
-        
-        if (threeSessions.length > 0 && !TimerState.currentSessionId) {
-            TimerState.currentSessionId = threeSessions[0].id;
-            selector.value = threeSessions[0].id;
-            await loadSessionSolves(threeSessions[0].id);
-        }
-        
+        selector.value = TimerState.currentSessionId || '';
+
         selector.onchange = async (e) => {
             if (e.target.value === 'new') {
                 await createTimerSession();
                 await loadSessionSelector();
             } else {
-                TimerState.currentSessionId = parseInt(e.target.value);
+                TimerState.currentSessionId = parseInt(e.target.value, 10);
                 await loadSessionSolves(TimerState.currentSessionId);
             }
         };
+
+        await loadSessionSolves(TimerState.currentSessionId);
     } catch (error) {
         console.error('Error loading sessions:', error);
     }
 }
 
+// How many recent solves the timer lists. The stats cover the whole session, and the full
+// list is in the Sessions tab, so a session with thousands of solves stays quick.
+const TIMER_LIST_LIMIT = 50;
+
 async function loadSessionSolves(sessionId) {
-    try {
-        const response = await fetch(`${API_BASE}/timer/session/${sessionId}/solves`);
-        const data = await response.json();
-        
-        TimerState.currentSolves = data.solves || [];
-        updateTimerStats();
-        updateSolvesList();
-    } catch (error) {
-        console.error('Error loading solves:', error);
+    if (!sessionId) {
+        TimerState.currentSolves = [];
+        TimerState.stats = null;
+    } else {
+        try {
+            const response = await fetch(`${API_BASE}/timer/session/${sessionId}/solves?limit=${TIMER_LIST_LIMIT}`);
+            const data = await response.json();
+            TimerState.currentSolves = data.solves || [];
+            TimerState.stats = data.stats || null;
+        } catch (error) {
+            console.error('Error loading solves:', error);
+        }
     }
+    updateTimerStats();
+    updateSolvesList();
 }
 
 // Settings modal
@@ -196,7 +210,7 @@ function showTimerSettings() {
             <div class="settings-grid">
                 <div class="setting-item">
                     <span class="setting-label">Inspection</span>
-                    <div class="setting-toggle ${TimerState.settings.inspectionEnabled ? 'active' : ''}" 
+                    <div class="setting-toggle ${TimerState.settings.inspectionEnabled ? 'active' : ''}"
                          onclick="toggleTimerSetting('inspectionEnabled', this)"></div>
                 </div>
                 <div class="setting-item">
@@ -210,22 +224,22 @@ function showTimerSettings() {
                 </div>
                 <div class="setting-item">
                     <span class="setting-label">Hide Timer While Solving</span>
-                    <div class="setting-toggle ${TimerState.settings.hideTimer ? 'active' : ''}" 
+                    <div class="setting-toggle ${TimerState.settings.hideTimer ? 'active' : ''}"
                          onclick="toggleTimerSetting('hideTimer', this)"></div>
                 </div>
                 <div class="setting-item">
                     <span class="setting-label">Hide Stats</span>
-                    <div class="setting-toggle ${TimerState.settings.hideStats ? 'active' : ''}" 
+                    <div class="setting-toggle ${TimerState.settings.hideStats ? 'active' : ''}"
                          onclick="toggleTimerSetting('hideStats', this)"></div>
                 </div>
             </div>
-            <div style="margin-top: 20px; text-align: right;">
+            <div class="form-actions align-end">
                 <button class="btn-secondary" onclick="closeTimerSettings()">Close</button>
             </div>
         </div>
     `;
     document.body.appendChild(modal);
-    
+
     modal.addEventListener('click', (e) => {
         if (e.target === modal) {
             closeTimerSettings();
@@ -236,48 +250,48 @@ function showTimerSettings() {
 function toggleTimerSetting(setting, element) {
     TimerState.settings[setting] = !TimerState.settings[setting];
     element.classList.toggle('active');
-    
+
     if (setting === 'hideStats') {
-        const stats = document.querySelector('.timer-session-stats');
-        if (stats) {
-            if (TimerState.settings.hideStats) {
-                stats.classList.add('hidden');
-            } else {
-                stats.classList.remove('hidden');
-            }
-        }
+        document.querySelector('.timer-session-stats')
+            ?.classList.toggle('hidden', TimerState.settings.hideStats);
     }
 }
 
 function changeInspectionTime(value) {
-    TimerState.settings.inspectionSeconds = parseInt(value);
+    TimerState.settings.inspectionSeconds = parseInt(value, 10);
 }
 
 function closeTimerSettings() {
-    // Was document.querySelector('.modal') - the *first* element with class "modal" in
-    // DOM order, which on the Sessions tab is #solve-details-modal, not this one. That
-    // meant closing Timer Settings could delete the Sessions "view solves" modal from the
-    // page entirely, permanently breaking its "View" button until reload.
-    const modal = document.getElementById('timer-settings-modal');
-    if (modal) modal.remove();
+    // Look this modal up by its own id: the first ".modal" on the page is a different one.
+    document.getElementById('timer-settings-modal')?.remove();
 }
 
 // Timer keyboard controls
 function setupTimerKeyboard() {
     document.removeEventListener('keydown', handleTimerKeyDown);
     document.removeEventListener('keyup', handleTimerKeyUp);
-    
+
     document.addEventListener('keydown', handleTimerKeyDown);
     document.addEventListener('keyup', handleTimerKeyUp);
 }
 
-// Helper function to start hold timer
+// The space bar only drives the timer while the Timer tab is showing, and never while you're
+// typing in a text box or have the timer settings open. Otherwise it would block typing spaces
+// anywhere in the app, and could quietly start an inspection that ends in a DNF.
+function timerOwnsSpaceBar(e) {
+    if (!document.getElementById('tab-timer').classList.contains('active')) return false;
+    if (TimerState.event !== '333' || document.getElementById('timer-settings-modal')) return false;
+    const target = e.target;
+    return !(target.isContentEditable || target.tagName === 'INPUT' || target.tagName === 'TEXTAREA');
+}
+
+// Start the hold that has to last 300ms before releasing the space bar starts the timer
 function startHoldTimer() {
     TimerState.spacePressed = true;
     TimerState.readyToStart = false;
-    
+
     const display = document.getElementById('timer-display');
-    
+
     TimerState.holdTimer = setTimeout(() => {
         if (TimerState.spacePressed && !TimerState.running) {
             TimerState.readyToStart = true;
@@ -288,18 +302,18 @@ function startHoldTimer() {
 }
 
 function handleTimerKeyDown(e) {
-    if (e.key !== ' ') return;
+    if (e.key !== ' ' || !timerOwnsSpaceBar(e)) return;
     e.preventDefault();
-    
+
     if (e.repeat) return;
-    
-    // If timer is running, stop it
+
+    // If the timer is running, stop it
     if (TimerState.running) {
         stopTimer();
         return;
     }
-    
-    // If in inspection, prepare to start timer
+
+    // If in inspection, get ready to start the timer
     if (TimerState.inspection) {
         const display = document.getElementById('timer-display');
         display.classList.remove('inspection');
@@ -307,90 +321,70 @@ function handleTimerKeyDown(e) {
         startHoldTimer();
         return;
     }
-    
-    // If showing result, go directly to inspection/ready
-    if (TimerState.showingResult) {
-        TimerState.showingResult = false;
-        
-        if (TimerState.settings.inspectionEnabled) {
-            startInspection();
-        } else {
-            startHoldTimer();
-        }
-        return;
-    }
-    
-    // Initial state (0.00) - start inspection or prepare to start
-    if (!TimerState.inspection && !TimerState.running) {
-        if (TimerState.settings.inspectionEnabled) {
-            startInspection();
-        } else {
-            startHoldTimer();
-        }
+
+    // From a shown result or the initial 0.00: start inspection, or get ready to start
+    TimerState.showingResult = false;
+    if (TimerState.settings.inspectionEnabled) {
+        startInspection();
+    } else {
+        startHoldTimer();
     }
 }
 
 function handleTimerKeyUp(e) {
-    if (e.key !== ' ') return;
+    // Always finish a hold that started on the timer, even if focus has moved since.
+    if (e.key !== ' ' || !(timerOwnsSpaceBar(e) || TimerState.spacePressed)) return;
     e.preventDefault();
-    
+
     if (TimerState.holdTimer) {
         clearTimeout(TimerState.holdTimer);
         TimerState.holdTimer = null;
     }
-    
+
     TimerState.spacePressed = false;
-    
-    // Start timer if ready
+
+    // Start the timer if the hold was long enough
     if (TimerState.readyToStart && !TimerState.running) {
         startTimer();
     }
-    
-    const display = document.getElementById('timer-display');
-    display.classList.remove('ready', 'holding');
+
+    document.getElementById('timer-display').classList.remove('ready', 'holding');
 }
 
 // Inspection countdown
 function startInspection() {
     TimerState.inspection = true;
     TimerState.inspectionTime = TimerState.settings.inspectionSeconds;
-    
+
     const display = document.getElementById('timer-display');
     display.className = 'timer-display inspection';
-    
-    if (TimerState.settings.hideTimer) {
-        display.textContent = 'inspect';
-    } else {
-        display.textContent = TimerState.inspectionTime;
-    }
-    
+    display.textContent = TimerState.settings.hideTimer ? 'inspect' : TimerState.inspectionTime;
+
     TimerState.inspectionInterval = setInterval(() => {
         TimerState.inspectionTime--;
-        
+
         if (!TimerState.settings.hideTimer) {
             display.textContent = TimerState.inspectionTime;
         }
-        
+
         if (TimerState.inspectionTime <= 0) {
             clearInterval(TimerState.inspectionInterval);
-            // Auto DNF when inspection time runs out
+            // Running out of inspection time is a DNF
             TimerState.inspection = false;
+            TimerState.time = 0;
             display.textContent = 'DNF';
             display.className = 'timer-display stopped';
             TimerState.showingResult = true;
             saveSolve('DNF');
-            setTimeout(() => {
-                generateNewScramble();
-            }, 100);
+            setTimeout(generateNewScramble, 100);
         }
-        
+
         if (!TimerState.inspection) {
             clearInterval(TimerState.inspectionInterval);
         }
     }, 1000);
 }
 
-// Start timer
 function startTimer() {
     if (TimerState.inspection) {
         TimerState.inspection = false;
@@ -399,70 +393,63 @@ function startTimer() {
             TimerState.inspectionInterval = null;
         }
     }
-    
+
     TimerState.running = true;
     TimerState.readyToStart = false;
     TimerState.startTime = Date.now();
-    
+
     const display = document.getElementById('timer-display');
     display.className = 'timer-display running';
-    
-    // Show "solve" if hide timer is enabled
+
+    // Show "solve" instead of the time if Hide Timer is on
     if (TimerState.settings.hideTimer) {
         display.textContent = 'solve';
     }
-    
+
     const interval = setInterval(() => {
         if (!TimerState.running) {
             clearInterval(interval);
             return;
         }
-        
+
         const elapsed = (Date.now() - TimerState.startTime) / 1000;
-        
-        if (TimerState.settings.hideTimer) {
-            display.textContent = 'solve';
-        } else {
-            display.textContent = elapsed.toFixed(2);
-        }
+        display.textContent = TimerState.settings.hideTimer ? 'solve' : elapsed.toFixed(2);
     }, 10);
 }
 
-// Stop timer
 function stopTimer() {
     if (!TimerState.running) return;
-    
+
     TimerState.running = false;
     TimerState.time = (Date.now() - TimerState.startTime) / 1000;
-    TimerState.showingResult = true; // Set flag that we're showing result
-    
+    TimerState.showingResult = true;
+
     const display = document.getElementById('timer-display');
     display.className = 'timer-display stopped';
     display.textContent = TimerState.time.toFixed(2);
-    
-    // Auto-save and generate new scramble
+
+    // Save straight away, then show a new scramble while keeping the time on screen
     saveSolve('OK');
-    
-    // Generate new scramble immediately but keep time displayed
-    setTimeout(() => {
-        generateNewScramble();
-    }, 100);
+    setTimeout(generateNewScramble, 100);
 }
 
 async function saveSolve(penalty) {
     let finalTime = TimerState.time;
     let isDNF = false;
-    
+
     if (penalty === '+2') {
         finalTime += 2;
     } else if (penalty === 'DNF') {
         isDNF = true;
     }
-    
+
+    const scramble = TimerState.scramble;
+
     if (!TimerState.currentSessionId) {
         await createTimerSession();
+        await loadSessionSelector();
     }
-    
+
     try {
         const response = await fetch(`${API_BASE}/timer/solve`, {
             method: 'POST',
@@ -470,25 +457,16 @@ async function saveSolve(penalty) {
             body: JSON.stringify({
                 session_id: TimerState.currentSessionId,
                 time: finalTime,
-                scramble: TimerState.scramble,
+                scramble: scramble,
                 penalty: penalty,
                 dnf: isDNF
             })
         });
-        
+
         const result = await response.json();
-        
+
         if (result.success) {
-            TimerState.currentSolves.unshift({
-                id: result.solve_id,
-                time: finalTime,
-                penalty: penalty,
-                dnf: isDNF,
-                scramble: TimerState.scramble
-            });
-            
-            updateTimerStats();
-            updateSolvesList();
+            await loadSessionSolves(TimerState.currentSessionId);
         }
     } catch (error) {
         console.error('Error saving solve:', error);
@@ -496,62 +474,51 @@ async function saveSolve(penalty) {
     }
 }
 
-// Update stats
+// The session's stats come from the server, which uses the WCA rules: Ao5 drops the best and
+// worst of the last 5 solves (a DNF counts as the worst), and two or more DNFs make it a DNF.
 function updateTimerStats() {
-    const validSolves = TimerState.currentSolves.filter(s => !s.dnf);
-    
-    if (validSolves.length === 0) {
-        document.getElementById('stat-count').textContent = '0';
-        document.getElementById('stat-best').textContent = '-';
-        document.getElementById('stat-mean').textContent = '-';
-        document.getElementById('stat-ao5').textContent = '-';
-        return;
-    }
-    
-    const times = validSolves.map(s => s.time);
-    const best = Math.min(...times);
-    const mean = times.reduce((a, b) => a + b, 0) / times.length;
-    
-    document.getElementById('stat-count').textContent = TimerState.currentSolves.length;
-    document.getElementById('stat-best').textContent = best.toFixed(2);
-    document.getElementById('stat-mean').textContent = mean.toFixed(2);
-    
-    if (validSolves.length >= 5) {
-        const last5 = times.slice(0, 5).sort((a, b) => a - b);
-        const ao5 = last5.slice(1, 4).reduce((a, b) => a + b, 0) / 3;
-        document.getElementById('stat-ao5').textContent = ao5.toFixed(2);
-    } else {
-        document.getElementById('stat-ao5').textContent = '-';
-    }
+    const stats = TimerState.stats || { solve_count: 0 };
+    const show = value => (value == null ? '-' : value.toFixed(2));
+
+    document.getElementById('stat-count').textContent = Number(stats.solve_count).toLocaleString('en-NZ');
+    document.getElementById('stat-best').textContent = show(stats.best);
+    document.getElementById('stat-mean').textContent = show(stats.mean);
+    document.getElementById('stat-ao5').textContent =
+        stats.ao5 == null && stats.solve_count >= 5 ? 'DNF' : show(stats.ao5);
 }
 
-// Update solves list
 function updateSolvesList() {
     const container = document.querySelector('.solves-list-container');
-    
+    const stats = TimerState.stats || { solve_count: 0 };
+    const note = document.getElementById('timer-solves-note');
+    note.textContent = stats.solve_count > TimerState.currentSolves.length
+        ? `Showing your latest ${TimerState.currentSolves.length} of ${countLabel(stats.solve_count, 'solve')}. ` +
+          'The Sessions tab has them all.'
+        : '';
+
     if (TimerState.currentSolves.length === 0) {
-        container.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-tertiary);">No solves yet</div>';
+        container.innerHTML = '<div class="empty-note">No solves yet</div>';
         return;
     }
-    
-    const validTimes = TimerState.currentSolves.filter(s => !s.dnf).map(s => s.time);
-    const best = validTimes.length > 0 ? Math.min(...validTimes) : null;
-    const worst = validTimes.length > 0 ? Math.max(...validTimes) : null;
-    
-    container.innerHTML = TimerState.currentSolves.map((solve, index) => {
-        const isBest = !solve.dnf && solve.time === best;
-        const isWorst = !solve.dnf && solve.time === worst && validTimes.length > 2;
-        
+
+    // Highlight the session's best and worst results
+    const matches = (solve, target) => target != null && !solve.dnf && solve.time.toFixed(2) === target.toFixed(2);
+
+    container.innerHTML = TimerState.currentSolves.map(solve => {
+        const isBest = matches(solve, stats.best);
+        const isWorst = matches(solve, stats.worst) && stats.solve_count > 2;
+
         let timeDisplay = solve.dnf ? 'DNF' : solve.time.toFixed(2);
         if (solve.penalty === '+2' && !solve.dnf) {
             timeDisplay += ' (+2)';
         }
-        
+        const scramble = escapeHtml(solve.scramble);
+
         return `
             <div class="solve-item">
-                <span class="solve-number">#${TimerState.currentSolves.length - index}</span>
+                <span class="solve-number">#${solve.solve_number}</span>
                 <span class="solve-time ${isBest ? 'best' : ''} ${isWorst ? 'worst' : ''}">${timeDisplay}</span>
-                <span class="solve-scramble" title="${solve.scramble || ''}">${solve.scramble || ''}</span>
+                <span class="solve-scramble" title="${scramble}">${scramble}</span>
                 <div class="solve-actions">
                     <select class="solve-action-select" onchange="changeSolvePenalty(${solve.id}, this.value)">
                         <option value="OK" ${solve.penalty === 'OK' ? 'selected' : ''}>OK</option>
@@ -572,7 +539,7 @@ async function changeSolvePenalty(solveId, newPenalty) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ penalty: newPenalty })
         });
-        
+
         if (response.ok) {
             await loadSessionSolves(TimerState.currentSessionId);
         }
@@ -588,33 +555,28 @@ async function deleteTimerSolve(solveId) {
         const response = await fetch(`${API_BASE}/timer/solve/${solveId}`, {
             method: 'DELETE'
         });
-        
+
         if (response.ok) {
-            TimerState.currentSolves = TimerState.currentSolves.filter(s => s.id !== solveId);
-            updateTimerStats();
-            updateSolvesList();
+            await loadSessionSolves(TimerState.currentSessionId);
         }
     } catch (error) {
         console.error('Error deleting solve:', error);
     }
 }
 
-// Create timer session
 async function createTimerSession() {
     try {
         const response = await fetch(`${API_BASE}/timer/session`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                event_id: TimerState.event
-            })
+            body: JSON.stringify({ event_id: TimerState.event })
         });
-        
+
         const result = await response.json();
-        
+
         if (result.success) {
             TimerState.currentSessionId = result.session_id;
-            TimerState.currentSolves = [];
+            await loadSessionSolves(result.session_id);
         }
     } catch (error) {
         console.error('Error creating session:', error);
@@ -624,16 +586,10 @@ async function createTimerSession() {
 // Fullscreen mode
 function toggleFullscreen() {
     const timerSection = document.querySelector('.timer-section');
-    
-    if (!TimerState.isFullscreen) {
-        timerSection.classList.add('timer-fullscreen');
-        TimerState.isFullscreen = true;
-        document.getElementById('fullscreen-btn').textContent = 'Exit Fullscreen (Esc)';
-    } else {
-        timerSection.classList.remove('timer-fullscreen');
-        TimerState.isFullscreen = false;
-        document.getElementById('fullscreen-btn').textContent = 'Fullscreen';
-    }
+    TimerState.isFullscreen = !TimerState.isFullscreen;
+    timerSection.classList.toggle('timer-fullscreen', TimerState.isFullscreen);
+    document.getElementById('fullscreen-btn').textContent =
+        TimerState.isFullscreen ? 'Exit Fullscreen (Esc)' : 'Fullscreen';
 }
 
 document.addEventListener('keydown', (e) => {
@@ -644,13 +600,5 @@ document.addEventListener('keydown', (e) => {
 
 function changeTimerEvent(eventId) {
     TimerState.event = eventId;
-    
-    if (eventId !== '333') {
-        showUnderConstruction();
-    } else {
-        const timerContainer = document.querySelector('.timer-main-content');
-        if (timerContainer && timerContainer.querySelector('.under-construction')) {
-            loadTimerTab();
-        }
-    }
+    loadTimerTab();
 }

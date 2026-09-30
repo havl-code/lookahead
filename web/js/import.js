@@ -1,6 +1,6 @@
-// import.js - File upload and import functionality
+// import.js: the Import tab (CSTimer import)
 
-// Initialize file upload listeners when tab loads
+// Set up the file upload listeners when the tab loads
 function loadImportTab() {
     setupFileUpload();
 }
@@ -62,14 +62,16 @@ async function previewSessions() {
         }
         
         const checkboxesDiv = document.getElementById('session-checkboxes');
-        checkboxesDiv.innerHTML = result.sessions.map(session => `
+        // Session names come from the file, so they're escaped, and the ids use the position
+        // rather than the name (which may contain spaces or quotes).
+        checkboxesDiv.innerHTML = result.sessions.map((session, i) => `
             <div class="session-checkbox">
-                <input type="checkbox" id="session-${session.key}" value="${session.key}" checked>
-                <label for="session-${session.key}" class="session-info">
-                    <strong>${session.key}</strong><br>
-                    <span style="color: #666; font-size: 13px;">
-                        ${session.solve_count} solves | 
-                        Best: ${session.best ? session.best.toFixed(2) + 's' : 'N/A'} | 
+                <input type="checkbox" id="import-session-${i}" value="${escapeHtml(session.key)}" checked>
+                <label for="import-session-${i}" class="session-info">
+                    <strong>${escapeHtml(session.key)}</strong><br>
+                    <span class="session-meta">
+                        ${countLabel(session.solve_count, 'solve')} |
+                        Best: ${session.best ? session.best.toFixed(2) + 's' : 'N/A'} |
                         Mean: ${session.mean ? session.mean.toFixed(2) + 's' : 'N/A'}
                     </span>
                 </label>
@@ -99,15 +101,16 @@ async function importSelectedSessions() {
     statusDiv.textContent = `Importing ${selectedSessions.length} session(s) as ${getEventName(eventId)}...`;
     statusDiv.className = '';
     
+    // The server doesn't keep the previewed file around, so send it again with the selection.
+    const formData = new FormData();
+    formData.append('file', AppState.selectedFile);
+    formData.append('sessions', JSON.stringify(selectedSessions));
+    formData.append('event_id', eventId);
+
     try {
         const response = await fetch(`${API_BASE}/import/selected`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                filename: AppState.selectedFile.name,
-                sessions: selectedSessions,
-                event_id: eventId
-            })
+            body: formData
         });
         
         const result = await response.json();

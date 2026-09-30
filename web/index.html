@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speedcube Training Explorer</title>
+    <link rel="icon" type="image/png" href="images/favicon_w.png">
+    <link rel="preload" href="vendor/fonts/space-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/timer.css">
+    <script>
+        // Apply the saved theme (dark unless light was picked) before the page is drawn, so it
+        // never flashes the wrong colours.
+        try {
+            document.documentElement.dataset.theme = localStorage.getItem('theme') || 'dark';
+        } catch (e) {
+            document.documentElement.dataset.theme = 'dark';
+        }
+    </script>
+</head>
+<body>
+    <header class="app-header">
+        <div class="container header-inner">
+            <a class="brand" href="#" onclick="switchTab('dashboard'); return false;">
+                <img src="images/favicon_b.png" alt="" class="brand-logo logo-light">
+                <img src="images/favicon_w.png" alt="" class="brand-logo logo-dark">
+                <span class="brand-name">Speedcube Training Explorer</span>
+            </a>
+            <nav class="tabs" aria-label="Sections">
+                <button class="tab active" data-tab="dashboard" onclick="switchTab('dashboard')">Dashboard</button>
+                <button class="tab" data-tab="timer" onclick="switchTab('timer')">Timer</button>
+                <button class="tab" data-tab="sessions" onclick="switchTab('sessions')">Sessions</button>
+                <button class="tab" data-tab="cubes" onclick="switchTab('cubes')">Cubes</button>
+                <button class="tab" data-tab="import" onclick="switchTab('import')">Import</button>
+                <button class="tab" data-tab="analytics" onclick="switchTab('analytics')">Analytics</button>
+            </nav>
+            <button class="icon-button theme-toggle" onclick="toggleTheme()" aria-label="Switch between light and dark mode" title="Switch between light and dark mode">
+                <svg id="theme-icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M12 18a6 6 0 1 1 0-12 6 6 0 0 1 0 12zm0-2a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM11 1h2v3h-2V1zm0 19h2v3h-2v-3zM3.515 4.929l1.414-1.414L7.05 5.636 5.636 7.05 3.515 4.93zM16.95 18.364l1.414-1.414 2.121 2.121-1.414 1.414-2.121-2.121zm2.121-14.85l1.414 1.415-2.121 2.121-1.414-1.414 2.121-2.121zM5.636 16.95l1.414 1.414-2.121 2.121-1.414-1.414 2.121-2.121zM23 11v2h-3v-2h3zM4 11v2H1v-2h3z"/>
+                </svg>
+                <svg id="theme-icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M10 7a7 7 0 0 0 12 4.9v.1c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2h.1A6.979 6.979 0 0 0 10 7zm-6 5a8 8 0 0 0 15.062 3.762A9 9 0 0 1 8.238 4.938 7.999 7.999 0 0 0 4 12z"/>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <!-- Dashboard Tab -->
+        <div id="tab-dashboard" class="tab-content active">
+            <section class="greeting-section">
+                <h1 id="greeting-text">Welcome to Speedcube Training Explorer</h1>
+                <p id="greeting-subtext" class="subtitle">Track your progress and compare with WCA rankings</p>
+
+                <div class="greeting-actions">
+                    <!-- WCA ID: a setup button until one is set, then a badge -->
+                    <div id="wca-setup-prompt" style="display: none;">
+                        <button class="btn-secondary" onclick="showWCASetupModal()">Set up WCA ID</button>
+                    </div>
+                    <div id="wca-display" style="display: none;">
+                        <button class="wca-id-badge" id="wca-id-display" onclick="showWCASetupModal()" title="Change your WCA ID"></button>
+                    </div>
+
+                    <div class="quick-actions">
+                        <button class="btn-primary" onclick="switchTab('timer')">Start Timer</button>
+                        <button class="btn-secondary" onclick="switchTab('sessions'); showAddSessionForm();">Add Session</button>
+                        <button class="btn-secondary" onclick="switchTab('cubes'); showAddCubeForm();">Add Cube</button>
+                        <button class="btn-secondary" onclick="switchTab('import');">Import Solves</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="dashboard">
+                <div class="section-header">
+                    <h2>Your Statistics</h2>
+                    <label class="inline-field">
+                        <span>Event</span>
+                        <select id="event-select" onchange="changeEvent()">
+                            <option value="all">All Events</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Personal Best</div>
+                        <div class="stat-value" id="stat-pb">--</div>
+                        <div class="stat-note">click for details</div>
+                    </div>
+                    <div class="stat-card highlight">
+                        <div class="stat-label">World Rank</div>
+                        <div class="stat-value" id="stat-rank">--</div>
+                        <div class="stat-note" id="stat-rank-note">based on your best single</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Average Time</div>
+                        <div class="stat-value" id="stat-avg">--</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Total Solves</div>
+                        <div class="stat-value" id="stat-solves">--</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Sessions</div>
+                        <div class="stat-value" id="stat-sessions">--</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Cubes</div>
+                        <div class="stat-value" id="stat-cubes">--</div>
+                        <div class="stat-note" id="stat-cubes-note">0 active</div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>Recent Sessions</h2>
+                <div class="table-container">
+                    <table id="recent-sessions-table">
+                        <thead>
+                            <tr>
+                                <th data-sort="date" data-default-dir="desc">Date</th>
+                                <th data-sort="event">Event</th>
+                                <th data-sort="solves" data-default-dir="desc" class="num">Solves</th>
+                                <th data-sort="best" class="num">Best</th>
+                                <th data-sort="mean" class="num">Mean</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-sessions-tbody">
+                            <tr><td colspan="5" class="loading">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <!-- Timer Tab -->
+        <div id="tab-timer" class="tab-content">
+            <section class="timer-section">
+                <div class="timer-header">
+                    <div class="timer-controls-left">
+                        <label class="inline-field">
+                            <span>Event</span>
+                            <select id="timer-event-select" onchange="changeTimerEvent(this.value)">
+                                <option value="333" selected>3x3x3</option>
+                                <option value="222">2x2x2</option>
+                                <option value="444">4x4x4</option>
+                                <option value="555">5x5x5</option>
+                                <option value="666">6x6x6</option>
+                                <option value="777">7x7x7</option>
+                                <option value="333oh">3x3x3 One-Handed</option>
+                                <option value="333bf">3x3x3 Blindfolded</option>
+                                <option value="clock">Clock</option>
+                                <option value="minx">Megaminx</option>
+                                <option value="pyram">Pyraminx</option>
+                                <option value="skewb">Skewb</option>
+                                <option value="sq1">Square-1</option>
+                            </select>
+                        </label>
+                        <label class="inline-field">
+                            <span>Session</span>
+                            <select id="timer-session-select">
+                                <option value="new">+ Create New Session</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="timer-controls-right">
+                        <button class="icon-button" id="timer-settings-btn" onclick="showTimerSettings()" title="Timer settings" aria-label="Timer settings">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M12 15.5A3.5 3.5 0 0 1 8.5 12 3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5m7.43-2.53c.04-.32.07-.64.07-.97 0-.33-.03-.66-.07-1l2.11-1.63c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.31-.61-.22l-2.49 1c-.52-.39-1.06-.73-1.69-.98l-.37-2.65A.506.506 0 0 0 14 2h-4c-.25 0-.46.18-.5.42l-.37 2.65c-.63.25-1.17.59-1.69.98l-2.49-1c-.22-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64L4.57 11c-.04.34-.07.67-.07 1 0 .33.03.65.07.97l-2.11 1.66c-.19.15-.25.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1.01c.52.4 1.06.74 1.69.99l.37 2.65c.04.24.25.42.5.42h4c.25 0 .46-.18.5-.42l.37-2.65c.63-.26 1.17-.59 1.69-.99l2.49 1.01c.22.08.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.66z"/>
+                            </svg>
+                        </button>
+                        <button class="btn-secondary btn-small" id="fullscreen-btn" onclick="toggleFullscreen()">Fullscreen</button>
+                    </div>
+                </div>
+
+                <div class="timer-main-content">
+                    <div class="timer-container">
+                        <div class="scramble-display" title="Click for scramble options">
+                            <div class="scramble-label">Scramble</div>
+                            <div class="scramble-text" id="scramble-text">Press the space bar to start</div>
+                            <div class="scramble-menu">
+                                <div class="scramble-menu-item" onclick="copyScramble()">Copy Scramble</div>
+                                <div class="scramble-menu-item" onclick="newScramble()">New Scramble</div>
+                            </div>
+                        </div>
+
+                        <div class="timer-display" id="timer-display">0.00</div>
+                        <p class="timer-hint">Hold the space bar until the time turns green, then let go to start.</p>
+
+                        <div class="timer-session-stats">
+                            <div class="stat-item">
+                                <div class="stat-item-label">Solves</div>
+                                <div class="stat-item-value" id="stat-count">0</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-item-label">Best</div>
+                                <div class="stat-item-value" id="stat-best">-</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-item-label">Mean</div>
+                                <div class="stat-item-value" id="stat-mean">-</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-item-label">Ao5</div>
+                                <div class="stat-item-value" id="stat-ao5">-</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="timer-solves-list">
+                        <h3>Recent Solves</h3>
+                        <div class="solves-list-container">
+                            <div class="empty-note">No solves yet</div>
+                        </div>
+                        <p class="list-note" id="timer-solves-note"></p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Sessions Tab -->
+        <div id="tab-sessions" class="tab-content">
+            <section>
+                <div class="section-header">
+                    <h2>Training Sessions</h2>
+                    <div class="section-actions">
+                        <label class="inline-field">
+                            <span>Event</span>
+                            <select id="filter-event" onchange="applySessionFilters()">
+                                <option value="">All Events</option>
+                            </select>
+                        </label>
+                        <button class="btn-primary" onclick="showAddSessionForm()">Add Session</button>
+                    </div>
+                </div>
+
+                <div id="add-session-form" class="form-card" style="display: none;">
+                    <h3>Add New Session</h3>
+                    <form onsubmit="addSession(event)">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="new-event-id">Event</label>
+                                <select id="new-event-id" required>
+                                    <option value="222">2x2x2</option>
+                                    <option value="333" selected>3x3x3</option>
+                                    <option value="444">4x4x4</option>
+                                    <option value="555">5x5x5</option>
+                                    <option value="666">6x6x6</option>
+                                    <option value="777">7x7x7</option>
+                                    <option value="333oh">3x3x3 One-Handed</option>
+                                    <option value="333bf">3x3x3 Blindfolded</option>
+                                    <option value="clock">Clock</option>
+                                    <option value="minx">Megaminx</option>
+                                    <option value="pyram">Pyraminx</option>
+                                    <option value="skewb">Skewb</option>
+                                    <option value="sq1">Square-1</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="new-cube-id">Cube (optional)</label>
+                                <select id="new-cube-id">
+                                    <option value="">None</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="new-session-notes">Notes</label>
+                            <input type="text" id="new-session-notes">
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">Create Session</button>
+                            <button type="button" class="btn-secondary" onclick="hideAddSessionForm()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="table-container">
+                    <table id="sessions-table">
+                        <thead>
+                            <tr>
+                                <th data-sort="date" data-default-dir="desc">Date</th>
+                                <th data-sort="event">Event</th>
+                                <th data-sort="solves" data-default-dir="desc" class="num">Solves</th>
+                                <th data-sort="best" class="num">Best</th>
+                                <th data-sort="mean" class="num">Mean</th>
+                                <th data-sort="ao5" class="num">Ao5</th>
+                                <th data-sort="ao12" class="num">Ao12</th>
+                                <th class="actions-col"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="sessions-tbody">
+                            <tr><td colspan="8" class="loading">Loading sessions...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Solves in one session -->
+                <div id="solve-details-modal" class="modal" style="display: none;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 id="solve-modal-title">Session Solves</h3>
+                            <button class="modal-close" onclick="closeSolveModal()" aria-label="Close">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <form onsubmit="addSolveToSession(event)" id="add-solve-form" class="add-solve-form">
+                                <input type="hidden" id="current-session-id">
+                                <div class="form-group">
+                                    <label for="new-solve-time">Time (seconds)</label>
+                                    <input type="number" step="0.01" min="0" id="new-solve-time" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="new-solve-penalty">Penalty</label>
+                                    <select id="new-solve-penalty">
+                                        <option value="">None</option>
+                                        <option value="+2">+2</option>
+                                        <option value="DNF">DNF</option>
+                                    </select>
+                                </div>
+                                <div class="form-group grow">
+                                    <label for="new-solve-scramble">Scramble (optional)</label>
+                                    <input type="text" id="new-solve-scramble">
+                                </div>
+                                <button type="submit" class="btn-primary">Add Solve</button>
+                            </form>
+
+                            <div class="table-container">
+                                <table id="solves-table">
+                                    <thead>
+                                        <tr>
+                                            <th data-sort="number" class="num">#</th>
+                                            <th data-sort="time" class="num">Time</th>
+                                            <th data-sort="penalty">Penalty</th>
+                                            <th>Scramble</th>
+                                            <th class="actions-col"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="solves-tbody"></tbody>
+                                </table>
+                            </div>
+                            <div class="list-footer">
+                                <span class="list-note" id="solves-count-note"></span>
+                                <button class="btn-secondary btn-small" id="solves-more-btn" onclick="loadMoreSessionSolves()" style="display: none;">Show more</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Cubes Tab -->
+        <div id="tab-cubes" class="tab-content">
+            <section>
+                <div class="section-header">
+                    <h2>Cube Inventory</h2>
+                    <button class="btn-primary" onclick="showAddCubeForm()">Add Cube</button>
+                </div>
+
+                <div id="add-cube-form" class="form-card" style="display: none;">
+                    <h3>Add New Cube</h3>
+                    <form onsubmit="addCube(event)">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="new-cube-type">Type <span class="required">*</span></label>
+                                <select id="new-cube-type" required>
+                                    <option value="">Select a type</option>
+                                    <option value="222">2x2x2</option>
+                                    <option value="333">3x3x3</option>
+                                    <option value="444">4x4x4</option>
+                                    <option value="555">5x5x5</option>
+                                    <option value="666">6x6x6</option>
+                                    <option value="777">7x7x7</option>
+                                    <option value="333oh">3x3x3 One-Handed</option>
+                                    <option value="333bf">3x3x3 Blindfolded</option>
+                                    <option value="clock">Clock</option>
+                                    <option value="minx">Megaminx</option>
+                                    <option value="pyram">Pyraminx</option>
+                                    <option value="skewb">Skewb</option>
+                                    <option value="sq1">Square-1</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="custom-type-group" style="display: none;">
+                                <label for="new-cube-custom-type">Custom Type</label>
+                                <input type="text" id="new-cube-custom-type" placeholder="Enter a custom type">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="new-cube-brand">Brand</label>
+                                <input type="text" id="new-cube-brand" placeholder="e.g. GAN, MoYu">
+                            </div>
+                            <div class="form-group">
+                                <label for="new-cube-model">Model</label>
+                                <input type="text" id="new-cube-model" placeholder="e.g. 14 MagLev">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="new-cube-date">Purchase Date or Started Using</label>
+                            <input type="date" id="new-cube-date">
+                        </div>
+                        <div class="form-group">
+                            <label for="new-cube-notes">Notes</label>
+                            <textarea id="new-cube-notes" rows="3" placeholder="Anything else worth remembering"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">Add Cube</button>
+                            <button type="button" class="btn-secondary" onclick="hideAddCubeForm()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- The edit form is inserted here by JavaScript -->
+
+                <div class="table-container">
+                    <table id="cubes-table">
+                        <thead>
+                            <tr>
+                                <th data-sort="type">Type</th>
+                                <th data-sort="brand">Brand</th>
+                                <th data-sort="model">Model</th>
+                                <th data-sort="date" data-default-dir="desc">Purchase Date</th>
+                                <th data-sort="status">Status</th>
+                                <th class="actions-col"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="cubes-tbody">
+                            <tr><td colspan="6" class="loading">Loading cubes...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <!-- Import Tab -->
+        <div id="tab-import" class="tab-content">
+            <section id="import">
+                <h2>Import from CSTimer</h2>
+                <div class="import-card">
+                    <p>Choose a CSTimer export file (.txt or .json) to see the sessions in it.</p>
+                    <input type="file" id="file-input" accept=".txt,.json" style="display: none;">
+                    <div class="import-actions">
+                        <button class="btn-primary" onclick="document.getElementById('file-input').click()">Choose File</button>
+                        <span id="file-name"></span>
+                        <button class="btn-secondary" id="preview-btn" style="display: none;">Preview Sessions</button>
+                    </div>
+                    <div id="import-status"></div>
+
+                    <div id="session-selection" style="display: none;">
+                        <h3>Select Sessions to Import</h3>
+                        <div class="form-group import-event">
+                            <label for="import-event-select">Import as event</label>
+                            <select id="import-event-select">
+                                <option value="222">2x2x2</option>
+                                <option value="333" selected>3x3x3</option>
+                                <option value="444">4x4x4</option>
+                                <option value="555">5x5x5</option>
+                                <option value="666">6x6x6</option>
+                                <option value="777">7x7x7</option>
+                                <option value="333oh">3x3x3 One-Handed</option>
+                                <option value="333bf">3x3x3 Blindfolded</option>
+                                <option value="clock">Clock</option>
+                                <option value="minx">Megaminx</option>
+                                <option value="pyram">Pyraminx</option>
+                                <option value="skewb">Skewb</option>
+                                <option value="sq1">Square-1</option>
+                            </select>
+                        </div>
+                        <div id="session-checkboxes"></div>
+                        <div class="form-actions">
+                            <button class="btn-primary" onclick="importSelectedSessions()">Import Selected</button>
+                            <button class="btn-secondary" onclick="cancelImport()">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Analytics Tab (scores, insights and charts) -->
+        <div id="tab-analytics" class="tab-content">
+            <section id="analytics">
+                <div class="section-header">
+                    <h2>Analytics</h2>
+                    <div class="section-actions">
+                        <label class="inline-field">
+                            <span>Event</span>
+                            <select id="analytics-event-select" onchange="changeAnalyticsEvent()"></select>
+                        </label>
+                        <label class="inline-field">
+                            <span>Charts for</span>
+                            <select id="analytics-session-select" onchange="renderAllCharts()">
+                                <option value="all">All sessions</option>
+                            </select>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-title">Speed</div>
+                        <div class="metric-value" id="metric-speed">--</div>
+                        <div class="performance-bar-track"><div class="performance-bar-fill" id="speed-bar"></div></div>
+                        <div class="metric-trend neutral" id="metric-speed-trend"><span>No data yet</span></div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Consistency</div>
+                        <div class="metric-value" id="metric-consistency">--</div>
+                        <div class="performance-bar-track"><div class="performance-bar-fill" id="consistency-bar"></div></div>
+                        <div class="metric-trend neutral" id="metric-consistency-trend"><span>No data yet</span></div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Accuracy</div>
+                        <div class="metric-value" id="metric-accuracy">--</div>
+                        <div class="performance-bar-track"><div class="performance-bar-fill" id="accuracy-bar"></div></div>
+                        <div class="metric-trend neutral" id="metric-accuracy-trend"><span>No data yet</span></div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Overall</div>
+                        <div class="metric-value" id="metric-overall">--</div>
+                        <div class="performance-bar-track"><div class="performance-bar-fill" id="overall-bar"></div></div>
+                        <div class="metric-trend neutral" id="metric-overall-trend"><span>No data yet</span></div>
+                    </div>
+                </div>
+
+                <div class="insights-panel">
+                    <h3>Insights</h3>
+                    <div id="insights-container">
+                        <div class="insight-item">
+                            <div class="insight-bullet neutral"></div>
+                            <div class="insight-content">
+                                <div class="insight-text">Loading insights...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="charts-grid">
+                    <div class="chart-card wide">
+                        <h3>Progress Over Time</h3>
+                        <div id="progress-chart" class="chart-container"><div class="loading">Loading chart...</div></div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Time Distribution</h3>
+                        <div id="distribution-chart" class="chart-container"><div class="loading">Loading chart...</div></div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Rolling Averages</h3>
+                        <div id="breakdown-chart" class="chart-container"><div class="loading">Loading chart...</div></div>
+                    </div>
+                    <div class="chart-card wide">
+                        <h3>Consistency Across Sessions</h3>
+                        <div id="consistency-chart" class="chart-container"><div class="loading">Loading chart...</div></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- WCA ID Setup Modal -->
+        <div id="wca-setup-modal" class="modal" style="display: none;">
+            <div class="modal-content modal-small">
+                <div class="modal-header">
+                    <h3>Your WCA ID</h3>
+                    <button class="modal-close" onclick="closeWCASetupModal()" aria-label="Close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p class="muted">
+                        Enter your WCA ID to personalise your dashboard. Your name is looked up from the official WCA database.
+                    </p>
+                    <form onsubmit="saveWCAID(event)">
+                        <div class="form-group">
+                            <label for="wca-id-input">WCA ID</label>
+                            <input
+                                type="text"
+                                id="wca-id-input"
+                                placeholder="e.g. 2003POCH01"
+                                pattern="[0-9]{4}[A-Za-z]{4}[0-9]{2}"
+                                title="Four digits, four letters and two digits, e.g. 2003POCH01"
+                                required
+                            >
+                            <small class="field-hint">Format: YYYYLLLL## (e.g. 2003POCH01)</small>
+                        </div>
+                        <div id="wca-setup-status"></div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">Save WCA ID</button>
+                            <button type="button" class="btn-secondary" onclick="closeWCASetupModal()">Cancel</button>
+                            <button type="button" class="btn-secondary btn-danger push-right" id="remove-wca-btn" onclick="removeWCAID()" style="display: none;">Remove</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="about-section">
+                <div class="about-blurb">
+                    <h3>About this project</h3>
+                    <p>
+                        A free, open-source training tracker for speedcubers. It runs on your own
+                        computer: no accounts, no cloud, no tracking.
+                    </p>
+                </div>
+                <div class="about-connect">
+                    <span class="about-connect-label">Get in touch</span>
+                    <!-- External links open in a new tab, so the app stays open -->
+                    <div class="about-connect-links">
+                        <a class="about-connect-link" href="https://github.com/havl-code" target="_blank" rel="noopener noreferrer">
+                            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+                            GitHub
+                        </a>
+                        <a class="about-connect-link" href="https://www.linkedin.com/in/viet-ha-ly/" target="_blank" rel="noopener noreferrer">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 1 1 0-4.125 2.062 2.062 0 0 1 0 4.125zM7.119 20.452H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                            LinkedIn
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p class="footer-links">
+                    <a href="https://github.com/havl-code/speedcube-training-explorer" target="_blank" rel="noopener noreferrer">Repository</a>
+                    <a href="https://github.com/havl-code/speedcube-training-explorer/issues" target="_blank" rel="noopener noreferrer">Report an issue</a>
+                    <a href="https://wca-rest-api.robiningelbrecht.be/" target="_blank" rel="noopener noreferrer">WCA rankings API</a>
+                    <a href="#" onclick="exportBackup(); return false;">Export backup</a>
+                    <a href="#" onclick="triggerImportBackup(); return false;">Import backup</a>
+                    <input type="file" id="backup-file-input" accept=".json" style="display: none;" onchange="handleImportBackupFile(event)">
+                </p>
+                <p class="footer-credit">Made by Viet Ha Ly. All data stays on this machine.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Load the JavaScript in order: config.js first, since it defines API_BASE (the local
+         server's API that every tab reads and writes through) and the shared helpers, then
+         tables.js (sortable table headings), which several tabs use. -->
+    <script src="js/config.js"></script>
+    <script src="js/tables.js"></script>
+    <script src="js/backup.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/sessions.js"></script>
+    <script src="js/cubes.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/import.js"></script>
+    <script src="js/greeting.js"></script>
+    <script src="js/timer.js"></script>
+    <script src="js/analytics.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/theme.js"></script>
+</body>
+</html>

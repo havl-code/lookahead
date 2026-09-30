@@ -1,0 +1,11 @@
+[project]
+name = "speedcube-training-explorer"
+version = "3.0.0"
+description = "A local training tracker for speedcubers: timer, sessions, charts, and WCA rank comparison."
+readme = "README.md"
+license = "MIT"
+authors = [{ name = "Viet Ha Ly" }]
+requires-python = ">=3.10"
+dependencies = [
+    "flask>=3.0",
+]

@@ -15,5 +15,13 @@ Thumbs.db
 # Logs
 *.log
 
+# Python / uv
+.venv/
+__pycache__/
+*.pyc
+
+# The app's SQLite database (contains personal training data)
+data/
+
 # Backups exported from the app (contain personal training data)
 speedcube-backup-*.json
