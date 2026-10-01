@@ -1,6 +1,9 @@
 // app.js: starts the app and switches between tabs
 
 async function init() {
+    // Holding this connection open tells the server the page is still open. The server stops
+    // itself shortly after the last page closes, and the browser reconnects after a reload.
+    new EventSource(`${API_BASE}/presence`);
     await loadGreeting();   // show the personalised greeting first
     switchTab('dashboard'); // this also loads the dashboard's data, so don't load it separately
 }

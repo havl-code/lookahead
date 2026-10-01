@@ -1,10 +1,11 @@
 # Installation Guide 📦
 
-**One tool to install. One command to start.**
+**One tool to install. One double-click (or one command) to start.**
 
 Speedcube Training Explorer is a web app that runs on your own computer. A small program (the
-"server") keeps your data and shows the app in your web browser. You start it with one command,
-`uv run app.py`, and everything else happens in the browser.
+"server") keeps your data and shows the app in your web browser. On Windows, Mac or Linux, you
+can start it either by double-clicking its launcher or by typing one command, `uv run app.py`.
+Both do the same thing, so use whichever you prefer. Everything else happens in the browser.
 
 The only thing to install is **uv**, a free tool that downloads the right version of Python and
 everything the app needs, automatically.
@@ -45,21 +46,63 @@ Documents folder.
 
 ## 🚀 3. Start the App
 
+There are two ways to start the app, and they work on every operating system. Pick whichever
+you like; you can switch any time, and your data is the same either way.
+
+Either way, the app opens in your browser. The very first start takes a few seconds while uv
+sets everything up (it creates a `.venv` folder inside the app's folder); after that it's quick.
+When you're finished, just close the app's browser tab. The app stops by itself a few seconds
+later.
+
+### Option A: Double-Click the Launcher
+
+The app's folder has a launcher for each operating system. Double-click the one for yours:
+
+| Operating system | Double-click this file |
+| --- | --- |
+| Windows | `Start Speedcube Training Explorer.bat` |
+| Mac | `Start Speedcube Training Explorer.command` |
+| Linux | `Start Speedcube Training Explorer.sh` |
+
+(Your computer may hide the part after the dot, so they can all look like **Start Speedcube
+Training Explorer**. The other two launchers do nothing harmful on your system; just ignore
+them.)
+
+The first time you open a downloaded launcher, your system may check with you first:
+
+- **Windows** may warn you about running a file from the internet. Choose **Run** (or **More
+  info**, then **Run anyway**).
+- **Mac** may say it can't check the file for malicious software. Click **Done**, open **System
+  Settings**, go to **Privacy & Security**, scroll down and click **Open Anyway** next to the
+  launcher's name. You only need to do this once.
+- **Linux** file managers may ask whether to run the file or open it as text. Choose **Run**. If
+  it opens in a text editor instead, look in your file manager's settings for an option to run
+  executable text files.
+
+What happens next depends on your system:
+
+- **Windows:** after the first start, the folder also has a **Speedcube Training Explorer**
+  shortcut with the app's icon. It starts the app with no window at all, so use it from then
+  on. You can drag it to your desktop, or right-click it and pin it to the Start menu.
+- **Mac:** a Terminal window opens and shows the app's messages. Leave it open while you use the
+  app. Once the app stops, you can close it.
+- **Linux:** if you chose **Run**, the app runs in the background with no window apart from
+  your browser. If you chose **Run in Terminal**, a terminal shows its messages instead.
+
+### Option B: Type One Command
+
 1. **Open a terminal in the app's folder** (the one containing `app.py`):
    - **Windows:** right-click the folder in File Explorer and choose **Open in Terminal**
    - **Mac:** right-click the folder in Finder and choose **New Terminal at Folder**
+   - **Linux:** right-click the folder in your file manager and choose **Open in Terminal**
 2. **Start the app** by typing this and pressing Enter:
 
    ```bash
    uv run app.py
    ```
 
-The app opens in your browser. The very first start takes a few seconds while uv sets everything
-up (it creates a `.venv` folder inside the app's folder); after that it's quick.
-
-**Keep the terminal window open while you use the app.** When you're finished, close the window
-(or press **Ctrl+C** in it) to stop the app. Next time, open a terminal in the folder and run
-`uv run app.py` again.
+**Keep the terminal window open while you use the app.** Once the app stops, you can close it.
+Next time, open a terminal in the folder and run `uv run app.py` again.
 
 ---
 
@@ -101,11 +144,21 @@ this version and use **Import backup** with that file.
   or see the [uv installation docs](https://docs.astral.sh/uv/getting-started/installation/).
 - **"No such file or directory: app.py":** the terminal isn't in the app's folder. Open the
   terminal from the folder that contains `app.py` (see step 3).
-- **The browser didn't open:** the terminal shows an address like `http://127.0.0.1:8577`. Copy
-  it into your browser.
-- **The app opened at a different address:** if something else is already using the usual
-  address (for example, the app is already open in another terminal), the app picks a free one
-  instead. That's fine: your data is the same either way.
+- **The browser didn't open:** go to `http://127.0.0.1:8577` in your browser. (If you started
+  the app from a terminal and it shows a different address there, use that one.)
+- **The app opened at a different address:** if another program is already using the usual
+  address, the app picks a free one instead. That's fine: your data is the same either way.
+  (Starting the app while it's already running just opens another tab of it.)
+- **Double-clicking says uv isn't installed:** install it (see step 1), then try again. If you
+  only just installed it and it still isn't found, sign out of your computer and back in.
+- **Double-clicking the launcher does nothing, or opens it as text:** some unzip tools and
+  file managers stop launchers from running. Start the app with Option B (`uv run app.py`)
+  instead; it does exactly the same thing.
+- **Windows: the shortcut with the icon stopped working after moving the folder:** it remembers
+  where the folder was. Delete it and double-click `Start Speedcube Training Explorer.bat`; the
+  app makes a fresh one.
+- **The app stopped while I was using it:** it stops a few seconds after its last tab closes,
+  so start it again. Your data is all saved.
 - **World Rank shows "No data":** this needs an internet connection to reach the public WCA
   rankings. Everything else still works without one.
 - **WCA ID setup fails:** check the ID format (four digits, four letters, two digits, such as
@@ -119,7 +172,7 @@ this version and use **Import backup** with that file.
 ## 🔄 Updating the App
 
 Download the latest ZIP from GitHub and unzip it. To keep your data, copy the `data` folder from
-your old copy into the new one before you start it. Then run `uv run app.py` in the new folder
+your old copy into the new one before you start it. Then start the app from the new folder
 as usual; uv picks up any changes to what the app needs by itself.
 
 ---

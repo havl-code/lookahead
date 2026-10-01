@@ -20,6 +20,9 @@ Thumbs.db
 __pycache__/
 *.pyc
 
+# Windows shortcuts to the app (they hold paths on one particular computer)
+*.lnk
+
 # The app's SQLite database (contains personal training data)
 data/
 

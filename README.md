@@ -5,7 +5,7 @@
 A training tracker for speedcubers that runs on your own computer and opens in your web
 browser. Time your solves, analyse your progress with charts, keep track of your cubes, and
 see how you stack up against the WCA world rankings. Everything is stored on your computer,
-and one command starts it.
+and a double-click (or one command) starts it.
 
 ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)
 ![Flask](https://img.shields.io/badge/Flask-000000?logo=flask&logoColor=white)
@@ -90,18 +90,22 @@ and one command starts it.
    only do this once; see [INSTALLATION.md](INSTALLATION.md#-1-install-uv) for the one-line
    installer.
 2. **Download this project:** on GitHub, click **Code**, then **Download ZIP**, and unzip it.
-3. **Open a terminal in the project folder.** On Windows, right-click the folder and choose
-   **Open in Terminal**. On a Mac, right-click it and choose **New Terminal at Folder**.
-4. **Start the app** by typing:
+3. **Start the app** in whichever of these two ways you prefer. Both work on Windows, Mac and
+   Linux, and do exactly the same thing:
+   - **Double-click the launcher** in the project folder: `Start Speedcube Training
+     Explorer.bat` on Windows, `.command` on a Mac, or `.sh` on Linux. On Windows, the first
+     start also adds a **Speedcube Training Explorer** shortcut with the app's icon, which
+     starts it with no window at all. Put it on your desktop if you like.
+   - **Or type one command** in a terminal opened in the project folder:
 
-   ```bash
-   uv run app.py
-   ```
+     ```bash
+     uv run app.py
+     ```
 
-The app opens in your browser. That's the only command you'll ever need. 🎉
-
-The first start takes a few seconds while uv gets everything ready; after that it's quick.
-Leave the terminal window open while you use the app, and close it when you're done.
+The app opens in your browser. 🎉 The first start takes a few seconds while uv gets everything
+ready; after that it's quick. When you're done, close the app's browser tab and it stops by
+itself. The first time you open a downloaded launcher, your system may ask you to confirm it;
+[INSTALLATION.md](INSTALLATION.md#-3-start-the-app) walks through each system step by step.
 
 ---
 
@@ -127,7 +131,7 @@ Leave the terminal window open while you use the app, and close it when you're d
 ### Bringing Your Data Across from the Browser-Only Version
 
 1. Open your old copy of the app (the 2.x `index.html`) and click **Export backup** in the footer
-2. Start this version with `uv run app.py`
+2. Start this version (see [Quick Start](#-quick-start))
 3. Click **Import backup** in the footer and choose the file from step 1
 
 ---
@@ -136,7 +140,7 @@ Leave the terminal window open while you use the app, and close it when you're d
 
 ### First Time
 
-1. Start the app with `uv run app.py`. It opens in your browser.
+1. Start the app (see [Quick Start](#-quick-start)). It opens in your browser.
 2. **Optional:** click **Set up WCA ID** on the dashboard to get a personalised greeting.
 3. Start tracking: use the timer, add sessions by hand, or import your CSTimer data.
 
@@ -201,7 +205,10 @@ footer to download everything as one JSON file, and **Import backup** to restore
 
 ```text
 speedcube-training-explorer/
-├── app.py                 # Start here: `uv run app.py`
+├── Start Speedcube Training Explorer.bat      # Double-click to start on Windows
+├── Start Speedcube Training Explorer.command  # Double-click to start on a Mac
+├── Start Speedcube Training Explorer.sh       # Double-click to start on Linux
+├── app.py                 # The app itself; `uv run app.py` starts it on any system
 ├── pyproject.toml         # Python version and dependencies (uv.lock pins exact versions)
 ├── speedcube/             # The Python backend
 │   ├── __init__.py        # Creates the Flask app and serves web/
@@ -221,7 +228,7 @@ speedcube-training-explorer/
 │   │   ├── dashboard.js, sessions.js, cubes.js, timer.js,
 │   │   │   import.js, analytics.js, charts.js, greeting.js,
 │   │   │   app.js, theme.js   # One file per tab or feature
-│   ├── images/            # Logo and favicon
+│   ├── images/            # Logo, favicon and the shortcut icon (app-icon.ico)
 │   └── vendor/            # Bundled Plotly.js and Space Grotesk (with their licences)
 ├── docs/screenshots/      # Images used in this README
 ├── data/                  # Your database (created on first start, never committed)
