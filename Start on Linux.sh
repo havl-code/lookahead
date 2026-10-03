@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Double-click this (or run it) to start Speedcube Training Explorer on Linux. Some file managers
-# ask whether to run it or open it as text: choose Run. The app stops by itself shortly after its
-# last browser tab is closed.
+# Double-click this (or run it) to start Speedcube Training Explorer on Linux. It checks that uv
+# is installed and hands over to app.py. Some file managers ask whether to run it or open it as
+# text: choose Run. The app stops by itself shortly after its last browser tab is closed.
 cd "$(dirname "$0")" || exit 1
 
 # uv's usual install locations, in case the session running this hasn't put them on the PATH.

@@ -15,6 +15,9 @@ const TimerState = {
     currentSolves: [],      // the latest solves in the session, newest first
     stats: null,            // the session's stats, worked out by the server
     currentSessionId: null,
+    // Whether the timer follows the calendar: times go into today's session, and the first solve
+    // of a new day starts one. Picking a session from the menu turns this off until next time.
+    followToday: true,
     isFullscreen: false,
     showingResult: false,   // true while the last result is on screen
     settings: {
@@ -139,18 +142,23 @@ async function loadSessionSelector() {
         const sessions = await response.json();
 
         const selector = document.getElementById('timer-session-select');
+        // Newest first, so the first one dated today is today's latest session
         const timerSessions = sessions.filter(s => s.event_id === TimerState.event);
 
-        // Fall back to the most recent session if there's no current one (or it was deleted).
+        // Back to following today if the picked session has been deleted
         if (!timerSessions.some(s => s.id === TimerState.currentSessionId)) {
-            TimerState.currentSessionId = timerSessions.length > 0 ? timerSessions[0].id : null;
+            TimerState.followToday = true;
+        }
+        if (TimerState.followToday) {
+            const todays = timerSessions.find(s => s.date === localToday());
+            TimerState.currentSessionId = todays ? todays.id : null;
         }
 
         selector.innerHTML = '<option value="new">+ Create New Session</option>';
         if (!TimerState.currentSessionId) {
             // A selected placeholder, so picking "+ Create New Session" still counts as a change.
             selector.insertAdjacentHTML('beforeend',
-                '<option value="" disabled>No session yet: your first solve starts one</option>');
+                `<option value="" disabled>Today's session starts with your first solve</option>`);
         }
         timerSessions.forEach(session => {
             const option = document.createElement('option');
@@ -163,8 +171,10 @@ async function loadSessionSelector() {
         selector.onchange = async (e) => {
             if (e.target.value === 'new') {
                 await createTimerSession();
+                TimerState.followToday = true;  // the new session is today's latest
                 await loadSessionSelector();
             } else {
+                TimerState.followToday = false;
                 TimerState.currentSessionId = parseInt(e.target.value, 10);
                 await loadSessionSolves(TimerState.currentSessionId);
             }
@@ -445,17 +455,16 @@ async function saveSolve(penalty) {
 
     const scramble = TimerState.scramble;
 
-    if (!TimerState.currentSessionId) {
-        await createTimerSession();
-        await loadSessionSelector();
-    }
-
     try {
+        // The server picks the session when following today (it may start a new one), and says
+        // which session it used.
         const response = await fetch(`${API_BASE}/timer/solve`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 session_id: TimerState.currentSessionId,
+                follow_today: TimerState.followToday,
+                event_id: TimerState.event,
                 time: finalTime,
                 scramble: scramble,
                 penalty: penalty,
@@ -465,7 +474,10 @@ async function saveSolve(penalty) {
 
         const result = await response.json();
 
-        if (result.success) {
+        if (result.success && result.session_id !== TimerState.currentSessionId) {
+            TimerState.currentSessionId = result.session_id;
+            await loadSessionSelector();
+        } else if (result.success) {
             await loadSessionSolves(TimerState.currentSessionId);
         }
     } catch (error) {
@@ -592,8 +604,27 @@ function toggleFullscreen() {
         TimerState.isFullscreen ? 'Exit Fullscreen (Esc)' : 'Fullscreen';
 }
 
+// Called off part-way through: stop inspection, a hold or a running solve without saving
+// anything, and keep the same scramble for the next try.
+function cancelAttempt() {
+    clearInterval(TimerState.inspectionInterval);
+    clearTimeout(TimerState.holdTimer);
+    TimerState.inspectionInterval = null;
+    TimerState.holdTimer = null;
+    TimerState.inspection = false;
+    TimerState.running = false;  // the running display stops itself on its next tick
+    TimerState.spacePressed = false;
+    TimerState.readyToStart = false;
+    resetTimerDisplay();
+}
+
+// Escape cancels an attempt in progress; otherwise it leaves fullscreen.
 document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && TimerState.isFullscreen) {
+    if (e.key !== 'Escape') return;
+    if (TimerState.inspection || TimerState.running || TimerState.spacePressed) {
+        e.preventDefault();
+        cancelAttempt();
+    } else if (TimerState.isFullscreen) {
         toggleFullscreen();
     }
 });

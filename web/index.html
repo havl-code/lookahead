@@ -45,6 +45,13 @@
         </div>
     </header>
 
+    <div class="update-banner" id="update-banner" role="status" hidden>
+        <div class="container">
+            The app was updated while it was running. Close all of its tabs, wait a few seconds,
+            then start it again to finish updating.
+        </div>
+    </div>
+
     <main class="container">
 
         <!-- Dashboard Tab -->
@@ -185,7 +192,7 @@
                         </div>
 
                         <div class="timer-display" id="timer-display">0.00</div>
-                        <p class="timer-hint">Hold the space bar until the time turns green, then let go to start.</p>
+                        <p class="timer-hint">Hold the space bar until the time turns green, then let go to start. Press Esc to cancel.</p>
 
                         <div class="timer-session-stats">
                             <div class="stat-item">
@@ -500,26 +507,24 @@
                         <div class="metric-value" id="metric-speed">--</div>
                         <div class="performance-bar-track"><div class="performance-bar-fill" id="speed-bar"></div></div>
                         <div class="metric-trend neutral" id="metric-speed-trend"><span>No data yet</span></div>
+                        <div class="metric-detail" id="metric-speed-detail"></div>
                     </div>
                     <div class="metric-card">
                         <div class="metric-title">Consistency</div>
                         <div class="metric-value" id="metric-consistency">--</div>
                         <div class="performance-bar-track"><div class="performance-bar-fill" id="consistency-bar"></div></div>
                         <div class="metric-trend neutral" id="metric-consistency-trend"><span>No data yet</span></div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-title">Accuracy</div>
-                        <div class="metric-value" id="metric-accuracy">--</div>
-                        <div class="performance-bar-track"><div class="performance-bar-fill" id="accuracy-bar"></div></div>
-                        <div class="metric-trend neutral" id="metric-accuracy-trend"><span>No data yet</span></div>
+                        <div class="metric-detail" id="metric-consistency-detail"></div>
                     </div>
                     <div class="metric-card">
                         <div class="metric-title">Overall</div>
                         <div class="metric-value" id="metric-overall">--</div>
                         <div class="performance-bar-track"><div class="performance-bar-fill" id="overall-bar"></div></div>
                         <div class="metric-trend neutral" id="metric-overall-trend"><span>No data yet</span></div>
+                        <div class="metric-detail" id="metric-overall-detail"></div>
                     </div>
                 </div>
+                <p class="scores-note" id="scores-note"></p>
 
                 <div class="insights-panel">
                     <h3>Insights</h3>

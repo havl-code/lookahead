@@ -7,10 +7,11 @@ totals are worked out in SQL.
 
 import json
 import sqlite3
+from collections import defaultdict
 
 from flask import Blueprint, Response, current_app, jsonify, request
 
-from . import backup, cstimer, db, wca
+from . import backup, cstimer, db, scores, wca
 from .db import NON_DNF_RESULT_MS, RESULT_MS
 from .stats import (
     box_stats,
@@ -147,7 +148,7 @@ def get_pb_details():
 
 @api.get('/sessions')
 def get_sessions():
-    rows = db.get_db().execute('SELECT * FROM sessions ORDER BY date DESC, id')
+    rows = db.get_db().execute('SELECT * FROM sessions ORDER BY date DESC, id DESC')
     return jsonify([
         {
             'id': s['id'],
@@ -457,57 +458,57 @@ def analytics_heatmap():
     conn = db.get_db()
     sessions = conn.execute(
         'SELECT id, date, solve_count, best_single, session_mean, ao5, ao12 FROM sessions '
-        'WHERE event_id = ? ORDER BY date DESC, id LIMIT 50',
+        'WHERE event_id = ? ORDER BY date DESC, id DESC LIMIT 50',
         (event_id,),
     ).fetchall()
 
     if not sessions:
         return _error('No sessions available', 404)
 
+    # The scores need every result in solve order (None for a DNF). This reads them in one
+    # query; they stay on the server, and only the scores go to the browser.
     ids = [s['id'] for s in sessions]
-    penalty_counts = {
-        row['session_id']: (row['dnf_count'], row['plus2_count'])
-        for row in conn.execute(
-            f"SELECT session_id, SUM(dnf) AS dnf_count, "
-            f"COALESCE(SUM(penalty = '+2'), 0) AS plus2_count "
-            f"FROM solves WHERE session_id IN ({', '.join('?' * len(ids))}) GROUP BY session_id",
-            ids,
-        )
-    }
+    results = defaultdict(list)
+    for row in conn.execute(
+        f'SELECT session_id, {NON_DNF_RESULT_MS} AS result_ms FROM solves '
+        f'WHERE session_id IN ({", ".join("?" * len(ids))}) ORDER BY session_id, solve_number, id',
+        ids,
+    ):
+        results[row['session_id']].append(row['result_ms'])
 
     sessions_out = []
     for s in sessions:
-        dnf_count, plus2_count = penalty_counts.get(s['id'], (0, 0))
-        count = s['solve_count'] or 0
         mean, best = s['session_mean'], s['best_single']
-
-        speed_score = consistency_score = accuracy_score = 0
-        if mean and best:
-            baseline = 30000
-            speed_score = max(0, 100 - (mean / baseline) * 50)
-            consistency_score = (best / mean) * 100 if mean > 0 else 0
-        if count > 0:
-            penalty_rate = (dnf_count + plus2_count) / count
-            accuracy_score = max(0, 100 - penalty_rate * 100)
-        overall_score = (speed_score + consistency_score + accuracy_score) / 3
-
+        session_scores = scores.session_scores(event_id, results[s['id']])
+        spread = session_scores['spread']
         sessions_out.append({
             'session_id': s['id'],
             'date': s['date'],
-            'solve_count': count,
+            'solve_count': s['solve_count'] or 0,
             'best': round2(best / 1000) if best else None,
             'mean': round2(mean / 1000) if mean else None,
             'ao5': round2(s['ao5'] / 1000) if s['ao5'] else None,
             'ao12': round2(s['ao12'] / 1000) if s['ao12'] else None,
-            'dnf_count': dnf_count,
-            'plus2_count': plus2_count,
-            'speed_score': round_to(speed_score, 1),
-            'consistency_score': round_to(consistency_score, 1),
-            'accuracy_score': round_to(accuracy_score, 1),
-            'overall_score': round_to(overall_score, 1),
+            'typical_result': round2(session_scores['typical_result']),
+            'spread_percent': round_to(spread * 100, 1) if spread is not None else None,
+            **{key: round_to(session_scores[key], 1)
+               for key in ('speed_score', 'consistency_score', 'overall_score')},
         })
 
-    return jsonify(sessions=sessions_out, event_id=event_id)
+    reference = scores.reference()
+    event_ref = reference['events'].get(event_id, {})
+    return jsonify(
+        sessions=sessions_out,
+        event_id=event_id,
+        has_speed_reference='speed' in event_ref,
+        has_consistency_reference='consistency' in event_ref,
+        result_kind=event_ref.get('result'),
+        solves_per_round=event_ref.get('solves_per_round'),
+        min_pairs=reference['min_pairs'],
+        reference_start=reference['window_start'],
+        reference_date=reference['export_date'],
+        wca_notice=reference['notice'],
+    )
 
 
 # ---- CSTimer import ----
@@ -557,7 +558,7 @@ def timer_create_session():
     conn = db.get_db()
     with conn:
         event_id = _json_body().get('event_id') or '333'
-        session_id = db.create_session(conn, event_id, 'Live timer session')
+        session_id = db.start_timer_session(conn, event_id)
     return jsonify(success=True, session_id=session_id)
 
 
@@ -565,7 +566,7 @@ def timer_create_session():
 def timer_save_solve():
     body = _json_body()
     session_id, time = body.get('session_id'), body.get('time')
-    if not session_id or time is None:
+    if time is None:
         return _error('Missing required fields', 400)
 
     penalty = body.get('penalty')
@@ -578,10 +579,20 @@ def timer_save_solve():
 
     conn = db.get_db()
     with conn:
+        session = conn.execute(
+            'SELECT event_id, date FROM sessions WHERE id = ?', (session_id,)
+        ).fetchone() if session_id else None
+        # The timer follows the calendar: unless a session was picked by hand (follow_today is
+        # false), solves go into today's session, and the first solve of a new day starts one.
+        if body.get('follow_today') and (session is None or session['date'] != db.today()):
+            event_id = session['event_id'] if session else (body.get('event_id') or '333')
+            session_id = db.todays_session(conn, event_id)
+        elif session is None:
+            return _error('Session not found', 404)
         solve_id = db.add_solve(conn, session_id, raw_time, body.get('scramble') or '', penalty,
                                 dnf=dnf)
         db.recompute_session_stats(conn, session_id)
-    return jsonify(success=True, solve_id=solve_id)
+    return jsonify(success=True, solve_id=solve_id, session_id=session_id)
 
 
 @api.delete('/timer/solve/<int:solve_id>')

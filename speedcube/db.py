@@ -141,6 +141,26 @@ def create_session(conn, event_id='333', notes='', cube_id=None):
     return cur.lastrowid
 
 
+def start_timer_session(conn, event_id):
+    """A new session for the timer. It keeps the cube from the event's latest session, since
+    people usually stick with the same cube from one day to the next."""
+    latest = conn.execute(
+        'SELECT cube_id FROM sessions WHERE event_id = ? ORDER BY date DESC, id DESC LIMIT 1',
+        (event_id,),
+    ).fetchone()
+    cube_id = latest['cube_id'] if latest else None
+    return create_session(conn, event_id, 'Live timer session', cube_id)
+
+
+def todays_session(conn, event_id):
+    """The event's newest session dated today, starting one if there isn't one yet."""
+    row = conn.execute(
+        'SELECT id FROM sessions WHERE event_id = ? AND date = ? ORDER BY id DESC LIMIT 1',
+        (event_id, today()),
+    ).fetchone()
+    return row['id'] if row else start_timer_session(conn, event_id)
+
+
 def add_solve(conn, session_id, time_seconds, scramble='', penalty=None, notes='', dnf=None):
     """Append a solve to a session. `dnf` defaults to whether the penalty is 'DNF'."""
     (last_number,) = conn.execute(

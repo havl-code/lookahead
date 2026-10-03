@@ -979,6 +979,31 @@ textarea {
     font-size: 13px;
 }
 
+.update-banner {
+    padding: 10px 0;
+    font-size: 14px;
+    color: var(--text-primary);
+    background: var(--warning-soft);
+    border-bottom: 1px solid var(--warning);
+}
+
+.metric-detail {
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.metric-detail:empty {
+    display: none;
+}
+
+.scores-note {
+    margin: -4px 0 16px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--text-secondary);
+}
+
 .metric-trend.positive { color: var(--success); }
 .metric-trend.negative { color: var(--danger); }
 .metric-trend.neutral { color: var(--text-tertiary); }

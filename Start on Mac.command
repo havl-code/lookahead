@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Double-click this in Finder to start Speedcube Training Explorer on a Mac. A Terminal window
-# shows the app's messages while it runs, and the app stops by itself shortly after its last
-# browser tab is closed.
+# Double-click this in Finder to start Speedcube Training Explorer on a Mac. It checks that uv
+# is installed and hands over to app.py. A Terminal window shows the app's messages while it
+# runs, and the app stops by itself shortly after its last browser tab is closed.
 cd "$(dirname "$0")" || exit 1
 
 # uv's usual install locations, in case the shell running this hasn't put them on the PATH.

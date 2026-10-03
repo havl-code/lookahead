@@ -60,13 +60,12 @@ The app's folder has a launcher for each operating system. Double-click the one 
 
 | Operating system | Double-click this file |
 | --- | --- |
-| Windows | `Start Speedcube Training Explorer.bat` |
-| Mac | `Start Speedcube Training Explorer.command` |
-| Linux | `Start Speedcube Training Explorer.sh` |
+| Windows | **Start on Windows** |
+| Mac | **Start on Mac** |
+| Linux | **Start on Linux** |
 
-(Your computer may hide the part after the dot, so they can all look like **Start Speedcube
-Training Explorer**. The other two launchers do nothing harmful on your system; just ignore
-them.)
+(There's one per system because each system only runs its own kind of file. They all do the
+same thing: check that uv is installed, then start the app. Just ignore the other two.)
 
 The first time you open a downloaded launcher, your system may check with you first:
 
@@ -81,9 +80,11 @@ The first time you open a downloaded launcher, your system may check with you fi
 
 What happens next depends on your system:
 
-- **Windows:** after the first start, the folder also has a **Speedcube Training Explorer**
-  shortcut with the app's icon. It starts the app with no window at all, so use it from then
-  on. You can drag it to your desktop, or right-click it and pin it to the Start menu.
+- **Windows:** a window shows for a moment (a few seconds the first time, while uv sets
+  things up) and closes once the app is running. After the first start, the folder also has a
+  **Speedcube Training Explorer** shortcut with the app's icon, which starts the app with no
+  window at all, so use it from then on. You can drag it to your desktop, or right-click it
+  and pin it to the Start menu.
 - **Mac:** a Terminal window opens and shows the app's messages. Leave it open while you use the
   app. Once the app stops, you can close it.
 - **Linux:** if you chose **Run**, the app runs in the background with no window apart from
@@ -118,7 +119,8 @@ it. Two features use the internet, and the rest of the app works fine without th
 - **Name Lookup:** finding your name from your WCA ID, for the personalised greeting
 
 Everything else (the timer, sessions, cubes, analytics, charts and CSTimer import) works
-completely offline. The fonts and the charting library are bundled with the app.
+completely offline. The fonts, the charting library and the summary of WCA results that the
+Analytics scores compare with are all bundled with the app.
 
 The app starts in dark mode. Use the sun or moon button at the top right to switch; it
 remembers your choice.
@@ -146,17 +148,21 @@ this version and use **Import backup** with that file.
   terminal from the folder that contains `app.py` (see step 3).
 - **The browser didn't open:** go to `http://127.0.0.1:8577` in your browser. (If you started
   the app from a terminal and it shows a different address there, use that one.)
-- **The app opened at a different address:** if another program is already using the usual
-  address, the app picks a free one instead. That's fine: your data is the same either way.
-  (Starting the app while it's already running just opens another tab of it.)
+- **The app opened at a different address:** if something else is already using the usual
+  address (another program, an out-of-date copy of the app that's still open, or a copy in a
+  different folder), the app picks a free one instead. That's fine: your data is the same
+  either way. (Starting the app while this same copy is already running just opens another
+  tab of it.)
 - **Double-clicking says uv isn't installed:** install it (see step 1), then try again. If you
   only just installed it and it still isn't found, sign out of your computer and back in.
 - **Double-clicking the launcher does nothing, or opens it as text:** some unzip tools and
   file managers stop launchers from running. Start the app with Option B (`uv run app.py`)
   instead; it does exactly the same thing.
 - **Windows: the shortcut with the icon stopped working after moving the folder:** it remembers
-  where the folder was. Delete it and double-click `Start Speedcube Training Explorer.bat`; the
-  app makes a fresh one.
+  where the folder was. Delete it and double-click **Start on Windows**; the app makes a fresh one.
+- **A notice says the app was updated while it was running:** the app's files changed (for
+  example, you updated it) while it was open, so part of it is still the old version. Close
+  all of its tabs, wait a few seconds for it to stop, then start it again.
 - **The app stopped while I was using it:** it stops a few seconds after its last tab closes,
   so start it again. Your data is all saved.
 - **World Rank shows "No data":** this needs an internet connection to reach the public WCA
@@ -171,16 +177,21 @@ this version and use **Import backup** with that file.
 
 ## 🔄 Updating the App
 
-Download the latest ZIP from GitHub and unzip it. To keep your data, copy the `data` folder from
-your old copy into the new one before you start it. Then start the app from the new folder
-as usual; uv picks up any changes to what the app needs by itself.
+First close the app's tabs so the old version stops. Then download the latest ZIP from GitHub
+and unzip it. To keep your data, copy the `data` folder from your old copy into the new one
+before you start it. Then start the app from the new folder as usual; uv picks up any changes
+to what the app needs by itself.
+
+On Windows, the shortcut with the app's icon (and any copy of it on your desktop or Start menu)
+still points to the old folder. Delete it; the new folder makes its own on its first start.
 
 ---
 
 ## 🧹 Uninstalling
 
 Delete the app's folder. If you want to keep your data, copy `data/speedcube.db` (or use
-**Export backup**) first, because it lives inside that folder.
+**Export backup**) first, because it lives inside that folder. On Windows, also delete any
+copies of the app's shortcut you put on your desktop or Start menu.
 
 ---
 

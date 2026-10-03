@@ -61,6 +61,13 @@ function formatTime(seconds) {
     return seconds ? `${seconds.toFixed(2)}s` : '-';
 }
 
+// Today's date on this computer as YYYY-MM-DD, the way session dates are stored
+function localToday() {
+    const now = new Date();
+    const pad = n => String(n).padStart(2, '0');
+    return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+}
+
 // "1 solve", "12 solves", "57,660 solves"
 function countLabel(count, noun) {
     return `${Number(count).toLocaleString('en-NZ')} ${noun}${count === 1 ? '' : 's'}`;

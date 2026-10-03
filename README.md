@@ -38,7 +38,9 @@ and a double-click (or one command) starts it.
 - **Inspection:** an optional inspection countdown (8, 12, 15 or 17 seconds)
 - **Scrambles:** a new random 3x3x3 scramble for every solve
 - **Live Statistics:** solve count, best, mean and Ao5 for the whole session as you solve
+- **A Session a Day:** your first solve each day starts a new session automatically
 - **Penalties:** mark any solve as +2 or DNF afterwards
+- **Cancel Any Time:** press Esc to call off inspection or a solve without saving it
 - **Fullscreen Mode:** hides everything except the scramble and the time
 
 ### 🗂️ Sessions and Cubes
@@ -53,8 +55,10 @@ and a double-click (or one command) starts it.
 
 ### 📈 Analytics
 
-- **Scores:** speed, consistency, accuracy and overall scores, colour-coded from red (needs
-  work) to green (excellent), with how they've changed recently
+- **Scores:** Speed, Consistency and Overall, each the percentage of WCA competitors in the
+  same event that your session beats (using official results from the last two years, bundled
+  with the app so it works offline). Colour-coded from red (needs work) to green (excellent),
+  with how they've changed recently. [How the scores are worked out](docs/SCORES.md)
 - **Insights:** plain-English tips on what to work on next
 - **Charts:** progress over time, time distribution, rolling Ao5 and Ao12, and consistency across
   sessions, for a whole event or a single session
@@ -92,10 +96,10 @@ and a double-click (or one command) starts it.
 2. **Download this project:** on GitHub, click **Code**, then **Download ZIP**, and unzip it.
 3. **Start the app** in whichever of these two ways you prefer. Both work on Windows, Mac and
    Linux, and do exactly the same thing:
-   - **Double-click the launcher** in the project folder: `Start Speedcube Training
-     Explorer.bat` on Windows, `.command` on a Mac, or `.sh` on Linux. On Windows, the first
-     start also adds a **Speedcube Training Explorer** shortcut with the app's icon, which
-     starts it with no window at all. Put it on your desktop if you like.
+   - **Double-click the launcher for your system** in the project folder: **Start on
+     Windows**, **Start on Mac** or **Start on Linux**. On Windows, the first start also adds
+     a **Speedcube Training Explorer** shortcut with the app's icon, which starts it with no
+     window at all. Put it on your desktop if you like.
    - **Or type one command** in a terminal opened in the project folder:
 
      ```bash
@@ -111,6 +115,19 @@ itself. The first time you open a downloaded launcher, your system may ask you t
 
 ## 🆕 What's New
 
+- **Start with a double-click.** Every system has its own launcher (**Start on Windows**,
+  **Start on Mac**, **Start on Linux**), and on Windows the app adds a shortcut with its icon
+  that opens it with no window at all. Typing `uv run app.py` still works too.
+- **Stops by itself.** Close the app's last browser tab and it shuts down a few seconds later,
+  so there's no terminal to keep open.
+- **Scores that mean something.** Speed and Consistency now show the percentage of WCA
+  competitors in the same event that your session beats, based on official results from the
+  last two years. Speed is measured the way the WCA ranks each event, and Consistency is
+  measured in a way that doesn't mistake improvement for inconsistency. The old Accuracy score
+  is gone. See [How the Analytics Scores Work](docs/SCORES.md).
+- **A session a day.** The timer starts a new session with your first solve of each day.
+- **Cancel with Esc.** Changed your mind during inspection, or even mid-solve? Press Esc and
+  nothing is saved.
 - **Runs on your computer, not just in the browser.** The older browser-only version (2.x)
   kept your data inside the browser, so clearing your browsing data (or switching browsers)
   could lose it. Now a small server on your computer saves everything to one file,
@@ -147,15 +164,32 @@ itself. The first time you open a downloaded launcher, your system may ask you t
 ### Using the Timer
 
 1. Open the **Timer** tab. (3x3x3 is the only event with a timer so far.)
-2. Pick a session, or choose **+ Create New Session**. Your first solve starts a session
-   automatically if you don't have one.
+2. Just start solving. The timer keeps one session per day: your first solve of the day
+   starts a new session automatically (with the same cube as your last one), and the rest of
+   the day's solves go into it. To add solves to an older session instead, pick it from the
+   menu; choose **+ Create New Session** to split a day into more than one session.
 3. Press the **space bar** to start inspection (if it's turned on).
 4. Hold the **space bar** until the time turns green.
 5. Let go to start solving.
 6. Press the **space bar** again to stop.
 
+Changed your mind? Press **Esc** during inspection (or even mid-solve) to cancel. Nothing is
+saved, and you keep the same scramble for your next try.
+
 Every solve is saved automatically. The list shows your latest 50 solves; use the menu next to
 a solve to mark it +2 or DNF, and the gear icon for timer settings.
+
+### Reading Your Analytics
+
+1. Open the **Analytics** tab and pick an event.
+2. The three cards show your **Speed**, **Consistency** and **Overall** scores: the percentage
+   of WCA competitors in that event your recent sessions beat. Under each score is the figure
+   behind it from your latest session, such as your typical Ao5.
+3. The arrows show whether your last 10 sessions are better or worse than the 10 before them,
+   and the insights suggest what to work on.
+4. Use the **Charts for** menu to narrow the charts down to a single session.
+
+[How the Analytics Scores Work](docs/SCORES.md) explains exactly how each score is worked out.
 
 ### Importing CSTimer Data
 
@@ -198,6 +232,9 @@ footer to download everything as one JSON file, and **Import backup** to restore
   rankings. The WCA has no official rankings API; this community project is built from the
   WCA's own results export, and the WCA's developer documentation points people to it. These
   are only used for the world rank and the name lookup. Everything else works offline.
+- **WCA results summary:** the Analytics scores compare with a summary of official results
+  from the [WCA results export](https://www.worldcubeassociation.org/export/results), which is
+  bundled with the app (see [docs/SCORES.md](docs/SCORES.md)).
 
 ---
 
@@ -205,9 +242,9 @@ footer to download everything as one JSON file, and **Import backup** to restore
 
 ```text
 speedcube-training-explorer/
-├── Start Speedcube Training Explorer.bat      # Double-click to start on Windows
-├── Start Speedcube Training Explorer.command  # Double-click to start on a Mac
-├── Start Speedcube Training Explorer.sh       # Double-click to start on Linux
+├── Start on Windows.bat   # Double-click to start on Windows
+├── Start on Mac.command   # Double-click to start on a Mac
+├── Start on Linux.sh      # Double-click to start on Linux
 ├── app.py                 # The app itself; `uv run app.py` starts it on any system
 ├── pyproject.toml         # Python version and dependencies (uv.lock pins exact versions)
 ├── speedcube/             # The Python backend
@@ -215,6 +252,8 @@ speedcube-training-explorer/
 │   ├── api.py             # The JSON API the web page talks to (/api/...)
 │   ├── db.py              # SQLite tables, connections and core data operations
 │   ├── stats.py           # Ao5/Ao12 rules and chart maths
+│   ├── scores.py          # The Analytics scores (see docs/SCORES.md)
+│   ├── wca_reference.json # Summary of WCA results the scores compare against
 │   ├── wca.py             # WCA rank and percentile, and WCA ID lookup
 │   ├── cstimer.py         # Reading CSTimer exports
 │   └── backup.py          # JSON backup export and restore
@@ -230,8 +269,13 @@ speedcube-training-explorer/
 │   │   │   app.js, theme.js   # One file per tab or feature
 │   ├── images/            # Logo, favicon and the shortcut icon (app-icon.ico)
 │   └── vendor/            # Bundled Plotly.js and Space Grotesk (with their licences)
-├── docs/screenshots/      # Images used in this README
+├── tools/
+│   └── build_wca_reference.py  # Rebuilds wca_reference.json from a WCA results export
+├── docs/
+│   ├── SCORES.md          # How the Analytics scores are worked out
+│   └── screenshots/       # Images used in this README
 ├── data/                  # Your database (created on first start, never committed)
+├── Speedcube Training Explorer.lnk  # Windows only: made on first start, never committed
 ├── LICENSE
 └── README.md, INSTALLATION.md
 ```
@@ -253,10 +297,14 @@ Feel free to open an issue for bugs or feature requests too.
 - **[Unofficial WCA Public API](https://wca-rest-api.robiningelbrecht.be/)** by
   [Robin Ingelbrecht](https://github.com/robiningelbrecht): the community-run rankings API
   this app relies on, built from the official WCA results export
-- **WCA:** the World Cube Association, for their official database, results export and rankings
+- **WCA:** the World Cube Association, for their official database, results export and rankings.
+  The Analytics scores use the results export: this information is based on competition
+  results owned and maintained by the World Cube Association, published at
+  <https://worldcubeassociation.org/results> as of September 30, 2026.
 - **CSTimer:** for the inspiration and the export format
 - **Plotly.js:** for the interactive charts
 - **Space Grotesk:** by Florian Karsten, the font the app uses
+- **Claude Code:** occasional help along the way
 
 ---
 

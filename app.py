@@ -4,13 +4,16 @@ Start it with:
 
     uv run app.py
 
-or by double-clicking the launcher for your system ("Start Speedcube Training Explorer" .bat on
-Windows, .command on a Mac, .sh on Linux), which does the same. That starts a small server on
-this computer and opens the app in your browser. Your data is saved in
-data/speedcube.db next to this file. The app stops by itself shortly after its last browser tab
-is closed.
+or by double-clicking the launcher for your system ("Start on Windows.bat", "Start on
+Mac.command" or "Start on Linux.sh"), which runs the same command. That starts a small server
+on this computer and opens the app in your browser. Your data is saved in data/speedcube.db
+next to this file. The app stops by itself shortly after its last browser tab is closed.
+
+The launchers only check that uv is installed and hand over to this file, which handles
+anything that differs between systems (see leave_console_window and make_shortcut).
 """
 
+import hashlib
 import json
 import logging
 import os
@@ -36,6 +39,8 @@ PROJECT_DIR = Path(__file__).resolve().parent
 DATABASE = PROJECT_DIR / 'data' / 'speedcube.db'
 SHORTCUT = PROJECT_DIR / 'Speedcube Training Explorer.lnk'
 SHORTCUT_ICON = PROJECT_DIR / 'web' / 'images' / 'app-icon.ico'
+# "Start on Windows.bat" sets this, so the app knows it's in a console window it can leave.
+LAUNCHER_ENV = 'SPEEDCUBE_LAUNCHER'
 
 # The app may be running without a terminal window, so it stops itself once no page is open.
 STARTUP_WAIT = 120     # seconds to wait for the browser to open the first page
@@ -69,10 +74,28 @@ class OpenPages:
             return self._count == 0 and time.monotonic() - self._empty_since > wait
 
 
-def add_lifetime_routes(app, pages):
+def code_version():
+    """A fingerprint of the server's code. The server only loads its code when it starts, so
+    comparing this with the one taken at startup tells whether the code has changed since."""
+    speedcube = PROJECT_DIR / 'speedcube'
+    files = [PROJECT_DIR / 'app.py', *speedcube.glob('*.py'), speedcube / 'wca_reference.json']
+    digest = hashlib.sha256()
+    try:
+        for path in sorted(files):
+            digest.update(path.name.encode())
+            digest.update(path.read_bytes())
+    except OSError:
+        return 'unknown'
+    return digest.hexdigest()[:16]
+
+
+def add_lifetime_routes(app, pages, version):
+    # Identifies this copy of the app: which data it uses, and whether its code is out of date
+    # (the page shows a notice if so, since its own files would be newer than the server).
     @app.get('/api/app')
     def which_app():
-        return jsonify(app=APP_NAME)
+        return jsonify(app=APP_NAME, database=str(DATABASE), version=version,
+                       stale=code_version() != version)
 
     # Each open page keeps this event stream open. Writing to a closed page fails, which ends the
     # generator, so the count drops within KEEPALIVE_EVERY seconds of a tab closing.
@@ -105,18 +128,43 @@ def port_is_free(port):
     return True
 
 
-def already_running(url):
+def already_running(url, version):
+    """Whether this same app, with the same data and up-to-date code, is serving at `url`."""
     try:
         with urllib.request.urlopen(f'{url}/api/app', timeout=2) as response:
-            return json.load(response).get('app') == APP_NAME
-    except (OSError, ValueError, AttributeError):
+            info = json.load(response)
+    except (OSError, ValueError):
         return False
+    return (isinstance(info, dict) and info.get('app') == APP_NAME
+            and info.get('database') == str(DATABASE) and info.get('version') == version
+            and not info.get('stale'))
+
+
+def leave_console_window():
+    """When "Start on Windows.bat" started the app, start it again with pythonw (Python without
+    a console window) and return True, so this copy can exit and the launcher's window closes.
+    The window is still there for the first start, while uv shows its setup progress."""
+    if sys.platform != 'win32' or os.environ.get(LAUNCHER_ENV) != 'windows':
+        return False
+    pythonw = Path(sys.executable).with_name('pythonw.exe')
+    if not pythonw.exists():
+        return False
+    env = {key: value for key, value in os.environ.items() if key != LAUNCHER_ENV}
+    try:
+        subprocess.Popen(
+            [str(pythonw), str(PROJECT_DIR / 'app.py')], cwd=PROJECT_DIR, env=env,
+            stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP,
+        )
+    except OSError:
+        return False  # carry on in the window instead
+    return True
 
 
 def make_shortcut():
     """On Windows, put a shortcut with the app's icon in the project folder. It starts the app
-    through uvw, which opens no terminal window at all. A shortcut holds this computer's paths, so
-    it can't come with the download; the .bat launcher does, and this runs on its first start."""
+    through uvw, which opens no window at all. A shortcut holds this computer's paths, so it
+    can't come with the download; the .bat launcher does, and this runs on its first start."""
     uvw = shutil.which('uvw')
     if sys.platform != 'win32' or SHORTCUT.exists() or not uvw:
         return
@@ -138,20 +186,25 @@ def make_shortcut():
 
 
 def main():
+    if leave_console_window():
+        return
+
+    version = code_version()
     usual_url = f'http://{HOST}:{PORT}'
     port_free = port_is_free(PORT)
     # Starting the app again while it's open (say, a double-click on the shortcut) just opens
-    # another tab of the running one.
-    if not port_free and already_running(usual_url):
+    # another tab of the running one, as long as it's this same copy of the app and up to date.
+    if not port_free and already_running(usual_url, version):
         webbrowser.open(usual_url)
         return
 
     app = create_app(DATABASE)
     pages = OpenPages()
-    add_lifetime_routes(app, pages)
+    add_lifetime_routes(app, pages, version)
     # Werkzeug logs every request by default; keep the console to warnings and errors.
     logging.getLogger('werkzeug').setLevel(logging.WARNING)
-    # If the usual port is taken by another program, let the OS pick one.
+    # If the usual port is taken (by another program, an out-of-date copy of the app or another
+    # copy of it in a different folder), let the OS pick a free one.
     server = make_server(HOST, PORT if port_free else 0, app, threaded=True)
     url = f'http://{HOST}:{server.server_port}'
 
