@@ -25,9 +25,36 @@ def round2(value):
     return round_to(value, 2)
 
 
-def ms_to_seconds(ms):
-    """A stored millisecond value as seconds rounded to 2 dp, passing None through."""
-    return round2(ms / 1000) if ms is not None else None
+# Results are written the way the WCA records them. Regulation 9f1: a single under 10 minutes is
+# truncated (cut off, not rounded) to the hundredth of a second, and an average or mean under 10
+# minutes is rounded to the nearest hundredth. Regulation 9f2: from 10 minutes up, singles are
+# truncated and averages rounded to the whole second. Averages are worked out from the truncated
+# singles, as they are from the times recorded in a competition.
+TEN_MINUTES_MS = 10 * 60 * 1000
+
+
+def wca_single_ms(ms):
+    """A single as the WCA records it, in ms: truncated to the hundredth, or the second from 10
+    minutes up. None (a DNF) passes through."""
+    if ms is None:
+        return None
+    ms = int(ms)
+    return ms - ms % 1000 if ms >= TEN_MINUTES_MS else ms - ms % 10
+
+
+def single_seconds(ms):
+    """A single result in seconds, as the WCA records it (Regulations 9f1 and 9f2)."""
+    return round2(wca_single_ms(ms) / 1000) if ms is not None else None
+
+
+def average_seconds(ms):
+    """An average or mean in seconds, as the WCA records it: rounded to the hundredth, or to the
+    second from 10 minutes up, with halves going up."""
+    if ms is None:
+        return None
+    if ms >= TEN_MINUTES_MS:
+        return float(round_half_up(ms / 1000))
+    return round_half_up(ms / 10) / 100
 
 
 def effective_time_ms(solve):
@@ -43,7 +70,8 @@ def wca_average(window):
     The best and worst results are dropped (a DNF counts as the worst) and the rest are
     averaged. Two or more DNFs make the whole average a DNF, which is returned as None.
     """
-    times = [effective_time_ms(s) for s in window if not s['dnf']]
+    # Averaged from the singles as the WCA records them (truncated, Regulation 9f1)
+    times = [wca_single_ms(effective_time_ms(s)) for s in window if not s['dnf']]
     if len(window) - len(times) > 1:
         return None
     middle = sorted(times)[1:len(window) - 1]
@@ -58,7 +86,7 @@ def trimmed_average(results, trim=1):
     dnfs = sum(r is None for r in results)
     if dnfs > trim:
         return None
-    times = sorted(r for r in results if r is not None)
+    times = sorted(wca_single_ms(r) for r in results if r is not None)
     kept = times[trim:len(results) - trim]
     return sum(kept) / len(kept)
 

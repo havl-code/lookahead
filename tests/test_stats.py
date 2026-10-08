@@ -38,9 +38,30 @@ class TestRounding:
     def test_round2_rounds_halves_up(self):
         assert stats.round2(2.125) == 2.13  # 2.125 is exact in binary, so this is a true half
 
-    def test_ms_to_seconds(self):
-        assert stats.ms_to_seconds(12340) == 12.34
-        assert stats.ms_to_seconds(None) is None
+
+
+class TestWcaRecording:
+    """Regulations 9f1 and 9f2: singles are truncated, averages rounded, to the hundredth under
+    10 minutes and to the second from 10 minutes up."""
+
+    @pytest.mark.parametrize('ms, expected', [(12345, 12340), (12349, 12340), (12340, 12340),
+                                              (599999, 599990), (612345, 612000), (None, None)])
+    def test_singles_are_truncated(self, ms, expected):
+        assert stats.wca_single_ms(ms) == expected
+
+    def test_single_seconds(self):
+        assert stats.single_seconds(12345) == 12.34
+        assert stats.single_seconds(612345) == 612.0
+        assert stats.single_seconds(None) is None
+
+    @pytest.mark.parametrize('ms, expected', [(12345, 12.35), (12344.9, 12.34), (10009, 10.01),
+                                              (612345, 612.0), (612500, 613.0), (None, None)])
+    def test_averages_are_rounded(self, ms, expected):
+        assert stats.average_seconds(ms) == expected
+
+    def test_averages_use_truncated_singles(self):
+        # Five singles of 10.009 s are each recorded as 10.00, so the average is 10.00, not 10.01
+        assert stats.wca_average(solves(10.009, 10.009, 10.009, 10.009, 10.009)) == 10000
 
 
 class TestEffectiveTime:
@@ -81,19 +102,22 @@ class TestWcaAverage:
 
 class TestTrimmedAverage:
     def test_drops_the_best_and_worst(self):
-        assert stats.trimmed_average([10, 11, 12, 13, 14]) == 12
+        assert stats.trimmed_average([10000, 11000, 12000, 13000, 14000]) == 12000
 
     def test_one_dnf_is_the_worst(self):
-        assert stats.trimmed_average([10, None, 12, 13, 14]) == 13
+        assert stats.trimmed_average([10000, None, 12000, 13000, 14000]) == 13000
 
     def test_two_dnfs_make_a_dnf(self):
-        assert stats.trimmed_average([10, None, 12, None, 14]) is None
+        assert stats.trimmed_average([10000, None, 12000, None, 14000]) is None
+
+    def test_singles_are_truncated_first(self):
+        assert stats.trimmed_average([10009] * 5) == 10000
 
     def test_a_wider_trim(self):
         # Ao50 and Ao100 drop 5% from each end, so a trim of 3 or 5
-        assert stats.trimmed_average([1, 2, 3, 50, 50, 50, 97, 98, 99], trim=3) == 50
-        assert stats.trimmed_average([None] * 3 + [10] * 6, trim=3) == 10
-        assert stats.trimmed_average([None] * 4 + [10] * 6, trim=3) is None
+        assert stats.trimmed_average([1000, 2000, 3000, 50000, 50000, 50000, 97000, 98000, 99000], trim=3) == 50000
+        assert stats.trimmed_average([None] * 3 + [10000] * 6, trim=3) == 10000
+        assert stats.trimmed_average([None] * 4 + [10000] * 6, trim=3) is None
 
     def test_matches_wca_average(self):
         rows = solves(10, 'DNF', (12, '+2'), 13, 11)
@@ -103,16 +127,17 @@ class TestTrimmedAverage:
 
 class TestRollingWcaAverages:
     def test_windows_fill_up_before_a_value_shows(self):
-        assert stats.rolling_wca_averages([1, 2, 3, 4, 5, 6], 5) == [None, None, None, None, 3, 4]
-        assert stats.rolling_wca_averages([1, 2, 3, 4, 5, 6], 12) == [None] * 6
+        results = [1000, 2000, 3000, 4000, 5000, 6000]
+        assert stats.rolling_wca_averages(results, 5) == [None, None, None, None, 3000, 4000]
+        assert stats.rolling_wca_averages(results, 12) == [None] * 6
 
     def test_ao12_window(self):
-        assert stats.rolling_wca_averages(list(range(1, 13)), 12)[-1] == 6.5
+        assert stats.rolling_wca_averages([s * 1000 for s in range(1, 13)], 12)[-1] == 6500
 
     def test_dnfs_count_the_wca_way(self):
-        averages = stats.rolling_wca_averages([10, 20, None, 10, 20, None, 15], 5)
+        averages = stats.rolling_wca_averages([10000, 20000, None, 10000, 20000, None, 15000], 5)
         # 10, 20, DNF, 10, 20: one DNF, dropped as the worst; then 20, DNF, 10, 20, DNF: two DNFs
-        assert averages[4] == pytest.approx(50 / 3)
+        assert averages[4] == pytest.approx(50000 / 3)
         assert averages[5] is None
         assert averages[6] is None  # DNF, 10, 20, DNF, 15 still has two
 

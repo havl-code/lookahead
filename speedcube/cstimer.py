@@ -18,7 +18,7 @@ from collections import Counter
 from datetime import datetime, timezone
 
 from . import db
-from .stats import round_half_up
+from .stats import average_seconds, round_half_up, single_seconds, wca_single_ms
 from .validation import MAX_SOLVE_SECONDS
 
 # CSTimer's penalty codes, and how each is stored here (OK, +2, or DNF)
@@ -142,8 +142,8 @@ def preview(data, conn=None):
     sessions = []
     for key, name, rows in _sessions(data):
         solves, unreadable = _readable_solves(rows)
-        times = [(s['time_ms'] + (2000 if s['penalty'] == '+2' else 0)) / 1000
-                 for s in solves if not s['dnf']]
+        results = [wca_single_ms(s['time_ms'] + (2000 if s['penalty'] == '+2' else 0))
+                   for s in solves if not s['dnf']]
         days = sorted({local_date(s['unix']) for s in solves})
         sessions.append({
             'key': key,
@@ -154,9 +154,9 @@ def preview(data, conn=None):
             'last_date': days[-1] if days else None,
             'days': len(days),
             'already_imported': len(already_imported(conn, solves)) if conn is not None else 0,
-            'best': min(times) if times else None,
-            'worst': max(times) if times else None,
-            'mean': sum(times) / len(times) if times else None,
+            'best': single_seconds(min(results)) if results else None,
+            'worst': single_seconds(max(results)) if results else None,
+            'mean': average_seconds(sum(results) / len(results)) if results else None,
         })
     return sessions
 

@@ -529,7 +529,7 @@ function startTimer() {
             showToast(`This solve has passed ${WCA_LIMIT}. That's fine for practice, and the ` +
                       'timer keeps going until 2 hours.', { duration: 15000 });
         }
-        display.textContent = TimerState.settings.hideTimer ? 'solve' : elapsed.toFixed(2);
+        display.textContent = TimerState.settings.hideTimer ? 'solve' : formatClock(truncatedSeconds(elapsed * 1000));
     }, 10);
 }
 
@@ -554,18 +554,21 @@ function stopTimer() {
     if (!TimerState.running) return;
 
     TimerState.running = false;
-    TimerState.time = (performance.now() - TimerState.startTime) / 1000;
+    // Whole milliseconds, cut off rather than rounded, so the time saved can never show a
+    // hundredth more than the one on screen
+    const ms = Math.floor(performance.now() - TimerState.startTime);
+    TimerState.time = ms / 1000;
     TimerState.showingResult = true;
 
     const display = document.getElementById('timer-display');
     display.className = 'timer-display stopped';
-    display.textContent = TimerState.time.toFixed(2);
+    display.textContent = formatClock(truncatedSeconds(ms));
 
     // Save straight away (with any +2 from inspection), then show a new scramble while keeping
     // the time on screen
     const penalty = TimerState.pendingPenalty;
     TimerState.pendingPenalty = 'OK';
-    if (penalty === '+2') display.textContent = `${(TimerState.time + 2).toFixed(2)} (+2)`;
+    if (penalty === '+2') display.textContent = `${formatClock(truncatedSeconds(ms + 2000))} (+2)`;
     saveSolve(penalty);
     setTimeout(generateNewScramble, 100);
 }
@@ -627,7 +630,7 @@ async function sendSolve(solve) {
 // worst of the last 5 solves (a DNF counts as the worst), and two or more DNFs make it a DNF.
 function updateTimerStats() {
     const stats = TimerState.stats || { solve_count: 0 };
-    const show = value => (value == null ? '-' : value.toFixed(2));
+    const show = value => (value == null ? '-' : formatClock(value));
 
     document.getElementById('stat-count').textContent = Number(stats.solve_count).toLocaleString('en-NZ');
     document.getElementById('stat-best').textContent = show(stats.best);
@@ -651,13 +654,13 @@ function updateSolvesList() {
     }
 
     // Highlight the session's best and worst results
-    const matches = (solve, target) => target != null && !solve.dnf && solve.time.toFixed(2) === target.toFixed(2);
+    const matches = (solve, target) => target != null && !solve.dnf && Math.abs(solve.time - target) < 0.005;
 
     container.innerHTML = TimerState.currentSolves.map(solve => {
         const isBest = matches(solve, stats.best);
         const isWorst = matches(solve, stats.worst) && stats.solve_count > 2;
 
-        let timeDisplay = solve.dnf ? 'DNF' : solve.time.toFixed(2);
+        let timeDisplay = solve.dnf ? 'DNF' : formatClock(solve.time);
         if (solve.penalty === '+2' && !solve.dnf) {
             timeDisplay += ' (+2)';
         }

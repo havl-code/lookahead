@@ -58,9 +58,10 @@ class TestPreview:
 
     def test_summaries_include_plus_two_and_leave_out_dnfs(self, cstimer_data):
         session1 = cstimer.preview(cstimer_data)[0]
-        # Readable results: 12.345, 11 + 2, a DNF, 13, and 14
-        assert (session1['best'], session1['worst']) == (12.345, 14.0)
-        assert session1['mean'] == pytest.approx((12.345 + 13 + 13 + 14) / 4)
+        # Readable results: 12.345, 11 + 2, a DNF, 13, and 14. As the WCA records them, the
+        # single is 12.34 and the mean (12.34 + 13 + 13 + 14) / 4 = 13.085 rounds to 13.09
+        assert (session1['best'], session1['worst']) == (12.34, 14.0)
+        assert session1['mean'] == 13.09
 
     def test_counts_readable_and_unreadable_rows(self, cstimer_data):
         session1 = cstimer.preview(cstimer_data)[0]

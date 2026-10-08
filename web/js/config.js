@@ -79,8 +79,30 @@ function getEventName(eventId) {
     return EVENT_NAMES[eventId] || eventId;
 }
 
+// A result in seconds as cubers write it: 12.34, then 1:23.45 from a minute up, whole seconds
+// from 10 minutes up (10:12), as the WCA records them (Regulation 9f2), and hours from an hour
+// up (1:02:05). The server already truncates singles and rounds averages (Regulation 9f1);
+// this only lays them out.
+function formatClock(seconds) {
+    if (seconds < 60) return seconds.toFixed(2);
+    const minutes = Math.floor(seconds / 60);
+    const rest = seconds - minutes * 60;
+    if (seconds < 600) return `${minutes}:${rest.toFixed(2).padStart(5, '0')}`;
+    const secs = String(Math.round(rest)).padStart(2, '0');
+    if (minutes < 60) return `${minutes}:${secs}`;
+    return `${Math.floor(minutes / 60)}:${String(minutes % 60).padStart(2, '0')}:${secs}`;
+}
+
+// The same, with an "s" for times under a minute (12.34s), or "-" when there's no time
 function formatTime(seconds) {
-    return seconds ? `${seconds.toFixed(2)}s` : '-';
+    if (!seconds) return '-';
+    return seconds < 60 ? `${seconds.toFixed(2)}s` : formatClock(seconds);
+}
+
+// A running time in ms, in seconds cut off (not rounded) the way the WCA records a single, so
+// the timer never shows a hundredth the solve didn't reach
+function truncatedSeconds(ms) {
+    return ms >= 600000 ? Math.floor(ms / 1000) : Math.floor(ms / 10) / 100;
 }
 
 // Today's date on this computer as YYYY-MM-DD, the way session dates are stored

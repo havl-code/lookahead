@@ -11,17 +11,18 @@ from collections import defaultdict
 
 from flask import Blueprint, Response, current_app, jsonify, request
 
-from . import backup, cstimer, db, scores, validation, wca
-from .db import NON_DNF_RESULT_MS, RESULT_MS
+from . import backup, cstimer, db, scores, stats, validation, wca
+from .db import NON_DNF_RESULT_MS, NON_DNF_WCA_RESULT_MS, RESULT_MS
 from .validation import MAX_CUBE_TEXT, MAX_NOTES, MAX_SCRAMBLE, ValidationError
 from .stats import (
+    average_seconds,
     box_stats,
     filter_distribution_outliers,
-    ms_to_seconds,
     population_std_dev,
     rolling_wca_averages,
     round2,
     round_to,
+    single_seconds,
 )
 
 api = Blueprint('api', __name__)
@@ -54,19 +55,14 @@ LATEST_EVENT_ALL_RESULTS_SQL = (
 )
 
 
-def _seconds_or_none(results_ms):
-    return [None if r is None else r / 1000 for r in results_ms]
-
-
 def _rolling_chart(results_ms):
     """The rolling chart's data: each result in seconds (None for a DNF) with the WCA-style
     rolling Ao5 and Ao12 through it."""
     if len(results_ms) < 12:
         return _error('Need at least 12 solves', 400)
-    to_seconds = lambda values: [None if v is None else round2(v / 1000) for v in values]
-    return jsonify(times=_seconds_or_none(results_ms),
-                   rolling5=to_seconds(rolling_wca_averages(results_ms, 5)),
-                   rolling12=to_seconds(rolling_wca_averages(results_ms, 12)))
+    return jsonify(times=[single_seconds(r) for r in results_ms],
+                   rolling5=[average_seconds(a) for a in rolling_wca_averages(results_ms, 5)],
+                   rolling12=[average_seconds(a) for a in rolling_wca_averages(results_ms, 12)])
 
 
 def _json_body():
@@ -119,7 +115,7 @@ def get_stats():
 
     solves = conn.execute(
         f'SELECT COUNT(*) AS total, MIN({NON_DNF_RESULT_MS}) AS best_ms, '
-        f'AVG({NON_DNF_RESULT_MS}) AS mean_ms '
+        f'AVG({NON_DNF_WCA_RESULT_MS}) AS mean_ms '
         f'FROM solves so JOIN sessions se ON se.id = so.session_id {where}',
         params,
     ).fetchone()
@@ -128,8 +124,9 @@ def get_stats():
         'SELECT COUNT(*) AS total, COALESCE(SUM(is_active), 0) AS active FROM cubes'
     ).fetchone()
 
-    pb = solves['best_ms'] / 1000 if solves['best_ms'] is not None else None
-    average = solves['mean_ms'] / 1000 if solves['mean_ms'] is not None else None
+    # As the WCA records them (Regulations 9f1 and 9f2), which is also how they're ranked
+    pb = single_seconds(solves['best_ms'])
+    average = average_seconds(solves['mean_ms'])
 
     estimate = None
     if pb and event_id in WCA_RANKED_EVENTS:
@@ -140,8 +137,8 @@ def get_stats():
     estimate = estimate or {}
 
     return jsonify(
-        pb=round2(pb),
-        average=round2(average),
+        pb=pb,
+        average=average,
         total_solves=solves['total'],
         total_sessions=total_sessions,
         total_cubes=cubes['total'],
@@ -185,10 +182,10 @@ def get_sessions():
             'date': s['date'],
             'event_id': s['event_id'],
             'solve_count': s['solve_count'] or 0,
-            'best_single': ms_to_seconds(s['best_single']),
-            'session_mean': ms_to_seconds(s['session_mean']),
-            'ao5': ms_to_seconds(s['ao5']),
-            'ao12': ms_to_seconds(s['ao12']),
+            'best_single': single_seconds(s['best_single']),
+            'session_mean': average_seconds(s['session_mean']),
+            'ao5': average_seconds(s['ao5']),
+            'ao12': average_seconds(s['ao12']),
             'notes': s['notes'] or '',
         }
         for s in rows
@@ -235,7 +232,7 @@ def _result_seconds(solve):
     """A solve row's result in seconds (+2 included), or None for a DNF."""
     if solve['dnf']:
         return None
-    return round2((solve['time_ms'] + (2000 if solve['penalty'] == '+2' else 0)) / 1000)
+    return single_seconds(solve['time_ms'] + (2000 if solve['penalty'] == '+2' else 0))
 
 
 @api.get('/sessions/<int:session_id>/solves')
@@ -386,9 +383,9 @@ def chart_progress():
     return jsonify(data=[
         {
             'date': s['date'],
-            'best': ms_to_seconds(s['best_single']),
-            'mean': ms_to_seconds(s['session_mean']),
-            'ao5': ms_to_seconds(s['ao5']),
+            'best': single_seconds(s['best_single']),
+            'mean': average_seconds(s['session_mean']),
+            'ao5': average_seconds(s['ao5']),
         }
         for s in sessions
     ])
@@ -416,13 +413,13 @@ def chart_session_progress():
     total, completed = 0, 0
     for solve, result, ao5 in zip(solves, results, ao5s):
         if result is not None:
-            total += result
+            total += stats.wca_single_ms(result)
             completed += 1
         data.append({
             'solve_number': solve['solve_number'],
-            'time': round2(result / 1000) if result is not None else None,
-            'mean': round2(total / completed / 1000) if completed else None,
-            'ao5': round2(ao5 / 1000) if ao5 is not None else None,
+            'time': single_seconds(result),
+            'mean': average_seconds(total / completed) if completed else None,
+            'ao5': average_seconds(ao5),
         })
     return jsonify(data=data)
 
@@ -547,10 +544,10 @@ def analytics_heatmap():
             'session_id': s['id'],
             'date': s['date'],
             'solve_count': s['solve_count'] or 0,
-            'best': round2(best / 1000) if best else None,
-            'mean': round2(mean / 1000) if mean else None,
-            'ao5': round2(s['ao5'] / 1000) if s['ao5'] else None,
-            'ao12': round2(s['ao12'] / 1000) if s['ao12'] else None,
+            'best': single_seconds(best),
+            'mean': average_seconds(mean),
+            'ao5': average_seconds(s['ao5']),
+            'ao12': average_seconds(s['ao12']),
             'typical_result': round2(session_scores['typical_result']),
             'spread_percent': round_to(spread * 100, 1) if spread is not None else None,
             **{key: round_to(session_scores[key], 1)
@@ -720,19 +717,17 @@ def timer_session_solves(session_id):
     for s in rows:
         penalty = s['penalty'] or 'OK'
         dnf = bool(s['dnf'])
-        time = s['time_ms'] / 1000
-        if penalty == '+2' and not dnf:
-            time += 2
+        time = single_seconds(s['time_ms'] + (2000 if penalty == '+2' and not dnf else 0))
         solves.append({
             'id': s['id'], 'solve_number': s['solve_number'], 'time': time, 'penalty': penalty,
             'dnf': dnf, 'scramble': s['scramble'] or '',
         })
     stats = {
         'solve_count': session['solve_count'] if session else 0,
-        'best': ms_to_seconds(session['best_single']) if session else None,
-        'worst': ms_to_seconds(session['worst_single']) if session else None,
-        'mean': ms_to_seconds(session['session_mean']) if session else None,
-        'ao5': ms_to_seconds(session['ao5']) if session else None,
+        'best': single_seconds(session['best_single']) if session else None,
+        'worst': single_seconds(session['worst_single']) if session else None,
+        'mean': average_seconds(session['session_mean']) if session else None,
+        'ao5': average_seconds(session['ao5']) if session else None,
     }
     return jsonify(solves=solves, stats=stats)
 

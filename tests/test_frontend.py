@@ -1,5 +1,6 @@
 """Checks on the page's own files that don't need a browser."""
 
+import json
 import re
 import shutil
 import subprocess
@@ -83,3 +84,23 @@ def test_scripts_load_in_order():
     assert html.index('theme-init.js') < html.index('</head>')
     on_disk = {path.name for path in (WEB / 'js').glob('*.js')}
     assert set(scripts) == on_disk  # every script is loaded, and none is missing
+
+
+@pytest.mark.skipif(shutil.which('node') is None, reason='Node.js is not installed')
+def test_times_are_written_the_cubing_way():
+    """config.js's formatClock and truncatedSeconds, run in Node: 12.34, 1:23.45, whole seconds
+    from 10 minutes (Regulation 9f2), hours from an hour, and running times cut off, not rounded."""
+    config = (WEB / 'js' / 'config.js').read_text(encoding='utf-8')
+    start = config.index('function formatClock')
+    code = config[start:config.index('\n}\n', config.index('function truncatedSeconds')) + 3]
+    script = code + '''
+console.log(JSON.stringify([
+    [9.87, 59.99, 60, 83.45, 599.99, 600, 612, 3725].map(formatClock),
+    [9.87, 0, 83.45].map(formatTime),
+    [9877.3, 9869.99, 599999, 612345].map(truncatedSeconds)]));'''
+    result = subprocess.run(['node', '-e', script], capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+    assert json.loads(result.stdout) == [
+        ['9.87', '59.99', '1:00.00', '1:23.45', '9:59.99', '10:00', '10:12', '1:02:05'],
+        ['9.87s', '-', '1:23.45'],
+        [9.87, 9.86, 599.99, 612]]

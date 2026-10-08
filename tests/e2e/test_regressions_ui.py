@@ -101,8 +101,8 @@ def test_penalties_can_be_changed_from_the_sessions_tab(app_page, live_app):
     assert app_page.locator('#solves-tbody select').count() == 2
 
 
-@finding('13', 'the timer rounds 12.345 s up to 12.35 (Regulation 9f1 truncates to 12.34)')
 def test_the_timer_list_truncates_singles(app_page, live_app):
+    """Finding 13 (fixed): the timer rounds 12.345 s up to 12.35 (Regulation 9f1 truncates to 12.34)."""
     seed_session(live_app, [12.345], date=app_page.evaluate('localToday()'))
     open_tab(app_page, 'timer')
     app_page.wait_for_selector('.solve-item')

@@ -99,7 +99,11 @@ and a double-click (or one command) starts it.
 - **Averages:** Ao5 and Ao12 drop your best and worst results and average the rest. A DNF
   counts as your worst result, so one DNF is dropped, but two or more make the average a DNF.
 - **Penalties:** a +2 is added to the solve's time everywhere it counts: PBs, means,
-  averages, charts and the world rank comparison.
+  averages, charts, and the world rank comparison.
+- **Rounding:** as the WCA records results (Regulations 9f1 and 9f2), a single is cut off (not
+  rounded) at the hundredth of a second, and averages and means are worked out from those
+  singles and rounded to the nearest hundredth. From 10 minutes up, both go to whole seconds.
+  Times over a minute are written as minutes and seconds (1:23.45).
 
 ---
 

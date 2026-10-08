@@ -371,21 +371,21 @@ def test_progress_chart_shows_the_latest_sessions(app, client):
 
 # ---- 13: WCA rounding (Regulations 9f1 and 9f2) ----
 
-@finding('13', 'singles are rounded, not truncated to hundredths')
 def test_singles_are_truncated(app, client):
+    """Finding 13 (fixed): singles are rounded, not truncated to hundredths."""
     sid = seed_session(app, [12.345])
     assert client.get('/api/sessions').get_json()[0]['best_single'] == 12.34
     assert client.get(f'/api/sessions/{sid}/solves').get_json()['solves'][0]['result_seconds'] == 12.34
 
 
-@finding('13', 'averages come from the raw times, not the truncated singles')
 def test_averages_use_truncated_singles(app, client):
+    """Finding 13 (fixed): averages come from the raw times, not the truncated singles."""
     seed_session(app, [10.009] * 5)  # each single is 10.00, so the Ao5 is 10.00, not 10.01
     assert client.get('/api/sessions').get_json()[0]['ao5'] == 10.0
 
 
-@finding('13', 'results of 10 minutes or more keep their hundredths')
 def test_long_singles_are_truncated_to_seconds(app, client):
+    """Finding 13 (fixed): results of 10 minutes or more keep their hundredths."""
     seed_session(app, [612.345], event='777')
     assert client.get('/api/sessions').get_json()[0]['best_single'] == 612.0
 

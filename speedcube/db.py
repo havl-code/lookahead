@@ -22,6 +22,12 @@ from .stats import round_half_up, wca_average
 RESULT_MS = "(time_ms + CASE WHEN penalty = '+2' THEN 2000 ELSE 0 END)"
 # The same, but NULL for a DNF, so aggregates like MIN and AVG skip DNFs.
 NON_DNF_RESULT_MS = f'(CASE WHEN dnf THEN NULL ELSE {RESULT_MS} END)'
+# A result as the WCA records it (truncated to the hundredth, or the second from 10 minutes up;
+# see stats.wca_single_ms), NULL for a DNF. Means are averaged from these, as in competition.
+NON_DNF_WCA_RESULT_MS = (
+    f'(CASE WHEN dnf THEN NULL WHEN {RESULT_MS} >= 600000 THEN {RESULT_MS} - {RESULT_MS} % 1000 '
+    f'ELSE {RESULT_MS} - {RESULT_MS} % 10 END)'
+)
 
 # NUMERIC affinity keeps whole-number stats (e.g. best_single) as integers and the rest
 # (means, averages) as floats, which is also how the old in-browser version stored them.
@@ -92,7 +98,8 @@ ADDED_COLUMNS = {
 # Bump this whenever recompute_session_stats changes, so the stats already stored on existing
 # sessions get recalculated once on the next start. It's kept in SQLite's user_version.
 # 1: Ao5/Ao12 follow the WCA rules for DNFs (3.0).
-STATS_VERSION = 1
+# 2: means and averages use singles truncated the WCA way (Regulation 9f1) (3.1).
+STATS_VERSION = 2
 
 
 def connect(path):
@@ -228,7 +235,7 @@ def recompute_session_stats(conn, session_id):
     result = NON_DNF_RESULT_MS
     totals = conn.execute(
         f'SELECT COUNT(*) AS solve_count, MIN({result}) AS best_single, '
-        f'MAX({result}) AS worst_single, AVG({result}) AS session_mean '
+        f'MAX({result}) AS worst_single, AVG({NON_DNF_WCA_RESULT_MS}) AS session_mean '
         f'FROM solves WHERE session_id = ?',
         (session_id,),
     ).fetchone()

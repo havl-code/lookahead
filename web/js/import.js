@@ -92,8 +92,8 @@ async function previewSessions() {
                         <strong>${escapeHtml(session.name)}</strong>
                         <span class="session-meta">
                             ${countLabel(session.solve_count, 'solve')}${session.days ? ` | ${escapeHtml(formatDateRange(session.first_date, session.last_date))}` : ''}${session.days > 1 ? ` (${session.days} days)` : ''} |
-                            Best: ${session.best ? session.best.toFixed(2) + 's' : 'N/A'} |
-                            Mean: ${session.mean ? session.mean.toFixed(2) + 's' : 'N/A'}
+                            Best: ${session.best ? formatTime(session.best) : 'N/A'} |
+                            Mean: ${session.mean ? formatTime(session.mean) : 'N/A'}
                         </span>
                         ${notes.length ? `<span class="session-meta session-warning">${notes.join('. ')}.</span>` : ''}
                     </label>
