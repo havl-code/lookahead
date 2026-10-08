@@ -41,7 +41,9 @@ and a double-click (or one command) starts it.
 - **WCA Inspection:** an optional 15 second inspection that follows the WCA rules: starting
   after 15 seconds is a +2, and after 17 a DNF. The 8 and 12 second calls show on screen, and
   can also beep or be spoken
-- **Scrambles:** a new random 3x3x3 scramble for every solve
+- **Scrambles:** a new 25 move 3x3x3 scramble for every solve. They're random-move, as the
+  WCA's own were in its 2006 Regulations, rather than random-state like official WCA scrambles
+  today, so they mix the cube well for practice but aren't exactly like competition ones
 - **Live Statistics:** solve count, best, mean and Ao5 for the whole session as you solve
 - **A Session a Day:** your first solve each day starts a new session automatically
 - **Penalties:** mark any solve as +2 or DNF afterwards

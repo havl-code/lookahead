@@ -43,41 +43,6 @@ function inspectionPenalty(elapsedSeconds) {
     return 'OK';
 }
 
-// Generate a random-move 3x3x3 scramble
-function generate333Scramble() {
-    const moves = ['R', 'L', 'U', 'D', 'F', 'B'];
-    const modifiers = ['', "'", '2'];
-    const scrambleLength = 20;
-
-    const scramble = [];
-    let lastMove = '';
-    let lastAxis = '';
-
-    for (let i = 0; i < scrambleLength; i++) {
-        let move;
-        let axis;
-
-        do {
-            move = moves[Math.floor(Math.random() * moves.length)];
-            axis = getAxis(move);
-        } while (move === lastMove || axis === lastAxis);
-
-        const modifier = modifiers[Math.floor(Math.random() * modifiers.length)];
-        scramble.push(move + modifier);
-
-        lastMove = move;
-        lastAxis = axis;
-    }
-
-    return scramble.join(' ');
-}
-
-function getAxis(move) {
-    if (move === 'R' || move === 'L') return 'RL';
-    if (move === 'U' || move === 'D') return 'UD';
-    if (move === 'F' || move === 'B') return 'FB';
-}
-
 // The timer settings live in the app's database (see /api/settings/timer), so they're the same
 // after a reload, in another browser, and after restoring a backup.
 let timerSettingsLoaded = false;
@@ -155,7 +120,7 @@ function resetTimerDisplay() {
 }
 
 function generateNewScramble() {
-    TimerState.scramble = generate333Scramble();
+    TimerState.scramble = generateScramble(TimerState.event);
     document.getElementById('scramble-text').textContent = TimerState.scramble;
 }
 

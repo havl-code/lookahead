@@ -36,8 +36,8 @@ def test_timer_settings_survive_a_reload(app_page):
     assert app_page.evaluate('TimerState.settings.hideStats') is True
 
 
-@finding('8', 'scrambles never have two moves on the same axis in a row, such as R L')
 def test_scrambles_allow_opposite_faces_but_never_cancel(app_page):
+    """Finding 8 (fixed): scrambles never have two moves on the same axis in a row, such as R L."""
     counts = app_page.evaluate("""() => {
         const make = typeof generateScramble === 'function'
             ? () => generateScramble('333') : generate333Scramble;
