@@ -11,14 +11,13 @@ These are the only two features in the app that need internet access. Everything
 works fully offline.
 """
 
+import bisect
 import http.client
 import json
 import time
 import urllib.error
 import urllib.parse
 import urllib.request
-
-from .stats import round_half_up
 
 # NOTE: this moved from the `master` branch and `/api` path to the `v1` branch in 2025. If
 # rankings ever silently stop loading again, check https://wca-rest-api.robiningelbrecht.be/
@@ -79,57 +78,34 @@ def get_rankings(conn, region, rank_type, event):
     return data.get('items') or [], data.get('total') or None
 
 
-def approximate_percentile(time_seconds):
-    """Fallback percentile table for when live rankings can't be fetched."""
-    percentile_map = [
-        (6, 0.01, 'Elite (World-class)'),
-        (8, 0.1, 'Elite (National champion level)'),
-        (10, 1, 'Advanced (Continental finalist)'),
-        (12, 5, 'Advanced (Regional finalist)'),
-        (15, 15, 'Intermediate (Very fast)'),
-        (20, 40, 'Intermediate (Fast)'),
-        (25, 60, 'Beginner-Intermediate (Above average)'),
-        (30, 75, 'Beginner (Average competitor)'),
-        (40, 90, 'Beginner (Learning)'),
-    ]
-    for threshold, percentile, description in percentile_map:
-        if time_seconds <= threshold:
-            return {'percentile': percentile, 'rank_estimate': None, 'description': description}
-    return {'percentile': 95, 'rank_estimate': None, 'description': 'Beginner'}
+def estimate_rank(conn, time_seconds, event='333', rank_type='single', region='world'):
+    """Where a time would rank, from the live rankings.
 
+    The rankings list the fastest 1,000 people in each event, plus the total number ranked.
+    Within those 1,000 the rank is exact: one more than the number of people strictly faster
+    (so ties share a rank, as in WCA rankings), and the percentile is that rank out of everyone
+    ranked. Beyond the 1,000th there's nothing sound to estimate from (the field spreads out
+    differently in every event), so the answer is only that the time is outside the top 1,000.
+    Without any rankings (offline, with nothing cached) the answer is None.
 
-def estimate_percentile(conn, time_seconds, event='333', rank_type='single', region='world'):
-    """Estimate world rank/percentile by comparing against live WCA rankings: an exact count
-    within the top 1000, statistical extrapolation beyond that."""
-    items, api_total = get_rankings(conn, region, rank_type, event)
-
-    # The API always returns the ranked time (in centiseconds) in `best`, single or average alike.
-    times = [best / 100 for best in (item.get('best') or 0 for item in items) if best > 0]
+    Returns {'rank', 'percentile', 'outside_top'}: rank and percentile are None outside the
+    listed times, and outside_top is how many are listed then (else None).
+    """
+    items, total = get_rankings(conn, region, rank_type, event)
+    # The ranked time is in centiseconds in `best`, for singles and averages alike. Sorting
+    # means the order the rows arrive in doesn't matter.
+    times = sorted(best / 100 for best in (item.get('best') or 0 for item in items) if best > 0)
     if not times:
-        return approximate_percentile(time_seconds)
+        return None
 
-    faster_count = sum(1 for t in times if t < time_seconds)
-    estimated_total = api_total or 200000
-
-    if faster_count >= len(times):
-        last_time = times[-1]
-        if time_seconds < 10:
-            estimated_rank = round_half_up(1000 + (time_seconds - last_time) * 2000)
-        elif time_seconds < 15:
-            estimated_rank = round_half_up(5000 + (time_seconds - 10) * 5000)
-        elif time_seconds < 20:
-            estimated_rank = round_half_up(30000 + (time_seconds - 15) * 10000)
-        elif time_seconds < 30:
-            estimated_rank = round_half_up(80000 + (time_seconds - 20) * 8000)
-        else:
-            estimated_rank = round_half_up(150000 + (time_seconds - 30) * 2000)
-        estimated_rank = min(estimated_rank, estimated_total)
-        return {
-            'percentile': estimated_rank / estimated_total * 100,
-            'rank_estimate': estimated_rank,
-        }
-
-    return {'percentile': faster_count / estimated_total * 100, 'rank_estimate': faster_count + 1}
+    faster = bisect.bisect_left(times, time_seconds)
+    if faster < len(times) or (total is not None and total <= len(times)):
+        # Within the listed times, or the list is everyone ranked (so even slower than all of
+        # them is a real rank)
+        rank = faster + 1
+        percentile = min(100.0, rank / total * 100) if total else None
+        return {'rank': rank, 'percentile': percentile, 'outside_top': None}
+    return {'rank': None, 'percentile': None, 'outside_top': len(times)}
 
 
 def lookup_person(wca_id):

@@ -26,7 +26,10 @@ and a double-click (or one command) starts it.
 ### 📊 Dashboard
 
 - **Personal Bests:** your best single for every event you've logged, with its date and scramble
-- **World Rank:** your estimated WCA world rank and percentile, based on your best single
+- **World Rank:** where your best single would rank in the WCA world rankings, with its
+  percentile, for every ranked timed event (One-Handed and the blindfolded events included). The
+  rankings list the fastest 1,000 people in each event, so a slower single shows as outside the
+  top 1,000 rather than a guess
 - **At a Glance:** your average, total solves, sessions and cubes
 - **Recent Sessions:** your latest sessions, sortable by any column
 - **Quick Actions:** jump straight into the timer, or add a session or cube

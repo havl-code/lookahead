@@ -74,19 +74,42 @@ class TestRankingsCache:
         assert wca.get_rankings(conn, 'world', 'single', '333') == ([{'best': 500}], None)
 
 
+def ranking(times_cs, total):
+    return {'items': [{'best': t} for t in times_cs], 'total': total}
+
+
 class TestEstimate:
-    def test_rank_within_the_top_1000(self, conn, fake_wca):
-        fake_wca.replies[RANKING] = {'items': [{'best': t} for t in (500, 600, 700, 800)], 'total': 1000}
-        assert wca.estimate_percentile(conn, 6.5, '333')['rank_estimate'] == 3
+    def test_rank_and_percentile_within_the_listed_times(self, conn, fake_wca):
+        fake_wca.replies[RANKING] = ranking((500, 600, 700, 800), 1000)
+        assert wca.estimate_rank(conn, 6.5, '333') == {'rank': 3, 'percentile': 0.3, 'outside_top': None}
 
     def test_ties_share_a_rank(self, conn, fake_wca):
-        fake_wca.replies[RANKING] = {'items': [{'best': t} for t in (500, 600, 600, 800)], 'total': 1000}
-        assert wca.estimate_percentile(conn, 6.0, '333')['rank_estimate'] == 2
+        fake_wca.replies[RANKING] = ranking((500, 600, 600, 800), 1000)
+        assert wca.estimate_rank(conn, 6.0, '333')['rank'] == 2
+
+    def test_equal_to_the_last_listed_time_is_still_inside(self, conn, fake_wca):
+        fake_wca.replies[RANKING] = ranking((500, 600, 700, 800), 1000)
+        assert wca.estimate_rank(conn, 8.0, '333')['rank'] == 4
+
+    def test_slower_than_every_listed_time_gets_no_guess(self, conn, fake_wca):
+        fake_wca.replies[RANKING] = ranking((500, 600, 700, 800), 1000)
+        assert wca.estimate_rank(conn, 9.0, '333') == {'rank': None, 'percentile': None, 'outside_top': 4}
+
+    def test_when_the_list_is_everyone_ranked_last_place_is_real(self, conn, fake_wca):
+        fake_wca.replies[RANKING] = ranking((500, 600), 2)
+        assert wca.estimate_rank(conn, 9.0, '333') == {'rank': 3, 'percentile': 100.0, 'outside_top': None}
+
+    def test_without_a_total_there_is_no_percentile(self, conn, fake_wca):
+        fake_wca.replies[RANKING] = {'items': [{'best': 500}, {'best': 700}]}
+        assert wca.estimate_rank(conn, 6.0, '333') == {'rank': 2, 'percentile': None, 'outside_top': None}
 
     def test_rows_without_a_time_are_ignored(self, conn, fake_wca):
-        fake_wca.replies[RANKING] = {'items': [{'best': 500}, {'best': 0}, {}, {'best': 700}],
-                                     'total': 1000}
-        assert wca.estimate_percentile(conn, 6.0, '333')['rank_estimate'] == 2
+        fake_wca.replies[RANKING] = {'items': [{'best': 500}, {'best': 0}, {}, {'best': 700}], 'total': 1000}
+        assert wca.estimate_rank(conn, 6.0, '333')['rank'] == 2
+
+    def test_no_rankings_at_all(self, conn, fake_wca):
+        fake_wca.replies[RANKING] = OSError('offline')
+        assert wca.estimate_rank(conn, 6.0, '333') is None
 
 
 class TestLookupPerson:

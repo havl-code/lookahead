@@ -117,7 +117,7 @@ it. It also refuses requests from other websites open in your browser, so a page
 read or change your data (see [Security](README.md#-security) in the README). Two features use
 the internet, and the rest of the app works fine without them:
 
-- **World Rank:** your estimated WCA world rank and percentile on the dashboard
+- **World Rank:** where your best single would rank in the WCA world rankings, on the dashboard
 - **Name Lookup:** finding your name from your WCA ID, for the personalised greeting
 
 Everything else (the timer, sessions, cubes, analytics, charts, and CSTimer import) works
@@ -169,6 +169,9 @@ this version and use **Import backup** with that file.
   so start it again. Your data is all saved.
 - **World Rank shows "No data":** this needs an internet connection to reach the public WCA
   rankings. Everything else still works without one.
+- **World Rank says "Outside the top 1,000":** the WCA rankings list the fastest 1,000 people in
+  each event, so the app can only place a time among them. Rather than guess further back, it
+  says your best single is outside the top 1,000.
 - **WCA ID setup fails:** check the ID format (four digits, four letters, two digits, such as
   `2003POCH01`) and your internet connection. The app looks your name up on the official WCA
   website.

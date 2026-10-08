@@ -68,11 +68,22 @@ async function loadStats() {
             data.total_cubes > 0 ? () => switchTab('cubes') : null);
         document.getElementById('stat-cubes-note').textContent = `${data.active_cubes || 0} active`;
 
-        setStat('stat-rank', data.wca_rank != null ? `~${Number(data.wca_rank).toLocaleString('en-NZ')}` : 'No data');
-        // Anything under 0.01% (faster than nearly everyone ranked) rounds to 0, so show 0.01%
-        document.getElementById('stat-rank-note').textContent = data.wca_percentile != null
-            ? `Top ${Math.max(data.wca_percentile, 0.01)}% worldwide, by best single`
-            : 'based on your best single';
+        // The rankings only list the fastest 1,000 in each event, so a slower best single gets
+        // no rank rather than a guess (see wca.estimate_rank)
+        const rankNote = document.getElementById('stat-rank-note');
+        if (data.wca_rank != null) {
+            setStat('stat-rank', `~${Number(data.wca_rank).toLocaleString('en-NZ')}`);
+            // Anything under 0.01% (faster than nearly everyone ranked) rounds to 0, so show 0.01%
+            rankNote.textContent = data.wca_percentile != null
+                ? `Top ${Math.max(data.wca_percentile, 0.01)}% worldwide, by best single`
+                : 'by best single';
+        } else if (data.wca_outside_top != null) {
+            setStat('stat-rank', `${Number(data.wca_outside_top).toLocaleString('en-NZ')}+`);
+            rankNote.textContent = `Outside the top ${Number(data.wca_outside_top).toLocaleString('en-NZ')}, so no estimate`;
+        } else {
+            setStat('stat-rank', 'No data');
+            rankNote.textContent = 'based on your best single';
+        }
     } catch (error) {
         console.error('Failed to load stats:', error);
     }

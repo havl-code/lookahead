@@ -18,6 +18,33 @@ def test_the_dashboard_loads_cleanly(app_page):
     assert app_page.errors == []
 
 
+def test_world_rank(app_page, live_app, fake_wca):
+    """Inside the top 1,000 a best single gets its rank and percentile; beyond, no guess; and
+    with no rankings at all, no data."""
+    fake_wca.replies['rank/world/single/333.json'] = {
+        'items': [{'best': t} for t in range(300, 1300)], 'total': 250000}
+    fake_wca.replies['rank/world/single/222.json'] = {
+        'items': [{'best': t} for t in range(100, 1100)], 'total': 150000}
+    fake_wca.replies['rank/world/single/444.json'] = OSError('offline')
+    seed_session(live_app, [5.0], date='2026-09-01')
+    seed_session(live_app, [30.0], event='222', date='2026-09-01')
+    seed_session(live_app, [60.0], event='444', date='2026-09-01')
+    page = app_page
+    page.reload()
+    page.wait_for_function("() => document.getElementById('stat-rank').textContent.startsWith('~')")
+    assert page.text_content('#stat-rank') == '~201'
+    assert page.text_content('#stat-rank-note') == 'Top 0.08% worldwide, by best single'
+
+    page.select_option('#event-select', '222')
+    page.wait_for_function("() => document.getElementById('stat-rank').textContent === '1,000+'")
+    assert page.text_content('#stat-rank-note') == 'Outside the top 1,000, so no estimate'
+
+    page.select_option('#event-select', '444')
+    page.wait_for_function("() => document.getElementById('stat-rank').textContent === 'No data'")
+    assert page.text_content('#stat-rank-note') == 'based on your best single'
+    assert page.errors == []
+
+
 def test_timer(app_page, live_app):
     page = app_page
     open_tab(page, 'timer')

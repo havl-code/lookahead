@@ -26,9 +26,11 @@ from .stats import (
 
 api = Blueprint('api', __name__)
 
-# Events the WCA rankings API has single rankings for (used for the Dashboard rank stat).
+# Events the WCA rankings API has timed single rankings for (used for the Dashboard rank
+# stat). Multi-Blind is ranked by points and Fewest Moves by moves, so neither is here.
 WCA_RANKED_EVENTS = {
-    '222', '333', '444', '555', '666', '777', 'pyram', 'skewb', 'minx', 'sq1', 'clock',
+    '222', '333', '444', '555', '666', '777', '333oh', '333bf', '444bf', '555bf',
+    'pyram', 'skewb', 'minx', 'sq1', 'clock',
 }
 
 # The biggest lists and charts only ever send this many solves, so even a session with tens of
@@ -108,14 +110,13 @@ def get_stats():
     pb = solves['best_ms'] / 1000 if solves['best_ms'] is not None else None
     average = solves['mean_ms'] / 1000 if solves['mean_ms'] is not None else None
 
-    wca_rank = wca_percentile = None
+    estimate = None
     if pb and event_id in WCA_RANKED_EVENTS:
         try:
-            estimate = wca.estimate_percentile(conn, pb, event_id, 'single')
-            wca_rank = estimate.get('rank_estimate') or None
-            wca_percentile = estimate.get('percentile')
+            estimate = wca.estimate_rank(conn, pb, event_id, 'single')
         except Exception:  # the WCA comparison is best-effort; never fail the whole dashboard
             current_app.logger.exception('WCA rank estimate failed')
+    estimate = estimate or {}
 
     return jsonify(
         pb=round2(pb),
@@ -124,8 +125,9 @@ def get_stats():
         total_sessions=total_sessions,
         total_cubes=cubes['total'],
         active_cubes=cubes['active'],
-        wca_rank=wca_rank,
-        wca_percentile=round2(wca_percentile),
+        wca_rank=estimate.get('rank'),
+        wca_percentile=round2(estimate.get('percentile')),
+        wca_outside_top=estimate.get('outside_top'),
         event_id=event_id,
     )
 

@@ -39,7 +39,7 @@ class TestStats:
         data = client.get('/api/stats').get_json()
         assert data == {'pb': None, 'average': None, 'total_solves': 0, 'total_sessions': 0,
                         'total_cubes': 0, 'active_cubes': 0, 'wca_rank': None,
-                        'wca_percentile': None, 'event_id': '333'}
+                        'wca_percentile': None, 'wca_outside_top': None, 'event_id': '333'}
 
     def test_totals_for_one_event(self, app, client, fake_wca):
         fake_wca.replies['rank/world/single/333.json'] = OSError('offline')
@@ -75,7 +75,7 @@ class TestStats:
 
         def broken(*args, **kwargs):
             raise RuntimeError('unexpected')
-        monkeypatch.setattr(wca, 'estimate_percentile', broken)
+        monkeypatch.setattr(wca, 'estimate_rank', broken)
         seed_session(app, [10])
         response = client.get('/api/stats?event_id=333')
         assert response.status_code == 200 and response.get_json()['wca_rank'] is None

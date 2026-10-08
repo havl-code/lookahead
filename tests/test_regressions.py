@@ -269,16 +269,16 @@ def rankings(times_cs, total):
     return {'items': [{'best': t} for t in times_cs], 'total': total}
 
 
-@finding('4', 'past the top 1,000, every event is ranked with 3x3x3 figures')
 def test_no_rank_is_guessed_past_the_top_1000(app, client, fake_wca):
+    """Finding 4 (fixed): past the top 1,000, every event is ranked with 3x3x3 figures."""
     fake_wca.replies['rank/world/single/222.json'] = rankings(range(40, 1040), 120000)
     seed_session(app, [30.0], event='222')  # far slower than the 1,000th best (10.39 s)
     data = client.get('/api/stats?event_id=222').get_json()
     assert data['wca_rank'] is None and data['wca_percentile'] is None
 
 
-@finding('4', 'the rank depends on the order of the rows')
 def test_rank_does_not_depend_on_row_order(conn, fake_wca):
+    """Finding 4 (fixed): the rank depends on the order of the rows."""
     from speedcube import wca
     times = [t for t in range(300, 800) for _ in (1, 2)]  # the 1,000th best is 7.99 s
     answers = []
@@ -286,29 +286,29 @@ def test_rank_does_not_depend_on_row_order(conn, fake_wca):
         conn.execute('DELETE FROM wca_cache')
         conn.commit()
         fake_wca.replies['rank/world/single/333.json'] = rankings(order, 250000)
-        answers.append(wca.estimate_percentile(conn, 9.0, '333'))  # past the top 1,000
+        answers.append(wca.estimate_rank(conn, 9.0, '333'))  # past the top 1,000
     assert answers[0] == answers[1]
 
 
-@finding('4a', 'offline, a percentile is made up from a 3x3x3 table')
 def test_offline_there_is_no_rank_or_percentile(app, client, fake_wca):
+    """Finding 4a (fixed): offline, a percentile is made up from a 3x3x3 table."""
     fake_wca.replies['rank/world/single/333.json'] = OSError('offline')
     seed_session(app, [14.0])
     data = client.get('/api/stats?event_id=333').get_json()
     assert data['wca_rank'] is None and data['wca_percentile'] is None
 
 
-@finding('4b', 'rank 1 comes out as 0%')
 def test_the_percentile_counts_your_own_rank(app, client, fake_wca):
+    """Finding 4b (fixed): rank 1 comes out as 0%."""
     fake_wca.replies['rank/world/single/333.json'] = rankings(range(300, 1300), 2000)
     seed_session(app, [2.0])
     data = client.get('/api/stats?event_id=333').get_json()
     assert data['wca_rank'] == 1 and data['wca_percentile'] == 0.05  # rank 1 of 2,000
 
 
-@finding('4c', 'One-Handed and the blindfolded events have no world rank')
 @pytest.mark.parametrize('event', ['333oh', '333bf', '444bf', '555bf'])
 def test_more_events_get_a_world_rank(app, client, fake_wca, event):
+    """Finding 4c (fixed): one-Handed and the blindfolded events have no world rank."""
     fake_wca.replies[f'rank/world/single/{event}.json'] = rankings(range(500, 1500), 50000)
     seed_session(app, [5.5], event=event)
     assert client.get(f'/api/stats?event_id={event}').get_json()['wca_rank'] == 51
