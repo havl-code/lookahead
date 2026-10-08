@@ -435,15 +435,18 @@ Feel free to open an issue for bugs or feature requests too.
 ### Running the Tests
 
 The tests use [pytest](https://docs.pytest.org/) and run on temporary databases, so they never
-touch your own data or need the internet. From the project folder:
+touch your own data or need the internet. They're only for working on the app, so the ZIP
+download leaves them out (along with `.github/` and `tools/`): clone the repository with git to
+get them. Then, from the project folder:
 
 ```bash
-uv run pytest
+uv run --dev pytest
 ```
 
-A browser smoke test also clicks through every tab in Chromium, using
-[Playwright](https://playwright.dev/python/). It's left out of the everyday run because it's
-slower and needs a browser download. To run it, download the browser once, then run the tests
+`--dev` adds pytest, which `uv run app.py` doesn't install, since using the app never needs
+it. Browser tests also click through every tab in Chromium, using
+[Playwright](https://playwright.dev/python/). They're left out of the everyday run because
+they're slower and need a browser download. To run it, download the browser once, then run the tests
 marked `e2e`:
 
 ```bash

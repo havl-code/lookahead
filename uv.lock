@@ -668,6 +668,8 @@ dev = [
     { name = "pytest-cov" },
 ]
 e2e = [
+    { name = "pytest" },
+    { name = "pytest-cov" },
     { name = "pytest-playwright" },
 ]
 
@@ -679,7 +681,11 @@ dev = [
     { name = "pytest", specifier = ">=9.1.1" },
     { name = "pytest-cov", specifier = ">=7.1.0" },
 ]
-e2e = [{ name = "pytest-playwright", specifier = ">=0.9.0" }]
+e2e = [
+    { name = "pytest", specifier = ">=9.1.1" },
+    { name = "pytest-cov", specifier = ">=7.1.0" },
+    { name = "pytest-playwright", specifier = ">=0.9.0" },
+]
 
 [[package]]
 name = "text-unidecode"

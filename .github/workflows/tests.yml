@@ -26,7 +26,7 @@ jobs:
           python-version: ${{ matrix.python }}
           enable-cache: true
       # --locked fails the run if uv.lock is out of step with pyproject.toml
-      - run: uv run --locked pytest
+      - run: uv run --locked --dev pytest
 
   browser:
     name: Browser smoke test (Chromium)

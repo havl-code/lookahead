@@ -1,7 +1,7 @@
 """Browser tests: the app served on a temporary database, driven in Chromium by Playwright.
 
 They only run when asked for (`uv run --group e2e pytest -m e2e`), and are skipped quietly when
-Playwright isn't installed, so the everyday `uv run pytest` stays fast. The first time, the
+Playwright isn't installed, so the everyday `uv run --dev pytest` stays fast. The first time, the
 browser itself needs downloading once: `uv run --group e2e playwright install chromium`.
 """
 
