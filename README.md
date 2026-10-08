@@ -48,6 +48,9 @@ and a double-click (or one command) starts it.
 - **A Session a Day:** your first solve each day starts a new session automatically
 - **Penalties:** mark any solve as +2 or DNF afterwards
 - **Cancel Any Time:** press Esc to call off inspection or a solve without saving it
+- **Long Solves:** a solve can run for up to 2 hours. Past 60 minutes (the WCA's longest time
+  limit) a notice says so, and at 2 hours the timer stops and saves a DNF, as a judge does
+  when a solve reaches its time limit
 - **Fullscreen Mode:** hides everything except the scramble and the time
 - **Settings That Stick:** inspection, its sound, and hiding the timer or stats are saved with
   your data, so they're the same next time, in any browser, and in your backups

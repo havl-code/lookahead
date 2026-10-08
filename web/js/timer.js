@@ -511,6 +511,7 @@ function startTimer() {
         display.textContent = 'solve';
     }
 
+    let noticeShown = false;
     const interval = setInterval(() => {
         if (!TimerState.running) {
             clearInterval(interval);
@@ -518,8 +519,35 @@ function startTimer() {
         }
 
         const elapsed = (performance.now() - TimerState.startTime) / 1000;
+        if (elapsed >= MAX_SOLVE_SECONDS) {
+            clearInterval(interval);
+            stopAtTimeLimit();
+            return;
+        }
+        if (elapsed >= WCA_LONGEST_LIMIT_SECONDS && !noticeShown) {
+            noticeShown = true;
+            showToast(`This solve has passed ${WCA_LIMIT}. That's fine for practice, and the ` +
+                      'timer keeps going until 2 hours.', { duration: 15000 });
+        }
         display.textContent = TimerState.settings.hideTimer ? 'solve' : elapsed.toFixed(2);
     }, 10);
+}
+
+// At 2 hours, the longest solve the app keeps, the timer stops by itself and the attempt is a
+// DNF, the way a judge stops a solve that reaches its time limit and records a DNF
+// (Regulation A1a4).
+function stopAtTimeLimit() {
+    TimerState.running = false;
+    TimerState.time = MAX_SOLVE_SECONDS;
+    TimerState.showingResult = true;
+    TimerState.pendingPenalty = 'OK';
+    const display = document.getElementById('timer-display');
+    display.className = 'timer-display stopped';
+    display.textContent = 'DNF';
+    showToast('The solve reached 2 hours, the longest the app keeps, so the timer stopped and saved ' +
+              'it as a DNF, as a judge does when a solve reaches its time limit.', { type: 'error', duration: 20000 });
+    saveSolve('DNF');
+    setTimeout(generateNewScramble, 100);
 }
 
 function stopTimer() {

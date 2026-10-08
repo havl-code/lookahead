@@ -279,6 +279,9 @@ async function addSolveToSession(event) {
         if (result.error) {
             showError(result.error);
         } else {
+            if (timeSeconds >= WCA_LONGEST_LIMIT_SECONDS) {
+                showToast(`Solve added. It's past ${WCA_LIMIT}, but that's fine for practice.`, { duration: 10000 });
+            }
             document.getElementById('add-solve-form').reset();
             await loadSessionSolvesPage(true);
             loadSessionsTab();

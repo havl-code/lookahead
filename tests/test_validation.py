@@ -163,3 +163,18 @@ class TestRestoreTidiesUp:
     def test_a_backup_without_an_app_name_still_restores(self, client, backup_v3):
         del backup_v3['app']
         assert client.post('/api/backup/import', data=upload(json.dumps(backup_v3))).status_code == 200
+
+
+def test_the_page_uses_the_same_time_limit():
+    """config.js stops the timer at the same 2 hours the server accepts, and knows the WCA's
+    longest limit (60 minutes, Regulation H1b) for its notice."""
+    config = (PROJECT_DIR / 'web' / 'js' / 'config.js').read_text(encoding='utf-8')
+
+    def seconds(name):
+        product = 1
+        for factor in re.search(rf'const {name} = ([\d\s*]+);', config).group(1).split('*'):
+            product *= int(factor)
+        return product
+
+    assert seconds('MAX_SOLVE_SECONDS') == validation.MAX_SOLVE_SECONDS
+    assert seconds('WCA_LONGEST_LIMIT_SECONDS') == 60 * 60

@@ -26,6 +26,14 @@ const AppState = {
     allCubes: []
 };
 
+// How long a solve can be. 2 hours is this app's limit for practice (speedcube/validation.py
+// has the same number). The WCA's default time limit is 10 minutes an attempt (Regulation
+// A1a1), and its longest is 60 minutes, for Multi-Blind (H1b), so a solve past that gets a
+// friendly notice rather than being stopped.
+const MAX_SOLVE_SECONDS = 2 * 60 * 60;
+const WCA_LONGEST_LIMIT_SECONDS = 60 * 60;
+const WCA_LIMIT = "60 minutes, the WCA's longest time limit (for Multi-Blind)";
+
 // Colour palette for chart data series only (UI colours live in the CSS). It leads with the
 // app's orange accent, and the others are easy to tell apart, including for colour-blind users.
 const COLORS = {

@@ -120,6 +120,41 @@ def test_a_failed_save_can_be_retried(app_page, live_app):
     assert page.dialogs == []
 
 
+def test_the_two_hour_limit(app_page, live_app):
+    """Past 60 minutes (the WCA's longest limit) there's a notice; at 2 hours the timer stops and
+    saves a DNF, as a judge does at a time limit (Regulation A1a4)."""
+    page = app_page
+    open_timer(page)
+    page.keyboard.press('Space')
+    page.clock.run_for(1000)
+    page.keyboard.down('Space')
+    page.clock.run_for(400)
+    page.keyboard.up('Space')
+    page.clock.fast_forward(60 * 60 * 1000 + 1000)
+    page.wait_for_selector('.toast >> text=This solve has passed 60 minutes')
+    assert solves_in(live_app) == []  # still going
+    page.clock.fast_forward(60 * 60 * 1000)
+    page.wait_for_selector('.solve-item')
+    solve = solves_in(live_app)[0]
+    assert (solve['penalty'], solve['dnf'], solve['time_ms']) == ('DNF', 1, 2 * 60 * 60 * 1000)
+    assert page.text_content('#timer-display') == 'DNF'
+    assert page.locator('[role="alert"] >> text=reached 2 hours').count() == 1
+
+
+def test_long_solves_added_by_hand(app_page, live_app):
+    seed_session(live_app, [], date='2026-09-01')
+    page = app_page
+    open_tab(page, 'sessions')
+    page.click('#sessions-tbody button:has-text("View")')
+    page.fill('#new-solve-time', '3900')
+    page.click('#add-solve-form button[type=submit]')
+    page.wait_for_selector(".toast >> text=It's past 60 minutes")
+    page.fill('#new-solve-time', '7300')
+    page.click('#add-solve-form button[type=submit]')
+    page.wait_for_selector('[role="alert"] >> text=at most 2 hours')
+    assert [s['time_ms'] for s in solves_in(live_app)] == [3900000]
+
+
 def test_sessions(app_page, live_app):
     page = app_page
     open_tab(page, 'sessions')
