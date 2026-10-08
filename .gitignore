@@ -1,8 +1,8 @@
-# Local tooling files (local instructions, memory, and settings; not part of the app)
+# Local tooling files: settings, instructions, and the plan for the current piece of
+# work. They're for working on the app, not part of it.
 .claude/
 CLAUDE.md
 CLAUDE.local.md
-**/CLAUDE.md
 PLAN.md
 
 # IDE
@@ -28,6 +28,7 @@ __pycache__/
 .coverage
 .coverage.*
 htmlcov/
+.pytest_cache/
 
 # Windows shortcuts to the app (they hold paths on one particular computer)
 *.lnk
