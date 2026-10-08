@@ -49,7 +49,12 @@ and a double-click (or one command) starts it.
   today, so they mix the cube well for practice but aren't exactly like competition ones
 - **Live Statistics:** solve count, best, mean and Ao5 for the whole session as you solve
 - **A Session a Day:** your first solve each day starts a new session automatically
-- **Penalties:** mark any solve as +2 or DNF afterwards
+- **Penalties and Notes:** mark any solve as +2 or DNF afterwards, or add a note about how it
+  went, here or in the Sessions tab
+- **Shortcuts:** Alt+1, Alt+2, and Alt+3 make your last solve OK, +2, or DNF, and Ctrl+Z
+  deletes it (Ctrl+1 to Ctrl+3 work too, as in csTimer, if your browser lets them through)
+- **Undo:** deleting a solve doesn't ask first; an Undo button shows for a few seconds instead
+  and puts it back exactly as it was
 - **Cancel Any Time:** press Esc to call off inspection or a solve without saving it
 - **Long Solves:** a solve can run for up to 2 hours. Past 60 minutes (the WCA's longest time
   limit) a notice says so, and at 2 hours the timer stops and saves a DNF, as a judge does
@@ -209,8 +214,20 @@ itself. The first time you open a downloaded launcher, your system may ask you t
 Changed your mind? Press **Esc** during inspection (or even mid-solve) to cancel. Nothing is
 saved, and you keep the same scramble for your next try.
 
-Every solve is saved automatically. The list shows your latest 50 solves; use the menu next to
-a solve to mark it +2 or DNF, and the gear icon for timer settings.
+Every solve is saved automatically. The list shows your latest 50 solves: use the menu next to
+a solve to mark it +2 or DNF, **Note** to add a note, and **Delete** to remove it (click
+**Undo** straight afterwards if you didn't mean to). The gear icon opens the timer settings.
+
+Shortcuts for your last solve, whenever the timer isn't running:
+
+| Keys | What they do |
+| --- | --- |
+| **Alt+1**, **Alt+2**, **Alt+3** | Make it OK, +2, or DNF |
+| **Ctrl+Z** | Delete it (with Undo) |
+
+Ctrl+1 to Ctrl+3 do the same as Alt, as in csTimer, but many browsers keep Ctrl and a number
+for switching tabs. On a Mac, use Option or Ctrl with the numbers, and Cmd+Z or Ctrl+Z. A
+solve that never started (a DNF from running out of inspection) has no time, so it stays a DNF.
 
 ### Reading Your Analytics
 
@@ -249,7 +266,11 @@ safely import a newer export of the same sessions: only the new solves are added
 - **Add solves by hand:** click **Add Session** (it's for today unless you pick an earlier
   date), then **View** to add individual solves
 - **Edit a session:** click **Edit** to change its date, its cube, or its notes
-- **Delete:** remove sessions or single solves you don't want
+- **Change a solve:** in a session's solves, use the penalty menu to make it OK, +2, or DNF,
+  and **Note** to add or change its note
+- **Delete:** remove sessions or single solves you don't want. A deleted solve can be brought
+  back with **Undo** for a few seconds afterwards; a deleted session can't, so the app checks
+  with you first
 
 ### Backing Up Your Data
 
@@ -339,9 +360,11 @@ speedcube-training-explorer/
 │   ├── css/               # Stylesheets
 │   ├── js/
 │   │   ├── config.js      # API address, event names, and shared helpers
-│   │   ├── ui.js          # Toasts and the "are you sure?" window
+│   │   ├── ui.js          # Toasts, the "are you sure?" window, and the note window
+│   │   ├── solves.js      # Changing and deleting one solve, with Undo
+│   │   ├── scramble.js    # Random-move scrambles
 │   │   ├── tables.js      # Sortable table headings
-│   │   ├── backup.js      # Export and import backup links
+│   │   ├── backup.js      # Backup export and import, and the CSV export
 │   │   ├── dashboard.js, sessions.js, cubes.js, timer.js,
 │   │   │   import.js, analytics.js, charts.js, greeting.js,
 │   │   │   app.js, theme.js, theme-init.js   # One file per tab or feature

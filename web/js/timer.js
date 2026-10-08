@@ -17,6 +17,8 @@ const TimerState = {
     currentSolves: [],      // the latest solves in the session, newest first
     stats: null,            // the session's stats, worked out by the server
     currentSessionId: null,
+    savingSolve: false,     // true while a solve is on its way to the server
+    shownSolveId: null,     // the saved solve whose result is on screen, if there is one
     // Whether the timer follows the calendar: times go into today's session, and the first solve
     // of a new day starts one. Picking a session from the menu turns this off until next time.
     followToday: true,
@@ -117,6 +119,7 @@ function resetTimerDisplay() {
     display.textContent = '0.00';
     display.className = 'timer-display';
     TimerState.showingResult = false;
+    TimerState.shownSolveId = null;
 }
 
 function generateNewScramble() {
@@ -303,20 +306,45 @@ function closeTimerSettings() {
 function setupTimerKeyboard() {
     document.removeEventListener('keydown', handleTimerKeyDown);
     document.removeEventListener('keyup', handleTimerKeyUp);
+    document.removeEventListener('keydown', handleTimerShortcut);
 
     document.addEventListener('keydown', handleTimerKeyDown);
     document.addEventListener('keyup', handleTimerKeyUp);
+    document.addEventListener('keydown', handleTimerShortcut);
 }
 
-// The space bar only drives the timer while the Timer tab is showing, and never while you're
-// typing in a text box or have the timer settings open. Otherwise it would block typing spaces
-// anywhere in the app, and could quietly start an inspection that ends in a DNF.
-function timerOwnsSpaceBar(e) {
+// The timer's keys (the space bar and the shortcuts) only work while the Timer tab is showing,
+// and never while you're typing in a text box or have a window open. Otherwise the space bar
+// would block typing spaces anywhere in the app, and could quietly start an inspection that
+// ends in a DNF.
+function timerOwnsKeys(e) {
     if (!document.getElementById('tab-timer').classList.contains('active')) return false;
     if (TimerState.event !== '333' || document.getElementById('timer-settings-modal')) return false;
-    if (document.querySelector('.confirm-dialog')) return false;
+    if (isDialogOpen()) return false;
     const target = e.target;
     return !(target.isContentEditable || target.tagName === 'INPUT' || target.tagName === 'TEXTAREA');
+}
+
+// Shortcuts for the latest solve, as in csTimer: Ctrl+1, Ctrl+2, and Ctrl+3 make it OK, +2, or
+// DNF, and Ctrl+Z deletes it (with Undo). Many browsers keep Ctrl and a number for switching
+// tabs, so Alt works with the numbers too (Option on a Mac, and Cmd+Z there). They wait while a
+// solve is being timed or saved, so they can't change the wrong one.
+const PENALTY_KEYS = { Digit1: 'OK', Digit2: '+2', Digit3: 'DNF', Numpad1: 'OK', Numpad2: '+2', Numpad3: 'DNF' };
+
+function handleTimerShortcut(e) {
+    const penalty = (e.ctrlKey || e.altKey) && !e.shiftKey ? PENALTY_KEYS[e.code] : null;
+    const undo = (e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && e.key.toLowerCase() === 'z';
+    if (!(penalty || undo) || !timerOwnsKeys(e)) return;
+    e.preventDefault();
+    if (TimerState.running || TimerState.inspection || TimerState.spacePressed || TimerState.savingSolve) return;
+
+    const latest = TimerState.currentSolves[0];
+    if (!latest) return;
+    if (undo) {
+        deleteTimerSolve(latest.id);
+    } else if (solvePenalty(latest) !== penalty) {
+        changeSolvePenalty(latest.id, penalty);
+    }
 }
 
 // Start the hold that has to last 300ms before releasing the space bar starts the timer
@@ -336,7 +364,7 @@ function startHoldTimer() {
 }
 
 function handleTimerKeyDown(e) {
-    if (e.key !== ' ' || !timerOwnsSpaceBar(e)) return;
+    if (e.key !== ' ' || !timerOwnsKeys(e)) return;
     e.preventDefault();
 
     if (e.repeat) return;
@@ -367,7 +395,7 @@ function handleTimerKeyDown(e) {
 
 function handleTimerKeyUp(e) {
     // Always finish a hold that started on the timer, even if focus has moved since.
-    if (e.key !== ' ' || !(timerOwnsSpaceBar(e) || TimerState.spacePressed)) return;
+    if (e.key !== ' ' || !(timerOwnsKeys(e) || TimerState.spacePressed)) return;
     e.preventDefault();
 
     if (TimerState.holdTimer) {
@@ -599,6 +627,7 @@ async function saveSolve(penalty) {
 // turns it down or can't be reached, it isn't lost: an error toast says why and offers Retry,
 // which sends exactly the same solve again.
 async function sendSolve(solve) {
+    TimerState.savingSolve = true;
     try {
         const response = await apiFetch('/timer/solve', {
             method: 'POST',
@@ -610,6 +639,8 @@ async function sendSolve(solve) {
             throw new Error(result.error || `the app replied with an error (${response.status})`);
         }
 
+        // The time on screen is this solve's, unless another attempt has started since
+        if (TimerState.showingResult) TimerState.shownSolveId = result.solve_id;
         if (result.session_id !== TimerState.currentSessionId) {
             TimerState.currentSessionId = result.session_id;
             await loadSessionSelector();
@@ -623,6 +654,8 @@ async function sendSolve(solve) {
         showToast(`Couldn't save that solve: ${reason}.`, {
             type: 'error', actionLabel: 'Retry', onAction: () => sendSolve(solve), duration: 20000
         });
+    } finally {
+        TimerState.savingSolve = false;
     }
 }
 
@@ -660,60 +693,60 @@ function updateSolvesList() {
         const isBest = matches(solve, stats.best);
         const isWorst = matches(solve, stats.worst) && stats.solve_count > 2;
 
-        let timeDisplay = solve.dnf ? 'DNF' : formatClock(solve.time);
-        if (solve.penalty === '+2' && !solve.dnf) {
-            timeDisplay += ' (+2)';
-        }
         const scramble = escapeHtml(solve.scramble);
+        const note = escapeHtml(solve.notes);
 
         return `
             <div class="solve-item">
                 <span class="solve-number">#${solve.solve_number}</span>
-                <span class="solve-time ${isBest ? 'best' : ''} ${isWorst ? 'worst' : ''}">${timeDisplay}</span>
+                <span class="solve-time ${isBest ? 'best' : ''} ${isWorst ? 'worst' : ''}">${solveResultText(solve)}</span>
                 <span class="solve-scramble" title="${scramble}">${scramble}</span>
                 <div class="solve-actions">
-                    <select class="solve-action-select" data-change="change-solve-penalty" data-solve-id="${solve.id}">
-                        <option value="OK" ${solve.penalty === 'OK' ? 'selected' : ''}>OK</option>
-                        <option value="+2" ${solve.penalty === '+2' ? 'selected' : ''}>+2</option>
-                        <option value="DNF" ${solve.penalty === 'DNF' ? 'selected' : ''}>DNF</option>
+                    <select class="solve-action-select" data-change="change-solve-penalty" data-solve-id="${solve.id}"
+                            aria-label="Penalty for solve ${solve.solve_number}">
+                        ${penaltyOptions(solve)}
                     </select>
+                    <button class="solve-action-btn${note ? ' has-note' : ''}" data-action="edit-timer-solve-note"
+                            data-solve-id="${solve.id}" title="${note ? 'Edit the note' : 'Add a note'}">Note</button>
                     <button class="solve-action-btn delete" data-action="delete-timer-solve" data-solve-id="${solve.id}">Delete</button>
                 </div>
+                ${note ? `<p class="solve-note">${note}</p>` : ''}
             </div>
         `;
     }).join('');
 }
 
-async function changeSolvePenalty(solveId, newPenalty) {
-    try {
-        const response = await apiFetch(`/timer/solve/${solveId}/penalty`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ penalty: newPenalty })
-        });
+// A solve's result the way the timer shows it: 12.34, 14.34 (+2), or DNF
+function solveResultText(solve) {
+    if (solve.dnf) return 'DNF';
+    return solve.penalty === '+2' ? `${formatClock(solve.time)} (+2)` : formatClock(solve.time);
+}
 
-        if (response.ok) {
-            await loadSessionSolves(TimerState.currentSessionId);
+async function refreshTimerSolves() {
+    await loadSessionSolves(TimerState.currentSessionId);
+}
+
+async function changeSolvePenalty(solveId, newPenalty) {
+    if (await updateSolve(solveId, { penalty: newPenalty })) {
+        await refreshTimerSolves();
+        // If that solve's time is still on screen, show it with its new penalty
+        const solve = TimerState.currentSolves.find(s => s.id === solveId);
+        if (solve && TimerState.showingResult && TimerState.shownSolveId === solveId) {
+            document.getElementById('timer-display').textContent = solveResultText(solve);
         }
-    } catch (error) {
-        console.error('Error updating penalty:', error);
+    } else {
+        updateSolvesList();  // put the menu back to the penalty it has
     }
 }
 
+async function editTimerSolveNote(solveId) {
+    const solve = TimerState.currentSolves.find(s => s.id === solveId);
+    if (solve && await editSolveNote(solve)) await refreshTimerSolves();
+}
+
 async function deleteTimerSolve(solveId) {
-    if (!(await confirmDialog("Delete this solve? This can't be undone.", { title: 'Delete solve' }))) return;
-
-    try {
-        const response = await apiFetch(`/timer/solve/${solveId}`, {
-            method: 'DELETE'
-        });
-
-        if (response.ok) {
-            await loadSessionSolves(TimerState.currentSessionId);
-        }
-    } catch (error) {
-        console.error('Error deleting solve:', error);
-    }
+    const onScreen = TimerState.showingResult && TimerState.shownSolveId === solveId;
+    if (await deleteSolve(solveId, refreshTimerSolves) && onScreen) resetTimerDisplay();
 }
 
 async function createTimerSession() {
@@ -782,6 +815,7 @@ registerActions('click', {
     'toggle-fullscreen': () => toggleFullscreen(),
     'copy-scramble': () => copyScramble(),
     'new-scramble': () => newScramble(),
+    'edit-timer-solve-note': button => editTimerSolveNote(Number(button.dataset.solveId)),
     'delete-timer-solve': button => deleteTimerSolve(Number(button.dataset.solveId))
 });
 registerActions('change', {

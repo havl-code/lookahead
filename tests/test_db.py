@@ -60,7 +60,8 @@ class TestSolves:
         second = query(app, 'SELECT id FROM solves WHERE session_id = ? AND solve_number = 2',
                        (sid,))[0]['id']
         with open_db(app) as conn, conn:
-            assert db.delete_solve(conn, second) is True
+            deleted = db.delete_solve(conn, second)
+        assert (deleted['session_id'], deleted['solve_number'], deleted['time_ms']) == (sid, 2, 11000)
         rows = query(app, 'SELECT solve_number, time_ms FROM solves WHERE session_id = ? '
                           'ORDER BY solve_number', (sid,))
         assert [(r['solve_number'], r['time_ms']) for r in rows] == [
@@ -70,24 +71,53 @@ class TestSolves:
 
     def test_delete_missing_solve(self, app):
         with open_db(app) as conn, conn:
-            assert db.delete_solve(conn, 12345) is False
+            assert db.delete_solve(conn, 12345) is None
 
-    def test_set_penalty_updates_the_dnf_flag_and_stats(self, app):
+    def test_a_new_penalty_updates_the_dnf_flag_and_stats(self, app):
         sid = seed_session(app, [10, 11, 12, 13, 14])
         first = query(app, 'SELECT id FROM solves WHERE session_id = ? AND solve_number = 1',
                       (sid,))[0]['id']
         with open_db(app) as conn, conn:
-            assert db.set_solve_penalty(conn, first, 'DNF') is True
+            assert db.update_solve(conn, first, {'penalty': 'DNF'}) is True
         assert query(app, 'SELECT dnf FROM solves WHERE id = ?', (first,))[0]['dnf'] == 1
         assert session_row(app, sid)['best_single'] == 11000
         with open_db(app) as conn, conn:
-            db.set_solve_penalty(conn, first, '+2')
+            db.update_solve(conn, first, {'penalty': '+2'})
         assert query(app, 'SELECT dnf FROM solves WHERE id = ?', (first,))[0]['dnf'] == 0
         assert session_row(app, sid)['best_single'] == 11000  # 10 + 2 = 12, so 11 is still best
 
-    def test_set_penalty_on_a_missing_solve(self, app):
+    def test_a_note_leaves_the_penalty_alone(self, app):
+        sid = seed_session(app, [(10, '+2')])
+        (solve,) = query(app, 'SELECT id FROM solves WHERE session_id = ?', (sid,))
         with open_db(app) as conn, conn:
-            assert db.set_solve_penalty(conn, 999, 'OK') is False
+            db.update_solve(conn, solve['id'], {'notes': 'lucky'})
+        assert query(app, 'SELECT penalty, notes FROM solves') == [{'penalty': '+2', 'notes': 'lucky'}]
+
+    def test_changing_a_missing_solve(self, app):
+        with open_db(app) as conn, conn:
+            assert db.update_solve(conn, 999, {'penalty': 'OK'}) is False
+
+    @pytest.mark.parametrize('number', [1, 3, 5])
+    def test_a_deleted_solve_goes_back_where_it_was(self, app, number):
+        sid = seed_session(app, [10, (11, '+2'), 'DNF', 13, 14])
+        before = query(app, 'SELECT solve_number, time_ms, penalty, dnf, timestamp FROM solves ORDER BY solve_number')
+        stats_before = session_row(app, sid)
+        solve = query(app, 'SELECT id FROM solves WHERE solve_number = ?', (number,))[0]['id']
+        with open_db(app) as conn, conn:
+            db.restore_solve(conn, db.delete_solve(conn, solve))
+        assert query(app, 'SELECT solve_number, time_ms, penalty, dnf, timestamp FROM solves ORDER BY solve_number') == before
+        assert session_row(app, sid) == stats_before
+
+    def test_a_solve_goes_back_at_the_end_if_the_session_got_shorter(self, app):
+        sid = seed_session(app, [10, 11, 12])
+        last, middle = (query(app, 'SELECT id FROM solves WHERE solve_number = ?', (n,))[0]['id'] for n in (3, 2))
+        with open_db(app) as conn, conn:
+            deleted = db.delete_solve(conn, last)
+            db.delete_solve(conn, middle)
+            db.restore_solve(conn, deleted)
+        assert query(app, 'SELECT solve_number, time_ms FROM solves ORDER BY solve_number') == [
+            {'solve_number': 1, 'time_ms': 10000}, {'solve_number': 2, 'time_ms': 12000}]
+        assert session_row(app, sid)['solve_count'] == 2
 
     def test_delete_session_takes_its_solves(self, app):
         sid = seed_session(app, [10, 11])

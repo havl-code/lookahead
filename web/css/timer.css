@@ -122,10 +122,13 @@
     color: var(--accent);
 }
 
-.timer-hint {
+.timer-hints {
+    display: grid;
+    gap: 6px;
     margin-bottom: 32px;
     font-size: 13px;
     color: var(--text-tertiary);
+    text-align: center;
 }
 
 /* Session stats under the time */
@@ -251,6 +254,21 @@
     color: var(--danger);
 }
 
+.solve-action-btn.has-note {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+/* A solve's note, on its own line under the solve */
+.solve-note {
+    grid-column: 1 / -1;
+    margin-top: -4px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
 .timer-solves-list .list-note {
     margin-top: 8px;
 }
@@ -291,7 +309,7 @@
 
 .timer-fullscreen .timer-controls-left,
 .timer-fullscreen #timer-settings-btn,
-.timer-fullscreen .timer-hint,
+.timer-fullscreen .timer-hints,
 .timer-fullscreen .timer-session-stats,
 .timer-fullscreen .timer-solves-list {
     display: none !important;

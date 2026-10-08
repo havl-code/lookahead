@@ -600,6 +600,14 @@ th.num .sort-arrow {
     text-align: right;
 }
 
+.note-cell {
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--text-secondary);
+}
+
 .scramble-cell {
     max-width: 320px;
     overflow: hidden;
@@ -839,11 +847,34 @@ textarea {
     color: var(--danger);
 }
 
-/* The "are you sure?" window for actions that can't be undone (ui.js) */
+/* The "are you sure?" window for actions that can't be undone, and the one that asks for a
+   note (ui.js) */
 .confirm-message {
+    display: block;
     margin-bottom: 20px;
     color: var(--text-secondary);
     line-height: 1.5;
+}
+
+.prompt-dialog textarea {
+    width: 100%;
+    margin-bottom: 20px;
+    resize: vertical;
+}
+
+/* Keys in a hint, such as Alt+1 */
+kbd {
+    display: inline-block;
+    min-width: 1.6em;
+    padding: 1px 5px;
+    border: 1px solid var(--border-secondary);
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    background: var(--bg-secondary);
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    line-height: 1.4;
+    text-align: center;
 }
 
 .btn-primary.danger {

@@ -94,8 +94,8 @@ def test_pb_details_name_the_real_event(app_page, live_app):
     assert app_page.text_content('.pb-event') == '2x2x2'
 
 
-@finding('12', 'penalties can only be changed from the timer')
 def test_penalties_can_be_changed_from_the_sessions_tab(app_page, live_app):
+    """Finding 12 (fixed): a solve's penalty can only be changed from the timer's latest 50."""
     seed_session(live_app, [12, 13])
     open_tab(app_page, 'sessions')
     app_page.click('#sessions-tbody button:has-text("View")')

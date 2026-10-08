@@ -362,26 +362,36 @@ def recompute_all_session_stats(conn):
         recompute_session_stats(conn, session_id)
 
 
-def set_solve_penalty(conn, solve_id, penalty):
-    """Set a solve's penalty ('OK', '+2' or 'DNF'). Returns False if there's no such solve."""
+def update_solve(conn, solve_id, fields):
+    """Change whichever of a solve's penalty ('OK', '+2' or 'DNF') and notes are in `fields`
+    (already checked). Returns False if there's no such solve. A new penalty changes the
+    session's stats, so they're recalculated; a note doesn't touch them."""
     row = conn.execute('SELECT session_id FROM solves WHERE id = ?', (solve_id,)).fetchone()
     if row is None:
         return False
-    conn.execute(
-        'UPDATE solves SET penalty = ?, dnf = ? WHERE id = ?', (penalty, penalty == 'DNF', solve_id)
-    )
-    recompute_session_stats(conn, row['session_id'])
+    if 'notes' in fields:
+        conn.execute('UPDATE solves SET notes = ? WHERE id = ?', (fields['notes'] or '', solve_id))
+    if 'penalty' in fields:
+        penalty = fields['penalty']
+        conn.execute(
+            'UPDATE solves SET penalty = ?, dnf = ? WHERE id = ?', (penalty, penalty == 'DNF', solve_id)
+        )
+        recompute_session_stats(conn, row['session_id'])
     return True
 
 
+# Everything about a solve that's kept, apart from its id: what delete_solve hands back, and
+# what restore_solve needs to put it back exactly as it was.
+SOLVE_RECORD = ('session_id', 'solve_number', 'time_ms', 'scramble', 'penalty', 'dnf', 'notes',
+                'timestamp')
+
+
 def delete_solve(conn, solve_id):
-    """Delete a solve and close the gap in its session's numbering. Returns False if there's
-    no such solve."""
-    row = conn.execute(
-        'SELECT session_id, solve_number FROM solves WHERE id = ?', (solve_id,)
-    ).fetchone()
+    """Delete a solve and close the gap in its session's numbering. Returns the solve as it was
+    stored (a dict of SOLVE_RECORD), so it can be put back, or None if there's no such solve."""
+    row = conn.execute('SELECT * FROM solves WHERE id = ?', (solve_id,)).fetchone()
     if row is None:
-        return False
+        return None
     session_id = row['session_id']
     conn.execute('DELETE FROM solves WHERE id = ?', (solve_id,))
     conn.execute(
@@ -390,7 +400,33 @@ def delete_solve(conn, solve_id):
         (session_id, row['solve_number']),
     )
     recompute_session_stats(conn, session_id)
-    return True
+    return {**{key: row[key] for key in SOLVE_RECORD}, 'dnf': bool(row['dnf'])}
+
+
+def restore_solve(conn, record):
+    """Put a deleted solve back (a record like the one delete_solve returns, already checked):
+    at its old number, or at the end if its session has fewer solves now, moving the solves
+    after it along by one. Returns its new id."""
+    session_id = record['session_id']
+    (last_number,) = conn.execute(
+        'SELECT COALESCE(MAX(solve_number), 0) FROM solves WHERE session_id = ?', (session_id,)
+    ).fetchone()
+    number = min(record['solve_number'], last_number + 1)
+    conn.execute(
+        'UPDATE solves SET solve_number = solve_number + 1 '
+        'WHERE session_id = ? AND solve_number >= ?',
+        (session_id, number),
+    )
+    cur = conn.execute(
+        'INSERT INTO solves (session_id, solve_number, time_ms, scramble, penalty, dnf, notes, '
+        'timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+        (session_id, number, record['time_ms'], record['scramble'] or '', record['penalty'],
+         record['dnf'], record['notes'] or '', record['timestamp'] or now_iso()),
+    )
+    # Put back at the end (the usual undo, straight after deleting the latest solve), it's
+    # just one more solve, so the quick way of updating the stats is enough.
+    recompute_session_stats(conn, session_id, appended=number == last_number + 1)
+    return cur.lastrowid
 
 
 def delete_session(conn, session_id):

@@ -20,10 +20,14 @@ registerActions('click', {
     'close-edit-session': () => closeEditSession(),
     'delete-session': button => deleteSession(Number(button.dataset.sessionId)),
     'delete-session-solve': button => deleteSessionSolve(Number(button.dataset.solveId)),
+    'edit-session-solve-note': button => editSessionSolveNote(Number(button.dataset.solveId)),
     'close-solve-modal': () => closeSolveModal(),
     'load-more-solves': () => loadMoreSessionSolves()
 });
-registerActions('change', { 'filter-sessions': () => applySessionFilters() });
+registerActions('change', {
+    'filter-sessions': () => applySessionFilters(),
+    'change-session-solve-penalty': select => changeSessionSolvePenalty(Number(select.dataset.solveId), select.value)
+});
 registerActions('submit', {
     'add-session': (form, event) => addSession(event),
     'save-session': (form, event) => saveSession(event),
@@ -306,17 +310,25 @@ function renderSolvesTable() {
     const { solves, total } = solvesView;
 
     if (solves.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="loading">No solves yet. Add some above!</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="loading">No solves yet. Add some above!</td></tr>';
     } else {
         tbody.innerHTML = solves.map(solve => {
-            const penalty = solve.penalty === 'OK' ? '' : (solve.penalty || '');  // timer solves save 'OK'
+            const note = escapeHtml(solve.notes);
             return `
                 <tr>
                     <td class="num">${solve.solve_number}</td>
                     <td class="num">${solve.result_seconds == null ? 'DNF' : formatTime(solve.result_seconds)}</td>
-                    <td>${escapeHtml(penalty || '-')}</td>
+                    <td>
+                        <select class="solve-action-select" data-change="change-session-solve-penalty" data-solve-id="${solve.id}"
+                                aria-label="Penalty for solve ${solve.solve_number}">
+                            ${penaltyOptions(solve)}
+                        </select>
+                    </td>
                     <td class="scramble-cell" title="${escapeHtml(solve.scramble)}">${escapeHtml(solve.scramble || '-')}</td>
+                    <td class="note-cell" title="${note}">${note || '-'}</td>
                     <td class="actions-col">
+                        <button class="action-btn" data-action="edit-session-solve-note" data-solve-id="${solve.id}"
+                                title="${note ? 'Edit the note' : 'Add a note'}">Note</button>
                         <button class="action-btn danger" data-action="delete-session-solve" data-solve-id="${solve.id}">Delete</button>
                     </td>
                 </tr>
@@ -375,26 +387,38 @@ async function addSolveToSession(event) {
     }
 }
 
-async function deleteSessionSolve(solveId) {
-    if (!(await confirmDialog("Delete this solve? This can't be undone.", { title: 'Delete solve' }))) return;
+// A changed solve takes its new values where it is in the table, rather than reloading it, so
+// you don't lose your place in a long session. Its session's stats change, so they reload.
+function showChangedSolve(updated) {
+    solvesView.solves = solvesView.solves.map(s => (s.id === updated.id ? updated : s));
+    renderSolvesTable();
+}
 
-    try {
-        const response = await apiFetch(`/solves/${solveId}`, {
-            method: 'DELETE'
-        });
-
-        const result = await response.json();
-
-        if (result.error) {
-            showError(result.error);
-        } else {
-            await loadSessionSolvesPage(true);
-            loadSessionsTab();
-            loadStats();
-        }
-    } catch (error) {
-        showError(error.message);
+async function changeSessionSolvePenalty(solveId, penalty) {
+    const updated = await updateSolve(solveId, { penalty });
+    if (!updated) {
+        renderSolvesTable();  // put the menu back to the penalty it has
+        return;
     }
+    showChangedSolve(updated);
+    loadSessionsTab();
+    loadStats();
+}
+
+async function editSessionSolveNote(solveId) {
+    const solve = solvesView.solves.find(s => s.id === solveId);
+    const updated = solve && await editSolveNote(solve);
+    if (updated) showChangedSolve(updated);
+}
+
+async function refreshSessionSolves() {
+    await loadSessionSolvesPage(true);
+    loadSessionsTab();
+    loadStats();
+}
+
+function deleteSessionSolve(solveId) {
+    deleteSolve(solveId, refreshSessionSolves);
 }
 
 // Close the solves window by clicking the dark area around it

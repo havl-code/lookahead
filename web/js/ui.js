@@ -1,5 +1,6 @@
-// ui.js: small messages (toasts) and an in-page "are you sure?" window, used instead of the
-// browser's alert() and confirm(), which freeze the whole page until they're dismissed.
+// ui.js: small messages (toasts), an in-page "are you sure?" window, and a window that asks for
+// a note, used instead of the browser's alert(), confirm(), and prompt(), which freeze the whole
+// page until they're dismissed.
 
 // ---- Toasts ----
 // A toast appears in the bottom corner and fades away by itself, so the page keeps working.
@@ -55,6 +56,45 @@ function showToast(message, { type = 'info', actionLabel = null, onAction = null
     return { dismiss };
 }
 
+// ---- Windows ----
+// While one of these windows is open, keys are caught in the capture phase, ahead of everything
+// else, and stopped there, so nothing behind it (such as the timer's space bar, Esc, or its
+// shortcuts) reacts. Typing, and the buttons' own Enter and Space, still work, since those are
+// built in. Esc runs `onEscape`, `onEnter` can take Enter over (by returning true), and Tab
+// moves between the window's own controls only. Returns a function that lets the keys go again.
+function holdKeys(overlay, { onEscape, onEnter = () => false }) {
+    function holdBack(e) {
+        e.stopPropagation();
+    }
+
+    function onKey(e) {
+        e.stopPropagation();
+        if (e.key === 'Escape') {
+            e.preventDefault();
+            onEscape();
+        } else if (e.key === 'Enter' && onEnter(e)) {
+            e.preventDefault();
+        } else if (e.key === 'Tab') {
+            e.preventDefault();
+            const stops = [...overlay.querySelectorAll('button, textarea')];
+            const at = stops.indexOf(document.activeElement);
+            stops[(at + (e.shiftKey ? stops.length - 1 : 1)) % stops.length].focus();
+        }
+    }
+
+    document.addEventListener('keydown', onKey, true);
+    document.addEventListener('keyup', holdBack, true);
+    return () => {
+        document.removeEventListener('keydown', onKey, true);
+        document.removeEventListener('keyup', holdBack, true);
+    };
+}
+
+// Whether one of these windows is open (the timer leaves its keys alone while one is)
+function isDialogOpen() {
+    return document.querySelector('.confirm-dialog, .prompt-dialog') !== null;
+}
+
 // ---- Confirm ----
 // An in-page "are you sure?" for actions that can't be undone. Resolves to true if confirmed.
 // Esc or Cancel resolves to false, Enter confirms (the confirm button starts focused, as in the
@@ -84,40 +124,76 @@ function confirmDialog(message, { title = 'Are you sure?', confirmLabel = 'Delet
         cancelButton.textContent = cancelLabel;
         confirmButton.textContent = confirmLabel;
 
+        const letKeysGo = holdKeys(overlay, { onEscape: () => finish(false) });
         const finish = (confirmed) => {
-            document.removeEventListener('keydown', onKey, true);
-            document.removeEventListener('keyup', holdBack, true);
+            letKeysGo();
             overlay.remove();
             if (previousFocus && typeof previousFocus.focus === 'function') previousFocus.focus();
             resolve(confirmed);
         };
-
-        // These listen in the capture phase, ahead of everything else, and stop keys going any
-        // further, so nothing behind the window (such as the timer's space bar or Esc) reacts
-        // while it's open. Buttons still respond to Enter and Space, since that's built in.
-        function holdBack(e) {
-            e.stopPropagation();
-        }
-
-        function onKey(e) {
-            e.stopPropagation();
-            if (e.key === 'Escape') {
-                e.preventDefault();
-                finish(false);
-            } else if (e.key === 'Tab') {
-                e.preventDefault();
-                (document.activeElement === confirmButton ? cancelButton : confirmButton).focus();
-            }
-        }
 
         overlay.addEventListener('click', (e) => {
             const choice = e.target.closest('[data-choice]');
             if (choice) finish(choice.dataset.choice === 'confirm');
             else if (e.target === overlay) finish(false);  // the dark area around the window
         });
-        document.addEventListener('keydown', onKey, true);
-        document.addEventListener('keyup', holdBack, true);
         document.body.appendChild(overlay);
         confirmButton.focus();
+    });
+}
+
+// ---- Ask for a note ----
+// An in-page window with one text box, such as for a solve's note. Resolves to the text, or
+// null if cancelled. Enter saves (Shift+Enter starts a new line), Esc or Cancel cancels, Tab
+// stays inside the window, and focus goes back to where it was.
+function promptDialog(label, { title = 'Note', value = '', confirmLabel = 'Save', cancelLabel = 'Cancel', maxLength = 1000 } = {}) {
+    return new Promise(resolve => {
+        const previousFocus = document.activeElement;
+        const overlay = document.createElement('div');
+        overlay.className = 'modal prompt-dialog';
+        overlay.innerHTML = `
+            <div class="modal-content modal-small" role="dialog" aria-modal="true" aria-labelledby="prompt-title">
+                <div class="modal-header"><h3 id="prompt-title"></h3></div>
+                <div class="modal-body">
+                    <label class="confirm-message" for="prompt-field" id="prompt-label"></label>
+                    <textarea id="prompt-field" rows="3"></textarea>
+                    <div class="form-actions align-end">
+                        <button type="button" class="btn-secondary" data-choice="cancel"></button>
+                        <button type="button" class="btn-primary" data-choice="confirm"></button>
+                    </div>
+                </div>
+            </div>
+        `;
+        overlay.querySelector('#prompt-title').textContent = title;
+        overlay.querySelector('#prompt-label').textContent = label;
+        const field = overlay.querySelector('#prompt-field');
+        field.value = value;
+        field.maxLength = maxLength;
+        overlay.querySelector('[data-choice="cancel"]').textContent = cancelLabel;
+        overlay.querySelector('[data-choice="confirm"]').textContent = confirmLabel;
+
+        const letKeysGo = holdKeys(overlay, {
+            onEscape: () => finish(null),
+            onEnter: (e) => {
+                if (e.target !== field || e.shiftKey || e.isComposing) return false;
+                finish(field.value);
+                return true;
+            }
+        });
+        const finish = (text) => {
+            letKeysGo();
+            overlay.remove();
+            if (previousFocus && typeof previousFocus.focus === 'function') previousFocus.focus();
+            resolve(text);
+        };
+
+        overlay.addEventListener('click', (e) => {
+            const choice = e.target.closest('[data-choice]');
+            if (choice) finish(choice.dataset.choice === 'confirm' ? field.value : null);
+            else if (e.target === overlay) finish(null);  // the dark area around the window
+        });
+        document.body.appendChild(overlay);
+        field.focus();
+        field.setSelectionRange(field.value.length, field.value.length);
     });
 }

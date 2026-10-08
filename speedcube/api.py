@@ -340,6 +340,19 @@ def _result_seconds(solve):
     return single_seconds(solve['time_ms'] + (2000 if solve['penalty'] == '+2' else 0))
 
 
+def _solve_json(solve):
+    """A solve as the Sessions tab shows it."""
+    return {
+        'id': solve['id'],
+        'solve_number': solve['solve_number'],
+        'result_seconds': _result_seconds(solve),
+        'scramble': solve['scramble'] or '',
+        'penalty': solve['penalty'],
+        'notes': solve['notes'] or '',
+        'timestamp': solve['timestamp'],
+    }
+
+
 @api.get('/sessions/<int:session_id>/solves')
 def get_session_solves(session_id):
     """One page of a session's solves, sorted by `sort` (number, time or penalty) and `dir`.
@@ -359,18 +372,7 @@ def get_session_solves(session_id):
         f'ORDER BY {SOLVE_SORTS[sort].format(dir=direction)}, id LIMIT ? OFFSET ?',
         (session_id, limit, offset),
     ).fetchall()
-    return jsonify(total=total, solves=[
-        {
-            'id': s['id'],
-            'solve_number': s['solve_number'],
-            'result_seconds': _result_seconds(s),
-            'scramble': s['scramble'] or '',
-            'penalty': s['penalty'],
-            'notes': s['notes'] or '',
-            'timestamp': s['timestamp'],
-        }
-        for s in solves
-    ])
+    return jsonify(total=total, solves=[_solve_json(s) for s in solves])
 
 
 @api.post('/sessions/<int:session_id>/solves/add')
@@ -389,14 +391,87 @@ def add_solve_to_session(session_id):
     return jsonify(success=True)
 
 
-@api.delete('/solves/<int:solve_id>')
-def delete_solve(solve_id):
+# ---- One solve: change, delete, and undo a delete ----
+# The timer and the Sessions tab share these.
+
+def _change_solve(conn, solve_id, body):
+    """Check and make a change to a solve's penalty and notes (whichever are in `body`), and
+    return the solve as it is now. A solve with no time, an inspection DNF (Regulation A4d2),
+    has to stay a DNF: as OK or +2 it would be a 0.00 or a 2.00."""
+    solve = conn.execute('SELECT * FROM solves WHERE id = ?', (solve_id,)).fetchone()
+    if solve is None:
+        raise ValidationError('Solve not found', 404)
+    fields = {}
+    if 'penalty' in body:
+        fields['penalty'] = validation.penalty(body['penalty'])
+        if fields['penalty'] != 'DNF' and solve['time_ms'] == 0:
+            raise ValidationError("This solve has no time (it never started), so it can only be a DNF.")
+    if 'notes' in body:
+        fields['notes'] = validation.text(body['notes'], 'Notes', MAX_NOTES)
+    with conn:
+        db.update_solve(conn, solve_id, fields)
+    return conn.execute('SELECT * FROM solves WHERE id = ?', (solve_id,)).fetchone()
+
+
+@api.put('/solves/<int:solve_id>')
+def update_solve(solve_id):
+    """Change a solve's penalty, its notes, or both. Only what's sent changes."""
+    body = _json_body()
+    if 'penalty' not in body and 'notes' not in body:
+        return _error('Send a penalty, notes, or both.', 400)
+    solve = _change_solve(db.get_db(), solve_id, body)
+    return jsonify(success=True, solve=_solve_json(solve))
+
+
+def _delete_solve(solve_id):
     conn = db.get_db()
     with conn:
         deleted = db.delete_solve(conn, solve_id)
-    if not deleted:
-        return _error('Solve not found', 404)
-    return jsonify(success=True, message='Solve deleted')
+    if deleted is None:
+        raise ValidationError('Solve not found', 404)
+    return deleted
+
+
+@api.delete('/solves/<int:solve_id>')
+def delete_solve(solve_id):
+    """Delete a solve. The reply has the solve as it was stored (`deleted`), so the page can
+    offer Undo, which sends it back to /solves/restore."""
+    return jsonify(success=True, message='Solve deleted', deleted=_delete_solve(solve_id))
+
+
+@api.post('/solves/restore')
+def restore_solve():
+    """Undo a delete: put a solve back, as DELETE /solves/<id> returned it, at its old number
+    in its session. It comes from the page, so it's checked like any other solve."""
+    body = _json_body()
+    conn = db.get_db()
+    session_id = validation.record_id(body.get('session_id'), 'Session')
+    if session_id is None or conn.execute('SELECT 1 FROM sessions WHERE id = ?', (session_id,)).fetchone() is None:
+        return _error("The solve's session has been deleted, so the solve can't be put back.", 404)
+    number = validation.record_id(body.get('solve_number'), 'Solve number')
+    dnf = body.get('dnf')
+    time_ms = body.get('time_ms')
+    if number is None:
+        raise ValidationError('Solve number is required.')
+    if not isinstance(dnf, bool):
+        raise ValidationError('dnf must be true or false.')
+    if isinstance(time_ms, bool) or not isinstance(time_ms, int):
+        raise ValidationError('time_ms must be a whole number of milliseconds.')
+    validation.solve_time(time_ms / 1000, allow_zero=dnf)
+    record = {
+        'session_id': session_id,
+        'solve_number': number,
+        'time_ms': time_ms,
+        # A penalty that was never set stays unset (it means OK)
+        'penalty': None if body.get('penalty') is None else validation.penalty(body['penalty']),
+        'dnf': dnf,
+        'scramble': validation.text(body.get('scramble'), 'Scramble', MAX_SCRAMBLE),
+        'notes': validation.text(body.get('notes'), 'Notes', MAX_NOTES),
+        'timestamp': validation.text(body.get('timestamp'), 'Timestamp', 40),
+    }
+    with conn:
+        solve_id = db.restore_solve(conn, record)
+    return jsonify(success=True, solve_id=solve_id)
 
 
 # ---- Cubes ----
@@ -812,23 +887,18 @@ def timer_save_solve():
     return jsonify(success=True, solve_id=solve_id, session_id=session_id)
 
 
+# The timer's own routes for deleting a solve and changing its penalty, from before the shared
+# ones above. The page uses those now; these work the same way.
+
 @api.delete('/timer/solve/<int:solve_id>')
 def timer_delete_solve(solve_id):
-    conn = db.get_db()
-    with conn:
-        deleted = db.delete_solve(conn, solve_id)
-    if not deleted:
-        return _error('Solve not found', 404)
-    return jsonify(success=True)
+    return jsonify(success=True, deleted=_delete_solve(solve_id))
 
 
 @api.put('/timer/solve/<int:solve_id>/penalty')
 def timer_update_penalty(solve_id):
-    conn = db.get_db()
-    with conn:
-        updated = db.set_solve_penalty(conn, solve_id, validation.penalty(_json_body().get('penalty')))
-    if not updated:
-        return _error('Solve not found', 404)
+    """Change a solve's penalty; leaving it out means OK."""
+    _change_solve(db.get_db(), solve_id, {'penalty': _json_body().get('penalty')})
     return jsonify(success=True)
 
 
@@ -856,7 +926,7 @@ def timer_session_solves(session_id):
         time = single_seconds(s['time_ms'] + (2000 if penalty == '+2' and not dnf else 0))
         solves.append({
             'id': s['id'], 'solve_number': s['solve_number'], 'time': time, 'penalty': penalty,
-            'dnf': dnf, 'scramble': s['scramble'] or '',
+            'dnf': dnf, 'scramble': s['scramble'] or '', 'notes': s['notes'] or '',
         })
     stats = {
         'solve_count': session['solve_count'] if session else 0,

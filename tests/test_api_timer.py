@@ -94,8 +94,14 @@ class TestEditSolves:
 
     def test_delete(self, app, client):
         result = save(client, session_id=None, time=12).get_json()
-        assert client.delete(f'/api/timer/solve/{result["solve_id"]}').get_json() == {'success': True}
+        reply = client.delete(f'/api/timer/solve/{result["solve_id"]}').get_json()
+        assert reply['success'] is True and reply['deleted']['time_ms'] == 12000
         assert query(app, 'SELECT COUNT(*) AS n FROM solves') == [{'n': 0}]
+
+    def test_an_inspection_dnf_stays_a_dnf(self, client):
+        result = save(client, session_id=None, time=0, penalty='DNF', dnf=True).get_json()
+        response = client.put(f'/api/timer/solve/{result["solve_id"]}/penalty', json={'penalty': 'OK'})
+        assert response.status_code == 400 and 'only be a DNF' in response.get_json()['error']
 
     def test_delete_a_missing_solve(self, client):
         assert client.delete('/api/timer/solve/999').status_code == 404
@@ -108,6 +114,7 @@ class TestRecentSolves:
         assert [s['solve_number'] for s in data['solves']] == [5, 4, 3, 2, 1]
         plus_two = data['solves'][3]
         assert (plus_two['time'], plus_two['penalty'], plus_two['dnf']) == (13.0, '+2', False)
+        assert all(s['notes'] == '' for s in data['solves'])
         assert data['solves'][2]['dnf'] is True
         assert data['stats'] == {'solve_count': 5, 'best': 10.0, 'worst': 14.0,
                                  'mean': 12.25, 'ao5': 13.0}

@@ -211,7 +211,13 @@
 
                         <div class="timer-display" id="timer-display">0.00</div>
                         <p class="inspection-call" id="inspection-call" aria-live="assertive"></p>
-                        <p class="timer-hint">Hold the space bar until the time turns green, then let go to start. Press Esc to cancel.</p>
+                        <div class="timer-hints">
+                            <p>Hold the space bar until the time turns green, then let go to start. Press Esc to cancel.</p>
+                            <p title="Ctrl works instead of Alt too, unless your browser keeps Ctrl and a number for switching tabs">
+                                Your last solve: <kbd>Alt</kbd>+<kbd>1</kbd> OK, <kbd>Alt</kbd>+<kbd>2</kbd> +2,
+                                <kbd>Alt</kbd>+<kbd>3</kbd> DNF, and <kbd>Ctrl</kbd>+<kbd>Z</kbd> to delete it.
+                            </p>
+                        </div>
 
                         <div class="timer-session-stats">
                             <div class="stat-item">
@@ -393,6 +399,7 @@
                                             <th data-sort="time" class="num">Time</th>
                                             <th data-sort="penalty">Penalty</th>
                                             <th>Scramble</th>
+                                            <th>Note</th>
                                             <th class="actions-col"></th>
                                         </tr>
                                     </thead>
@@ -710,6 +717,7 @@
          several tabs use. -->
     <script src="js/config.js"></script>
     <script src="js/ui.js"></script>
+    <script src="js/solves.js"></script>
     <script src="js/tables.js"></script>
     <script src="js/backup.js"></script>
     <script src="js/dashboard.js"></script>

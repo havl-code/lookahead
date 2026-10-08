@@ -193,10 +193,13 @@ def test_sessions(app_page, live_app):
     page.wait_for_selector('#solves-tbody tr td.num')
     assert '12.34s' in page.text_content('#solves-tbody')
 
+    # Deleting a solve doesn't ask first; it offers Undo, which brings the solve back
     page.click('#solves-tbody button:has-text("Delete")')
-    page.click('.confirm-dialog [data-choice="confirm"]')
     page.wait_for_selector('#solves-tbody td.loading')
     assert solves_in(live_app) == []
+    page.click('.toast >> text=Undo')
+    page.wait_for_selector('#solves-tbody tr td.num')
+    assert [s['time_ms'] for s in solves_in(live_app)] == [12340]
     assert page.errors == []
 
 
