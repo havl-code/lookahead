@@ -335,6 +335,7 @@ def test_main_serves_on_the_usual_port_and_opens_the_browser(started, monkeypatc
     assert (started['host'], started['port']) == ('127.0.0.1', 8577)
     assert started['opened'] == ['http://127.0.0.1:8577']
     assert started['app'].config['DATABASE'] == app_module.DATABASE  # temporary in tests
+    assert started['app'].config['PORT'] == 8577  # for the security checks
     assert sorted(started['threads']) == ['make_shortcut', 'stop_when_unused']
     assert started['server'].closed
 
@@ -353,6 +354,7 @@ def test_main_picks_another_port_when_the_usual_one_is_taken(started, monkeypatc
     app_module.main()
     assert started['port'] == 0
     assert started['opened'] == ['http://127.0.0.1:51234']
+    assert started['app'].config['PORT'] == 51234  # the port the OS picked
 
 
 def test_main_hands_over_to_pythonw(started, monkeypatch):

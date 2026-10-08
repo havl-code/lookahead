@@ -54,8 +54,11 @@ def app_page(live_app, page):
     page.on('dialog', on_dialog)
     page.on('console', lambda m: page.errors.append(m.text) if m.type == 'error' else None)
     page.on('pageerror', lambda e: page.errors.append(str(e)))
+    # Anything the Content-Security-Policy blocks shows up as an error, so tests notice
+    page.add_init_script("document.addEventListener('securitypolicyviolation', e => "
+                         "console.error(`CSP blocked ${e.violatedDirective}: ${e.blockedURI}`))")
     page.clock.install()
     page.goto(live_app.config['BASE_URL'])
-    page.wait_for_function("document.getElementById('stat-solves').textContent !== '--'")
+    page.wait_for_function("() => document.getElementById('stat-solves').textContent !== '--'")
     return page
 

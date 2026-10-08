@@ -13,6 +13,9 @@ from speedcube import db
 PROJECT_DIR = Path(__file__).resolve().parent.parent
 REAL_DATA = (PROJECT_DIR / 'data').resolve()
 FIXTURES = Path(__file__).resolve().parent / 'fixtures'
+# The address the test app pretends to be served at (the app's usual one)
+APP_PORT = 8577
+APP_URL = f'http://127.0.0.1:{APP_PORT}'
 
 
 def to_record(result, scramble=''):

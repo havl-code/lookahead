@@ -9,6 +9,9 @@ pytestmark = pytest.mark.e2e
 
 
 def test_the_dashboard_loads_cleanly(app_page):
+    response = app_page.reload()
+    assert "script-src 'self'" in response.headers['content-security-policy']
+    app_page.wait_for_function("() => document.getElementById('stat-solves').textContent !== '--'")
     assert app_page.text_content('#greeting-text') == 'Welcome to Speedcube Training Explorer'
     assert app_page.text_content('#stat-solves') == '0'
     assert app_page.is_hidden('#update-banner')
@@ -30,7 +33,7 @@ def test_timer(app_page, live_app):
 
     # Mark it +2
     page.select_option('.solve-action-select', '+2')
-    page.wait_for_function("document.querySelector('.solve-time').textContent.includes('(+2)')")
+    page.wait_for_function("() => document.querySelector('.solve-time').textContent.includes('(+2)')")
     assert float(page.text_content('#stat-best')) == pytest.approx(saved + 2, abs=0.01)
 
     # Esc cancels a solve in progress, and nothing is saved
@@ -81,7 +84,7 @@ def test_cubes(app_page):
     page.click('#cubes-tbody button:has-text("Edit")')
     page.fill('#edit-cube-brand', 'MoYu')
     page.click('#edit-cube-form button[type=submit]')
-    page.wait_for_function("document.getElementById('cubes-tbody').textContent.includes('MoYu')")
+    page.wait_for_function("() => document.getElementById('cubes-tbody').textContent.includes('MoYu')")
 
     page.click('#cubes-tbody button:has-text("Deactivate")')
     page.wait_for_selector('#cubes-tbody button:has-text("Reactivate")')
@@ -126,7 +129,7 @@ def test_buttons_menus_and_windows(app_page, live_app):
 
     seed_session(live_app, [12, 13], date='2026-09-01')
     page.reload()
-    page.wait_for_function("document.getElementById('stat-solves').textContent === '2'")
+    page.wait_for_function("() => document.getElementById('stat-solves').textContent === '2'")
     page.select_option('#event-select', '333')
     page.click('#stat-pb')
     page.wait_for_selector('#pb-modal')

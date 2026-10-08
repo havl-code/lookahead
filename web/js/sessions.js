@@ -28,7 +28,7 @@ registerActions('submit', {
 
 async function loadSessionsTab() {
     try {
-        const response = await fetch(`${API_BASE}/sessions`);
+        const response = await apiFetch(`/sessions`);
         const sessions = await response.json();
 
         if (sessions.error) {
@@ -101,7 +101,7 @@ async function deleteSession(sessionId) {
     if (!confirm('Delete this session? This cannot be undone.')) return;
 
     try {
-        const response = await fetch(`${API_BASE}/sessions/${sessionId}`, {
+        const response = await apiFetch(`/sessions/${sessionId}`, {
             method: 'DELETE'
         });
         const result = await response.json();
@@ -134,7 +134,7 @@ async function addSession(event) {
     const notes = document.getElementById('new-session-notes').value;
 
     try {
-        const response = await fetch(`${API_BASE}/sessions/add`, {
+        const response = await apiFetch(`/sessions/add`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -200,7 +200,7 @@ async function loadSessionSolvesPage(reset) {
     });
 
     try {
-        const response = await fetch(`${API_BASE}/sessions/${solvesView.sessionId}/solves?${params}`);
+        const response = await apiFetch(`/sessions/${solvesView.sessionId}/solves?${params}`);
         const data = await response.json();
         if (request !== solvesView.request) return;
 
@@ -262,7 +262,7 @@ async function addSolveToSession(event) {
     const scramble = document.getElementById('new-solve-scramble').value;
 
     try {
-        const response = await fetch(`${API_BASE}/sessions/${sessionId}/solves/add`, {
+        const response = await apiFetch(`/sessions/${sessionId}/solves/add`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -291,7 +291,7 @@ async function deleteSessionSolve(solveId) {
     if (!confirm('Delete this solve?')) return;
 
     try {
-        const response = await fetch(`${API_BASE}/solves/${solveId}`, {
+        const response = await apiFetch(`/solves/${solveId}`, {
             method: 'DELETE'
         });
 

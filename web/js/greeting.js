@@ -3,7 +3,7 @@
 // Load user settings and update greeting
 async function loadGreeting() {
     try {
-        const response = await fetch(`${API_BASE}/user/settings`);
+        const response = await apiFetch(`/user/settings`);
         const data = await response.json();
         
         const greetingText = document.getElementById('greeting-text');
@@ -66,7 +66,7 @@ function showWCASetupModal() {
     status.className = '';
     
     // Check if user already has WCA ID
-    fetch(`${API_BASE}/user/settings`)
+    apiFetch(`/user/settings`)
         .then(res => res.json())
         .then(data => {
             if (data.wca_id) {
@@ -105,7 +105,7 @@ async function saveWCAID(event) {
     status.className = '';
     
     try {
-        const response = await fetch(`${API_BASE}/user/settings`, {
+        const response = await apiFetch(`/user/settings`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -146,7 +146,7 @@ async function removeWCAID() {
     status.className = '';
     
     try {
-        const response = await fetch(`${API_BASE}/user/settings`, {
+        const response = await apiFetch(`/user/settings`, {
             method: 'DELETE'
         });
         

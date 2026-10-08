@@ -54,7 +54,7 @@ async function previewSessions() {
     document.getElementById('import-status').textContent = 'Loading sessions...';
     
     try {
-        const response = await fetch(`${API_BASE}/import/preview`, {
+        const response = await apiFetch(`/import/preview`, {
             method: 'POST',
             body: formData
         });
@@ -114,7 +114,7 @@ async function importSelectedSessions() {
     formData.append('event_id', eventId);
 
     try {
-        const response = await fetch(`${API_BASE}/import/selected`, {
+        const response = await apiFetch(`/import/selected`, {
             method: 'POST',
             body: formData
         });

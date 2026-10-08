@@ -31,7 +31,7 @@ document.getElementById('new-cube-type').addEventListener('change', function () 
 
 async function loadCubesTab() {
     try {
-        const response = await fetch(`${API_BASE}/cubes`);
+        const response = await apiFetch(`/cubes`);
         const cubes = await response.json();
 
         if (cubes.error) {
@@ -101,7 +101,7 @@ async function addCube(event) {
     const notes = document.getElementById('new-cube-notes').value;
     
     try {
-        const response = await fetch(`${API_BASE}/cubes/add`, {
+        const response = await apiFetch(`/cubes/add`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -266,7 +266,7 @@ async function updateCube(event) {
     const notes = document.getElementById('edit-cube-notes').value;
     
     try {
-        const response = await fetch(`${API_BASE}/cubes/${cubeId}`, {
+        const response = await apiFetch(`/cubes/${cubeId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -296,7 +296,7 @@ async function deleteCube(cubeId) {
     if (!confirm('Deactivate this cube? Past sessions will still reference it.')) return;
     
     try {
-        const response = await fetch(`${API_BASE}/cubes/${cubeId}`, {
+        const response = await apiFetch(`/cubes/${cubeId}`, {
             method: 'DELETE'
         });
         const result = await response.json();
@@ -314,7 +314,7 @@ async function deleteCube(cubeId) {
 
 async function reactivateCube(cubeId) {
     try {
-        const response = await fetch(`${API_BASE}/cubes/${cubeId}`, {
+        const response = await apiFetch(`/cubes/${cubeId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ is_active: 1 })
@@ -335,7 +335,7 @@ async function reactivateCube(cubeId) {
 
 async function loadCubesForDropdown() {
     try {
-        const response = await fetch(`${API_BASE}/cubes`);
+        const response = await apiFetch(`/cubes`);
         const cubes = await response.json();
         
         const select = document.getElementById('new-cube-id');

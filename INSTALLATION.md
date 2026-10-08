@@ -109,17 +109,19 @@ Next time, open a terminal in the folder and run `uv run app.py` again.
 
 ## 💾 Where Your Data Lives
 
-Everything (your cubes, sessions, solves and WCA ID) is saved in one file, `data/speedcube.db`,
+Everything (your cubes, sessions, solves, and WCA ID) is saved in one file, `data/speedcube.db`,
 inside the app's folder. It's created the first time you start the app.
 
 The app only accepts connections from your own computer, so nobody else on your network can see
-it. Two features use the internet, and the rest of the app works fine without them:
+it. It also refuses requests from other websites open in your browser, so a page you visit can't
+read or change your data (see [Security](README.md#-security) in the README). Two features use
+the internet, and the rest of the app works fine without them:
 
 - **World Rank:** your estimated WCA world rank and percentile on the dashboard
 - **Name Lookup:** finding your name from your WCA ID, for the personalised greeting
 
-Everything else (the timer, sessions, cubes, analytics, charts and CSTimer import) works
-completely offline. The fonts, the charting library and the summary of WCA results that the
+Everything else (the timer, sessions, cubes, analytics, charts, and CSTimer import) works
+completely offline. The fonts, the charting library, and the summary of WCA results that the
 Analytics scores compare with are all bundled with the app.
 
 The app starts in dark mode. Use the sun or moon button at the top right to switch; it

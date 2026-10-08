@@ -10,9 +10,11 @@ import urllib.request
 from pathlib import Path
 
 import pytest
+from flask.testing import FlaskClient
+from werkzeug.datastructures import Headers
 
 import app as app_module
-from helpers import FIXTURES, REAL_DATA
+from helpers import APP_PORT, APP_URL, FIXTURES, REAL_DATA
 from speedcube import create_app, db, wca
 
 # The real fetcher, kept so its own test can call it (with urlopen faked)
@@ -76,13 +78,32 @@ def fake_wca(monkeypatch):
     return fake
 
 
+class PageClient(FlaskClient):
+    """A test client that sends what the app's own page sends: its address as the Host, its
+    Origin, and the header that state-changing requests need (see speedcube/security.py).
+    A test can still override any of them, say to pretend to be another website."""
+
+    def open(self, *args, **kwargs):
+        kwargs.setdefault('base_url', APP_URL)
+        headers = Headers(kwargs.pop('headers', None) or {})
+        headers.setdefault('Origin', APP_URL)
+        headers.setdefault('X-Requested-With', 'speedcube')
+        return super().open(*args, headers=headers, **kwargs)
+
+
 @pytest.fixture
 def app(tmp_path):
-    return create_app(tmp_path / 'test.db')
+    return create_app(tmp_path / 'test.db', port=APP_PORT)
 
 
 @pytest.fixture
 def client(app):
+    return PageClient(app, app.response_class, use_cookies=True)
+
+
+@pytest.fixture
+def raw_client(app):
+    """A client that adds nothing: no Origin, no header, and the Host 'localhost'."""
     return app.test_client()
 
 

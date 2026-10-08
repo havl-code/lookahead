@@ -142,7 +142,7 @@ function newScramble() {
 // Session selector: lists this event's sessions and keeps showing the one being timed into.
 async function loadSessionSelector() {
     try {
-        const response = await fetch(`${API_BASE}/sessions`);
+        const response = await apiFetch(`/sessions`);
         const sessions = await response.json();
 
         const selector = document.getElementById('timer-session-select');
@@ -200,7 +200,7 @@ async function loadSessionSolves(sessionId) {
         TimerState.stats = null;
     } else {
         try {
-            const response = await fetch(`${API_BASE}/timer/session/${sessionId}/solves?limit=${TIMER_LIST_LIMIT}`);
+            const response = await apiFetch(`/timer/session/${sessionId}/solves?limit=${TIMER_LIST_LIMIT}`);
             const data = await response.json();
             TimerState.currentSolves = data.solves || [];
             TimerState.stats = data.stats || null;
@@ -462,7 +462,7 @@ async function saveSolve(penalty) {
     try {
         // The server picks the session when following today (it may start a new one), and says
         // which session it used.
-        const response = await fetch(`${API_BASE}/timer/solve`, {
+        const response = await apiFetch(`/timer/solve`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -550,7 +550,7 @@ function updateSolvesList() {
 
 async function changeSolvePenalty(solveId, newPenalty) {
     try {
-        const response = await fetch(`${API_BASE}/timer/solve/${solveId}/penalty`, {
+        const response = await apiFetch(`/timer/solve/${solveId}/penalty`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ penalty: newPenalty })
@@ -568,7 +568,7 @@ async function deleteTimerSolve(solveId) {
     if (!confirm('Delete this solve?')) return;
 
     try {
-        const response = await fetch(`${API_BASE}/timer/solve/${solveId}`, {
+        const response = await apiFetch(`/timer/solve/${solveId}`, {
             method: 'DELETE'
         });
 
@@ -582,7 +582,7 @@ async function deleteTimerSolve(solveId) {
 
 async function createTimerSession() {
     try {
-        const response = await fetch(`${API_BASE}/timer/session`, {
+        const response = await apiFetch(`/timer/session`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ event_id: TimerState.event })

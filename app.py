@@ -33,7 +33,8 @@ from werkzeug.serving import make_server
 from speedcube import create_app
 
 APP_NAME = 'speedcube-training-explorer'
-HOST = '127.0.0.1'  # only reachable from this computer, since the API has no login
+HOST = '127.0.0.1'  # only reachable from this computer, since the API has no login (and
+                    # speedcube/security.py keeps websites open in the browser out too)
 PORT = 8577
 PROJECT_DIR = Path(__file__).resolve().parent
 DATABASE = PROJECT_DIR / 'data' / 'speedcube.db'
@@ -206,6 +207,8 @@ def main():
     # If the usual port is taken (by another program, an out-of-date copy of the app or another
     # copy of it in a different folder), let the OS pick a free one.
     server = make_server(HOST, PORT if port_free else 0, app, threaded=True)
+    # The security checks only accept requests addressed to this port (see speedcube/security.py)
+    app.config['PORT'] = server.server_port
     url = f'http://{HOST}:{server.server_port}'
 
     # flush: when output is piped (e.g. an IDE's run console) it would otherwise sit in a buffer.

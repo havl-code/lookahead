@@ -10,7 +10,7 @@ async function loadDashboard() {
 
 async function loadAvailableEvents() {
     try {
-        const response = await fetch(`${API_BASE}/events`);
+        const response = await apiFetch(`/events`);
         const events = await response.json();
 
         const select = document.getElementById('event-select');
@@ -50,7 +50,7 @@ function setStat(id, text, onClick = null) {
 
 async function loadStats() {
     try {
-        const response = await fetch(`${API_BASE}/stats?event_id=${encodeURIComponent(AppState.currentEvent)}`);
+        const response = await apiFetch(`/stats?event_id=${encodeURIComponent(AppState.currentEvent)}`);
         const data = await response.json();
 
         if (data.error) {
@@ -80,7 +80,7 @@ async function loadStats() {
 
 async function showPBDetails(pbTime, eventId) {
     try {
-        const response = await fetch(`${API_BASE}/pb-details?event_id=${encodeURIComponent(eventId)}`);
+        const response = await apiFetch(`/pb-details?event_id=${encodeURIComponent(eventId)}`);
         const data = await response.json();
 
         if (!response.ok || data.error) {
@@ -129,7 +129,7 @@ function closePBModal() {
 
 async function loadRecentSessions() {
     try {
-        const response = await fetch(`${API_BASE}/sessions`);
+        const response = await apiFetch(`/sessions`);
         const sessions = await response.json();
         if (sessions.error) return;
 

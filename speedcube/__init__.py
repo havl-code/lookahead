@@ -7,7 +7,7 @@ from pathlib import Path
 from flask import Flask, jsonify, request, send_from_directory
 from werkzeug.exceptions import HTTPException
 
-from . import db
+from . import db, security
 from .api import api
 
 WEB_DIR = Path(__file__).resolve().parent.parent / 'web'
@@ -20,10 +20,14 @@ for mime_type, extension in (
     mimetypes.add_type(mime_type, extension)
 
 
-def create_app(database_path):
+def create_app(database_path, port=None):
+    """The app, storing its data in `database_path`. `port` is the one it's served on, which
+    the security checks use (app.py sets it once the server has picked one)."""
     app = Flask(__name__, static_folder=WEB_DIR, static_url_path='')
     app.config['DATABASE'] = Path(database_path)
+    app.config['PORT'] = port
     db.init_app(app)
+    security.init_app(app)
     app.register_blueprint(api, url_prefix='/api')
 
     @app.get('/')

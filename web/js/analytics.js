@@ -24,7 +24,7 @@ function changeAnalyticsEvent() {
 // Refill the event menu (events can be added by an import at any time). Keeps the current
 // choice if it's still there, otherwise picks 3x3x3, otherwise the first event.
 async function refreshAnalyticsEvents() {
-    const response = await fetch(`${API_BASE}/events`);
+    const response = await apiFetch(`/events`);
     const events = await response.json();
 
     const select = document.getElementById('analytics-event-select');
@@ -45,7 +45,7 @@ async function refreshAnalyticsEvents() {
 
 // Fill the "Charts for" menu with the chosen event's sessions
 async function loadSessionsForCharts() {
-    const response = await fetch(`${API_BASE}/sessions`);
+    const response = await apiFetch(`/sessions`);
     const sessions = await response.json();
 
     const sessionSelect = document.getElementById('analytics-session-select');
@@ -85,7 +85,7 @@ async function updateAnalytics() {
     const eventId = document.getElementById('analytics-event-select').value || '333';
 
     try {
-        const response = await fetch(`${API_BASE}/analytics/session-heatmap?event_id=${encodeURIComponent(eventId)}`);
+        const response = await apiFetch(`/analytics/session-heatmap?event_id=${encodeURIComponent(eventId)}`);
         const data = await response.json();
 
         if (data.error || !data.sessions || data.sessions.length === 0) {

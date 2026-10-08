@@ -218,11 +218,37 @@ footer to download everything as one JSON file, and **Import backup** to restore
 
 ---
 
+## 🔒 Security
+
+The app has no accounts or passwords. Instead, it relies on only being reachable from your own
+computer: the server only listens on `127.0.0.1`, so nothing else on your network can connect to
+it.
+
+That still leaves one way in: the websites you visit. Any page open in your browser can try to
+send requests to `127.0.0.1`. A hidden form could post a "backup" that replaces all your data
+(this is called cross-site request forgery), and a website could even point its own address at
+your computer so its page can read the app's replies (DNS rebinding). So the app checks every
+request:
+
+- **The address** must be `127.0.0.1` or `localhost` on the app's own port, which rules out
+  DNS rebinding.
+- **Requests from other websites** to the app's data are refused. Browsers say where each
+  request comes from.
+- **Anything that changes your data** must come from the app's own page, and carry a header
+  that a form or script on another website can't send.
+- **The page itself** only runs the app's own scripts (a strict Content-Security-Policy), so
+  text from an imported file could never run as code, even if a bug let it through.
+
+None of this needs any setup, and you can still open the app in as many tabs or browsers as you
+like.
+
+---
+
 ## 🛠️ Tech Stack
 
 - **Backend:** Python with [Flask](https://flask.palletsprojects.com/), started by
   [uv](https://docs.astral.sh/uv/). It's a small server that only accepts connections from
-  your own computer.
+  your own computer, and refuses requests from other websites (see [Security](#-security)).
 - **Storage:** SQLite (`data/speedcube.db`). Nothing leaves your machine.
 - **Frontend:** plain JavaScript, HTML and CSS, with no build step, framework or bundler.
 - **Charts:** [Plotly.js](https://plotly.com/javascript/), bundled with the app.
@@ -255,6 +281,7 @@ speedcube-training-explorer/
 │   ├── scores.py          # The Analytics scores (see docs/SCORES.md)
 │   ├── wca_reference.json # Summary of WCA results the scores compare against
 │   ├── wca.py             # WCA rank and percentile, and WCA ID lookup
+│   ├── security.py        # Keeps other websites out (see Security)
 │   ├── cstimer.py         # Reading CSTimer exports
 │   └── backup.py          # JSON backup export and restore
 ├── web/                   # The web page, served by the backend

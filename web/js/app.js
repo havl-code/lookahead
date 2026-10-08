@@ -14,7 +14,7 @@ async function init() {
 // the two quietly disagree. (A server from before this check existed has no version at all.)
 async function checkServerUpToDate() {
     try {
-        const response = await fetch(`${API_BASE}/app`);
+        const response = await apiFetch(`/app`);
         const info = await response.json();
         document.getElementById('update-banner').hidden = Boolean(info.version) && !info.stale;
     } catch (error) {

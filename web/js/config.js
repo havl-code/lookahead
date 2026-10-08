@@ -3,6 +3,19 @@
 // The JSON API served by the local Python server (app.py) that also serves this page.
 const API_BASE = '/api';
 
+// Every request to the API goes through this, with a path such as '/sessions'. It works just
+// like fetch(), but adds the header the server requires on anything that changes your data. A
+// form or script on another website can't send that header, which is part of how the app keeps
+// other sites from changing your data (see "Security" in the README).
+function apiFetch(path, options = {}) {
+    const method = (options.method || 'GET').toUpperCase();
+    const headers = new Headers(options.headers || {});
+    if (method !== 'GET' && method !== 'HEAD') {
+        headers.set('X-Requested-With', 'speedcube');
+    }
+    return fetch(`${API_BASE}${path}`, { ...options, method, headers });
+}
+
 // Global state
 const AppState = {
     selectedFile: null,

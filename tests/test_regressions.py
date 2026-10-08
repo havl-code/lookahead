@@ -34,8 +34,8 @@ def iso_utc(unix_seconds):
 
 # ---- 1 and 1a: other websites and DNS rebinding ----
 
-@finding('1', 'another website can replace all the data')
 def test_a_cross_site_restore_is_refused(app, client):
+    """Finding 1: another website could replace all the data."""
     seed_session(app, [10, 11, 12])
     response = client.post('/api/backup/import', headers={'Origin': EVIL},
                            data=upload(b'{"cubes": [], "sessions": [], "solves": []}'))
@@ -43,35 +43,35 @@ def test_a_cross_site_restore_is_refused(app, client):
     assert query(app, 'SELECT COUNT(*) AS n FROM solves') == [{'n': 3}]
 
 
-@finding('1', 'another website can import CSTimer files')
 @pytest.mark.parametrize('route', ['/api/import/preview', '/api/import/selected'])
 def test_a_cross_site_import_is_refused(client, cstimer_bytes, route):
+    """Finding 1: another website could import CSTimer files."""
     data = {**upload(cstimer_bytes), 'sessions': '["session1"]'}
     assert client.post(route, headers={'Origin': EVIL}, data=data).status_code == 403
 
 
-@finding('1', 'DNS rebinding can read the whole backup')
 def test_a_foreign_host_is_refused(client):
+    """Finding 1: DNS rebinding could read the whole backup."""
     assert client.get('/api/backup/export', headers={'Host': 'evil.example:8577'}).status_code == 403
 
 
-@finding('1a', 'a plain cross-site form can start sessions')
 def test_a_cross_site_form_cannot_write(app, client):
+    """Finding 1a: a plain cross-site form could start sessions."""
     response = client.post('/api/timer/session', headers={'Origin': EVIL}, data='x=1',
                            content_type='application/x-www-form-urlencoded')
     assert response.status_code == 403
     assert query(app, 'SELECT COUNT(*) AS n FROM sessions') == [{'n': 0}]
 
 
-@finding('1a', 'state-changing requests need the custom header')
-def test_writes_need_the_custom_header(client):
-    response = client.post('/api/timer/session', json={},
-                           headers={'Origin': 'http://127.0.0.1:8577', 'Host': '127.0.0.1:8577'})
+def test_writes_need_the_custom_header(raw_client):
+    """Finding 1a: state-changing requests need the custom header."""
+    response = raw_client.post('/api/timer/session', json={},
+                               headers={'Origin': 'http://127.0.0.1:8577', 'Host': '127.0.0.1:8577'})
     assert response.status_code == 403
 
 
-@finding('1a', 'no security headers')
 def test_responses_carry_security_headers(client):
+    """Finding 1a: there were no security headers."""
     response = client.get('/')
     csp = response.headers.get('Content-Security-Policy', '')
     assert "script-src 'self'" in csp and 'unsafe-inline' not in csp.split('script-src')[1].split(';')[0]
@@ -422,7 +422,7 @@ def test_every_finding_has_a_test():
     are about the docs, which are checked by reading."""
     here = (PROJECT_DIR / 'tests' / 'test_regressions.py').read_text(encoding='utf-8')
     ui = (PROJECT_DIR / 'tests' / 'e2e' / 'test_regressions_ui.py').read_text(encoding='utf-8')
-    numbers = set(re.findall(r"finding\('(\w+)'", here + ui))
+    numbers = set(re.findall(r"finding\('(\w+)'", here + ui)) | set(re.findall(r'Finding (\w+):', here + ui))
     expected = {'1', '1a', '2', '2a', '2b', '2c', '2d', '2e', '3', '3a', '3b', '4', '4a', '4b',
                 '4c', '5', '6', '7', '8', '9', '9a', '9b', '10', '11', '12', '13', '15', '16'}
     assert expected <= numbers, sorted(expected - numbers)

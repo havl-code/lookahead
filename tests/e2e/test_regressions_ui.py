@@ -84,9 +84,9 @@ def test_pb_details_name_the_real_event(app_page, live_app):
     seed_session(live_app, [12, 13])
     seed_session(live_app, [3], event='222')
     app_page.reload()
-    app_page.wait_for_function("document.getElementById('stat-solves').textContent === '3'")
+    app_page.wait_for_function("() => document.getElementById('stat-solves').textContent === '3'")
     app_page.select_option('#event-select', 'all')
-    app_page.wait_for_function("document.getElementById('stat-pb').textContent === '3.00s'")
+    app_page.wait_for_function("() => document.getElementById('stat-pb').textContent === '3.00s'")
     app_page.click('#stat-pb')
     app_page.wait_for_selector('#pb-modal')
     assert app_page.text_content('.pb-event') == '2x2x2'

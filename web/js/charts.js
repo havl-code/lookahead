@@ -59,7 +59,7 @@ async function fetchChartData(request, containerId, url, hasData) {
     const container = document.getElementById(containerId);
     container.innerHTML = '<div class="loading">Loading...</div>';
     try {
-        const response = await fetch(url);
+        const response = await apiFetch(url);
         const data = await response.json();
         if (request !== chartRequest) return null;
         if (data.error || !hasData(data)) {
@@ -108,8 +108,8 @@ const line = (x, y, name, color, extra = {}) => ({ x, y, name, type: 'scatter', 
 
 async function loadProgressChart(request, eventId, sessionId) {
     const url = sessionId === 'all'
-        ? `${API_BASE}/charts/progress?event_id=${encodeURIComponent(eventId)}`
-        : `${API_BASE}/charts/session-progress?session_id=${sessionId}`;
+        ? `/charts/progress?event_id=${encodeURIComponent(eventId)}`
+        : `/charts/session-progress?session_id=${sessionId}`;
     const data = await fetchChartData(request, 'progress-chart', url, d => d.data && d.data.length > 0);
     if (!data) return;
 
@@ -142,8 +142,8 @@ async function loadProgressChart(request, eventId, sessionId) {
 
 async function loadDistributionChart(request, eventId, sessionId) {
     const url = sessionId === 'all'
-        ? `${API_BASE}/charts/distribution?event_id=${encodeURIComponent(eventId)}`
-        : `${API_BASE}/charts/session-distribution?session_id=${sessionId}`;
+        ? `/charts/distribution?event_id=${encodeURIComponent(eventId)}`
+        : `/charts/session-distribution?session_id=${sessionId}`;
     const data = await fetchChartData(request, 'distribution-chart', url, d => d.times && d.times.length > 0);
     if (!data) return;
 
@@ -179,8 +179,8 @@ async function loadDistributionChart(request, eventId, sessionId) {
 
 async function loadRollingChart(request, eventId, sessionId) {
     const url = sessionId === 'all'
-        ? `${API_BASE}/charts/rolling-average?event_id=${encodeURIComponent(eventId)}`
-        : `${API_BASE}/charts/session-rolling?session_id=${sessionId}`;
+        ? `/charts/rolling-average?event_id=${encodeURIComponent(eventId)}`
+        : `/charts/session-rolling?session_id=${sessionId}`;
     const data = await fetchChartData(request, 'breakdown-chart', url, d => d.times && d.times.length > 0);
     if (!data) return;
 
@@ -199,7 +199,7 @@ async function loadConsistencyChart(request, eventId, sessionId) {
         return;
     }
 
-    const url = `${API_BASE}/charts/consistency?event_id=${encodeURIComponent(eventId)}`;
+    const url = `/charts/consistency?event_id=${encodeURIComponent(eventId)}`;
     const data = await fetchChartData(request, 'consistency-chart', url, d => d.sessions && d.sessions.length > 0);
     if (!data) return;
 

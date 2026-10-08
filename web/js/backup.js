@@ -35,7 +35,7 @@ async function handleImportBackupFile(event) {
     try {
         const formData = new FormData();
         formData.append('file', file);
-        const response = await fetch(`${API_BASE}/backup/import`, { method: 'POST', body: formData });
+        const response = await apiFetch(`/backup/import`, { method: 'POST', body: formData });
         const result = await response.json();
         if (!response.ok) {
             throw new Error(result.error || 'Unknown error');

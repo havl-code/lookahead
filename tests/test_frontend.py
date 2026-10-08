@@ -40,6 +40,22 @@ def test_every_registered_action_is_used():
     assert not unused, f'Registered but never used: {sorted(unused)}'
 
 
+def test_every_api_call_goes_through_apifetch():
+    """apiFetch adds the header the server needs on changes, so a plain fetch() to the API
+    would be refused. The only other ways the page reaches the API are two reads: the presence
+    stream (EventSource) and the backup download link."""
+    direct = []
+    for path in (WEB / 'js').glob('*.js'):
+        for line in path.read_text(encoding='utf-8').splitlines():
+            if line.strip().startswith('//'):
+                continue  # comments may mention fetch()
+            if re.search(r'(?<![\w.])fetch\(', line) and 'return fetch(`${API_BASE}${path}`' not in line:
+                direct.append(f'{path.name}: {line.strip()}')
+            if 'API_BASE}' in line and 'apiFetch' not in line and 'return fetch(' not in line:
+                assert ('EventSource' in line and '/presence' in line) or '/backup/export' in line, line
+    assert direct == []
+
+
 def test_no_inline_scripts():
     html = (WEB / 'index.html').read_text(encoding='utf-8')
     assert re.findall(r'<script(?![^>]*\bsrc=)[^>]*>', html) == []
