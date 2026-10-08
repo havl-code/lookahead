@@ -42,5 +42,12 @@ function switchTab(tabName) {
     TAB_LOADERS[tabName]();
 }
 
+registerActions('click', {
+    'switch-tab': element => switchTab(element.dataset.tab),
+    // The Dashboard's quick actions open a tab with its form ready
+    'quick-add-session': () => { switchTab('sessions'); showAddSessionForm(); },
+    'quick-add-cube': () => { switchTab('cubes'); showAddCubeForm(); }
+});
+
 // Start the app when the page loads
 document.addEventListener('DOMContentLoaded', init);

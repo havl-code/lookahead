@@ -103,6 +103,65 @@ def test_import(app_page, live_app):
     assert len(solves_in(live_app)) == 10
 
 
+def test_buttons_menus_and_windows(app_page, live_app):
+    """Every kind of control the page wires up: links, buttons, menus, forms, and windows."""
+    page = app_page
+    theme = page.evaluate('document.documentElement.dataset.theme')
+    page.click('.theme-toggle')
+    assert page.evaluate('document.documentElement.dataset.theme') != theme
+
+    page.click('.quick-actions >> text=Add Session')
+    assert page.is_visible('#tab-sessions #add-session-form')
+    page.click('#add-session-form >> text=Cancel')
+    assert page.is_hidden('#add-session-form')
+    page.click('.brand')
+    page.click('.quick-actions >> text=Add Cube')
+    assert page.is_visible('#add-cube-form')
+    page.click('.brand')
+
+    page.click('#wca-setup-prompt button')
+    assert page.is_visible('#wca-setup-modal')
+    page.click('#wca-setup-modal .modal-close')
+    assert page.is_hidden('#wca-setup-modal')
+
+    seed_session(live_app, [12, 13], date='2026-09-01')
+    page.reload()
+    page.wait_for_function("document.getElementById('stat-solves').textContent === '2'")
+    page.select_option('#event-select', '333')
+    page.click('#stat-pb')
+    page.wait_for_selector('#pb-modal')
+    page.mouse.click(5, 5)  # the dark area around the window
+    assert page.locator('#pb-modal').count() == 0
+
+    page.click('.tab[data-tab="timer"]')
+    page.wait_for_selector('#scramble-text')
+    before = page.text_content('#scramble-text')
+    page.click('.scramble-display')
+    assert page.is_visible('.scramble-menu')
+    page.click('.scramble-menu >> text=New Scramble')
+    assert page.text_content('#scramble-text') != before
+    assert page.is_hidden('.scramble-menu')
+
+    page.click('#timer-settings-btn')
+    page.click('#timer-settings-modal .setting-item:has-text("Hide Stats") .setting-toggle')
+    assert page.evaluate("document.querySelector('.timer-session-stats').classList.contains('hidden')")
+    page.click('#timer-settings-modal >> text=Close')
+    assert page.locator('#timer-settings-modal').count() == 0
+
+    page.click('.tab[data-tab="sessions"]')
+    page.wait_for_selector('#sessions-tbody td.num')
+    page.select_option('#filter-event', '333')
+    assert page.locator('#sessions-tbody tr').count() == 1
+
+    with page.expect_download() as download:
+        page.click('text=Export backup')
+    assert download.value.suggested_filename.startswith('speedcube-backup-')
+    with page.expect_file_chooser() as chooser:
+        page.click('text=Import backup')
+    assert chooser.value is not None
+    assert page.errors == []
+
+
 def test_analytics_draws_every_chart(app_page, live_app):
     for day in range(1, 13):
         seed_session(live_app, [12 + ((i * 733) % 3000) / 1000 for i in range(25)],

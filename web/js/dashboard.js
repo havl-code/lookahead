@@ -32,6 +32,9 @@ async function loadAvailableEvents() {
     }
 }
 
+registerActions('change', { 'change-dashboard-event': () => changeEvent() });
+registerActions('click', { 'close-pb-modal': () => closePBModal() });
+
 function changeEvent() {
     AppState.currentEvent = document.getElementById('event-select').value;
     loadStats();
@@ -86,11 +89,11 @@ async function showPBDetails(pbTime, eventId) {
         }
 
         const modalHTML = `
-            <div id="pb-modal" class="modal" onclick="if (event.target === this) closePBModal()">
+            <div id="pb-modal" class="modal">
                 <div class="modal-content modal-small">
                     <div class="modal-header">
                         <h3>Personal Best</h3>
-                        <button class="modal-close" onclick="closePBModal()" aria-label="Close">&times;</button>
+                        <button class="modal-close" data-action="close-pb-modal" aria-label="Close">&times;</button>
                     </div>
                     <div class="modal-body">
                         <div class="pb-time">${formatTime(pbTime)}</div>
@@ -110,6 +113,10 @@ async function showPBDetails(pbTime, eventId) {
 
         closePBModal();
         document.body.insertAdjacentHTML('beforeend', modalHTML);
+        // Clicking the dark area around the window closes it
+        document.getElementById('pb-modal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) closePBModal();
+        });
     } catch (error) {
         console.error('Error showing PB details:', error);
         showError('Failed to load PB details');

@@ -266,7 +266,7 @@ speedcube-training-explorer/
 │   │   ├── backup.js      # Export and import backup links
 │   │   ├── dashboard.js, sessions.js, cubes.js, timer.js,
 │   │   │   import.js, analytics.js, charts.js, greeting.js,
-│   │   │   app.js, theme.js   # One file per tab or feature
+│   │   │   app.js, theme.js, theme-init.js   # One file per tab or feature
 │   ├── images/            # Logo, favicon, and the shortcut icon (app-icon.ico)
 │   └── vendor/            # Bundled Plotly.js and Space Grotesk (with their licences)
 ├── tools/

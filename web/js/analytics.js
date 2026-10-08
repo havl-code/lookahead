@@ -9,6 +9,11 @@ async function loadAnalyticsTab() {
     renderAllCharts();
 }
 
+registerActions('change', {
+    'change-analytics-event': () => changeAnalyticsEvent(),
+    'change-chart-session': () => renderAllCharts()
+});
+
 function changeAnalyticsEvent() {
     document.getElementById('analytics-session-select').value = 'all';
     loadSessionsForCharts();

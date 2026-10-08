@@ -1,5 +1,11 @@
 // import.js: the Import tab (CSTimer import)
 
+registerActions('click', {
+    'choose-import-file': () => document.getElementById('file-input').click(),
+    'import-selected': () => importSelectedSessions(),
+    'cancel-import': () => cancelImport()
+});
+
 // Set up the file upload listeners when the tab loads
 function loadImportTab() {
     setupFileUpload();

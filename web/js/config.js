@@ -85,6 +85,40 @@ function escapeHtml(value) {
         .replace(/'/g, '&#39;');
 }
 
+// ---- Actions ----
+// Buttons and links say what they do in a data-action attribute (data-change on menus and file
+// pickers, data-submit on forms) instead of inline onclick handlers, which the page's
+// Content-Security-Policy refuses to run. Each tab's script registers the actions it handles,
+// and the three listeners below call them with the element (whose data-* attributes carry any
+// details, such as a session id) and the event.
+const Actions = { click: {}, change: {}, submit: {} };
+
+function registerActions(kind, handlers) {
+    Object.assign(Actions[kind], handlers);
+}
+
+document.addEventListener('click', (event) => {
+    const element = event.target.closest('[data-action]');
+    const handler = element && Actions.click[element.dataset.action];
+    if (!handler) return;
+    if (element.tagName === 'A') event.preventDefault();  // links with href="#" go nowhere
+    handler(element, event);
+});
+
+document.addEventListener('change', (event) => {
+    const element = event.target.closest('[data-change]');
+    const handler = element && Actions.change[element.dataset.change];
+    if (handler) handler(element, event);
+});
+
+document.addEventListener('submit', (event) => {
+    const form = event.target.closest('[data-submit]');
+    const handler = form && Actions.submit[form.dataset.submit];
+    if (!handler) return;
+    event.preventDefault();  // the page saves through the API, never by reloading
+    handler(form, event);
+});
+
 function showError(message) {
     alert(`Error: ${message}`);
 }

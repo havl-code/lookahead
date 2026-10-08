@@ -79,8 +79,8 @@ def test_responses_carry_security_headers(client):
     assert response.headers.get('X-Content-Type-Options') == 'nosniff'
 
 
-@finding('1a', 'inline event handlers would be blocked by a strict CSP')
 def test_no_inline_event_handlers():
+    """Finding 1a: a strict CSP would block inline event handlers."""
     sources = [PROJECT_DIR / 'web' / 'index.html', *WEB_JS.glob('*.js')]
     found = {path.name: len(re.findall(r'\son[a-z]+\s*=\s*["\']', path.read_text(encoding='utf-8')))
              for path in sources}

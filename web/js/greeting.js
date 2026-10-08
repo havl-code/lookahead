@@ -176,3 +176,10 @@ window.addEventListener('click', (event) => {
         closeWCASetupModal();
     }
 });
+
+registerActions('click', {
+    'show-wca-setup': () => showWCASetupModal(),
+    'close-wca-setup': () => closeWCASetupModal(),
+    'remove-wca-id': () => removeWCAID()
+});
+registerActions('submit', { 'save-wca-id': (form, event) => saveWCAID(event) });

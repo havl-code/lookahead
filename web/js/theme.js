@@ -1,5 +1,5 @@
-// theme.js: the light/dark mode toggle. Dark is the default; a small script in index.html's
-// <head> applies the saved choice before the page is drawn.
+// theme.js: the light/dark mode toggle. Dark is the default; theme-init.js, loaded in
+// index.html's <head>, applies the saved choice before the page is drawn.
 
 function toggleTheme() {
     const currentTheme = document.documentElement.dataset.theme;
@@ -31,3 +31,5 @@ function updateThemeIcon() {
 }
 
 updateThemeIcon();
+
+registerActions('click', { 'toggle-theme': () => toggleTheme() });

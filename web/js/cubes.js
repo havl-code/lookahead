@@ -9,6 +9,19 @@ const CUBE_SORT_GETTERS = {
     status: c => (c.is_active ? 0 : 1)  // active first
 };
 
+registerActions('click', {
+    'show-add-cube': () => showAddCubeForm(),
+    'hide-add-cube': () => hideAddCubeForm(),
+    'edit-cube': button => showEditCubeForm(Number(button.dataset.cubeId)),
+    'hide-edit-cube': () => hideEditCubeForm(),
+    'deactivate-cube': button => deleteCube(Number(button.dataset.cubeId)),
+    'reactivate-cube': button => reactivateCube(Number(button.dataset.cubeId))
+});
+registerActions('submit', {
+    'add-cube': (form, event) => addCube(event),
+    'update-cube': (form, event) => updateCube(event)
+});
+
 // Show the custom type field when "Other" is picked in the Add Cube form
 document.getElementById('new-cube-type').addEventListener('change', function () {
     const isOther = this.value === 'other';
@@ -50,10 +63,10 @@ function renderCubesTable() {
             <td>${escapeHtml(cube.purchase_date || '-')}</td>
             <td><span class="status ${cube.is_active ? 'active' : 'inactive'}">${cube.is_active ? 'Active' : 'Inactive'}</span></td>
             <td class="actions-col">
-                <button class="action-btn" onclick="showEditCubeForm(${cube.id})">Edit</button>
+                <button class="action-btn" data-action="edit-cube" data-cube-id="${cube.id}">Edit</button>
                 ${cube.is_active ?
-                    `<button class="action-btn danger" onclick="deleteCube(${cube.id})">Deactivate</button>` :
-                    `<button class="action-btn" onclick="reactivateCube(${cube.id})">Reactivate</button>`
+                    `<button class="action-btn danger" data-action="deactivate-cube" data-cube-id="${cube.id}">Deactivate</button>` :
+                    `<button class="action-btn" data-action="reactivate-cube" data-cube-id="${cube.id}">Reactivate</button>`
                 }
             </td>
         </tr>
@@ -134,7 +147,7 @@ function showEditCubeForm(cubeId) {
         const editFormHTML = `
             <div id="edit-cube-form" class="form-card" style="display: none;">
                 <h3>Edit Cube</h3>
-                <form onsubmit="updateCube(event)">
+                <form data-submit="update-cube">
                     <input type="hidden" id="edit-cube-id">
                     <div class="form-row">
                         <div class="form-group">
@@ -182,7 +195,7 @@ function showEditCubeForm(cubeId) {
                     </div>
                     <div class="form-actions">
                         <button type="submit" class="btn-primary">Save Changes</button>
-                        <button type="button" class="btn-secondary" onclick="hideEditCubeForm()">Cancel</button>
+                        <button type="button" class="btn-secondary" data-action="hide-edit-cube">Cancel</button>
                     </div>
                 </form>
             </div>

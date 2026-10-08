@@ -4,6 +4,12 @@
 // restores from such a file, replacing all current data. Backups made with the older
 // browser-only version (2.x) use the same format, so they can be imported here too.
 
+registerActions('click', {
+    'export-backup': () => exportBackup(),
+    'import-backup': () => triggerImportBackup()
+});
+registerActions('change', { 'import-backup-file': (input, event) => handleImportBackupFile(event) });
+
 function exportBackup() {
     const a = document.createElement('a');
     a.href = `${API_BASE}/backup/export`;

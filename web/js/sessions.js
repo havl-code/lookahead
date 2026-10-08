@@ -11,6 +11,21 @@ const SESSION_SORT_GETTERS = {
     ao12: s => s.ao12
 };
 
+registerActions('click', {
+    'show-add-session': () => showAddSessionForm(),
+    'hide-add-session': () => hideAddSessionForm(),
+    'view-session': button => viewSessionSolves(Number(button.dataset.sessionId)),
+    'delete-session': button => deleteSession(Number(button.dataset.sessionId)),
+    'delete-session-solve': button => deleteSessionSolve(Number(button.dataset.solveId)),
+    'close-solve-modal': () => closeSolveModal(),
+    'load-more-solves': () => loadMoreSessionSolves()
+});
+registerActions('change', { 'filter-sessions': () => applySessionFilters() });
+registerActions('submit', {
+    'add-session': (form, event) => addSession(event),
+    'add-solve': (form, event) => addSolveToSession(event)
+});
+
 async function loadSessionsTab() {
     try {
         const response = await fetch(`${API_BASE}/sessions`);
@@ -75,8 +90,8 @@ function displayFilteredSessions(sessions) {
             <td class="num">${formatTime(session.ao5)}</td>
             <td class="num">${formatTime(session.ao12)}</td>
             <td class="actions-col">
-                <button class="action-btn" onclick="viewSessionSolves(${session.id})">View</button>
-                <button class="action-btn danger" onclick="deleteSession(${session.id})">Delete</button>
+                <button class="action-btn" data-action="view-session" data-session-id="${session.id}">View</button>
+                <button class="action-btn danger" data-action="delete-session" data-session-id="${session.id}">Delete</button>
             </td>
         </tr>
     `).join('');
@@ -217,7 +232,7 @@ function renderSolvesTable() {
                     <td>${escapeHtml(penalty || '-')}</td>
                     <td class="scramble-cell" title="${escapeHtml(solve.scramble)}">${escapeHtml(solve.scramble || '-')}</td>
                     <td class="actions-col">
-                        <button class="action-btn danger" onclick="deleteSessionSolve(${solve.id})">Delete</button>
+                        <button class="action-btn danger" data-action="delete-session-solve" data-solve-id="${solve.id}">Delete</button>
                     </td>
                 </tr>
             `;

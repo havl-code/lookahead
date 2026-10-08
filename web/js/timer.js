@@ -110,17 +110,21 @@ function generateNewScramble() {
     document.getElementById('scramble-text').textContent = TimerState.scramble;
 }
 
-// Scramble menu (copy / new scramble), opened by clicking the scramble
+// Scramble menu (copy / new scramble), opened by clicking the scramble. Clicks on its items
+// carry on to the page's action listener, which runs them (and they close the menu).
 function setupScrambleMenu() {
     document.querySelector('.scramble-display').onclick = (e) => {
-        e.stopPropagation();
-        document.querySelector('.scramble-menu').classList.toggle('show');
+        if (!e.target.closest('.scramble-menu-item')) {
+            document.querySelector('.scramble-menu').classList.toggle('show');
+        }
     };
 }
 
 // Clicking anywhere else closes the scramble menu.
-document.addEventListener('click', () => {
-    document.querySelector('.scramble-menu')?.classList.remove('show');
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.scramble-display')) {
+        document.querySelector('.scramble-menu')?.classList.remove('show');
+    }
 });
 
 function copyScramble() {
@@ -221,11 +225,11 @@ function showTimerSettings() {
                 <div class="setting-item">
                     <span class="setting-label">Inspection</span>
                     <div class="setting-toggle ${TimerState.settings.inspectionEnabled ? 'active' : ''}"
-                         onclick="toggleTimerSetting('inspectionEnabled', this)"></div>
+                         data-action="toggle-timer-setting" data-setting="inspectionEnabled"></div>
                 </div>
                 <div class="setting-item">
                     <span class="setting-label">Inspection Time</span>
-                    <select class="setting-select" onchange="changeInspectionTime(this.value)">
+                    <select class="setting-select" data-change="change-inspection-time">
                         <option value="8" ${TimerState.settings.inspectionSeconds === 8 ? 'selected' : ''}>8 seconds</option>
                         <option value="12" ${TimerState.settings.inspectionSeconds === 12 ? 'selected' : ''}>12 seconds</option>
                         <option value="15" ${TimerState.settings.inspectionSeconds === 15 ? 'selected' : ''}>15 seconds</option>
@@ -235,16 +239,16 @@ function showTimerSettings() {
                 <div class="setting-item">
                     <span class="setting-label">Hide Timer While Solving</span>
                     <div class="setting-toggle ${TimerState.settings.hideTimer ? 'active' : ''}"
-                         onclick="toggleTimerSetting('hideTimer', this)"></div>
+                         data-action="toggle-timer-setting" data-setting="hideTimer"></div>
                 </div>
                 <div class="setting-item">
                     <span class="setting-label">Hide Stats</span>
                     <div class="setting-toggle ${TimerState.settings.hideStats ? 'active' : ''}"
-                         onclick="toggleTimerSetting('hideStats', this)"></div>
+                         data-action="toggle-timer-setting" data-setting="hideStats"></div>
                 </div>
             </div>
             <div class="form-actions align-end">
-                <button class="btn-secondary" onclick="closeTimerSettings()">Close</button>
+                <button class="btn-secondary" data-action="close-timer-settings">Close</button>
             </div>
         </div>
     `;
@@ -532,12 +536,12 @@ function updateSolvesList() {
                 <span class="solve-time ${isBest ? 'best' : ''} ${isWorst ? 'worst' : ''}">${timeDisplay}</span>
                 <span class="solve-scramble" title="${scramble}">${scramble}</span>
                 <div class="solve-actions">
-                    <select class="solve-action-select" onchange="changeSolvePenalty(${solve.id}, this.value)">
+                    <select class="solve-action-select" data-change="change-solve-penalty" data-solve-id="${solve.id}">
                         <option value="OK" ${solve.penalty === 'OK' ? 'selected' : ''}>OK</option>
                         <option value="+2" ${solve.penalty === '+2' ? 'selected' : ''}>+2</option>
                         <option value="DNF" ${solve.penalty === 'DNF' ? 'selected' : ''}>DNF</option>
                     </select>
-                    <button class="solve-action-btn delete" onclick="deleteTimerSolve(${solve.id})">Delete</button>
+                    <button class="solve-action-btn delete" data-action="delete-timer-solve" data-solve-id="${solve.id}">Delete</button>
                 </div>
             </div>
         `;
@@ -633,3 +637,18 @@ function changeTimerEvent(eventId) {
     TimerState.event = eventId;
     loadTimerTab();
 }
+
+registerActions('click', {
+    'show-timer-settings': () => showTimerSettings(),
+    'close-timer-settings': () => closeTimerSettings(),
+    'toggle-timer-setting': toggle => toggleTimerSetting(toggle.dataset.setting, toggle),
+    'toggle-fullscreen': () => toggleFullscreen(),
+    'copy-scramble': () => copyScramble(),
+    'new-scramble': () => newScramble(),
+    'delete-timer-solve': button => deleteTimerSolve(Number(button.dataset.solveId))
+});
+registerActions('change', {
+    'change-timer-event': select => changeTimerEvent(select.value),
+    'change-inspection-time': select => changeInspectionTime(select.value),
+    'change-solve-penalty': select => changeSolvePenalty(Number(select.dataset.solveId), select.value)
+});
