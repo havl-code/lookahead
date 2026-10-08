@@ -88,6 +88,50 @@ def test_scripts_load_in_order():
 
 
 @pytest.mark.skipif(shutil.which('node') is None, reason='Node.js is not installed')
+@pytest.mark.parametrize('event, length, faces', [
+    ('222', 25, {'R', 'U', 'F'}),
+    ('333', 25, {'R', 'L', 'U', 'D', 'F', 'B'}),
+    ('444', 40, {'R', 'L', 'U', 'D', 'F', 'B', 'Rw', 'Uw', 'Fw'}),
+])
+def test_scrambles_for_each_timer_event(event, length, faces):
+    """scramble.js, run in Node: each event's length and moves (2006 Regulations, Article 4g),
+    written as in Regulation 12a, and never a move that cancels out. Every layer and turn turns
+    up, and moves next to each other share an axis about as often as in a fair random scramble."""
+    code = (WEB / 'js' / 'scramble.js').read_text(encoding='utf-8')
+    script = code + f'''
+const all = [];
+for (let i = 0; i < 2000; i++) all.push(generateScramble('{event}').split(' '));
+console.log(JSON.stringify({{ all, has: [hasTimer('{event}'), hasTimer('555'), hasTimer('toString')] }}));'''
+    result = subprocess.run(['node', '-e', script], capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+    data = json.loads(result.stdout)
+    assert data['has'] == [True, False, False]
+    axis = {'R': 'x', 'L': 'x', 'U': 'y', 'D': 'y', 'F': 'z', 'B': 'z'}
+    used, pairs, same_axis = set(), 0, 0
+    for scramble in data['all']:
+        assert len(scramble) == length
+        layers = []
+        for move in scramble:
+            match = re.fullmatch(r"([RLUDFB]w?)('|2)?", move)
+            assert match, move
+            layers.append(match[1])
+            used.add(move)
+        for i in range(1, len(layers)):
+            pairs += 1
+            same_axis += axis[layers[i][0]] == axis[layers[i - 1][0]]
+        # Within each run on one axis, no layer turns twice (so nothing cancels)
+        run = [layers[0]]
+        for layer in layers[1:]:
+            run = run + [layer] if axis[layer[0]] == axis[run[-1][0]] else [layer]
+            assert len(run) == len(set(run)), scramble
+    assert used == {face + turn for face in faces for turn in ('', "'", '2')}
+    if event == '222':
+        assert same_axis == 0  # one layer an axis, so the axis always changes
+    else:
+        assert 0.1 < same_axis / pairs < 0.45
+
+
+@pytest.mark.skipif(shutil.which('node') is None, reason='Node.js is not installed')
 def test_times_are_written_the_cubing_way():
     """config.js's formatClock and truncatedSeconds, run in Node: 12.34, 1:23.45, whole seconds
     from 10 minutes (Regulation 9f2), hours from an hour, and running times cut off, not rounded."""

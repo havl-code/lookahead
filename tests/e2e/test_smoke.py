@@ -3,7 +3,7 @@
 import pytest
 
 from e2e_helpers import open_tab, open_timer, solves_in, time_a_solve
-from helpers import FIXTURES, seed_session
+from helpers import FIXTURES, query, seed_session
 
 pytestmark = pytest.mark.e2e
 
@@ -422,4 +422,26 @@ def test_csv_downloads(app_page, live_app):
     assert download.value.suggested_filename.startswith('speedcube-solves-session-')
     text = open(download.value.path(), encoding='utf-8-sig').read()
     assert text.splitlines()[0].startswith('session_id,session_date,event_id') and len(text.splitlines()) == 3
+    assert page.errors == []
+
+
+def test_timers_for_2x2x2_and_4x4x4(app_page, live_app):
+    """2x2x2 and 4x4x4 have timers with their own scrambles, and their solves go into a session
+    for their own event; other events still show a notice."""
+    page = app_page
+    open_timer(page)
+    page.select_option('#timer-event-select', '222')
+    page.wait_for_function("() => /^([RUF]['2]? ?){25}$/.test(document.getElementById('scramble-text').textContent + ' ')")
+    time_a_solve(page, 3.0)
+    page.wait_for_selector('.solve-item')
+    assert query(live_app, 'SELECT event_id, solve_count FROM sessions') == [{'event_id': '222', 'solve_count': 1}]
+
+    page.select_option('#timer-event-select', '444')
+    page.wait_for_function("() => document.getElementById('scramble-text').textContent.split(' ').length === 40")
+    assert page.is_visible('#timer-display') and page.is_hidden('#timer-under-construction')
+    assert page.locator('.solve-item').count() == 0  # the 2x2x2 solve isn't in 4x4x4's list
+
+    page.select_option('#timer-event-select', '555')
+    page.wait_for_selector('#timer-under-construction')
+    assert 'ready for 2x2x2, 3x3x3, and 4x4x4' in page.inner_text('#timer-under-construction')
     assert page.errors == []

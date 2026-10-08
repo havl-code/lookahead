@@ -1,4 +1,4 @@
-// timer.js: the live speed timer (3x3x3 only for now)
+// timer.js: the live speed timer (for the events in SCRAMBLES, in scramble.js)
 
 const TimerState = {
     event: '333',
@@ -81,7 +81,7 @@ async function saveTimerSettings() {
 // Set up the timer tab (called every time it's opened)
 async function loadTimerTab() {
     await loadTimerSettings();
-    const supported = TimerState.event === '333';
+    const supported = hasTimer(TimerState.event);
     setUnderConstruction(!supported);
     if (!supported) return;
 
@@ -95,18 +95,20 @@ async function loadTimerTab() {
     }
 }
 
-// Only 3x3x3 has a timer so far. For other events, swap the timer for a notice. It's hidden
-// rather than replaced, so switching back to 3x3x3 still works.
+// Only some events have a timer so far. For the others, swap the timer for a notice. It's
+// hidden rather than replaced, so switching back to an event with a timer still works.
 function setUnderConstruction(show) {
     const content = document.querySelector('.timer-main-content');
     let notice = document.getElementById('timer-under-construction');
     if (!notice) {
+        const names = Object.keys(SCRAMBLES).map(getEventName);
         notice = document.createElement('div');
         notice.id = 'timer-under-construction';
         notice.className = 'under-construction';
         notice.innerHTML = `
             <h3>Coming soon</h3>
-            <p>The timer for other events is still being built. Only 3x3x3 is available for now.</p>
+            <p>The timer for this event is still being built. For now, it's ready for
+               ${escapeHtml(names.slice(0, -1).join(', '))}, and ${escapeHtml(names.at(-1))}.</p>
         `;
         content.after(notice);
     }
@@ -319,7 +321,7 @@ function setupTimerKeyboard() {
 // ends in a DNF.
 function timerOwnsKeys(e) {
     if (!document.getElementById('tab-timer').classList.contains('active')) return false;
-    if (TimerState.event !== '333' || document.getElementById('timer-settings-modal')) return false;
+    if (!hasTimer(TimerState.event) || document.getElementById('timer-settings-modal')) return false;
     if (isDialogOpen()) return false;
     const target = e.target;
     return !(target.isContentEditable || target.tagName === 'INPUT' || target.tagName === 'TEXTAREA');
