@@ -12,7 +12,7 @@ import pytest
 from werkzeug.serving import make_server
 
 import app as app_module
-from speedcube import create_app
+from speedcube import create_app, wca
 
 PLAYWRIGHT_INSTALLED = importlib.util.find_spec('playwright') is not None
 if not PLAYWRIGHT_INSTALLED:
@@ -22,6 +22,15 @@ if not PLAYWRIGHT_INSTALLED:
 def pytest_report_header(config):
     if not PLAYWRIGHT_INSTALLED and 'e2e' in (config.getoption('-m') or ''):
         return 'Playwright is not installed: run `uv run --group e2e pytest -m e2e`'
+
+
+@pytest.fixture(autouse=True)
+def offline_wca(monkeypatch):
+    """The browser tests run as if there's no internet, so the Dashboard's world rank shows
+    No data. A test that wants rankings asks for fake_wca, which replaces this."""
+    def offline(url):
+        raise OSError('no internet in the browser tests')
+    monkeypatch.setattr(wca, '_fetch_json', offline)
 
 
 @pytest.fixture

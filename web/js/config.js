@@ -105,6 +105,11 @@ function truncatedSeconds(ms) {
     return ms >= 600000 ? Math.floor(ms / 1000) : Math.floor(ms / 10) / 100;
 }
 
+// A YYYY-MM-DD date the New Zealand way, such as "8 Oct 2026"
+function formatDate(iso) {
+    return new Date(`${iso}T00:00:00`).toLocaleDateString('en-NZ', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
 // A cube's name for menus and tables, such as "GAN 14 MagLev (3x3x3)"
 function cubeLabel(cube) {
     const name = [cube.brand, cube.model].filter(Boolean).join(' ') || 'Unnamed cube';

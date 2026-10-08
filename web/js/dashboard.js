@@ -72,6 +72,7 @@ async function loadStats() {
         setStat('stat-cubes', data.total_cubes || '0',
             data.total_cubes > 0 ? () => switchTab('cubes') : null);
         document.getElementById('stat-cubes-note').textContent = `${data.active_cubes || 0} active`;
+        showBestAverages(data.best_averages);
 
         // The rankings only list the fastest 1,000 in each event, so a slower best single gets
         // no rank rather than a guess (see wca.estimate_rank)
@@ -94,17 +95,51 @@ async function loadStats() {
     }
 }
 
-// The PB's details: its event comes from the server, since with All Events chosen the fastest
-// single could be from any event
-async function showPBDetails(pbTime, eventId) {
+// The event's best Ao5, Ao12, Ao50, and Ao100. They need an event: averaging times from
+// different events would mean nothing.
+const AVERAGE_SIZES = { ao5: 5, ao12: 12, ao50: 50, ao100: 100 };
+
+function showBestAverages(averages) {
+    Object.entries(AVERAGE_SIZES).forEach(([kind, size]) => {
+        const best = averages ? averages[kind] : null;
+        setStat(`best-${kind}`, best ? formatTime(best.value) : '-',
+            best ? () => showPBDetails(best.value, AppState.currentEvent, kind) : null);
+        document.getElementById(`best-${kind}-note`).textContent = !averages
+            ? 'Choose an event above'
+            : best ? formatDate(best.date) : `Needs ${size} solves in a session`;
+    });
+}
+
+// The details of a PB: a single's date and scramble, or an average's date and solves (with the
+// dropped ones in brackets, the way cubers write them). Its event comes from the server, since
+// with All Events chosen the fastest single could be from any event.
+async function showPBDetails(pbTime, eventId, kind = 'single') {
     try {
-        const response = await apiFetch(`/pb-details?event_id=${encodeURIComponent(eventId)}`);
+        const response = await apiFetch(`/pb-details?event_id=${encodeURIComponent(eventId)}&kind=${kind}`);
         const data = await response.json();
 
         if (!response.ok || data.error) {
             showError('Could not fetch PB details');
             return;
         }
+
+        const isAverage = kind !== 'single';
+        const label = isAverage ? `Best Ao${AVERAGE_SIZES[kind]}, ` : '';
+        const solves = isAverage
+            ? data.solves.map(s => {
+                const time = s.result == null ? 'DNF' : formatClock(s.result);
+                return s.counted ? time : `(${time})`;
+            }).join(' ')
+            : '';
+        const lastBox = isAverage
+            ? `<div class="detail-box">
+                   <div class="detail-label">Solves (the dropped ones are in brackets)</div>
+                   <div class="detail-value mono">${escapeHtml(solves)}</div>
+               </div>`
+            : `<div class="detail-box">
+                   <div class="detail-label">Scramble</div>
+                   <div class="detail-value mono">${escapeHtml(data.scramble || 'No scramble recorded')}</div>
+               </div>`;
 
         const modalHTML = `
             <div id="pb-modal" class="modal">
@@ -115,15 +150,12 @@ async function showPBDetails(pbTime, eventId) {
                     </div>
                     <div class="modal-body">
                         <div class="pb-time">${formatTime(pbTime)}</div>
-                        <div class="pb-event">${escapeHtml(getEventName(data.event_id))}</div>
+                        <div class="pb-event">${escapeHtml(label + getEventName(data.event_id))}</div>
                         <div class="detail-box">
                             <div class="detail-label">Date</div>
                             <div class="detail-value">${escapeHtml(data.date || 'N/A')}</div>
                         </div>
-                        <div class="detail-box">
-                            <div class="detail-label">Scramble</div>
-                            <div class="detail-value mono">${escapeHtml(data.scramble || 'No scramble recorded')}</div>
-                        </div>
+                        ${lastBox}
                     </div>
                 </div>
             </div>

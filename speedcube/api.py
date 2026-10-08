@@ -19,6 +19,9 @@ from .stats import (
     box_stats,
     filter_distribution_outliers,
     population_std_dev,
+    AVERAGE_SIZES,
+    best_average,
+    dropped_in_window,
     rolling_wca_averages,
     round2,
     round_to,
@@ -140,6 +143,7 @@ def get_stats():
     return jsonify(
         pb=pb,
         average=average,
+        best_averages=_best_averages(conn, event_id),
         total_solves=solves['total'],
         total_sessions=total_sessions,
         total_cubes=cubes['total'],
@@ -151,9 +155,39 @@ def get_stats():
     )
 
 
+def _best_average_session(conn, event_id, size):
+    """The event's session with the best average of `size`, or None."""
+    return conn.execute(
+        f'SELECT id, date, best_ao{size} AS value FROM sessions WHERE event_id = ? '
+        f'AND best_ao{size} IS NOT NULL ORDER BY best_ao{size}, date, id LIMIT 1',
+        (event_id,),
+    ).fetchone()
+
+
+def _best_averages(conn, event_id):
+    """The event's best Ao5, Ao12, Ao50, and Ao100, each with the session it's from. Each
+    session keeps its own bests (see db.recompute_session_stats), so this is a quick lookup
+    even with tens of thousands of solves. Averages across different events mean nothing, so
+    'all' has none."""
+    if event_id == 'all':
+        return None
+    bests = {}
+    for size in AVERAGE_SIZES:
+        row = _best_average_session(conn, event_id, size)
+        bests[f'ao{size}'] = (
+            {'value': average_seconds(row['value']), 'session_id': row['id'], 'date': row['date']}
+            if row else None)
+    return bests
+
+
 @api.get('/pb-details')
 def get_pb_details():
+    """Where a PB came from. kind is 'single' (the default), or 'ao5', 'ao12', 'ao50', or
+    'ao100' for a best average, which also lists its solves, with the dropped ones marked."""
     event_id = request.args.get('event_id') or '333'
+    kind = request.args.get('kind') or 'single'
+    if kind != 'single':
+        return _average_details(event_id, kind)
     event_filter, params = _event_filter(event_id, prefix='AND')
     best = db.get_db().execute(
         f'SELECT so.scramble, se.id AS session_id, se.date, se.event_id '
@@ -169,6 +203,35 @@ def get_pb_details():
         date=best['date'],
         scramble=best['scramble'] or None,
         event_id=best['event_id'],
+    )
+
+
+def _average_details(event_id, kind):
+    sizes = {f'ao{size}': size for size in AVERAGE_SIZES}
+    if kind not in sizes:
+        return _error('Unknown kind of PB', 400)
+    if event_id == 'all':
+        return _error('Choose an event to see its best averages', 400)
+    size = sizes[kind]
+    conn = db.get_db()
+    session = _best_average_session(conn, event_id, size)
+    if session is None:
+        return _error('PB average not found', 404)
+    rows = conn.execute(
+        f'SELECT solve_number, {NON_DNF_RESULT_MS} AS result_ms, scramble FROM solves '
+        f'WHERE session_id = ? ORDER BY solve_number, id', (session['id'],)).fetchall()
+    average, end = best_average([row['result_ms'] for row in rows], size)
+    window = rows[end - size + 1:end + 1]
+    dropped = dropped_in_window([row['result_ms'] for row in window], size)
+    return jsonify(
+        kind=kind,
+        event_id=event_id,
+        value=average_seconds(average),
+        session_id=session['id'],
+        date=session['date'],
+        solves=[{'solve_number': row['solve_number'], 'result': single_seconds(row['result_ms']),
+                 'counted': i not in dropped}
+                for i, row in enumerate(window)],
     )
 
 
@@ -318,7 +381,7 @@ def add_solve_to_session(session_id):
     notes = validation.text(body.get('notes'), 'Notes', MAX_NOTES)
     with conn:
         db.add_solve(conn, session_id, time_seconds, scramble, penalty, notes)
-        db.recompute_session_stats(conn, session_id)
+        db.recompute_session_stats(conn, session_id, appended=True)
     return jsonify(success=True)
 
 
@@ -710,7 +773,7 @@ def timer_save_solve():
         elif session is None:
             return _error('Session not found', 404)
         solve_id = db.add_solve(conn, session_id, raw_time, scramble, penalty, dnf=dnf)
-        db.recompute_session_stats(conn, session_id)
+        db.recompute_session_stats(conn, session_id, appended=True)
     return jsonify(success=True, solve_id=solve_id, session_id=session_id)
 
 

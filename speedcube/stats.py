@@ -5,6 +5,7 @@ wherever a result is shown or averaged, as in WCA competitions. (Session totals 
 and mean are worked out in SQL; see db.recompute_session_stats.)
 """
 
+import bisect
 import math
 
 
@@ -89,6 +90,60 @@ def trimmed_average(results, trim=1):
     times = sorted(wca_single_ms(r) for r in results if r is not None)
     kept = times[trim:len(results) - trim]
     return sum(kept) / len(kept)
+
+
+# The averages the app tracks bests for. The WCA defines only the average of 5 (Regulation
+# 9f8, which drops one result from each end). Longer averages follow the community convention
+# (csTimer's, and the SpeedSolving wiki's): drop 5% of the results from each end, rounded up, so
+# 1 for an Ao12, 3 for an Ao50, and 5 for an Ao100. That also gives 1 for an Ao5.
+AVERAGE_SIZES = (5, 12, 50, 100)
+
+
+def trim_for(size):
+    """How many results an average of `size` drops from each end."""
+    return math.ceil(size * 0.05)
+
+
+def best_average(results, size):
+    """The best (lowest) average of `size` results in a row, and the index of the last result in
+    it, as (ms, index), or (None, None) if there's no such average that isn't a DNF.
+
+    `results` are ms in solve order, None for a DNF. Each window drops trim_for(size) results
+    from each end, where a DNF counts as the worst, and has more DNFs than that is a DNF. The
+    window slides along a sorted list, so a session of tens of thousands of solves takes a
+    fraction of a second rather than re-sorting every window."""
+    if len(results) < size:
+        return None, None
+    trim = trim_for(size)
+    values = [wca_single_ms(r) for r in results]
+    times = sorted(v for v in values[:size] if v is not None)
+    dnfs = size - len(times)
+    best = best_end = None
+    for end in range(size - 1, len(values)):
+        if end >= size:
+            leaving, arriving = values[end - size], values[end]
+            if leaving is None:
+                dnfs -= 1
+            else:
+                del times[bisect.bisect_left(times, leaving)]
+            if arriving is None:
+                dnfs += 1
+            else:
+                bisect.insort(times, arriving)
+        if dnfs <= trim:
+            kept = times[trim:size - trim]
+            average = sum(kept) / len(kept)
+            if best is None or average < best:
+                best, best_end = average, end
+    return best, best_end
+
+
+def dropped_in_window(window, size):
+    """Which positions of an average's window are dropped: the best trim_for(size) and the worst
+    as many, with DNFs as the worst (ties go to the earlier solve)."""
+    trim = trim_for(size)
+    order = sorted(range(len(window)), key=lambda i: (window[i] is None, window[i] or 0, i))
+    return set(order[:trim]) | set(order[len(order) - trim:])
 
 
 def rolling_wca_averages(results, size):

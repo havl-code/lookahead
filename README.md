@@ -26,6 +26,8 @@ and a double-click (or one command) starts it.
 ### 📊 Dashboard
 
 - **Personal Bests:** your best single for every event you've logged, with its date and scramble
+- **Best Averages:** your best Ao5, Ao12, Ao50, and Ao100 for each event, with the solves behind
+  each one (the dropped ones in brackets)
 - **World Rank:** where your best single would rank in the WCA world rankings, with its
   percentile, for every ranked timed event (One-Handed and the blindfolded events included). The
   rankings list the fastest 1,000 people in each event, so a slower single shows as outside the
@@ -99,8 +101,12 @@ and a double-click (or one command) starts it.
 
 ### 📏 Statistics the WCA Way
 
-- **Averages:** Ao5 and Ao12 drop your best and worst results and average the rest. A DNF
-  counts as your worst result, so one DNF is dropped, but two or more make the average a DNF.
+- **Averages:** an Ao5 drops your best and worst results and averages the rest (Regulations
+  9f8 and 9f9). A DNF counts as your worst result, so one DNF is dropped, but two or more make
+  the average a DNF. The WCA only defines the Ao5; longer averages follow the community's
+  convention of dropping 5% from each end, rounded up: one for an Ao12, three for an Ao50, and
+  five for an Ao100, with a DNF if there are more DNFs than that. In the Sessions table, Last
+  Ao5 and Last Ao12 are a session's latest averages; the Dashboard shows your best ones.
 - **Penalties:** a +2 is added to the solve's time everywhere it counts: PBs, means,
   averages, charts, and the world rank comparison.
 - **Rounding:** as the WCA records results (Regulations 9f1 and 9f2), a single is cut off (not

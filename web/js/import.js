@@ -174,8 +174,7 @@ async function importSelectedSessions() {
 
 // "1 Sept 2026", or "1 Sept to 3 Sept 2026" for a session that spans days
 function formatDateRange(first, last) {
-    const format = iso => new Date(`${iso}T00:00:00`).toLocaleDateString('en-NZ', { day: 'numeric', month: 'short', year: 'numeric' });
-    return first === last ? format(first) : `${format(first)} to ${format(last)}`;
+    return first === last ? formatDate(first) : `${formatDate(first)} to ${formatDate(last)}`;
 }
 
 function cancelImport() {

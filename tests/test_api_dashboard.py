@@ -39,7 +39,8 @@ class TestStats:
         data = client.get('/api/stats').get_json()
         assert data == {'pb': None, 'average': None, 'total_solves': 0, 'total_sessions': 0,
                         'total_cubes': 0, 'active_cubes': 0, 'wca_rank': None,
-                        'wca_percentile': None, 'wca_outside_top': None, 'event_id': '333'}
+                        'wca_percentile': None, 'wca_outside_top': None, 'event_id': '333',
+                        'best_averages': {'ao5': None, 'ao12': None, 'ao50': None, 'ao100': None}}
 
     def test_totals_for_one_event(self, app, client, fake_wca):
         fake_wca.replies['rank/world/single/333.json'] = OSError('offline')

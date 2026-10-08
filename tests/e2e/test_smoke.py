@@ -45,6 +45,30 @@ def test_world_rank(app_page, live_app, fake_wca):
     assert page.errors == []
 
 
+def test_best_averages(app_page, live_app):
+    """The Dashboard's best averages, and the details of one with its dropped solves in brackets."""
+    seed_session(live_app, [20, 9, 'DNF', 10, 11, 12, 30] + [13] * 5, date='2026-09-03')
+    page = app_page
+    page.reload()
+    page.wait_for_function("() => document.getElementById('best-ao5').textContent !== '--'")
+    assert page.text_content('#best-ao5') == '11.00s'
+    assert page.text_content('#best-ao5-note') == '3 Sept 2026' or page.text_content('#best-ao5-note') == '3 Sep 2026'
+    assert page.text_content('#best-ao12') == '14.80s'  # drops only the 9 and the DNF
+    assert page.text_content('#best-ao50') == '-'
+    assert page.text_content('#best-ao50-note') == 'Needs 50 solves in a session'
+
+    page.click('#best-ao5')
+    page.wait_for_selector('#pb-modal')
+    assert page.text_content('.pb-event') == 'Best Ao5, 3x3x3'
+    assert '(9.00) (DNF) 10.00 11.00 12.00' in page.text_content('#pb-modal')
+    page.click('#pb-modal .modal-close')
+
+    page.select_option('#event-select', 'all')
+    page.wait_for_function("() => document.getElementById('best-ao5').textContent === '-'")
+    assert page.text_content('#best-ao5-note') == 'Choose an event above'
+    assert page.errors == []
+
+
 def test_timer(app_page, live_app):
     page = app_page
     open_timer(page)

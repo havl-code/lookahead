@@ -15,7 +15,7 @@ from pathlib import Path
 
 from flask import current_app, g
 
-from .stats import round_half_up, wca_average
+from .stats import AVERAGE_SIZES, best_average, round_half_up, trimmed_average, trim_for, wca_average
 
 # A solve's result in ms, as SQL: the raw time plus 2000 for a +2 penalty. (DNFs are filtered
 # out separately.) The column names are unique to the solves table, so this also works in
@@ -56,7 +56,11 @@ CREATE TABLE IF NOT EXISTS sessions (
     ao5          NUMERIC,
     ao12         NUMERIC,
     notes        TEXT,
-    created_at   TEXT
+    created_at   TEXT,
+    best_ao5     NUMERIC,
+    best_ao12    NUMERIC,
+    best_ao50    NUMERIC,
+    best_ao100   NUMERIC
 );
 CREATE INDEX IF NOT EXISTS idx_sessions_event_date ON sessions (event_id, date);
 
@@ -92,15 +96,18 @@ CREATE TABLE IF NOT EXISTS wca_cache (
 # table as it is, so init_db adds any of these a database doesn't have yet. Adding a column
 # never touches the rows already there.
 #   settings.value: the timer settings, as JSON in the 'timer' row (3.1)
+#   sessions.best_ao5 to best_ao100: the session's best averages, for the PB averages (3.1)
 ADDED_COLUMNS = {
     'settings': {'value': 'TEXT'},
+    'sessions': {f'best_ao{size}': 'NUMERIC' for size in AVERAGE_SIZES},
 }
 
 # Bump this whenever recompute_session_stats changes, so the stats already stored on existing
 # sessions get recalculated once on the next start. It's kept in SQLite's user_version.
 # 1: Ao5/Ao12 follow the WCA rules for DNFs (3.0).
 # 2: means and averages use singles truncated the WCA way (Regulation 9f1) (3.1).
-STATS_VERSION = 2
+# 3: each session's best Ao5, Ao12, Ao50, and Ao100 (3.1).
+STATS_VERSION = 3
 
 
 def connect(path):
@@ -277,12 +284,16 @@ def add_solves_to_new_session(conn, session_id, records):
     )
 
 
-def recompute_session_stats(conn, session_id):
-    """Recalculate a session's cached stats (count, best, worst, mean, Ao5, Ao12).
+def recompute_session_stats(conn, session_id, appended=False):
+    """Recalculate a session's cached stats (count, best, worst, mean, Ao5, Ao12, and the best
+    Ao5, Ao12, Ao50, and Ao100).
 
     This is the single source of truth for session stats, used everywhere (Sessions tab, Timer
     tab, CSTimer import). Results include +2 penalties. It's run after every change to a
-    session's solves, so it only reads the totals and the last 12 solves, not the whole session.
+    session's solves. The totals and last averages only need the last 12 solves. The best
+    averages need every solve, except when the only change is one solve added at the end
+    (appended=True, as the timer does): then the only new average is the latest one, so the
+    best is the better of it and the best so far, and a huge session stays quick to time in.
     """
     result = NON_DNF_RESULT_MS
     totals = conn.execute(
@@ -300,15 +311,50 @@ def recompute_session_stats(conn, session_id):
     count = totals['solve_count']
     conn.execute(
         'UPDATE sessions SET solve_count = :solve_count, best_single = :best_single, '
-        'worst_single = :worst_single, session_mean = :session_mean, ao5 = :ao5, ao12 = :ao12 '
-        'WHERE id = :id',
+        'worst_single = :worst_single, session_mean = :session_mean, ao5 = :ao5, ao12 = :ao12, '
+        'best_ao5 = :best_ao5, best_ao12 = :best_ao12, best_ao50 = :best_ao50, '
+        'best_ao100 = :best_ao100 WHERE id = :id',
         {
             **totals,
             'ao5': wca_average(last12[-5:]) if count >= 5 else None,
             'ao12': wca_average(last12) if count >= 12 else None,
+            **(_best_averages_after_append(conn, session_id) if appended
+               else _best_averages(conn, session_id)),
             'id': session_id,
         },
     )
+
+
+def _results_in_order(conn, session_id, last=None):
+    """The session's results in ms (None for a DNF) in solve order, or only the last `last`."""
+    if last is None:
+        rows = conn.execute(f'SELECT {NON_DNF_RESULT_MS} FROM solves WHERE session_id = ? '
+                            'ORDER BY solve_number, id', (session_id,))
+        return [row[0] for row in rows]
+    rows = conn.execute(f'SELECT {NON_DNF_RESULT_MS} FROM solves WHERE session_id = ? '
+                        'ORDER BY solve_number DESC, id DESC LIMIT ?', (session_id, last))
+    return [row[0] for row in rows][::-1]
+
+
+def _best_averages(conn, session_id):
+    results = _results_in_order(conn, session_id)
+    return {f'best_ao{size}': best_average(results, size)[0] for size in AVERAGE_SIZES}
+
+
+def _best_averages_after_append(conn, session_id):
+    stored = conn.execute(
+        'SELECT ' + ', '.join(f'best_ao{size}' for size in AVERAGE_SIZES) + ' FROM sessions WHERE id = ?',
+        (session_id,)).fetchone()
+    latest = _results_in_order(conn, session_id, last=max(AVERAGE_SIZES))
+    bests = {}
+    for size in AVERAGE_SIZES:
+        best = stored[f'best_ao{size}']
+        if len(latest) >= size:
+            newest = trimmed_average(latest[-size:], trim_for(size))
+            if newest is not None and (best is None or newest < best):
+                best = newest
+        bests[f'best_ao{size}'] = best
+    return bests
 
 
 def recompute_all_session_stats(conn):
