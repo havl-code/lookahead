@@ -9,3 +9,30 @@ requires-python = ">=3.10"
 dependencies = [
     "flask>=3.0",
 ]
+
+# Tools for developing the app, never needed to use it. uv installs the small "dev" group by
+# default, so `uv run pytest` just works. The browser test's Playwright is much bigger, so it
+# lives in its own group and is only installed when asked for:
+#   uv run --group e2e pytest -m e2e
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+]
+e2e = [
+    "pytest-playwright>=0.9.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# app.py lives at the top of the project rather than in a package
+pythonpath = ["."]
+# The browser test is left out unless asked for with `-m e2e` (a later -m replaces this one)
+addopts = "-ra --strict-markers -m 'not e2e' --cov --cov-report=term-missing:skip-covered"
+markers = [
+    "e2e: browser smoke tests, run with: uv run --group e2e pytest -m e2e",
+]
+
+[tool.coverage.run]
+source = ["speedcube", "app"]
+branch = true
