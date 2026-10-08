@@ -2,7 +2,7 @@
 
 import pytest
 
-from e2e_helpers import open_tab, solves_in, time_a_solve
+from e2e_helpers import open_tab, open_timer, solves_in, time_a_solve
 from helpers import FIXTURES, seed_session
 
 pytestmark = pytest.mark.e2e
@@ -47,8 +47,7 @@ def test_world_rank(app_page, live_app, fake_wca):
 
 def test_timer(app_page, live_app):
     page = app_page
-    open_tab(page, 'timer')
-    page.wait_for_selector('.solves-list-container .empty-note')
+    open_timer(page)
     assert len(page.text_content('#scramble-text').split()) >= 20
 
     time_a_solve(page, 9.87)
@@ -81,8 +80,7 @@ def test_wca_inspection(app_page, live_app):
     """Regulations A3 and A4: 15 seconds to start, +2 from 15 to 17, DNF at 17, with calls at
     8 and 12 seconds."""
     page = app_page
-    page.click('.tab[data-tab="timer"]')
-    page.wait_for_selector('.solves-list-container .empty-note')
+    open_timer(page)
     assert page.evaluate("[14.99, 15, 16.99, 17, 20].map(inspectionPenalty)") == ['OK', '+2', '+2', 'DNF', 'DNF']
 
     page.keyboard.press('Space')
@@ -105,6 +103,21 @@ def test_wca_inspection(app_page, live_app):
     assert page.locator('#timer-settings-modal select option').all_text_contents() == ['Off', 'Beep', 'Voice']
     assert 'WCA Inspection (15 seconds)' in page.text_content('#timer-settings-modal')
     assert page.errors == []
+
+
+def test_a_failed_save_can_be_retried(app_page, live_app):
+    """A solve the app can't save isn't lost: the error says why, and Retry sends it again."""
+    page = app_page
+    open_timer(page)
+    page.route('**/api/timer/solve', lambda route: route.abort())
+    time_a_solve(page, 7.5)
+    page.wait_for_selector("[role=\"alert\"] >> text=the app isn't responding")
+    assert solves_in(live_app) == []
+    page.unroute('**/api/timer/solve')
+    page.click('.toast >> text=Retry')
+    page.wait_for_selector('.solve-item')
+    assert len(solves_in(live_app)) == 1 and 7500 <= solves_in(live_app)[0]['time_ms'] < 7600
+    assert page.dialogs == []
 
 
 def test_sessions(app_page, live_app):

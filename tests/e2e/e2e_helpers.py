@@ -7,6 +7,14 @@ def open_tab(page, name):
     page.click(f'.tab[data-tab="{name}"]')
 
 
+def open_timer(page):
+    """Open the Timer tab and wait until it's ready for the space bar. Its last setup step is
+    showing a scramble, so wait for one rather than for anything that's in the page from the
+    start."""
+    open_tab(page, 'timer')
+    page.wait_for_function("() => document.getElementById('scramble-text').textContent.split(' ').length >= 20")
+
+
 def time_a_solve(page, seconds, inspection_seconds=2):
     """Time one solve with the space bar, the way a person does: start inspection, hold until
     the time turns green, let go, and press again to stop."""

@@ -3,7 +3,7 @@ tests/test_regressions.py, each starts as a strict expected failure, and the fix
 
 import pytest
 
-from e2e_helpers import open_tab, solves_in, time_a_solve
+from e2e_helpers import open_tab, open_timer, solves_in, time_a_solve
 from helpers import seed_session
 
 pytestmark = pytest.mark.e2e
@@ -15,8 +15,7 @@ def finding(number, reason):
 
 def test_starting_between_15_and_17_seconds_is_a_plus_two(app_page, live_app):
     """Finding 5 (fixed): running out of inspection is an instant DNF, with no +2 window (A4d1)."""
-    open_tab(app_page, 'timer')
-    app_page.wait_for_selector('.solves-list-container .empty-note')
+    open_timer(app_page)
     time_a_solve(app_page, 10.0, inspection_seconds=16)
     app_page.wait_for_selector('.solve-item')
     solve = solves_in(live_app)[-1]
@@ -69,12 +68,11 @@ def test_no_blocking_dialogs_when_adding_a_cube(app_page):
     assert app_page.dialogs == []
 
 
-@finding('10', 'a save the server rejects is silently lost')
 def test_a_rejected_save_is_reported(app_page):
+    """Finding 10 (fixed): a save the server rejects is silently lost."""
     app_page.route('**/api/timer/solve', lambda route: route.fulfill(
         status=500, content_type='application/json', body='{"error": "An unexpected error occurred"}'))
-    open_tab(app_page, 'timer')
-    app_page.wait_for_selector('.solves-list-container .empty-note')
+    open_timer(app_page)
     time_a_solve(app_page, 8.0)
     app_page.wait_for_selector('[role="alert"]', timeout=3000)
     assert app_page.dialogs == []

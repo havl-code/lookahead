@@ -552,36 +552,46 @@ async function saveSolve(penalty) {
         isDNF = true;
     }
 
-    const scramble = TimerState.scramble;
+    await sendSolve({
+        session_id: TimerState.currentSessionId,
+        follow_today: TimerState.followToday,
+        event_id: TimerState.event,
+        time: finalTime,
+        scramble: TimerState.scramble,
+        penalty: penalty,
+        dnf: isDNF
+    });
+}
 
+// Send a solve to be saved. The server picks the session when following today (it may start a
+// new one), and says which session it used. If the solve can't be saved, whether the server
+// turns it down or can't be reached, it isn't lost: an error toast says why and offers Retry,
+// which sends exactly the same solve again.
+async function sendSolve(solve) {
     try {
-        // The server picks the session when following today (it may start a new one), and says
-        // which session it used.
-        const response = await apiFetch(`/timer/solve`, {
+        const response = await apiFetch('/timer/solve', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                session_id: TimerState.currentSessionId,
-                follow_today: TimerState.followToday,
-                event_id: TimerState.event,
-                time: finalTime,
-                scramble: scramble,
-                penalty: penalty,
-                dnf: isDNF
-            })
+            body: JSON.stringify(solve)
         });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok || !result.success) {
+            throw new Error(result.error || `the app replied with an error (${response.status})`);
+        }
 
-        const result = await response.json();
-
-        if (result.success && result.session_id !== TimerState.currentSessionId) {
+        if (result.session_id !== TimerState.currentSessionId) {
             TimerState.currentSessionId = result.session_id;
             await loadSessionSelector();
-        } else if (result.success) {
+        } else {
             await loadSessionSolves(TimerState.currentSessionId);
         }
     } catch (error) {
         console.error('Error saving solve:', error);
-        showError("Couldn't save that solve. Check the app is still running, then try again.");
+        // fetch() fails with a TypeError when the app can't be reached at all
+        const reason = error instanceof TypeError ? "the app isn't responding" : error.message.replace(/\.$/, '');
+        showToast(`Couldn't save that solve: ${reason}.`, {
+            type: 'error', actionLabel: 'Retry', onAction: () => sendSolve(solve), duration: 20000
+        });
     }
 }
 
