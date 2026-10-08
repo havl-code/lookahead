@@ -57,8 +57,8 @@ def test_scrambles_allow_opposite_faces_but_never_cancel(app_page):
     assert 0.1 < counts['share'] < 0.3  # about 1 pair in 5 shares an axis in a fair scramble
 
 
-@finding('10', 'adding a cube pops up an alert')
 def test_no_blocking_dialogs_when_adding_a_cube(app_page):
+    """Finding 10: adding a cube popped up an alert."""
     open_tab(app_page, 'cubes')
     app_page.click('#tab-cubes .section-header .btn-primary')
     app_page.select_option('#new-cube-type', '333')

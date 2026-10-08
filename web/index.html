@@ -629,8 +629,10 @@
 
     <!-- Load the JavaScript in order: config.js first, since it defines API_BASE (the local
          server's API that every tab reads and writes through) and the shared helpers, then
-         tables.js (sortable table headings), which several tabs use. -->
+         ui.js (toasts and the confirm window) and tables.js (sortable table headings), which
+         several tabs use. -->
     <script src="js/config.js"></script>
+    <script src="js/ui.js"></script>
     <script src="js/tables.js"></script>
     <script src="js/backup.js"></script>
     <script src="js/dashboard.js"></script>

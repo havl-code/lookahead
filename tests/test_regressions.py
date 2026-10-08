@@ -321,10 +321,12 @@ def test_the_timer_uses_a_steady_clock():
     assert 'Date.now()' not in (WEB_JS / 'timer.js').read_text(encoding='utf-8')
 
 
-@finding('10', 'alert() and confirm() block the page')
 def test_no_blocking_dialogs():
-    calls = {path.name: re.findall(r'\b(?:alert|confirm)\(', path.read_text(encoding='utf-8'))
-             for path in WEB_JS.glob('*.js')}
+    """Finding 10: alert() and confirm() blocked the page. (Comments may still mention them.)"""
+    code = {path.name: '\n'.join(line for line in path.read_text(encoding='utf-8').splitlines()
+                                 if not line.strip().startswith('//'))
+            for path in WEB_JS.glob('*.js')}
+    calls = {name: re.findall(r'(?<![\w.])(?:alert|confirm)\(', text) for name, text in code.items()}
     assert {name: found for name, found in calls.items() if found} == {}
 
 

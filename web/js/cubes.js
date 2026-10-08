@@ -118,7 +118,7 @@ async function addCube(event) {
         if (result.error) {
             showError(result.error);
         } else {
-            showSuccess('Cube added successfully');
+            showSuccess('Cube added');
             hideAddCubeForm();
             loadCubesTab();
             // Clear form
@@ -283,7 +283,7 @@ async function updateCube(event) {
         if (result.error) {
             showError(result.error);
         } else {
-            showSuccess('Cube updated successfully');
+            showSuccess('Cube updated');
             hideEditCubeForm();
             loadCubesTab();
         }
@@ -292,9 +292,9 @@ async function updateCube(event) {
     }
 }
 
+// Deactivating is easy to undo (past sessions keep their cube either way), so it happens straight
+// away, with an Undo in the message rather than an "are you sure?" first.
 async function deleteCube(cubeId) {
-    if (!confirm('Deactivate this cube? Past sessions will still reference it.')) return;
-    
     try {
         const response = await apiFetch(`/cubes/${cubeId}`, {
             method: 'DELETE'
@@ -304,7 +304,8 @@ async function deleteCube(cubeId) {
         if (result.error) {
             showError(result.error);
         } else {
-            showSuccess('Cube deactivated successfully');
+            showToast('Cube deactivated', { type: 'success', actionLabel: 'Undo',
+                onAction: () => reactivateCube(cubeId) });
             loadCubesTab();
         }
     } catch (error) {
@@ -325,7 +326,7 @@ async function reactivateCube(cubeId) {
         if (result.error) {
             showError(result.error);
         } else {
-            showSuccess('Cube reactivated successfully');
+            showSuccess('Cube reactivated');
             loadCubesTab();
         }
     } catch (error) {

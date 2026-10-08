@@ -832,6 +832,98 @@ textarea {
     color: var(--danger);
 }
 
+/* The "are you sure?" window for actions that can't be undone (ui.js) */
+.confirm-message {
+    margin-bottom: 20px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.btn-primary.danger {
+    background: var(--danger);
+    border-color: var(--danger);
+    color: var(--bg-secondary);
+}
+
+.btn-primary.danger:hover {
+    filter: brightness(1.1);
+}
+
+/* Toasts: short messages in the bottom corner that never stop you using the page (ui.js) */
+.toast-region {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 1100;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: min(420px, calc(100vw - 40px));
+    pointer-events: none;  /* only the toasts themselves take clicks */
+}
+
+.toast {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-secondary);
+    border-left: 4px solid var(--accent);
+    border-radius: var(--radius-small);
+    box-shadow: var(--shadow);
+    color: var(--text-primary);
+    font-size: 14px;
+    pointer-events: auto;
+    animation: toast-in 0.2s ease-out;
+}
+
+.toast-success {
+    border-left-color: var(--success);
+}
+
+.toast-error {
+    border-left-color: var(--danger);
+}
+
+.toast-message {
+    flex: 1;
+}
+
+.toast-action {
+    padding: 0 4px;
+    border: none;
+    background: none;
+    color: var(--accent);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.toast-close {
+    border: none;
+    background: none;
+    color: var(--text-secondary);
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.toast-close:hover {
+    color: var(--text-primary);
+}
+
+@keyframes toast-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .toast {
+        animation: none;
+    }
+}
+
 /* ===== 10. IMPORT ===== */
 .import-card {
     padding: 28px;

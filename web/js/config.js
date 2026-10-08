@@ -132,10 +132,11 @@ document.addEventListener('submit', (event) => {
     handler(form, event);
 });
 
+// Tell the person how something went, without stopping them (see showToast in ui.js)
 function showError(message) {
-    alert(`Error: ${message}`);
+    showToast(message, { type: 'error' });
 }
 
 function showSuccess(message) {
-    alert(message);
+    showToast(message, { type: 'success' });
 }

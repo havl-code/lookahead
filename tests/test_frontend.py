@@ -1,6 +1,10 @@
 """Checks on the page's own files that don't need a browser."""
 
 import re
+import shutil
+import subprocess
+
+import pytest
 
 from helpers import PROJECT_DIR
 
@@ -54,6 +58,15 @@ def test_every_api_call_goes_through_apifetch():
             if 'API_BASE}' in line and 'apiFetch' not in line and 'return fetch(' not in line:
                 assert ('EventSource' in line and '/presence' in line) or '/backup/export' in line, line
     assert direct == []
+
+
+@pytest.mark.skipif(shutil.which('node') is None, reason='Node.js is not installed')
+@pytest.mark.parametrize('script', sorted((WEB / 'js').glob('*.js')), ids=lambda p: p.name)
+def test_scripts_have_no_syntax_errors(script):
+    """A quick syntax check, so a typo is caught before any browser runs. It uses Node.js when
+    it's installed (the app itself never needs it)."""
+    result = subprocess.run(['node', '--check', str(script)], capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
 
 
 def test_no_inline_scripts():

@@ -65,6 +65,7 @@ def test_sessions(app_page, live_app):
     assert '12.34s' in page.text_content('#solves-tbody')
 
     page.click('#solves-tbody button:has-text("Delete")')
+    page.click('.confirm-dialog [data-choice="confirm"]')
     page.wait_for_selector('#solves-tbody td.loading')
     assert solves_in(live_app) == []
     assert page.errors == []
@@ -163,6 +164,43 @@ def test_buttons_menus_and_windows(app_page, live_app):
         page.click('text=Import backup')
     assert chooser.value is not None
     assert page.errors == []
+
+
+def test_confirms_and_toasts(app_page, live_app):
+    """Deleting asks in the page (not with a browser pop-up); Esc keeps things, Enter goes ahead,
+    and the outcome shows in a toast that doesn't block anything."""
+    seed_session(live_app, [12, 13], date='2026-09-01')
+    page = app_page
+    page.click('.tab[data-tab="sessions"]')
+    page.wait_for_selector('#sessions-tbody td.num')
+    delete = page.locator('#sessions-tbody button:has-text("Delete")')
+
+    delete.click()
+    page.wait_for_selector('.confirm-dialog')
+    assert page.evaluate("document.activeElement.dataset.choice") == 'confirm'
+    page.keyboard.press('Escape')
+    assert page.locator('.confirm-dialog').count() == 0
+    assert len(solves_in(live_app)) == 2
+    assert page.evaluate("document.activeElement.dataset.action") == 'delete-session'  # focus is back
+
+    delete.click()
+    page.click('.confirm-dialog >> text=Cancel')
+    assert len(solves_in(live_app)) == 2
+
+    delete.click()
+    page.keyboard.press('Enter')
+    page.wait_for_selector('[role="status"].toast >> text=Session deleted')
+    assert solves_in(live_app) == []
+
+    # Deactivating a cube is undoable, so it happens at once with an Undo in the toast
+    page.click('.tab[data-tab="cubes"]')
+    page.click('#tab-cubes .section-header .btn-primary')
+    page.select_option('#new-cube-type', '333')
+    page.click('#add-cube-form button[type=submit]')
+    page.click('#cubes-tbody button:has-text("Deactivate")')
+    page.click('.toast >> text=Undo')
+    page.wait_for_selector('#cubes-tbody button:has-text("Deactivate")')
+    assert page.dialogs == [] and page.errors == []
 
 
 def test_analytics_draws_every_chart(app_page, live_app):

@@ -295,6 +295,7 @@ function setupTimerKeyboard() {
 function timerOwnsSpaceBar(e) {
     if (!document.getElementById('tab-timer').classList.contains('active')) return false;
     if (TimerState.event !== '333' || document.getElementById('timer-settings-modal')) return false;
+    if (document.querySelector('.confirm-dialog')) return false;
     const target = e.target;
     return !(target.isContentEditable || target.tagName === 'INPUT' || target.tagName === 'TEXTAREA');
 }
@@ -486,7 +487,7 @@ async function saveSolve(penalty) {
         }
     } catch (error) {
         console.error('Error saving solve:', error);
-        alert('Failed to save solve');
+        showError("Couldn't save that solve. Check the app is still running, then try again.");
     }
 }
 
@@ -565,7 +566,7 @@ async function changeSolvePenalty(solveId, newPenalty) {
 }
 
 async function deleteTimerSolve(solveId) {
-    if (!confirm('Delete this solve?')) return;
+    if (!(await confirmDialog("Delete this solve? This can't be undone.", { title: 'Delete solve' }))) return;
 
     try {
         const response = await apiFetch(`/timer/solve/${solveId}`, {

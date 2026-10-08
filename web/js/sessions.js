@@ -98,7 +98,9 @@ function displayFilteredSessions(sessions) {
 }
 
 async function deleteSession(sessionId) {
-    if (!confirm('Delete this session? This cannot be undone.')) return;
+    const sure = await confirmDialog("Delete this session and all its solves? This can't be undone.",
+        { title: 'Delete session', confirmLabel: 'Delete session' });
+    if (!sure) return;
 
     try {
         const response = await apiFetch(`/sessions/${sessionId}`, {
@@ -109,7 +111,7 @@ async function deleteSession(sessionId) {
         if (result.error) {
             showError(result.error);
         } else {
-            showSuccess('Session deleted successfully');
+            showSuccess('Session deleted');
             loadSessionsTab();
             loadStats();
         }
@@ -149,7 +151,7 @@ async function addSession(event) {
         if (result.error) {
             showError(result.error);
         } else {
-            showSuccess('Session created successfully');
+            showSuccess('Session created');
             hideAddSessionForm();
             loadSessionsTab();
             loadStats();
@@ -208,7 +210,7 @@ async function loadSessionSolvesPage(reset) {
         solvesView.solves = reset ? data.solves : solvesView.solves.concat(data.solves);
         renderSolvesTable();
     } catch (error) {
-        showError('Error loading solves: ' + error.message);
+        showError(`Couldn't load the solves: ${error.message}`);
     }
 }
 
@@ -288,7 +290,7 @@ async function addSolveToSession(event) {
 }
 
 async function deleteSessionSolve(solveId) {
-    if (!confirm('Delete this solve?')) return;
+    if (!(await confirmDialog("Delete this solve? This can't be undone.", { title: 'Delete solve' }))) return;
 
     try {
         const response = await apiFetch(`/solves/${solveId}`, {

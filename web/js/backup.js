@@ -27,7 +27,10 @@ async function handleImportBackupFile(event) {
     const file = event.target.files[0];
     if (!file) return;
 
-    if (!confirm('Import this backup? This replaces ALL current data with the contents of the file.')) {
+    const replace = await confirmDialog(
+        `Restore "${file.name}"? Everything in the app now is replaced with what's in the file.`,
+        { title: 'Restore a backup', confirmLabel: 'Replace everything' });
+    if (!replace) {
         event.target.value = '';
         return;
     }
@@ -41,10 +44,10 @@ async function handleImportBackupFile(event) {
             throw new Error(result.error || 'Unknown error');
         }
 
-        alert('Backup restored. Reloading...');
-        location.reload();
+        showSuccess('Backup restored. Reloading...');
+        setTimeout(() => location.reload(), 800);  // long enough to read the message
     } catch (e) {
-        showError('Failed to restore backup: ' + e.message);
+        showError(`Couldn't restore the backup: ${e.message}`);
     } finally {
         event.target.value = '';
     }

@@ -137,7 +137,9 @@ async function saveWCAID(event) {
 
 // Remove WCA ID
 async function removeWCAID() {
-    if (!confirm('Are you sure you want to remove your WCA ID?')) {
+    const sure = await confirmDialog('Remove your WCA ID? The greeting goes back to the general one.',
+        { title: 'Remove WCA ID', confirmLabel: 'Remove' });
+    if (!sure) {
         return;
     }
     
