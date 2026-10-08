@@ -20,7 +20,7 @@ SOLVE_COLUMNS = (
     'id', 'session_id', 'solve_number', 'time_ms', 'scramble', 'penalty', 'dnf', 'notes',
     'timestamp',
 )
-SETTINGS_COLUMNS = ('id', 'wca_id', 'wca_name')
+SETTINGS_COLUMNS = ('id', 'wca_id', 'wca_name', 'value')
 
 BOOLEAN_COLUMNS = {'is_active', 'dnf'}
 # Fields every record must have, checked before anything is replaced, so an incomplete file

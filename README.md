@@ -47,6 +47,8 @@ and a double-click (or one command) starts it.
 - **Penalties:** mark any solve as +2 or DNF afterwards
 - **Cancel Any Time:** press Esc to call off inspection or a solve without saving it
 - **Fullscreen Mode:** hides everything except the scramble and the time
+- **Settings That Stick:** inspection, its sound, and hiding the timer or stats are saved with
+  your data, so they're the same next time, in any browser, and in your backups
 
 ### 🗂️ Sessions and Cubes
 

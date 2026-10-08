@@ -24,8 +24,8 @@ def test_starting_between_15_and_17_seconds_is_a_plus_two(app_page, live_app):
     assert (solve['penalty'], solve['dnf']) == ('+2', 0) and 10000 <= solve['time_ms'] < 10100
 
 
-@finding('6', 'timer settings are lost on reload')
 def test_timer_settings_survive_a_reload(app_page):
+    """Finding 6 (fixed): timer settings are lost on reload."""
     open_tab(app_page, 'timer')
     app_page.click('#timer-settings-btn')
     app_page.click('#timer-settings-modal .setting-item:has-text("Hide Stats") .setting-toggle')

@@ -78,8 +78,42 @@ function getAxis(move) {
     if (move === 'F' || move === 'B') return 'FB';
 }
 
+// The timer settings live in the app's database (see /api/settings/timer), so they're the same
+// after a reload, in another browser, and after restoring a backup.
+let timerSettingsLoaded = false;
+
+async function loadTimerSettings() {
+    if (!timerSettingsLoaded) {
+        try {
+            const response = await apiFetch('/settings/timer');
+            if (response.ok) {
+                Object.assign(TimerState.settings, await response.json());
+                timerSettingsLoaded = true;
+            }
+        } catch (error) {
+            console.error('Error loading the timer settings:', error);
+        }
+    }
+    document.querySelector('.timer-session-stats')
+        ?.classList.toggle('hidden', TimerState.settings.hideStats);
+}
+
+async function saveTimerSettings() {
+    try {
+        const response = await apiFetch('/settings/timer', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(TimerState.settings)
+        });
+        if (!response.ok) throw new Error((await response.json()).error);
+    } catch (error) {
+        showError(`Couldn't save the timer settings: ${error.message}`);
+    }
+}
+
 // Set up the timer tab (called every time it's opened)
 async function loadTimerTab() {
+    await loadTimerSettings();
     const supported = TimerState.event === '333';
     setUnderConstruction(!supported);
     if (!supported) return;
@@ -287,10 +321,12 @@ function toggleTimerSetting(setting, element) {
         document.querySelector('.timer-session-stats')
             ?.classList.toggle('hidden', TimerState.settings.hideStats);
     }
+    saveTimerSettings();
 }
 
 function changeInspectionCalls(value) {
     TimerState.settings.inspectionCalls = value;
+    saveTimerSettings();
 }
 
 function closeTimerSettings() {
@@ -718,7 +754,9 @@ function cancelAttempt() {
 // Escape cancels an attempt in progress; otherwise it leaves fullscreen.
 document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
-    if (TimerState.inspection || TimerState.running || TimerState.spacePressed) {
+    if (document.getElementById('timer-settings-modal')) {
+        closeTimerSettings();
+    } else if (TimerState.inspection || TimerState.running || TimerState.spacePressed) {
         e.preventDefault();
         cancelAttempt();
     } else if (TimerState.isFullscreen) {

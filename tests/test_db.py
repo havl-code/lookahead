@@ -187,3 +187,19 @@ class TestSetup:
 
     def test_now_iso_matches_javascript(self):
         assert re.fullmatch(r'\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z', db.now_iso())
+
+
+def test_new_columns_are_added_to_an_old_database(tmp_path):
+    """3.0 databases have no settings.value column; starting the app adds it and keeps the rows."""
+    path = tmp_path / 'old.db'
+    with closing(sqlite3.connect(path)) as conn:
+        conn.execute('CREATE TABLE settings (id TEXT PRIMARY KEY, wca_id TEXT, wca_name TEXT)')
+        conn.execute("INSERT INTO settings VALUES ('user', '2003POCH01', 'Test Person')")
+        conn.commit()
+    db.init_db(path)
+    db.init_db(path)  # and doing it again changes nothing
+    with closing(db.connect(path)) as conn:
+        columns = [row['name'] for row in conn.execute('PRAGMA table_info(settings)')]
+        assert columns == ['id', 'wca_id', 'wca_name', 'value']
+        assert dict(conn.execute('SELECT * FROM settings').fetchone()) == {
+            'id': 'user', 'wca_id': '2003POCH01', 'wca_name': 'Test Person', 'value': None}

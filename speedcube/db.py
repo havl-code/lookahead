@@ -70,7 +70,8 @@ CREATE INDEX IF NOT EXISTS idx_solves_timestamp ON solves (timestamp, id);
 CREATE TABLE IF NOT EXISTS settings (
     id       TEXT PRIMARY KEY,
     wca_id   TEXT,
-    wca_name TEXT
+    wca_name TEXT,
+    value    TEXT
 );
 
 CREATE TABLE IF NOT EXISTS wca_cache (
@@ -79,6 +80,14 @@ CREATE TABLE IF NOT EXISTS wca_cache (
     fetched_at REAL NOT NULL
 );
 """
+
+# Columns added since a table was first made. CREATE TABLE IF NOT EXISTS leaves an existing
+# table as it is, so init_db adds any of these a database doesn't have yet. Adding a column
+# never touches the rows already there.
+#   settings.value: the timer settings, as JSON in the 'timer' row (3.1)
+ADDED_COLUMNS = {
+    'settings': {'value': 'TEXT'},
+}
 
 # Bump this whenever recompute_session_stats changes, so the stats already stored on existing
 # sessions get recalculated once on the next start. It's kept in SQLite's user_version.
@@ -97,11 +106,21 @@ def init_db(path):
     with closing(connect(path)) as conn:
         conn.execute('PRAGMA journal_mode = WAL')
         conn.executescript(SCHEMA)
+        add_missing_columns(conn)
         (stats_version,) = conn.execute('PRAGMA user_version').fetchone()
         if stats_version < STATS_VERSION:
             with conn:
                 recompute_all_session_stats(conn)
                 conn.execute(f'PRAGMA user_version = {STATS_VERSION}')
+
+
+def add_missing_columns(conn):
+    for table, columns in ADDED_COLUMNS.items():
+        existing = {row['name'] for row in conn.execute(f'PRAGMA table_info({table})')}
+        for column, kind in columns.items():
+            if column not in existing:
+                with conn:
+                    conn.execute(f'ALTER TABLE {table} ADD COLUMN {column} {kind}')
 
 
 def get_db():

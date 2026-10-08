@@ -724,6 +724,53 @@ def timer_session_solves(session_id):
     return jsonify(solves=solves, stats=stats)
 
 
+# ---- Timer settings ----
+# Kept in the database rather than the browser, so they survive reloads, a change of browser,
+# and backups. They're stored as JSON in the settings table's 'timer' row.
+
+TIMER_SETTINGS = {
+    'inspectionEnabled': True,  # WCA inspection before each solve
+    'inspectionCalls': 'off',   # a sound at 8 and 12 seconds: 'off', 'beep', or 'voice'
+    'hideTimer': False,         # show "solve" instead of the running time
+    'hideStats': False,         # hide the session stats under the timer
+}
+INSPECTION_CALLS = ('off', 'beep', 'voice')
+
+
+def _stored_timer_settings(conn):
+    row = conn.execute("SELECT value FROM settings WHERE id = 'timer'").fetchone()
+    try:
+        stored = json.loads(row['value']) if row and row['value'] else {}
+    except ValueError:
+        stored = {}
+    # Only known settings, so an old or damaged row can't break the timer
+    return {**TIMER_SETTINGS, **{k: v for k, v in stored.items() if k in TIMER_SETTINGS}}
+
+
+@api.get('/settings/timer')
+def get_timer_settings():
+    return jsonify(_stored_timer_settings(db.get_db()))
+
+
+@api.put('/settings/timer')
+def update_timer_settings():
+    changes = _json_body()
+    for key, value in changes.items():
+        if key not in TIMER_SETTINGS:
+            raise ValidationError(f'{key} is not a timer setting.')
+        if key == 'inspectionCalls':
+            if value not in INSPECTION_CALLS:
+                raise ValidationError('The inspection sound must be off, beep, or voice.')
+        elif not isinstance(value, bool):
+            raise ValidationError(f'{key} must be true or false.')
+    conn = db.get_db()
+    settings = {**_stored_timer_settings(conn), **changes}
+    with conn:
+        conn.execute("INSERT OR REPLACE INTO settings (id, value) VALUES ('timer', ?)",
+                     (json.dumps(settings),))
+    return jsonify(settings)
+
+
 # ---- User settings ----
 
 @api.get('/user/settings')
