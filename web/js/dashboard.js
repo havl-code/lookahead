@@ -89,6 +89,8 @@ async function loadStats() {
     }
 }
 
+// The PB's details: its event comes from the server, since with All Events chosen the fastest
+// single could be from any event
 async function showPBDetails(pbTime, eventId) {
     try {
         const response = await apiFetch(`/pb-details?event_id=${encodeURIComponent(eventId)}`);
@@ -108,7 +110,7 @@ async function showPBDetails(pbTime, eventId) {
                     </div>
                     <div class="modal-body">
                         <div class="pb-time">${formatTime(pbTime)}</div>
-                        <div class="pb-event">${escapeHtml(getEventName(eventId))}</div>
+                        <div class="pb-event">${escapeHtml(getEventName(data.event_id))}</div>
                         <div class="detail-box">
                             <div class="detail-label">Date</div>
                             <div class="detail-value">${escapeHtml(data.date || 'N/A')}</div>

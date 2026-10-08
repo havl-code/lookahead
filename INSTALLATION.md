@@ -149,7 +149,9 @@ this version and use **Import backup** with that file.
 - **"No such file or directory: app.py":** the terminal isn't in the app's folder. Open the
   terminal from the folder that contains `app.py` (see step 3).
 - **The browser didn't open:** go to `http://127.0.0.1:8577` in your browser. (If you started
-  the app from a terminal and it shows a different address there, use that one.)
+  the app from a terminal and it shows a different address there, use that one.) Open it within
+  2 minutes: if no page connects by then, the app stops by itself, and you can simply start it
+  again.
 - **The app opened at a different address:** if something else is already using the usual
   address (another program, an out-of-date copy of the app that's still open, or a copy in a
   different folder), the app picks a free one instead. That's fine: your data is the same
@@ -172,7 +174,7 @@ this version and use **Import backup** with that file.
 - **World Rank says "Outside the top 1,000":** the WCA rankings list the fastest 1,000 people in
   each event, so the app can only place a time among them. Rather than guess further back, it
   says your best single is outside the top 1,000.
-- **WCA ID setup fails:** check the ID format (four digits, four letters, two digits, such as
+- **WCA ID setup fails:** check the ID format (four digits, four letters, and two digits, such as
   `2003POCH01`) and your internet connection. The app looks your name up on the official WCA
   website.
 - **CSTimer import fails:** make sure the file is a `.json` or `.txt` export straight from

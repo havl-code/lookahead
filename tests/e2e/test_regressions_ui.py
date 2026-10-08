@@ -78,12 +78,13 @@ def test_a_rejected_save_is_reported(app_page):
     assert app_page.dialogs == []
 
 
-@finding('11', 'the PB window names the event "all"')
 def test_pb_details_name_the_real_event(app_page, live_app):
+    """Finding 11 (fixed): the PB window names the event "all"."""
     seed_session(live_app, [12, 13])
     seed_session(live_app, [3], event='222')
     app_page.reload()
-    app_page.wait_for_function("() => document.getElementById('stat-solves').textContent === '3'")
+    # The Dashboard opens on 3x3x3 (2 solves), then All Events has the 2x2x2 3.00 as its PB
+    app_page.wait_for_function("() => document.getElementById('stat-solves').textContent === '2'")
     app_page.select_option('#event-select', 'all')
     app_page.wait_for_function("() => document.getElementById('stat-pb').textContent === '3.00s'")
     app_page.click('#stat-pb')
