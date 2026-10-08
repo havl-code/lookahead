@@ -250,7 +250,7 @@ speedcube-training-explorer/
 ├── speedcube/             # The Python backend
 │   ├── __init__.py        # Creates the Flask app and serves web/
 │   ├── api.py             # The JSON API the web page talks to (/api/...)
-│   ├── db.py              # SQLite tables, connections and core data operations
+│   ├── db.py              # SQLite tables, connections, and core data operations
 │   ├── stats.py           # Ao5/Ao12 rules and chart maths
 │   ├── scores.py          # The Analytics scores (see docs/SCORES.md)
 │   ├── wca_reference.json # Summary of WCA results the scores compare against
@@ -261,19 +261,22 @@ speedcube-training-explorer/
 │   ├── index.html
 │   ├── css/               # Stylesheets
 │   ├── js/
-│   │   ├── config.js      # API address, event names and shared helpers
+│   │   ├── config.js      # API address, event names, and shared helpers
 │   │   ├── tables.js      # Sortable table headings
 │   │   ├── backup.js      # Export and import backup links
 │   │   ├── dashboard.js, sessions.js, cubes.js, timer.js,
 │   │   │   import.js, analytics.js, charts.js, greeting.js,
 │   │   │   app.js, theme.js   # One file per tab or feature
-│   ├── images/            # Logo, favicon and the shortcut icon (app-icon.ico)
+│   ├── images/            # Logo, favicon, and the shortcut icon (app-icon.ico)
 │   └── vendor/            # Bundled Plotly.js and Space Grotesk (with their licences)
 ├── tools/
 │   └── build_wca_reference.py  # Rebuilds wca_reference.json from a WCA results export
 ├── docs/
 │   ├── SCORES.md          # How the Analytics scores are worked out
 │   └── screenshots/       # Images used in this README
+├── tests/                 # Automated tests (pytest), with small synthetic fixtures
+│   └── e2e/               # A browser smoke test (Playwright), run on request
+├── .github/workflows/     # Runs the tests on GitHub for every push and pull request
 ├── data/                  # Your database (created on first start, never committed)
 ├── Speedcube Training Explorer.lnk  # Windows only: made on first start, never committed
 ├── LICENSE
@@ -289,6 +292,27 @@ like to help, we'd love to have you. Fork the repository on GitHub, make your ch
 branch, and open a pull request.
 
 Feel free to open an issue for bugs or feature requests too.
+
+### Running the Tests
+
+The tests use [pytest](https://docs.pytest.org/) and run on temporary databases, so they never
+touch your own data or need the internet. From the project folder:
+
+```bash
+uv run pytest
+```
+
+A browser smoke test also clicks through every tab in Chromium, using
+[Playwright](https://playwright.dev/python/). It's left out of the everyday run because it's
+slower and needs a browser download. To run it, download the browser once, then run the tests
+marked `e2e`:
+
+```bash
+uv run --group e2e playwright install chromium
+uv run --group e2e pytest -m e2e
+```
+
+GitHub Actions runs both on Windows, macOS, and Ubuntu for every push and pull request.
 
 ---
 
