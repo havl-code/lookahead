@@ -1,8 +1,10 @@
 """wca.py: the rankings cache, the rank estimate, and the WCA ID lookup. The network is always
 faked (see the fake_wca fixture in conftest.py)."""
 
+import io
 import types
 import urllib.error
+import urllib.request
 
 import pytest
 
@@ -14,6 +16,21 @@ RANKING = 'rank/world/single/333.json'
 def clock(monkeypatch, now):
     """Pretend the time is `now` (seconds since the epoch) inside wca.py."""
     monkeypatch.setattr(wca, 'time', types.SimpleNamespace(time=lambda: now))
+
+
+def test_fetch_json_identifies_the_app_and_gives_up_after_a_while(monkeypatch):
+    seen = {}
+
+    def fake_urlopen(request, timeout):
+        seen.update(url=request.full_url, headers=dict(request.header_items()), timeout=timeout)
+        return io.BytesIO(b'{"ok": true}')
+
+    monkeypatch.setattr(urllib.request, 'urlopen', fake_urlopen)
+    assert wca._real_fetch_json('https://example.org/x.json') == {'ok': True}
+    assert seen['url'] == 'https://example.org/x.json'
+    assert seen['headers']['User-agent'] == wca.USER_AGENT
+    assert seen['headers']['Accept'] == 'application/json'
+    assert seen['timeout'] == wca.REQUEST_TIMEOUT_SECONDS
 
 
 class TestRankingsCache:

@@ -17,6 +17,8 @@ from speedcube import create_app, db, wca
 PROJECT_DIR = Path(__file__).resolve().parent.parent
 REAL_DATA = (PROJECT_DIR / 'data').resolve()
 FIXTURES = Path(__file__).resolve().parent / 'fixtures'
+# The real fetcher, kept so its own test can call it (with urlopen faked)
+REAL_FETCH_JSON = wca._fetch_json
 
 
 @pytest.fixture(autouse=True)
@@ -42,6 +44,7 @@ def no_network(monkeypatch):
     def refuse(url, *args, **kwargs):
         raise AssertionError(f'A test tried to reach the network: {url}')
 
+    monkeypatch.setattr(wca, '_real_fetch_json', REAL_FETCH_JSON, raising=False)
     monkeypatch.setattr(wca, '_fetch_json', refuse)
     monkeypatch.setattr(urllib.request, 'urlopen', refuse)
 

@@ -1,5 +1,7 @@
 """backup.py: exporting everything to one JSON file and restoring from one."""
 
+from contextlib import closing
+
 import pytest
 
 from helpers import query, seed_cube, seed_session
@@ -7,7 +9,7 @@ from speedcube import backup, create_app, db
 
 
 def export(app):
-    with db.connect(app.config['DATABASE']) as conn:
+    with closing(db.connect(app.config['DATABASE'])) as conn:
         return backup.export_backup(conn)
 
 
