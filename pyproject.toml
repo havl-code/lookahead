@@ -25,8 +25,9 @@ e2e = [
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-# app.py lives at the top of the project rather than in a package
-pythonpath = ["."]
+# app.py lives at the top of the project rather than in a package, and tests/helpers.py is
+# shared by the tests in subfolders
+pythonpath = [".", "tests"]
 # The browser test is left out unless asked for with `-m e2e` (a later -m replaces this one)
 addopts = "-ra --strict-markers -m 'not e2e' --cov --cov-report=term-missing:skip-covered"
 markers = [

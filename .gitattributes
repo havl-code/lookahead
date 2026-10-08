@@ -3,3 +3,7 @@
 *.bat text eol=crlf
 *.command text eol=lf
 *.sh text eol=lf
+
+# Test fixtures are checked byte for byte (one starts with a UTF-8 BOM, as CSTimer writes it),
+# so git must never change their line endings
+tests/fixtures/** -text
