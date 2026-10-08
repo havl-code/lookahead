@@ -50,15 +50,25 @@ def wca_average(window):
     return sum(middle) / len(middle)
 
 
-def rolling_averages(times):
-    """Straight (untrimmed) trailing means over 5 and 12 times, None until each window fills.
+def trimmed_average(results, trim=1):
+    """A WCA-style average of results (ms, None for a DNF): drop the best `trim` and the worst
+    `trim`, where a DNF counts as slower than any time, and average the rest. More DNFs than
+    `trim` make it a DNF, returned as None. With trim=1 over 5 results this is Regulations 9f8
+    and 9f9."""
+    dnfs = sum(r is None for r in results)
+    if dnfs > trim:
+        return None
+    times = sorted(r for r in results if r is not None)
+    kept = times[trim:len(results) - trim]
+    return sum(kept) / len(kept)
 
-    Used by the rolling average chart. It's intentionally simpler than the WCA-style session
-    Ao5/Ao12 above: it just smooths the line of non-DNF results.
-    """
-    rolling5 = [sum(times[i - 4:i + 1]) / 5 if i >= 4 else None for i in range(len(times))]
-    rolling12 = [sum(times[i - 11:i + 1]) / 12 if i >= 11 else None for i in range(len(times))]
-    return rolling5, rolling12
+
+def rolling_wca_averages(results, size):
+    """The WCA-style average of each run of `size` results in a row (ms, None for a DNF), in
+    order, for the charts' rolling Ao5 and Ao12. None until a window fills, and None for a window
+    that's a DNF; DNFs count the WCA way rather than being skipped."""
+    return [trimmed_average(results[i - size + 1:i + 1]) if i >= size - 1 else None
+            for i in range(len(results))]
 
 
 def sample_std_dev(values):

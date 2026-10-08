@@ -73,7 +73,8 @@ and a double-click (or one command) starts it.
   with how they've changed recently. [How the scores are worked out](docs/SCORES.md)
 - **Insights:** plain-English tips on what to work on next
 - **Charts:** progress over time, time distribution, rolling Ao5 and Ao12, and consistency across
-  sessions, for a whole event or a single session
+  sessions, for a whole event or a single session. Averages count DNFs the WCA way, and a DNF
+  shows as a gap
 
 ### 📥 Import and Backup
 

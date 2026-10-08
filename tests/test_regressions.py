@@ -334,25 +334,25 @@ def test_no_blocking_dialogs():
 
 # ---- 9 to 9b: charts ----
 
-@finding('9', 'the single-session Ao5 skips DNFs')
 def test_session_progress_ao5_follows_the_wca_rules(app, client):
+    """Finding 9 (fixed): the single-session Ao5 skips DNFs."""
     sid = seed_session(app, [10, 11, 'DNF', 'DNF', 12, 13, 14])
     points = client.get(f'/api/charts/session-progress?session_id={sid}').get_json()['data']
     assert points[-1]['ao5'] is None  # 2 DNFs in the last 5 make it a DNF
 
 
-@finding('9a', 'the rolling Ao5 is a plain mean of completed times')
 @pytest.mark.parametrize('url', ['/api/charts/session-rolling?session_id={sid}',
                                  '/api/charts/rolling-average?event_id=333'])
 def test_rolling_ao5_follows_the_wca_rules(app, client, url):
+    """Finding 9a (fixed): the rolling Ao5 is a plain mean of completed times."""
     sid = seed_session(app, [10, 20, 'DNF', 10, 20, 10, 20, 10, 20, 'DNF', 10, 20, 15, 15])
     data = client.get(url.format(sid=sid)).get_json()
     # The last 5 solves are DNF, 10, 20, 15, 15: drop the 10 and the DNF
     assert data['rolling5'][-1] == pytest.approx(50 / 3, abs=0.01)
 
 
-@finding('9b', 'the progress chart shows the oldest 500 sessions')
 def test_progress_chart_shows_the_latest_sessions(app, client):
+    """Finding 9b (fixed): the progress chart shows the oldest 500 sessions."""
     from contextlib import closing
     from datetime import date, timedelta
 

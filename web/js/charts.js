@@ -125,6 +125,7 @@ async function loadProgressChart(request, eventId, sessionId) {
         ];
     } else {
         const x = points.map(d => d.solve_number);
+        // A DNF has no time, so it's a gap in the Time dots; it still counts in the Ao5 the WCA way
         traces = [
             line(x, points.map(d => d.time), 'Time', COLORS.primary,
                 { mode: 'markers', marker: { size: 5, color: COLORS.primary, opacity: 0.6 } }),
@@ -184,6 +185,8 @@ async function loadRollingChart(request, eventId, sessionId) {
     const data = await fetchChartData(request, 'breakdown-chart', url, d => d.times && d.times.length > 0);
     if (!data) return;
 
+    // DNFs leave gaps in the dots, and count in the rolling averages the WCA way (a DNF is the
+    // worst result in its window, and two in an Ao5 make it a DNF)
     const x = data.times.map((_, i) => i + 1);
     draw('breakdown-chart', [
         line(x, data.times, 'Solves', COLORS.gray, { mode: 'markers', marker: { color: COLORS.gray, size: 4, opacity: 0.35 } }),

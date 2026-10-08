@@ -19,7 +19,7 @@ from .stats import (
     filter_distribution_outliers,
     ms_to_seconds,
     population_std_dev,
-    rolling_averages,
+    rolling_wca_averages,
     round2,
     round_to,
 )
@@ -46,6 +46,27 @@ LATEST_EVENT_RESULTS_SQL = (
     f'ON se.id = so.session_id WHERE se.event_id = ? AND NOT dnf '
     f'ORDER BY so.timestamp DESC, so.id DESC LIMIT ?'
 )
+# The same, but every solve, with NULL for a DNF, for the averages that count DNFs
+LATEST_EVENT_ALL_RESULTS_SQL = (
+    f'SELECT {NON_DNF_RESULT_MS} AS result_ms FROM solves so CROSS JOIN sessions se '
+    f'ON se.id = so.session_id WHERE se.event_id = ? '
+    f'ORDER BY so.timestamp DESC, so.id DESC LIMIT ?'
+)
+
+
+def _seconds_or_none(results_ms):
+    return [None if r is None else r / 1000 for r in results_ms]
+
+
+def _rolling_chart(results_ms):
+    """The rolling chart's data: each result in seconds (None for a DNF) with the WCA-style
+    rolling Ao5 and Ao12 through it."""
+    if len(results_ms) < 12:
+        return _error('Need at least 12 solves', 400)
+    to_seconds = lambda values: [None if v is None else round2(v / 1000) for v in values]
+    return jsonify(times=_seconds_or_none(results_ms),
+                   rolling5=to_seconds(rolling_wca_averages(results_ms, 5)),
+                   rolling12=to_seconds(rolling_wca_averages(results_ms, 12)))
 
 
 def _json_body():
@@ -353,11 +374,12 @@ def delete_cube(cube_id):
 @api.get('/charts/progress')
 def chart_progress():
     event_id = request.args.get('event_id') or '333'
+    # The latest 500 sessions (put back in date order), so a long history shows where you are now
     sessions = db.get_db().execute(
         'SELECT date, best_single, session_mean, ao5 FROM sessions '
-        'WHERE event_id = ? AND solve_count >= 5 ORDER BY date, id LIMIT 500',
+        'WHERE event_id = ? AND solve_count >= 5 ORDER BY date DESC, id DESC LIMIT 500',
         (event_id,),
-    ).fetchall()
+    ).fetchall()[::-1]
 
     if not sessions:
         return _error('Need at least 1 session for this event', 400)
@@ -378,28 +400,29 @@ def chart_session_progress():
     if not session_id:
         return _error('Missing session_id parameter', 400)
 
-    # The latest non-DNF solves, oldest first
+    # The latest solves, DNFs included (with no time), oldest first. The Ao5 follows the WCA
+    # rules, so a DNF counts as the worst result and two DNFs make the average a DNF.
     solves = db.get_db().execute(
-        f'SELECT solve_number, {RESULT_MS} AS result_ms FROM solves '
-        f'WHERE session_id = ? AND NOT dnf ORDER BY solve_number DESC, id DESC LIMIT ?',
+        f'SELECT solve_number, {NON_DNF_RESULT_MS} AS result_ms FROM solves '
+        f'WHERE session_id = ? ORDER BY solve_number DESC, id DESC LIMIT ?',
         (session_id, MAX_CHART_SOLVES),
     ).fetchall()[::-1]
     if not solves:
         return _error('No solves in this session', 400)
 
-    times = [s['result_ms'] / 1000 for s in solves]
+    results = [s['result_ms'] for s in solves]
+    ao5s = rolling_wca_averages(results, 5)
     data = []
-    running_total = 0
-    for i, (solve, time) in enumerate(zip(solves, times)):
-        running_total += time
-        ao5 = None
-        if i >= 4:
-            ao5 = sum(sorted(times[i - 4:i + 1])[1:4]) / 3
+    total, completed = 0, 0
+    for solve, result, ao5 in zip(solves, results, ao5s):
+        if result is not None:
+            total += result
+            completed += 1
         data.append({
             'solve_number': solve['solve_number'],
-            'time': round2(time),
-            'mean': round2(running_total / (i + 1)),
-            'ao5': round2(ao5),
+            'time': round2(result / 1000) if result is not None else None,
+            'mean': round2(total / completed / 1000) if completed else None,
+            'ao5': round2(ao5 / 1000) if ao5 is not None else None,
         })
     return jsonify(data=data)
 
@@ -441,31 +464,21 @@ def chart_session_distribution():
 def chart_rolling_average():
     event_id = request.args.get('event_id') or '333'
     rows = db.get_db().execute(
-        LATEST_EVENT_RESULTS_SQL,
+        LATEST_EVENT_ALL_RESULTS_SQL,
         (event_id, MAX_CHART_SOLVES),
     )
-    times = [row['result_ms'] / 1000 for row in rows][::-1]  # the latest ones, oldest first
-
-    if len(times) < 12:
-        return _error('Need at least 12 solves', 400)
-    rolling5, rolling12 = rolling_averages(times)
-    return jsonify(times=times, rolling5=rolling5, rolling12=rolling12)
+    return _rolling_chart([row['result_ms'] for row in rows][::-1])  # the latest, oldest first
 
 
 @api.get('/charts/session-rolling')
 def chart_session_rolling():
     session_id = _int_arg('session_id')
     rows = db.get_db().execute(
-        f'SELECT {RESULT_MS} AS result_ms FROM solves WHERE session_id = ? AND NOT dnf '
+        f'SELECT {NON_DNF_RESULT_MS} AS result_ms FROM solves WHERE session_id = ? '
         f'ORDER BY solve_number DESC, id DESC LIMIT ?',
         (session_id, MAX_CHART_SOLVES),
     )
-    times = [row['result_ms'] / 1000 for row in rows][::-1]  # the latest ones, oldest first
-
-    if len(times) < 12:
-        return _error('Need at least 12 solves', 400)
-    rolling5, rolling12 = rolling_averages(times)
-    return jsonify(times=times, rolling5=rolling5, rolling12=rolling12)
+    return _rolling_chart([row['result_ms'] for row in rows][::-1])  # the latest, oldest first
 
 
 @api.get('/charts/consistency')

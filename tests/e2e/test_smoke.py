@@ -321,8 +321,10 @@ def test_confirms_and_toasts(app_page, live_app):
 
 def test_analytics_draws_every_chart(app_page, live_app):
     for day in range(1, 13):
-        seed_session(live_app, [12 + ((i * 733) % 3000) / 1000 for i in range(25)],
-                     date=f'2026-09-{day:02d}')
+        # DNFs leave gaps in the charts and count in their averages the WCA way
+        results = [12 + ((i * 733) % 3000) / 1000 for i in range(25)]
+        results[3] = results[17] = 'DNF'
+        seed_session(live_app, results, date=f'2026-09-{day:02d}')
     page = app_page
     open_tab(page, 'analytics')
     for chart in ('progress-chart', 'distribution-chart', 'breakdown-chart', 'consistency-chart'):

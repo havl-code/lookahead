@@ -79,15 +79,42 @@ class TestWcaAverage:
         assert stats.wca_average(solves(*range(1, 11), 'DNF', 'DNF')) is None
 
 
-class TestRollingAverages:
+class TestTrimmedAverage:
+    def test_drops_the_best_and_worst(self):
+        assert stats.trimmed_average([10, 11, 12, 13, 14]) == 12
+
+    def test_one_dnf_is_the_worst(self):
+        assert stats.trimmed_average([10, None, 12, 13, 14]) == 13
+
+    def test_two_dnfs_make_a_dnf(self):
+        assert stats.trimmed_average([10, None, 12, None, 14]) is None
+
+    def test_a_wider_trim(self):
+        # Ao50 and Ao100 drop 5% from each end, so a trim of 3 or 5
+        assert stats.trimmed_average([1, 2, 3, 50, 50, 50, 97, 98, 99], trim=3) == 50
+        assert stats.trimmed_average([None] * 3 + [10] * 6, trim=3) == 10
+        assert stats.trimmed_average([None] * 4 + [10] * 6, trim=3) is None
+
+    def test_matches_wca_average(self):
+        rows = solves(10, 'DNF', (12, '+2'), 13, 11)
+        results = [stats.effective_time_ms(r) for r in rows]
+        assert stats.trimmed_average(results) == stats.wca_average(rows)
+
+
+class TestRollingWcaAverages:
     def test_windows_fill_up_before_a_value_shows(self):
-        rolling5, rolling12 = stats.rolling_averages([1, 2, 3, 4, 5, 6])
-        assert rolling5 == [None, None, None, None, 3, 4]
-        assert rolling12 == [None] * 6
+        assert stats.rolling_wca_averages([1, 2, 3, 4, 5, 6], 5) == [None, None, None, None, 3, 4]
+        assert stats.rolling_wca_averages([1, 2, 3, 4, 5, 6], 12) == [None] * 6
 
     def test_ao12_window(self):
-        _, rolling12 = stats.rolling_averages(list(range(1, 13)))
-        assert rolling12[-1] == 6.5
+        assert stats.rolling_wca_averages(list(range(1, 13)), 12)[-1] == 6.5
+
+    def test_dnfs_count_the_wca_way(self):
+        averages = stats.rolling_wca_averages([10, 20, None, 10, 20, None, 15], 5)
+        # 10, 20, DNF, 10, 20: one DNF, dropped as the worst; then 20, DNF, 10, 20, DNF: two DNFs
+        assert averages[4] == pytest.approx(50 / 3)
+        assert averages[5] is None
+        assert averages[6] is None  # DNF, 10, 20, DNF, 15 still has two
 
 
 class TestStdDev:
