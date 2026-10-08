@@ -17,7 +17,7 @@ and a double-click (or one command) starts it.
 ![uv](https://img.shields.io/badge/uv-DE5FE9?logo=uv&logoColor=white)
 ![Licence: MIT](https://img.shields.io/badge/licence-MIT-FF7A1A)
 
-![The dashboard in dark mode, greeting the user by name with their personal best, world rank, average time and recent sessions](docs/screenshots/dashboard-dark.png)
+![The dashboard in dark mode, greeting the user by name with their personal best, world rank, average time, best averages, and recent sessions](docs/screenshots/dashboard-dark.png)
 
 ---
 
