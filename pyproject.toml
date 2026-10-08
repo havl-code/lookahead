@@ -5,7 +5,7 @@ description = "A local training tracker for speedcubers: timer, sessions, charts
 readme = "README.md"
 license = "MIT"
 authors = [{ name = "Viet Ha Ly" }]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
     "flask>=3.0",
 ]

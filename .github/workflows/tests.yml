@@ -1,5 +1,6 @@
 # Runs the tests on every push and pull request, on all three systems the app supports, with
-# the oldest and newest Python it's tested on. The browser smoke test runs once, on Ubuntu.
+# the oldest Python that still gets security fixes (3.11) and the newest stable one (3.14).
+# The browser smoke test runs once, on Ubuntu.
 name: Tests
 
 on:
@@ -17,7 +18,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        python: ['3.10', '3.13']
+        python: ['3.11', '3.14']
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: astral-sh/setup-uv@v10.2.0
