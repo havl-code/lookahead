@@ -1,5 +1,8 @@
-# Local tooling config (e.g. the static-preview server used only for testing)
+# Local tooling files (local instructions, memory, and settings; not part of the app)
 .claude/
+CLAUDE.md
+CLAUDE.local.md
+**/CLAUDE.md
 
 # IDE
 .vscode/
