@@ -132,6 +132,9 @@ remembers your choice.
 - **Copy the file:** copy `data/speedcube.db` somewhere safe while the app isn't running
 - **Export a backup:** click **Export backup** in the app's footer to download everything as one
   JSON file, and **Import backup** to restore from it (this replaces all current data)
+- **Export solves as CSV:** **Export solves (CSV)** in the footer gives you every solve as a
+  spreadsheet. It's handy for your own analysis, but it isn't a backup: only the JSON file can
+  be restored
 - **Safety copies:** before restoring a backup, or updating your data for a new version of the
   app, the app copies `data/speedcube.db` into `data/backups` by itself, and keeps the newest
   five. To go back to one, close the app and copy it over `data/speedcube.db` (keeping that name)

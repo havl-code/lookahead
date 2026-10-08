@@ -5,14 +5,18 @@ browser: long lists come a page at a time, charts use the latest solves or a sum
 totals are worked out in SQL.
 """
 
+import csv
+import io
 import json
 import sqlite3
 from collections import defaultdict
+from contextlib import closing
 
 from flask import Blueprint, Response, current_app, jsonify, request
 
 from . import backup, cstimer, db, scores, stats, validation, wca
 from .db import NON_DNF_RESULT_MS, NON_DNF_WCA_RESULT_MS, RESULT_MS
+from .events import EVENTS
 from .validation import MAX_CUBE_TEXT, MAX_NOTES, MAX_SCRAMBLE, ValidationError
 from .stats import (
     average_seconds,
@@ -959,6 +963,81 @@ def export_backup():
         json.dumps(payload, indent=2),
         mimetype='application/json',
         headers={'Content-Disposition': f'attachment; filename="{filename}"'},
+    )
+
+
+# ---- CSV export ----
+# Every solve (or one session's) as a spreadsheet: one row a solve, in the order they were done.
+# It's for looking at your solves in a spreadsheet or another program; the JSON backup is the
+# way to back up and restore.
+
+CSV_COLUMNS = ('session_id', 'session_date', 'event_id', 'event', 'cube', 'solve_number',
+               'time_seconds', 'penalty', 'result_seconds', 'scramble', 'notes', 'timestamp')
+# Spreadsheets treat a cell starting with one of these as a formula, so text from you or an
+# imported file gets a leading ' to keep it as text.
+FORMULA_STARTS = ('=', '+', '-', '@', '\t', '\r')
+
+
+def _as_text(value):
+    value = value or ''
+    return "'" + value if value.startswith(FORMULA_STARTS) else value
+
+
+def _cube_name(row):
+    if row['cube_type'] is None:
+        return ''
+    name = ' '.join(part for part in (row['brand'], row['model']) if part) or 'Unnamed cube'
+    return f"{name} ({EVENTS.get(row['cube_type'], row['cube_type'])})"
+
+
+def _csv_row(row):
+    dnf = bool(row['dnf'])
+    penalty = 'DNF' if dnf else ('+2' if row['penalty'] == '+2' else 'OK')
+    result = None if dnf else single_seconds(row['time_ms'] + (2000 if penalty == '+2' else 0))
+    return (row['session_id'], row['date'], row['event_id'], EVENTS.get(row['event_id'], row['event_id']),
+            _as_text(_cube_name(row)), row['solve_number'], f"{row['time_ms'] / 1000:.3f}", penalty,
+            '' if result is None else f'{result:.2f}', _as_text(row['scramble']), _as_text(row['notes']),
+            row['timestamp'] or '')
+
+
+@api.get('/export/solves.csv')
+def export_solves_csv():
+    """All solves, or one session's (session_id), as CSV. Rows are streamed one at a time, so
+    even a huge history never has to sit in memory all at once."""
+    where, params = '', ()
+    if 'session_id' in request.args:
+        session_id = _int_arg('session_id')
+        if session_id is None:
+            return _error('session_id must be a number', 400)
+        validation.require(db.get_db(), 'sessions', session_id, 'Session')
+        where, params = 'WHERE se.id = ?', (session_id,)
+    sql = (
+        f'SELECT se.id AS session_id, se.date, se.event_id, cu.cube_type, cu.brand, cu.model, '
+        f'so.solve_number, so.time_ms, so.penalty, so.dnf, so.scramble, so.notes, so.timestamp '
+        f'FROM solves so JOIN sessions se ON se.id = so.session_id '
+        f'LEFT JOIN cubes cu ON cu.id = se.cube_id {where} '
+        f'ORDER BY se.date, se.id, so.solve_number, so.id'
+    )
+    database = current_app.config['DATABASE']
+
+    # The rows go out after this request has finished (and closed its connection), so the
+    # stream reads through a connection of its own, closed once the last row is out
+    def lines():
+        buffer = io.StringIO()
+        writer = csv.writer(buffer, lineterminator='\r\n')
+        yield '\ufeff'  # a byte order mark, so Excel reads the file as UTF-8
+        with closing(db.connect(database)) as conn:
+            for row in (CSV_COLUMNS, *map(_csv_row, conn.execute(sql, params))):
+                writer.writerow(row)
+                yield buffer.getvalue()
+                buffer.seek(0)
+                buffer.truncate()
+
+    which = f'session-{params[0]}-' if params else ''
+    return Response(
+        lines(),
+        mimetype='text/csv',
+        headers={'Content-Disposition': f'attachment; filename="speedcube-solves-{which}{db.today()}.csv"'},
     )
 
 

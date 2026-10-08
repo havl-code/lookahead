@@ -35,5 +35,6 @@ htmlcov/
 # The app's SQLite database (contains personal training data)
 data/
 
-# Backups exported from the app (contain personal training data)
+# Backups and CSV exports from the app (contain personal training data)
 speedcube-backup-*.json
+speedcube-solves-*.csv

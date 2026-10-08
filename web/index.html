@@ -401,6 +401,7 @@
                             </div>
                             <div class="list-footer">
                                 <span class="list-note" id="solves-count-note"></span>
+                                <button class="btn-secondary btn-small" data-action="export-session-csv">Export CSV</button>
                                 <button class="btn-secondary btn-small" id="solves-more-btn" data-action="load-more-solves" style="display: none;">Show more</button>
                             </div>
                         </div>
@@ -694,6 +695,7 @@
                     <a href="https://github.com/havl-code/speedcube-training-explorer/issues" target="_blank" rel="noopener noreferrer">Report an issue</a>
                     <a href="https://wca-rest-api.robiningelbrecht.be/" target="_blank" rel="noopener noreferrer">WCA rankings API</a>
                     <a href="#" data-action="export-backup">Export backup</a>
+                    <a href="#" data-action="export-csv">Export solves (CSV)</a>
                     <a href="#" data-action="import-backup">Import backup</a>
                     <input type="file" id="backup-file-input" accept=".json" style="display: none;" data-change="import-backup-file">
                 </p>

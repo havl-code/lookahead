@@ -89,6 +89,8 @@ and a double-click (or one command) starts it.
   their CSTimer names, and each one can be split into a session per day. Importing the same
   file again only adds solves that aren't already there.
 - **Backup and Restore:** export all your data to one JSON file, or restore from one
+- **CSV Export:** download every solve, or one session's, as a spreadsheet (CSV), with its date,
+  event, cube, time, penalty, result, scramble, and notes
 
 ### 🎨 Look and Feel
 
@@ -253,7 +255,9 @@ safely import a newer export of the same sessions: only the new solves are added
 
 Everything lives in one file, `data/speedcube.db`. Copying that file somewhere safe (while the
 app isn't running) is a complete backup. You can also use the **Export backup** link in the
-footer to download everything as one JSON file, and **Import backup** to restore it.
+footer to download everything as one JSON file, and **Import backup** to restore it. To look
+at your solves in a spreadsheet, use **Export solves (CSV)** in the footer, or **Export CSV** in
+a session's solves; that's for reading, not restoring.
 
 The app also keeps a safety copy of the database by itself, in `data/backups`, just before
 anything that rewrites a lot of it: restoring a backup, or updating your data for a new version

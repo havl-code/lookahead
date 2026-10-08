@@ -1,4 +1,4 @@
-// backup.js: export or import a full JSON backup of your data
+// backup.js: export or import a full JSON backup of your data, and export solves as CSV
 //
 // Export downloads everything (cubes, sessions, solves, WCA ID) as one JSON file; Import
 // restores from such a file, replacing all current data. Backups made with the older
@@ -6,17 +6,28 @@
 
 registerActions('click', {
     'export-backup': () => exportBackup(),
-    'import-backup': () => triggerImportBackup()
+    'import-backup': () => triggerImportBackup(),
+    'export-csv': () => exportSolvesCsv(),
+    'export-session-csv': () => exportSolvesCsv(solvesView.sessionId)
 });
 registerActions('change', { 'import-backup-file': (input, event) => handleImportBackupFile(event) });
 
-function exportBackup() {
+function download(url) {
     const a = document.createElement('a');
-    a.href = `${API_BASE}/backup/export`;
+    a.href = url;
     a.download = '';
     document.body.appendChild(a);
     a.click();
     a.remove();
+}
+
+function exportBackup() {
+    download(`${API_BASE}/backup/export`);
+}
+
+// Every solve as a spreadsheet (CSV), or just one session's
+function exportSolvesCsv(sessionId = null) {
+    download(`${API_BASE}/export/solves.csv${sessionId ? `?session_id=${sessionId}` : ''}`);
 }
 
 function triggerImportBackup() {

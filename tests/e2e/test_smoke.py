@@ -404,3 +404,19 @@ def test_analytics_draws_every_chart(app_page, live_app):
         page.wait_for_selector(f'#{chart} .main-svg')
     page.wait_for_selector('#consistency-chart >> text=compares sessions')
     assert page.errors == []
+
+
+def test_csv_downloads(app_page, live_app):
+    seed_session(live_app, [12, 13], date='2026-09-01')
+    page = app_page
+    with page.expect_download() as download:
+        page.click('text=Export solves (CSV)')
+    assert download.value.suggested_filename.startswith('speedcube-solves-')
+    open_tab(page, 'sessions')
+    page.click('#sessions-tbody button:has-text("View")')
+    with page.expect_download() as download:
+        page.click('#solve-details-modal >> text=Export CSV')
+    assert download.value.suggested_filename.startswith('speedcube-solves-session-')
+    text = open(download.value.path(), encoding='utf-8-sig').read()
+    assert text.splitlines()[0].startswith('session_id,session_date,event_id') and len(text.splitlines()) == 3
+    assert page.errors == []
