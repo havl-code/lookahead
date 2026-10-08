@@ -412,6 +412,7 @@ speedcube-training-explorer/
 │   └── build_wca_reference.py  # Rebuilds wca_reference.json from a WCA results export
 ├── docs/
 │   ├── SCORES.md          # How the Analytics scores are worked out
+│   ├── ROADMAP.md         # What's done, known limitations, and what could come next
 │   └── screenshots/       # Images used in this README
 ├── tests/                 # Automated tests (pytest), with small synthetic fixtures
 │   └── e2e/               # Browser tests (Playwright), run on request
@@ -430,7 +431,8 @@ Contributions are welcome! Whether you're a speedcuber with feature ideas or a d
 like to help, we'd love to have you. Fork the repository on GitHub, make your changes on a new
 branch, and open a pull request.
 
-Feel free to open an issue for bugs or feature requests too.
+Feel free to open an issue for bugs or feature requests too. The [roadmap](docs/ROADMAP.md) lists
+the known limitations and the ideas planned so far.
 
 ### Running the Tests
 
