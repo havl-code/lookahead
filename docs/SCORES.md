@@ -179,9 +179,10 @@ successful attempts to measure).
   faster) than cubers in general, so scoring 50 already puts you in good company.
 - **Small sessions are rough.** A session with only one or two Ao5s gives a rough Speed
   score, and Consistency needs at least 21 solves. More solves give steadier scores.
-- **Big sessions are one number.** If you keep months of solves in one session (common after
-  a CSTimer import), its scores describe all of them together. Shorter sessions show your
-  progress more clearly, which is one reason the timer starts a new session each day.
+- **Big sessions are one number.** If you keep months of solves in one session (as a CSTimer
+  import does when you untick splitting by day), its scores describe all of them together.
+  Shorter sessions show your progress more clearly, which is one reason the timer starts a new
+  session each day, and why CSTimer imports are split by day unless you say otherwise.
 - **The 2 point trend is a rule of thumb**, not a statistical test, so treat small changes
   as noise.
 

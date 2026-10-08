@@ -94,29 +94,29 @@ def import_file(client, raw, sessions, **form):
         **upload(raw, 'cstimer.json'), 'sessions': json.dumps(sessions), **form})
 
 
-@finding('2', 'imported sessions are dated the day of the import')
 def test_imported_sessions_are_dated_by_their_solves(app, client, cstimer_bytes, cstimer_data):
+    """Finding 2 (fixed): imported sessions are dated the day of the import."""
     import_file(client, cstimer_bytes, ['session1'])
     stamps = [row[3] for row in cstimer_data['session1'] if isinstance(row, list)]
     expected = sorted({local_date(t) for t in stamps if isinstance(t, int)})
     assert sorted(r['date'] for r in query(app, 'SELECT date FROM sessions')) == expected
 
 
-@finding('2', 'imported solves get the import time as their timestamp')
 def test_imported_solves_keep_their_own_time(app, client, cstimer_bytes, cstimer_data):
+    """Finding 2 (fixed): imported solves get the import time as their timestamp."""
     import_file(client, cstimer_bytes, ['session1'])
     first = query(app, 'SELECT timestamp FROM solves ORDER BY id LIMIT 1')[0]['timestamp']
     assert first == iso_utc(cstimer_data['session1'][0][3])
 
 
-@finding('2', 'the picker shows CSTimer keys, not session names')
 def test_preview_shows_cstimer_session_names(client, cstimer_bytes):
+    """Finding 2 (fixed): the picker shows CSTimer keys, not session names."""
     sessions = client.post('/api/import/preview', data=upload(cstimer_bytes)).get_json()['sessions']
     assert [s.get('name') for s in sessions] == ['Main 3x3', '2', 'Empty']
 
 
-@finding('2a', "an import dated today becomes the timer's session")
 def test_the_timer_doesnt_join_an_imported_session(app, client, set_today, cstimer_bytes):
+    """Finding 2a (fixed): an import dated today becomes the timer's session."""
     set_today('2026-10-08')
     import_file(client, cstimer_bytes, ['session2'])
     result = client.post('/api/timer/solve', json={'session_id': None, 'follow_today': True,
@@ -125,36 +125,36 @@ def test_the_timer_doesnt_join_an_imported_session(app, client, set_today, cstim
     assert 'CSTimer' not in notes
 
 
-@finding('2b', 'importing the same file twice duplicates every solve')
 def test_importing_twice_adds_nothing_the_second_time(app, client, cstimer_bytes):
+    """Finding 2b (fixed): importing the same file twice duplicates every solve."""
     import_file(client, cstimer_bytes, ['session2'])
     import_file(client, cstimer_bytes, ['session2'])
     assert query(app, 'SELECT COUNT(*) AS n FROM solves') == [{'n': 5}]
 
 
-@finding('2c', 'DNF times and CSTimer comments are lost')
 def test_dnf_times_and_comments_are_kept(app, client, cstimer_bytes):
+    """Finding 2c (fixed): dNF times and CSTimer comments are lost."""
     import_file(client, cstimer_bytes, ['session1'])
     rows = query(app, 'SELECT time_ms, dnf, notes FROM solves ORDER BY id')
     assert {'time_ms': 15000, 'dnf': 1, 'notes': ''} in rows
     assert any(r['notes'] == 'nice one' for r in rows)
 
 
-@finding('2d', 'the preview counts rows that the import skips')
 def test_preview_counts_only_readable_solves(client, cstimer_bytes):
+    """Finding 2d (fixed): the preview counts rows that the import skips."""
     session1 = client.post('/api/import/preview', data=upload(cstimer_bytes)).get_json()['sessions'][0]
     assert session1['solve_count'] == 5
 
 
-@finding('2e', 'an unknown penalty code imports as OK')
 def test_unknown_penalty_codes_are_not_imported_as_ok(app, client):
+    """Finding 2e (fixed): an unknown penalty code imports as OK."""
     raw = json.dumps({'s': [[[4000, 9000], 'R', '', 1700000000], [[0, 8000], 'U', '', 1700000060]]})
     import_file(client, raw, ['s'])
     assert query(app, 'SELECT time_ms FROM solves') == [{'time_ms': 8000}]
 
 
-@finding('2e', 'importing a key that is not in the file reports success')
 def test_importing_nothing_is_an_error(client, cstimer_bytes):
+    """Finding 2e (fixed): importing a key that is not in the file reports success."""
     assert import_file(client, cstimer_bytes, ['nope']).status_code == 400
 
 

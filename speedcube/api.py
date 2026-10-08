@@ -571,7 +571,7 @@ def import_preview():
         data = cstimer.load(file.read())
     except ValueError:
         return _error('An error occurred processing the import file', 400)
-    return jsonify(sessions=cstimer.preview(data), filename=file.filename)
+    return jsonify(sessions=cstimer.preview(data, db.get_db()), filename=file.filename)
 
 
 @api.post('/import/selected')
@@ -590,12 +590,30 @@ def import_selected():
     except ValueError:
         return _error('An error occurred during import', 400)
 
+    # Each CSTimer session is split into one session a day unless the picker says otherwise
+    split_by_day = request.form.get('split_by_day', 'true') != 'false'
     conn = db.get_db()
     with conn:
-        results = cstimer.import_sessions(conn, data, [str(key) for key in selected], event_id)
-    return jsonify(
-        success=True, message=f"Imported {results['total_solves']} solves", details=results
-    )
+        results = cstimer.import_sessions(conn, data, [str(key) for key in selected], event_id,
+                                          split_by_day=split_by_day)
+    if not results.pop('sessions_found'):
+        return _error('None of the chosen sessions are in this file.', 400)
+    return jsonify(success=True, message=_import_message(results), details=results)
+
+
+def _import_message(results):
+    """'Imported 120 solves into 3 sessions', plus anything left out and why."""
+    solves, sessions = results['total_solves'], results['sessions_imported']
+    message = (f"Imported {solves:,} solve{'s' if solves != 1 else ''} into "
+               f"{sessions:,} session{'s' if sessions != 1 else ''}")
+    extras = []
+    if results['duplicates_skipped']:
+        extras.append(f"{results['duplicates_skipped']:,} already in the app")
+    if results['unreadable_skipped']:
+        extras.append(f"{results['unreadable_skipped']:,} that couldn't be read")
+    if extras:
+        message += f" (skipped {' and '.join(extras)})"
+    return message
 
 
 # ---- Timer ----

@@ -66,7 +66,9 @@ and a double-click (or one command) starts it.
 ### 📥 Import and Backup
 
 - **CSTimer Import:** bring in your existing CSTimer sessions (JSON or TXT export), choosing
-  which ones to import
+  which ones to import. Every solve keeps its own date, penalty, and comment, sessions keep
+  their CSTimer names, and each one can be split into a session per day. Importing the same
+  file again only adds solves that aren't already there.
 - **Backup and Restore:** export all your data to one JSON file, or restore from one
 
 ### 🎨 Look and Feel
@@ -199,7 +201,14 @@ a solve to mark it +2 or DNF, and the gear icon for timer settings.
    - Click **Choose File** and pick your export
    - Click **Preview Sessions**
    - Tick the sessions you want and choose which event they're for
+   - Leave **Split each CSTimer session into one session per day** ticked to match the
+     timer's session a day, or untick it to keep each CSTimer session whole
    - Click **Import Selected**
+
+The picker shows each session's CSTimer name, its solves, and the days they span. Every solve
+keeps the date and time you did it, its penalty, and its comment (as a note), so your charts and
+history line up with the solves you time here. Solves already in the app are skipped, so you can
+safely import a newer export of the same sessions: only the new solves are added.
 
 ### Managing Sessions
 

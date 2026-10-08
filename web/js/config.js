@@ -19,6 +19,7 @@ function apiFetch(path, options = {}) {
 // Global state
 const AppState = {
     selectedFile: null,
+    importPreview: [],      // the last CSTimer preview: each session's counts, for the picker
     currentEvent: '333',
     plotlyLoaded: false,
     allSessions: [],

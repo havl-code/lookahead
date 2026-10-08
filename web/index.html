@@ -465,6 +465,15 @@
                                 <option value="sq1">Square-1</option>
                             </select>
                         </div>
+                        <label class="checkbox-row" for="import-split-by-day">
+                            <input type="checkbox" id="import-split-by-day" checked>
+                            <span>Split each CSTimer session into one session per day</span>
+                        </label>
+                        <p class="field-hint import-hint">
+                            The app keeps a session a day, so this lines your CSTimer history up with
+                            the solves you time here. Solves already in the app are skipped, so it's
+                            safe to import the same file again.
+                        </p>
                         <div id="session-checkboxes"></div>
                         <div class="form-actions">
                             <button class="btn-primary" data-action="import-selected">Import Selected</button>

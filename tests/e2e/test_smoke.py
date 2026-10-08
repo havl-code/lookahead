@@ -101,9 +101,20 @@ def test_import(app_page, live_app):
     page.click('#preview-btn')
     page.wait_for_selector('.session-checkbox')
     assert page.locator('.session-checkbox').count() == 3
+    assert page.text_content('.session-checkbox strong') == 'Main 3x3'  # CSTimer's own name
+    assert "can't be read" in page.text_content('.session-checkbox')
+    assert page.is_checked('#import-split-by-day')
     page.click('#session-selection .btn-primary')
     page.wait_for_selector('#import-status.success')
-    assert 'Imported 10 solves' in page.text_content('#import-status')
+    assert 'Imported 10 solves into 4 sessions' in page.text_content('#import-status')
+    assert len(solves_in(live_app)) == 10
+
+    # The same file again: everything is marked as already in the app, and nothing is added
+    page.set_input_files('#file-input', str(FIXTURES / 'cstimer_export.txt'))
+    page.click('#preview-btn')
+    page.wait_for_selector('.session-checkbox.imported')
+    assert page.locator('.session-checkbox.imported').count() == 2
+    assert page.locator('#session-checkboxes input:checked').count() == 0
     assert len(solves_in(live_app)) == 10
 
 

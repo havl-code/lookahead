@@ -133,10 +133,11 @@ def today():
 
 # ---- Sessions & solves ----
 
-def create_session(conn, event_id='333', notes='', cube_id=None):
+def create_session(conn, event_id='333', notes='', cube_id=None, date=None):
+    """A new, empty session, dated `date` (YYYY-MM-DD) or today."""
     cur = conn.execute(
         'INSERT INTO sessions (date, event_id, cube_id, notes, created_at) VALUES (?, ?, ?, ?, ?)',
-        (today(), event_id, cube_id or None, notes or '', now_iso()),
+        (date or today(), event_id, cube_id or None, notes or '', now_iso()),
     )
     return cur.lastrowid
 
@@ -184,15 +185,16 @@ def add_solve(conn, session_id, time_seconds, scramble='', penalty=None, notes='
 
 
 def add_solves_to_new_session(conn, session_id, records):
-    """Bulk-add (time_ms, scramble, penalty, dnf) records to a freshly created, empty
-    session, numbering them in order."""
-    timestamp = now_iso()
+    """Bulk-add (time_ms, scramble, penalty, dnf, notes, timestamp) records to a freshly
+    created, empty session, numbering them in order. A record without a timestamp (None) is
+    stamped with the current time."""
+    now = now_iso()
     conn.executemany(
         'INSERT INTO solves (session_id, solve_number, time_ms, scramble, penalty, dnf, notes, '
-        "timestamp) VALUES (?, ?, ?, ?, ?, ?, '', ?)",
+        'timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
         [
-            (session_id, number, time_ms, scramble or '', penalty, dnf, timestamp)
-            for number, (time_ms, scramble, penalty, dnf) in enumerate(records, start=1)
+            (session_id, number, time_ms, scramble or '', penalty, dnf, notes or '', timestamp or now)
+            for number, (time_ms, scramble, penalty, dnf, notes, timestamp) in enumerate(records, start=1)
         ],
     )
 

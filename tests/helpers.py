@@ -18,14 +18,15 @@ APP_PORT = 8577
 APP_URL = f'http://127.0.0.1:{APP_PORT}'
 
 
-def to_record(result, scramble=''):
-    """A result as the (time_ms, scramble, penalty, dnf) record the database helpers take."""
+def to_record(result, scramble='', timestamp=None):
+    """A result as the (time_ms, scramble, penalty, dnf, notes, timestamp) record the database
+    helpers take."""
     if result == 'DNF':
-        return (10000, scramble, 'DNF', True)
+        return (10000, scramble, 'DNF', True, '', timestamp)
     if isinstance(result, tuple):
         seconds, penalty = result
-        return (round(seconds * 1000), scramble, penalty, False)
-    return (round(result * 1000), scramble, None, False)
+        return (round(seconds * 1000), scramble, penalty, False, '', timestamp)
+    return (round(result * 1000), scramble, None, False, '', timestamp)
 
 
 def seed_session(app, results=(), event='333', date='2026-10-01', cube_id=None, notes=''):
