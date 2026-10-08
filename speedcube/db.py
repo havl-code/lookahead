@@ -11,6 +11,7 @@ commits (or rolls back) as one transaction.
 import sqlite3
 from contextlib import closing
 from datetime import date, datetime, timezone
+from pathlib import Path
 
 from flask import current_app, g
 
@@ -108,13 +109,52 @@ def connect(path):
     return conn
 
 
+# Safety copies of the database, made before anything that rewrites a lot of it: restoring a
+# backup, or updating an existing database to a newer version of the app. They go in a backups
+# folder next to the database, and only the newest few are kept.
+SAFETY_COPIES_KEPT = 5
+
+
+def keep_safety_copy(conn, database_path, reason):
+    """Copy the database to backups/speedcube-<date>-<time>-before-<reason>.db next to it, using
+    SQLite's backup API (which is safe while the app is running), and keep only the newest
+    SAFETY_COPIES_KEPT. Returns the copy's path."""
+    folder = Path(database_path).parent / 'backups'
+    folder.mkdir(exist_ok=True)
+    stamp = datetime.now().strftime('%Y-%m-%d-%H%M%S')
+    target = folder / f'speedcube-{stamp}-before-{reason}.db'
+    count = 2
+    while target.exists():  # two in the same second
+        target = folder / f'speedcube-{stamp}-{count}-before-{reason}.db'
+        count += 1
+    with closing(sqlite3.connect(target)) as copy:
+        conn.backup(copy)
+    copies = sorted(folder.glob('speedcube-*-before-*.db'), key=lambda p: (p.stat().st_mtime, p.name))
+    for old in copies[:-SAFETY_COPIES_KEPT]:
+        old.unlink()
+    return target
+
+
+def _missing_columns(conn):
+    for table, columns in ADDED_COLUMNS.items():
+        existing = {row['name'] for row in conn.execute(f'PRAGMA table_info({table})')}
+        if existing and set(columns) - existing:
+            return True
+    return False
+
+
 def init_db(path):
     path.parent.mkdir(parents=True, exist_ok=True)
     with closing(connect(path)) as conn:
         conn.execute('PRAGMA journal_mode = WAL')
+        (stats_version,) = conn.execute('PRAGMA user_version').fetchone()
+        # An existing database that's about to be updated (new columns, or stats worked out
+        # again under newer rules) gets a safety copy first. A brand new one has nothing to copy.
+        has_data = conn.execute("SELECT 1 FROM sqlite_master WHERE name = 'sessions'").fetchone()
+        if has_data and (stats_version < STATS_VERSION or _missing_columns(conn)):
+            keep_safety_copy(conn, path, 'update')
         conn.executescript(SCHEMA)
         add_missing_columns(conn)
-        (stats_version,) = conn.execute('PRAGMA user_version').fetchone()
         if stats_version < STATS_VERSION:
             with conn:
                 recompute_all_session_stats(conn)

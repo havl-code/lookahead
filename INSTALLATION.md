@@ -132,6 +132,9 @@ remembers your choice.
 - **Copy the file:** copy `data/speedcube.db` somewhere safe while the app isn't running
 - **Export a backup:** click **Export backup** in the app's footer to download everything as one
   JSON file, and **Import backup** to restore from it (this replaces all current data)
+- **Safety copies:** before restoring a backup, or updating your data for a new version of the
+  app, the app copies `data/speedcube.db` into `data/backups` by itself, and keeps the newest
+  five. To go back to one, close the app and copy it over `data/speedcube.db` (keeping that name)
 
 ### Bringing Your Data Across from the Browser-Only Version
 
@@ -188,6 +191,10 @@ First close the app's tabs so the old version stops. Then download the latest ZI
 and unzip it. To keep your data, copy the `data` folder from your old copy into the new one
 before you start it. Then start the app from the new folder as usual; uv picks up any changes
 to what the app needs by itself.
+
+A new version sometimes needs to update your data (for example, to work out your stats under
+newer rules). It does that by itself on its first start, after keeping a safety copy of your
+database in `data/backups`, so there's always a way back.
 
 On Windows, the shortcut with the app's icon (and any copy of it on your desktop or Start menu)
 still points to the old folder. Delete it; the new folder makes its own on its first start.

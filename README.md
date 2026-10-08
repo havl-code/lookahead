@@ -242,7 +242,11 @@ safely import a newer export of the same sessions: only the new solves are added
 
 Everything lives in one file, `data/speedcube.db`. Copying that file somewhere safe (while the
 app isn't running) is a complete backup. You can also use the **Export backup** link in the
-footer to download everything as one JSON file, and **Import backup** to restore it. See
+footer to download everything as one JSON file, and **Import backup** to restore it.
+
+The app also keeps a safety copy of the database by itself, in `data/backups`, just before
+anything that rewrites a lot of it: restoring a backup, or updating your data for a new version
+of the app. It keeps the newest five. See
 [INSTALLATION.md](INSTALLATION.md#-where-your-data-lives) for more.
 
 ---
@@ -336,7 +340,7 @@ speedcube-training-explorer/
 ├── tests/                 # Automated tests (pytest), with small synthetic fixtures
 │   └── e2e/               # A browser smoke test (Playwright), run on request
 ├── .github/workflows/     # Runs the tests on GitHub for every push and pull request
-├── data/                  # Your database (created on first start, never committed)
+├── data/                  # Your database, and safety copies in data/backups (never committed)
 ├── Speedcube Training Explorer.lnk  # Windows only: made on first start, never committed
 ├── LICENSE
 └── README.md, INSTALLATION.md

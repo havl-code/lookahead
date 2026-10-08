@@ -158,7 +158,7 @@ class TestRestoreTidiesUp:
     def test_left_out_solves_are_counted(self, client, backup_v3):
         backup_v3['solves'].append({'id': 999, 'session_id': 4242, 'solve_number': 1, 'time_ms': 5000})
         response = client.post('/api/backup/import', data=upload(json.dumps(backup_v3)))
-        assert response.get_json() == {'success': True, 'solves_left_out': 1}
+        assert response.get_json()['solves_left_out'] == 1
 
     def test_a_backup_without_an_app_name_still_restores(self, client, backup_v3):
         del backup_v3['app']

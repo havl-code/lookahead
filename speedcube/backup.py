@@ -70,9 +70,11 @@ def _restore_table(conn, table, columns, records):
     )
 
 
-def restore_backup(conn, payload):
+def restore_backup(conn, payload, before_replacing=None):
     """Replace ALL current data with the backup's. Run inside a transaction (`with conn:`).
-    Returns how many solves were left out because their session isn't in the backup."""
+    `before_replacing`, if given, is called once the backup has passed every check and just
+    before anything is replaced (the app uses it to keep a safety copy). Returns how many solves
+    were left out because their session isn't in the backup."""
     if not isinstance(payload, dict) or not all(
         isinstance(payload.get(key), list) for key in ('cubes', 'sessions', 'solves')
     ):
@@ -93,6 +95,11 @@ def restore_backup(conn, payload):
     solves = [s for s in payload['solves'] if s.get('session_id') in session_ids]
     sessions = [s if s.get('cube_id') in cube_ids or s.get('cube_id') is None else {**s, 'cube_id': None}
                 for s in payload['sessions']]
+
+    if not all(isinstance(record, dict) for record in payload.get('settings') or []):
+        raise InvalidBackup('This file does not look like a valid backup.')
+    if before_replacing is not None:
+        before_replacing()
 
     _restore_table(conn, 'cubes', CUBE_COLUMNS, payload['cubes'])
     _restore_table(conn, 'sessions', SESSION_COLUMNS, sessions)

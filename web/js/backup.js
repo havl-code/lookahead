@@ -46,7 +46,7 @@ async function handleImportBackupFile(event) {
 
         const leftOut = result.solves_left_out
             ? ` (${countLabel(result.solves_left_out, 'solve')} without a session were left out)` : '';
-        showSuccess(`Backup restored${leftOut}. Reloading...`);
+        showSuccess(`Backup restored${leftOut}. What you had before is kept in data/backups. Reloading...`);
         setTimeout(() => location.reload(), 800);  // long enough to read the message
     } catch (e) {
         showError(`Couldn't restore the backup: ${e.message}`);

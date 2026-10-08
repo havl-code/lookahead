@@ -838,12 +838,18 @@ def import_backup():
         return _error('No file provided', 400)
 
     conn = db.get_db()
+    safety_copy = []
+
+    def keep_a_copy():
+        # Everything is about to be replaced, so keep what's there now (see db.keep_safety_copy)
+        safety_copy.append(db.keep_safety_copy(conn, current_app.config['DATABASE'], 'restore'))
+
     try:
         payload = json.loads(file.read().decode('utf-8-sig'))
         with conn:
-            left_out = backup.restore_backup(conn, payload)
+            left_out = backup.restore_backup(conn, payload, before_replacing=keep_a_copy)
     except backup.InvalidBackup as e:
         return _error(str(e), 400)
     except (ValueError, sqlite3.IntegrityError):
         return _error('This file does not look like a valid backup.', 400)
-    return jsonify(success=True, solves_left_out=left_out)
+    return jsonify(success=True, solves_left_out=left_out, safety_copy=safety_copy[0].name)
