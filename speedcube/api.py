@@ -397,9 +397,39 @@ def delete_solve(solve_id):
 
 # ---- Cubes ----
 
+def _cube_usage(conn):
+    """For each cube, how it's been used: its sessions and solves in total, and its PB single and
+    best Ao5 in its main event (the one it has the most sessions in), so a 3x3x3 that's also used
+    for One-Handed doesn't mix the two. It reads only the sessions' stored stats, so it's quick."""
+    by_cube = defaultdict(list)
+    for row in conn.execute(
+        'SELECT cube_id, event_id, COUNT(*) AS sessions, SUM(solve_count) AS solves, '
+        'MIN(best_single) AS best_single, MIN(best_ao5) AS best_ao5 FROM sessions '
+        'WHERE cube_id IS NOT NULL GROUP BY cube_id, event_id'
+    ):
+        by_cube[row['cube_id']].append(row)
+
+    usage = {}
+    for cube_id, events in by_cube.items():
+        main = max(events, key=lambda e: (e['sessions'], e['solves'] or 0, e['event_id']))
+        usage[cube_id] = {
+            'sessions': sum(e['sessions'] for e in events),
+            'solves': sum(e['solves'] or 0 for e in events),
+            'main_event': main['event_id'],
+            'pb_single': single_seconds(main['best_single']),
+            'best_ao5': average_seconds(main['best_ao5']),
+        }
+    return usage
+
+
+NO_USAGE = {'sessions': 0, 'solves': 0, 'main_event': None, 'pb_single': None, 'best_ao5': None}
+
+
 @api.get('/cubes')
 def get_cubes():
-    rows = db.get_db().execute('SELECT * FROM cubes ORDER BY cube_type COLLATE NOCASE, id')
+    conn = db.get_db()
+    rows = conn.execute('SELECT * FROM cubes ORDER BY cube_type COLLATE NOCASE, id')
+    usage = _cube_usage(conn)
     return jsonify([
         {
             'id': c['id'],
@@ -409,6 +439,7 @@ def get_cubes():
             'purchase_date': c['purchase_date'],
             'is_active': bool(c['is_active']),
             'notes': c['notes'] or '',
+            'stats': usage.get(c['id'], NO_USAGE),
         }
         for c in rows
     ])

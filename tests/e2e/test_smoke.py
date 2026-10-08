@@ -251,6 +251,22 @@ def test_cubes(app_page):
     assert page.errors == []
 
 
+def test_cube_stats(app_page, live_app):
+    from helpers import seed_cube
+    cube = seed_cube(live_app, '333', 'GAN', '14')
+    seed_session(live_app, [12, 11, 13, 14, 12], cube_id=cube, date='2026-09-01')
+    seed_session(live_app, [25] * 5, event='333oh', cube_id=seed_cube(live_app, '333', 'QiYi', 'MS'),
+                 date='2026-09-02')
+    page = app_page
+    open_tab(page, 'cubes')
+    page.wait_for_selector('#cubes-tbody td.num')
+    rows = {r.split()[1]: r for r in page.locator('#cubes-tbody tr').all_inner_texts()}
+    assert '12.33s' in rows['GAN'] and '11.00s' in rows['GAN']
+    assert '25.00s (3x3x3 One-Handed)' in rows['QiYi']  # used for another event than its type
+    page.click('#cubes-table th[data-sort="sessions"]')
+    assert page.errors == []
+
+
 def test_import(app_page, live_app):
     page = app_page
     open_tab(page, 'import')

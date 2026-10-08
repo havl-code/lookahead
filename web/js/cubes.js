@@ -6,8 +6,19 @@ const CUBE_SORT_GETTERS = {
     brand: c => c.brand,
     model: c => c.model,
     date: c => c.purchase_date,
+    sessions: c => c.stats.sessions,
+    solves: c => c.stats.solves,
+    pb: c => c.stats.pb_single,
+    ao5: c => c.stats.best_ao5,
     status: c => (c.is_active ? 0 : 1)  // active first
 };
+
+// A cube's PB or best Ao5, saying which event it's from when that isn't the cube's own type
+function cubeBest(cube, seconds) {
+    if (seconds == null) return '-';
+    const event = cube.stats.main_event;
+    return event && event !== cube.cube_type ? `${formatTime(seconds)} (${getEventName(event)})` : formatTime(seconds);
+}
 
 registerActions('click', {
     'show-add-cube': () => showAddCubeForm(),
@@ -51,7 +62,7 @@ function renderCubesTable() {
     const tbody = document.getElementById('cubes-tbody');
 
     if (AppState.allCubes.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="loading">No cubes in your inventory yet.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="10" class="loading">No cubes in your inventory yet.</td></tr>';
         return;
     }
 
@@ -61,6 +72,10 @@ function renderCubesTable() {
             <td>${escapeHtml(cube.brand || '-')}</td>
             <td>${escapeHtml(cube.model || '-')}</td>
             <td>${escapeHtml(cube.purchase_date || '-')}</td>
+            <td class="num">${Number(cube.stats.sessions).toLocaleString('en-NZ')}</td>
+            <td class="num">${Number(cube.stats.solves).toLocaleString('en-NZ')}</td>
+            <td class="num">${escapeHtml(cubeBest(cube, cube.stats.pb_single))}</td>
+            <td class="num">${escapeHtml(cubeBest(cube, cube.stats.best_ao5))}</td>
             <td><span class="status ${cube.is_active ? 'active' : 'inactive'}">${cube.is_active ? 'Active' : 'Inactive'}</span></td>
             <td class="actions-col">
                 <button class="action-btn" data-action="edit-cube" data-cube-id="${cube.id}">Edit</button>

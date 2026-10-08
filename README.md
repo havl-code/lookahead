@@ -68,7 +68,8 @@ and a double-click (or one command) starts it.
 - **Edit Sessions:** change a session's date, cube, and notes afterwards; the table shows each
   session's cube
 - **Cube Inventory:** record each cube's type, brand, model, and when you got it, and link cubes
-  to sessions
+  to sessions. Each cube shows its sessions, solves, PB single, and best Ao5 (in the event it's
+  used for most)
 
 ### 📈 Analytics
 
