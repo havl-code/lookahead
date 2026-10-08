@@ -133,18 +133,23 @@ def estimate_percentile(conn, time_seconds, event='333', rank_type='single', reg
 
 
 def lookup_person(wca_id):
-    """The competitor's name for a WCA ID, from the official WCA API. Raises WCALookupError."""
+    """The competitor's name for a WCA ID, from the official WCA API. Raises WCALookupError,
+    with 404 for an ID the WCA doesn't know and 502 (a bad gateway) when the WCA's side fails,
+    since the problem is out there rather than in this app."""
     try:
         data = _fetch_json(PERSONS_API + urllib.parse.quote(wca_id, safe=''))
     except urllib.error.HTTPError as e:
         if e.code == 404:
             raise WCALookupError('WCA ID not found. Please check the ID and try again.', 404) from e
-        raise WCALookupError('Could not validate WCA ID. Please try again later.', 500) from e
+        raise WCALookupError('Could not validate WCA ID. Please try again later.', 502) from e
+    except ValueError as e:  # the reply arrived but wasn't JSON
+        raise WCALookupError("The WCA website's reply couldn't be read. Please try again later.",
+                             502) from e
     except FETCH_ERRORS as e:
-        raise WCALookupError('Could not connect to WCA API. Please try again later.', 500) from e
+        raise WCALookupError('Could not connect to WCA API. Please try again later.', 502) from e
 
     person = data.get('person') if isinstance(data, dict) else None
     name = person.get('name') if isinstance(person, dict) else None
     if not name:
-        raise WCALookupError('Could not fetch name for this WCA ID', 500)
+        raise WCALookupError('Could not fetch name for this WCA ID', 502)
     return name

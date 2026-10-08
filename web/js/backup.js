@@ -44,7 +44,9 @@ async function handleImportBackupFile(event) {
             throw new Error(result.error || 'Unknown error');
         }
 
-        showSuccess('Backup restored. Reloading...');
+        const leftOut = result.solves_left_out
+            ? ` (${countLabel(result.solves_left_out, 'solve')} without a session were left out)` : '';
+        showSuccess(`Backup restored${leftOut}. Reloading...`);
         setTimeout(() => location.reload(), 800);  // long enough to read the message
     } catch (e) {
         showError(`Couldn't restore the backup: ${e.message}`);

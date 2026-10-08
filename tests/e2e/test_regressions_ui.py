@@ -58,7 +58,7 @@ def test_scrambles_allow_opposite_faces_but_never_cancel(app_page):
 
 
 def test_no_blocking_dialogs_when_adding_a_cube(app_page):
-    """Finding 10: adding a cube popped up an alert."""
+    """Finding 10 (fixed): adding a cube popped up an alert."""
     open_tab(app_page, 'cubes')
     app_page.click('#tab-cubes .section-header .btn-primary')
     app_page.select_option('#new-cube-type', '333')

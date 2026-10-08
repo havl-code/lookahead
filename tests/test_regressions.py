@@ -35,7 +35,7 @@ def iso_utc(unix_seconds):
 # ---- 1 and 1a: other websites and DNS rebinding ----
 
 def test_a_cross_site_restore_is_refused(app, client):
-    """Finding 1: another website could replace all the data."""
+    """Finding 1 (fixed): another website could replace all the data."""
     seed_session(app, [10, 11, 12])
     response = client.post('/api/backup/import', headers={'Origin': EVIL},
                            data=upload(b'{"cubes": [], "sessions": [], "solves": []}'))
@@ -45,18 +45,18 @@ def test_a_cross_site_restore_is_refused(app, client):
 
 @pytest.mark.parametrize('route', ['/api/import/preview', '/api/import/selected'])
 def test_a_cross_site_import_is_refused(client, cstimer_bytes, route):
-    """Finding 1: another website could import CSTimer files."""
+    """Finding 1 (fixed): another website could import CSTimer files."""
     data = {**upload(cstimer_bytes), 'sessions': '["session1"]'}
     assert client.post(route, headers={'Origin': EVIL}, data=data).status_code == 403
 
 
 def test_a_foreign_host_is_refused(client):
-    """Finding 1: DNS rebinding could read the whole backup."""
+    """Finding 1 (fixed): DNS rebinding could read the whole backup."""
     assert client.get('/api/backup/export', headers={'Host': 'evil.example:8577'}).status_code == 403
 
 
 def test_a_cross_site_form_cannot_write(app, client):
-    """Finding 1a: a plain cross-site form could start sessions."""
+    """Finding 1a (fixed): a plain cross-site form could start sessions."""
     response = client.post('/api/timer/session', headers={'Origin': EVIL}, data='x=1',
                            content_type='application/x-www-form-urlencoded')
     assert response.status_code == 403
@@ -64,14 +64,14 @@ def test_a_cross_site_form_cannot_write(app, client):
 
 
 def test_writes_need_the_custom_header(raw_client):
-    """Finding 1a: state-changing requests need the custom header."""
+    """Finding 1a (fixed): state-changing requests need the custom header."""
     response = raw_client.post('/api/timer/session', json={},
                                headers={'Origin': 'http://127.0.0.1:8577', 'Host': '127.0.0.1:8577'})
     assert response.status_code == 403
 
 
 def test_responses_carry_security_headers(client):
-    """Finding 1a: there were no security headers."""
+    """Finding 1a (fixed): there were no security headers."""
     response = client.get('/')
     csp = response.headers.get('Content-Security-Policy', '')
     assert "script-src 'self'" in csp and 'unsafe-inline' not in csp.split('script-src')[1].split(';')[0]
@@ -80,7 +80,7 @@ def test_responses_carry_security_headers(client):
 
 
 def test_no_inline_event_handlers():
-    """Finding 1a: a strict CSP would block inline event handlers."""
+    """Finding 1a (fixed): a strict CSP would block inline event handlers."""
     sources = [PROJECT_DIR / 'web' / 'index.html', *WEB_JS.glob('*.js')]
     found = {path.name: len(re.findall(r'\son[a-z]+\s*=\s*["\']', path.read_text(encoding='utf-8')))
              for path in sources}
@@ -160,25 +160,25 @@ def test_importing_nothing_is_an_error(client, cstimer_bytes):
 
 # ---- 3 to 3b: validation ----
 
-@finding('3', 'a non-numeric time is a 500')
 @pytest.mark.parametrize('route, body', [
     ('/api/sessions/{sid}/solves/add', {'time_seconds': 'abc'}),
     ('/api/timer/solve', {'session_id': '{sid}', 'time': 'abc'}),
 ])
 def test_a_non_numeric_time_is_a_400(app, client, route, body):
+    """Finding 3 (fixed): a non-numeric time is a 500."""
     sid = seed_session(app, [10])
     body = {k: (sid if v == '{sid}' else v) for k, v in body.items()}
     assert client.post(route.format(sid=sid), json=body).status_code == 400
 
 
-@finding('3', 'a solve can be added to a session that does not exist')
 def test_a_solve_needs_its_session(app, client):
+    """Finding 3 (fixed): a solve can be added to a session that does not exist."""
     assert client.post('/api/sessions/99999/solves/add', json={'time_seconds': 10}).status_code == 404
     assert query(app, 'SELECT COUNT(*) AS n FROM solves') == [{'n': 0}]
 
 
-@finding('3', 'any penalty string is stored')
 def test_only_real_penalties_are_accepted(app, client):
+    """Finding 3 (fixed): any penalty string is stored."""
     sid = seed_session(app, [10])
     solve = query(app, 'SELECT id FROM solves')[0]['id']
     assert client.put(f'/api/timer/solve/{solve}/penalty', json={'penalty': 'LOL'}).status_code == 400
@@ -186,77 +186,77 @@ def test_only_real_penalties_are_accepted(app, client):
                        json={'time_seconds': 10, 'penalty': 'LOL'}).status_code == 400
 
 
-@finding('3', 'negative and absurd times are accepted')
 @pytest.mark.parametrize('seconds', [-5, 0, 7200.01, 1e12])
 def test_times_must_be_sensible(app, client, seconds):
+    """Finding 3 (fixed): negative and absurd times are accepted."""
     sid = seed_session(app, [])
     assert client.post(f'/api/sessions/{sid}/solves/add', json={'time_seconds': seconds}).status_code == 400
 
 
-@finding('3', 'deleting something that does not exist reports success')
 @pytest.mark.parametrize('route', ['/api/sessions/99999', '/api/solves/99999', '/api/cubes/99999'])
 def test_deleting_something_missing_is_a_404(client, route):
+    """Finding 3 (fixed): deleting something that does not exist reports success."""
     assert client.delete(route).status_code == 404
 
 
-@finding('3', 'cube ids are never checked')
 def test_a_session_needs_a_real_cube(client):
+    """Finding 3 (fixed): cube ids are never checked."""
     assert client.post('/api/sessions/add', json={'cube_id': 99999}).status_code == 404
 
 
-@finding('3a', 'any event id is accepted')
 def test_events_must_be_known(app, client, cstimer_bytes):
+    """Finding 3a (fixed): any event id is accepted."""
     assert client.post('/api/sessions/add', json={'event_id': 'zzz'}).status_code == 400
     assert import_file(client, cstimer_bytes, ['session2'], event_id='nope').status_code == 400
 
 
-@finding('3a', 'a badly formed WCA ID still triggers a network lookup')
 def test_wca_id_format_is_checked_first(client, fake_wca):
+    """Finding 3a (fixed): a badly formed WCA ID still triggers a network lookup."""
     assert client.post('/api/user/settings', json={'wca_id': 'not an id'}).status_code == 400
     assert fake_wca.calls == []
 
 
-@finding('3a', 'cube edits are not validated')
 @pytest.mark.parametrize('fields', [{'cube_type': ''}, {'purchase_date': 'yesterday-ish'}])
 def test_cube_edits_are_validated(app, client, fields):
+    """Finding 3a (fixed): cube edits are not validated."""
     cube = seed_cube(app)
     assert client.put(f'/api/cubes/{cube}', json=fields).status_code == 400
 
 
-@finding('3a', 'editing a missing cube is a 400, not a 404')
 def test_editing_a_missing_cube_is_a_404(client):
+    """Finding 3a (fixed): editing a missing cube is a 400, not a 404."""
     assert client.put('/api/cubes/99999', json={'brand': 'x'}).status_code == 404
 
 
-@finding('3a', 'there is no upload size limit')
 def test_uploads_have_a_size_limit(app):
+    """Finding 3a (fixed): there is no upload size limit."""
     assert (app.config.get('MAX_CONTENT_LENGTH') or 0) > 0
 
 
-@finding('3a', 'the solves of a missing session come back empty instead of 404')
 @pytest.mark.parametrize('route', ['/api/sessions/99999/solves', '/api/timer/session/99999/solves'])
 def test_solves_of_a_missing_session_are_a_404(client, route):
+    """Finding 3a (fixed): the solves of a missing session come back empty instead of 404."""
     assert client.get(route).status_code == 404
 
 
-@finding('3b', 'an empty body adds a 0.00 solve')
 def test_an_empty_body_adds_nothing(app, client):
+    """Finding 3b (fixed): an empty body adds a 0.00 solve."""
     sid = seed_session(app, [])
     assert client.post(f'/api/sessions/{sid}/solves/add', json={}).status_code == 400
     assert query(app, 'SELECT COUNT(*) AS n FROM solves') == [{'n': 0}]
 
 
-@finding('3b', 'a +2 under 2 seconds is stored with a negative time')
 def test_plus_two_never_stores_a_negative_time(app, client):
+    """Finding 3b (fixed): a +2 under 2 seconds is stored with a negative time."""
     sid = seed_session(app, [])
     response = client.post('/api/timer/solve', json={'session_id': sid, 'time': 1.0, 'penalty': '+2'})
     assert response.status_code == 400
     assert query(app, 'SELECT COUNT(*) AS n FROM solves WHERE time_ms < 0') == [{'n': 0}]
 
 
-@finding('3b', 'NaN and Infinity are 500s')
 @pytest.mark.parametrize('number', ['NaN', 'Infinity'])
 def test_nan_and_infinity_are_400s(app, client, number):
+    """Finding 3b (fixed): naN and Infinity are 500s."""
     sid = seed_session(app, [])
     response = client.post(f'/api/sessions/{sid}/solves/add', data=f'{{"time_seconds": {number}}}',
                            content_type='application/json')
@@ -322,7 +322,7 @@ def test_the_timer_uses_a_steady_clock():
 
 
 def test_no_blocking_dialogs():
-    """Finding 10: alert() and confirm() blocked the page. (Comments may still mention them.)"""
+    """Finding 10 (fixed): alert() and confirm() blocked the page. (Comments may still mention them.)"""
     code = {path.name: '\n'.join(line for line in path.read_text(encoding='utf-8').splitlines()
                                  if not line.strip().startswith('//'))
             for path in WEB_JS.glob('*.js')}
@@ -390,30 +390,30 @@ def test_long_singles_are_truncated_to_seconds(app, client):
 
 # ---- 15 and 16: backups and the WCA lookup ----
 
-@finding('15', "a restore never checks that the file is this app's backup")
 def test_another_apps_backup_is_refused(app, client):
+    """Finding 15 (fixed): a restore never checked that the file is this app's backup."""
     seed_session(app, [10])
     content = json.dumps({'app': 'another-app', 'cubes': [], 'sessions': [], 'solves': []})
     assert client.post('/api/backup/import', data=upload(content)).status_code == 400
     assert query(app, 'SELECT COUNT(*) AS n FROM solves') == [{'n': 1}]
 
 
-@finding('15', 'a restore keeps solves whose session is not in the file')
 def test_orphan_solves_are_left_out_of_a_restore(app, client, backup_v3):
+    """Finding 15 (fixed): a restore keeps solves whose session is not in the file."""
     backup_v3['solves'].append({'id': 999, 'session_id': 4242, 'solve_number': 1, 'time_ms': 5000})
     assert client.post('/api/backup/import', data=upload(json.dumps(backup_v3))).status_code == 200
     assert query(app, 'SELECT COUNT(*) AS n FROM solves WHERE session_id = 4242') == [{'n': 0}]
 
 
-@finding('16', 'bad JSON from the WCA reads as "Could not connect", and failures are 500s')
 def test_wca_lookup_failures_are_described_honestly(client, fake_wca):
+    """Finding 16 (fixed): bad JSON from the WCA reads as "Could not connect", and failures are 500s."""
     fake_wca.replies['persons/2003POCH01'] = ValueError('bad JSON')
     response = client.post('/api/user/settings', json={'wca_id': '2003POCH01'})
     assert response.status_code == 502 and 'connect' not in response.get_json()['error'].lower()
 
 
-@finding('16', 'a lower-case WCA ID is stored as sent')
 def test_wca_ids_are_stored_in_capitals(client, fake_wca):
+    """Finding 16 (fixed): a lower-case WCA ID is stored as sent."""
     fake_wca.replies['persons/2003POCH01'] = {'person': {'name': 'Test Person'}}
     client.post('/api/user/settings', json={'wca_id': '2003poch01'})
     assert client.get('/api/user/settings').get_json()['wca_id'] == '2003POCH01'
@@ -424,7 +424,7 @@ def test_every_finding_has_a_test():
     are about the docs, which are checked by reading."""
     here = (PROJECT_DIR / 'tests' / 'test_regressions.py').read_text(encoding='utf-8')
     ui = (PROJECT_DIR / 'tests' / 'e2e' / 'test_regressions_ui.py').read_text(encoding='utf-8')
-    numbers = set(re.findall(r"finding\('(\w+)'", here + ui)) | set(re.findall(r'Finding (\w+):', here + ui))
+    numbers = set(re.findall(r"finding\('(\w+)'", here + ui)) | set(re.findall(r'Finding (\w+) \(fixed\):', here + ui))
     expected = {'1', '1a', '2', '2a', '2b', '2c', '2d', '2e', '3', '3a', '3b', '4', '4a', '4b',
                 '4c', '5', '6', '7', '8', '9', '9a', '9b', '10', '11', '12', '13', '15', '16'}
     assert expected <= numbers, sorted(expected - numbers)

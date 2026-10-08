@@ -19,7 +19,7 @@ def test_restore_its_own_export(app, client):
     exported = client.get('/api/backup/export').data
     seed_session(app, [99])
     response = client.post('/api/backup/import', data=upload(exported, 'backup.json'))
-    assert response.get_json() == {'success': True}
+    assert response.get_json() == {'success': True, 'solves_left_out': 0}
     assert query(app, 'SELECT COUNT(*) AS n FROM solves') == [{'n': 3}]
 
 

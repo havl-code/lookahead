@@ -17,7 +17,7 @@ def test_add_and_list(client):
 
 def test_a_type_is_required(client):
     response = add(client, brand='GAN')
-    assert response.status_code == 400 and response.get_json() == {'error': 'Cube type is required'}
+    assert response.status_code == 400 and response.get_json() == {'error': 'Cube type is required.'}
 
 
 def test_custom_types_and_ordering(client):

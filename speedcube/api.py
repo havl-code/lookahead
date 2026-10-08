@@ -11,8 +11,9 @@ from collections import defaultdict
 
 from flask import Blueprint, Response, current_app, jsonify, request
 
-from . import backup, cstimer, db, scores, wca
+from . import backup, cstimer, db, scores, validation, wca
 from .db import NON_DNF_RESULT_MS, RESULT_MS
+from .validation import MAX_CUBE_TEXT, MAX_NOTES, MAX_SCRAMBLE, ValidationError
 from .stats import (
     box_stats,
     filter_distribution_outliers,
@@ -64,6 +65,12 @@ def _int_arg(name, default=None, lowest=None, highest=None):
 
 def _error(message, status):
     return jsonify(error=message), status
+
+
+@api.errorhandler(ValidationError)
+def _invalid(e):
+    """Anything validation.py turns down is answered with its message (a 400, or 404)."""
+    return _error(str(e), e.status)
 
 
 def _event_filter(event_id, prefix='WHERE'):
@@ -165,19 +172,28 @@ def get_sessions():
     ])
 
 
+def _cube_or_none(conn, value):
+    """A cube id from the page, checked to exist, or None for no cube."""
+    cube_id = validation.record_id(value, 'Cube')
+    return validation.require(conn, 'cubes', cube_id, 'Cube') if cube_id is not None else None
+
+
 @api.post('/sessions/add')
 def add_session():
     body = _json_body()
     conn = db.get_db()
+    event_id = validation.event(body.get('event_id'))
+    notes = validation.text(body.get('notes'), 'Notes', MAX_NOTES)
+    cube_id = _cube_or_none(conn, body.get('cube_id'))
     with conn:
-        session_id = db.create_session(conn, body.get('event_id') or '333', body.get('notes') or '',
-                                       body.get('cube_id'))
+        session_id = db.create_session(conn, event_id, notes, cube_id)
     return jsonify(success=True, session_id=session_id)
 
 
 @api.delete('/sessions/<int:session_id>')
 def delete_session(session_id):
     conn = db.get_db()
+    validation.require(conn, 'sessions', session_id, 'Session')
     with conn:
         db.delete_session(conn, session_id)
     return jsonify(success=True, message='Session deleted')
@@ -209,6 +225,7 @@ def get_session_solves(session_id):
     limit = _int_arg('limit', default=100, lowest=1, highest=500)
 
     conn = db.get_db()
+    validation.require(conn, 'sessions', session_id, 'Session')
     (total,) = conn.execute(
         'SELECT COUNT(*) FROM solves WHERE session_id = ?', (session_id,)
     ).fetchone()
@@ -233,11 +250,16 @@ def get_session_solves(session_id):
 
 @api.post('/sessions/<int:session_id>/solves/add')
 def add_solve_to_session(session_id):
+    """A solve typed in by hand: its time (before any +2) and penalty."""
     body = _json_body()
     conn = db.get_db()
+    validation.require(conn, 'sessions', session_id, 'Session')
+    penalty = validation.penalty(body.get('penalty'))
+    time_seconds = validation.solve_time(body.get('time_seconds'), allow_zero=penalty == 'DNF')
+    scramble = validation.text(body.get('scramble'), 'Scramble', MAX_SCRAMBLE)
+    notes = validation.text(body.get('notes'), 'Notes', MAX_NOTES)
     with conn:
-        db.add_solve(conn, session_id, body.get('time_seconds'), body.get('scramble') or '',
-                     body.get('penalty'), body.get('notes') or '')
+        db.add_solve(conn, session_id, time_seconds, scramble, penalty, notes)
         db.recompute_session_stats(conn, session_id)
     return jsonify(success=True)
 
@@ -246,7 +268,9 @@ def add_solve_to_session(session_id):
 def delete_solve(solve_id):
     conn = db.get_db()
     with conn:
-        db.delete_solve(conn, solve_id)
+        deleted = db.delete_solve(conn, solve_id)
+    if not deleted:
+        return _error('Solve not found', 404)
     return jsonify(success=True, message='Solve deleted')
 
 
@@ -269,31 +293,54 @@ def get_cubes():
     ])
 
 
+def _active_flag(value):
+    if value in (True, False, 0, 1):
+        return bool(value)
+    raise ValidationError('Active must be true or false.')
+
+
+# How each cube field is checked; fields that aren't a cube's are ignored
+CUBE_FIELD_CHECKS = {
+    'cube_type': lambda v: validation.text(v, 'Cube type', MAX_CUBE_TEXT, required=True),
+    'brand': lambda v: validation.text(v, 'Brand', MAX_CUBE_TEXT),
+    'model': lambda v: validation.text(v, 'Model', MAX_CUBE_TEXT),
+    'purchase_date': lambda v: validation.iso_date(v, 'Purchase date'),
+    'notes': lambda v: validation.text(v, 'Notes', MAX_NOTES),
+    'is_active': _active_flag,
+}
+
+
+def _cube_fields(body):
+    """The cube fields present in `body`, each checked."""
+    return {key: check(body[key]) for key, check in CUBE_FIELD_CHECKS.items() if key in body}
+
+
 @api.post('/cubes/add')
 def add_cube():
-    body = _json_body()
-    if not body.get('cube_type'):
-        return _error('Cube type is required', 400)
+    fields = _cube_fields({'cube_type': None, **_json_body()})
     conn = db.get_db()
     with conn:
-        cube_id = db.add_cube(conn, body['cube_type'], body.get('brand'), body.get('model'),
-                              body.get('purchase_date'), body.get('notes'))
+        cube_id = db.add_cube(conn, fields['cube_type'], fields.get('brand'), fields.get('model'),
+                              fields.get('purchase_date'), fields.get('notes'))
     return jsonify(success=True, cube_id=cube_id)
 
 
 @api.put('/cubes/<int:cube_id>')
 def update_cube(cube_id):
     conn = db.get_db()
+    validation.require(conn, 'cubes', cube_id, 'Cube')
+    fields = _cube_fields(_json_body())
+    if not fields:
+        return _error('Nothing to update', 400)
     with conn:
-        updated = db.update_cube(conn, cube_id, _json_body())
-    if not updated:
-        return _error('Failed to update cube', 400)
+        db.update_cube(conn, cube_id, fields)
     return jsonify(success=True, message='Cube updated')
 
 
 @api.delete('/cubes/<int:cube_id>')
 def delete_cube(cube_id):
     conn = db.get_db()
+    validation.require(conn, 'cubes', cube_id, 'Cube')
     with conn:
         db.deactivate_cube(conn, cube_id)
     return jsonify(success=True, message='Cube deactivated')
@@ -534,7 +581,7 @@ def import_selected():
         selected = json.loads(request.form.get('sessions') or '[]')
     except ValueError:
         selected = []
-    event_id = request.form.get('event_id') or '333'
+    event_id = validation.event(request.form.get('event_id'))
 
     if file is None or not isinstance(selected, list) or not selected:
         return _error('Missing file or sessions', 400)
@@ -556,8 +603,8 @@ def import_selected():
 @api.post('/timer/session')
 def timer_create_session():
     conn = db.get_db()
+    event_id = validation.event(_json_body().get('event_id'))
     with conn:
-        event_id = _json_body().get('event_id') or '333'
         session_id = db.start_timer_session(conn, event_id)
     return jsonify(success=True, session_id=session_id)
 
@@ -569,13 +616,18 @@ def timer_save_solve():
     if time is None:
         return _error('Missing required fields', 400)
 
-    penalty = body.get('penalty')
+    penalty = validation.penalty(body.get('penalty'))
+    # The timer sends an explicit dnf flag (it may differ from a penalty-derived guess).
+    dnf = body['dnf'] if isinstance(body.get('dnf'), bool) else None
+    time = validation.solve_time(time, allow_zero=bool(dnf) or penalty == 'DNF')
     # timer.js already adds 2s to `time` for a '+2' (for its own optimistic display), and
     # recompute_session_stats adds +2000ms again for any '+2' solve. Storing the
     # *raw* attempt time here keeps the penalty applied exactly once everywhere.
-    raw_time = float(time) - 2 if penalty == '+2' else float(time)
-    # The timer sends an explicit dnf flag (it may differ from a penalty-derived guess).
-    dnf = body['dnf'] if isinstance(body.get('dnf'), bool) else None
+    raw_time = time - 2 if penalty == '+2' else time
+    if penalty == '+2' and raw_time <= 0:
+        raise ValidationError('A +2 solve must take more than 2 seconds.')
+    scramble = validation.text(body.get('scramble'), 'Scramble', MAX_SCRAMBLE)
+    session_id = validation.record_id(session_id, 'Session')
 
     conn = db.get_db()
     with conn:
@@ -585,12 +637,11 @@ def timer_save_solve():
         # The timer follows the calendar: unless a session was picked by hand (follow_today is
         # false), solves go into today's session, and the first solve of a new day starts one.
         if body.get('follow_today') and (session is None or session['date'] != db.today()):
-            event_id = session['event_id'] if session else (body.get('event_id') or '333')
+            event_id = session['event_id'] if session else validation.event(body.get('event_id'))
             session_id = db.todays_session(conn, event_id)
         elif session is None:
             return _error('Session not found', 404)
-        solve_id = db.add_solve(conn, session_id, raw_time, body.get('scramble') or '', penalty,
-                                dnf=dnf)
+        solve_id = db.add_solve(conn, session_id, raw_time, scramble, penalty, dnf=dnf)
         db.recompute_session_stats(conn, session_id)
     return jsonify(success=True, solve_id=solve_id, session_id=session_id)
 
@@ -609,7 +660,7 @@ def timer_delete_solve(solve_id):
 def timer_update_penalty(solve_id):
     conn = db.get_db()
     with conn:
-        updated = db.set_solve_penalty(conn, solve_id, _json_body().get('penalty') or 'OK')
+        updated = db.set_solve_penalty(conn, solve_id, validation.penalty(_json_body().get('penalty')))
     if not updated:
         return _error('Solve not found', 404)
     return jsonify(success=True)
@@ -621,6 +672,7 @@ def timer_session_solves(session_id):
     recent solves, so a huge session doesn't have to be sent (or drawn) in full."""
     limit = _int_arg('limit', default=50, lowest=1, highest=500)
     conn = db.get_db()
+    validation.require(conn, 'sessions', session_id, 'Session')
     rows = conn.execute(
         'SELECT * FROM solves WHERE session_id = ? ORDER BY solve_number DESC, id DESC LIMIT ?',
         (session_id, limit),
@@ -665,9 +717,8 @@ def get_user_settings():
 
 @api.post('/user/settings')
 def update_user_settings():
-    wca_id = str(_json_body().get('wca_id') or '').strip()
-    if not wca_id:
-        return _error('WCA ID is required', 400)
+    # Checked (and put in capitals) before looking it up, so a typo never reaches the internet
+    wca_id = validation.wca_id(_json_body().get('wca_id'))
 
     try:
         wca_name = wca.lookup_person(wca_id)
@@ -714,9 +765,9 @@ def import_backup():
     try:
         payload = json.loads(file.read().decode('utf-8-sig'))
         with conn:
-            backup.restore_backup(conn, payload)
+            left_out = backup.restore_backup(conn, payload)
     except backup.InvalidBackup as e:
         return _error(str(e), 400)
     except (ValueError, sqlite3.IntegrityError):
         return _error('This file does not look like a valid backup.', 400)
-    return jsonify(success=True)
+    return jsonify(success=True, solves_left_out=left_out)

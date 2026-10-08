@@ -282,6 +282,8 @@ speedcube-training-explorer/
 │   ├── wca_reference.json # Summary of WCA results the scores compare against
 │   ├── wca.py             # WCA rank and percentile, and WCA ID lookup
 │   ├── security.py        # Keeps other websites out (see Security)
+│   ├── validation.py      # Checks what the page sends before it's stored
+│   ├── events.py          # The events the app knows about
 │   ├── cstimer.py         # Reading CSTimer exports
 │   └── backup.py          # JSON backup export and restore
 ├── web/                   # The web page, served by the backend
@@ -289,6 +291,7 @@ speedcube-training-explorer/
 │   ├── css/               # Stylesheets
 │   ├── js/
 │   │   ├── config.js      # API address, event names, and shared helpers
+│   │   ├── ui.js          # Toasts and the "are you sure?" window
 │   │   ├── tables.js      # Sortable table headings
 │   │   ├── backup.js      # Export and import backup links
 │   │   ├── dashboard.js, sessions.js, cubes.js, timer.js,

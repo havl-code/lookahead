@@ -104,9 +104,11 @@ class TestLookupPerson:
 
     @pytest.mark.parametrize('error, status, message', [
         (urllib.error.HTTPError('u', 404, 'Not Found', {}, None), 404, 'WCA ID not found'),
-        (urllib.error.HTTPError('u', 500, 'Server Error', {}, None), 500, 'Could not validate'),
-        (urllib.error.URLError('offline'), 500, 'Could not connect'),
-        (TimeoutError('slow'), 500, 'Could not connect'),
+        # Failures on the WCA's side are a bad gateway (502), not a fault in this app
+        (urllib.error.HTTPError('u', 500, 'Server Error', {}, None), 502, 'Could not validate'),
+        (urllib.error.URLError('offline'), 502, 'Could not connect'),
+        (TimeoutError('slow'), 502, 'Could not connect'),
+        (ValueError('not JSON'), 502, "reply couldn't be read"),
     ])
     def test_errors(self, fake_wca, error, status, message):
         fake_wca.replies[self.URL_END] = error
@@ -119,4 +121,4 @@ class TestLookupPerson:
         fake_wca.replies[self.URL_END] = reply
         with pytest.raises(wca.WCALookupError, match='Could not fetch name') as raised:
             wca.lookup_person('2003POCH01')
-        assert raised.value.status == 500
+        assert raised.value.status == 502
