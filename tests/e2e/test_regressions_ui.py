@@ -87,6 +87,8 @@ def test_pb_details_name_the_real_event(app_page, live_app):
     app_page.wait_for_function("() => document.getElementById('stat-solves').textContent === '2'")
     app_page.select_option('#event-select', 'all')
     app_page.wait_for_function("() => document.getElementById('stat-pb').textContent === '3.00s'")
+    assert app_page.text_content('#stat-avg') == '-'  # no average across different events
+    assert app_page.text_content('#stat-avg-note') == 'Choose an event above to see it'
     app_page.click('#stat-pb')
     app_page.wait_for_selector('#pb-modal')
     assert app_page.text_content('.pb-event') == '2x2x2'

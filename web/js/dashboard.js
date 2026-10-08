@@ -60,7 +60,12 @@ async function loadStats() {
 
         setStat('stat-pb', data.pb ? formatTime(data.pb) : 'No data',
             data.pb ? () => showPBDetails(data.pb, AppState.currentEvent) : null);
-        setStat('stat-avg', data.average ? formatTime(data.average) : 'No data');
+        // Times from different events can't be averaged together, so with All Events chosen
+        // the card asks for one instead
+        const allEvents = AppState.currentEvent === 'all';
+        setStat('stat-avg', allEvents ? '-' : (data.average ? formatTime(data.average) : 'No data'));
+        document.getElementById('stat-avg-note').textContent = allEvents
+            ? 'Choose an event above to see it' : 'of every solve in the event';
         setStat('stat-solves', Number(data.total_solves || 0).toLocaleString('en-NZ'));
         setStat('stat-sessions', data.total_sessions || '0',
             data.total_sessions > 0 ? () => switchTab('sessions') : null);

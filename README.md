@@ -30,7 +30,8 @@ and a double-click (or one command) starts it.
   percentile, for every ranked timed event (One-Handed and the blindfolded events included). The
   rankings list the fastest 1,000 people in each event, so a slower single shows as outside the
   top 1,000 rather than a guess
-- **At a Glance:** your average, total solves, sessions and cubes
+- **At a Glance:** your average time for the chosen event, and your total solves, sessions, and
+  cubes
 - **Recent Sessions:** your latest sessions, sortable by any column
 - **Quick Actions:** jump straight into the timer, or add a session or cube
 

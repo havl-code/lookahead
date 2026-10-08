@@ -56,6 +56,7 @@ class TestStats:
         seed_session(app, [3], event='222')
         data = client.get('/api/stats?event_id=all').get_json()
         assert (data['pb'], data['total_solves'], data['total_sessions']) == (3.0, 2, 2)
+        assert data['average'] is None  # a 3x3x3 and a 2x2x2 time don't average into anything
         assert data['wca_rank'] is None  # no rank across events
 
     def test_world_rank_within_the_top_1000(self, app, client, fake_wca):

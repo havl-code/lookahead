@@ -124,9 +124,10 @@ def get_stats():
         'SELECT COUNT(*) AS total, COALESCE(SUM(is_active), 0) AS active FROM cubes'
     ).fetchone()
 
-    # As the WCA records them (Regulations 9f1 and 9f2), which is also how they're ranked
+    # As the WCA records them (Regulations 9f1 and 9f2), which is also how they're ranked. An
+    # average across different events would mean nothing, so 'all' has none.
     pb = single_seconds(solves['best_ms'])
-    average = average_seconds(solves['mean_ms'])
+    average = average_seconds(solves['mean_ms']) if event_id != 'all' else None
 
     estimate = None
     if pb and event_id in WCA_RANKED_EVENTS:
