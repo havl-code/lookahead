@@ -19,6 +19,7 @@ import logging
 import os
 import shutil
 import socket
+import sqlite3
 import subprocess
 import sys
 import threading
@@ -30,7 +31,7 @@ from pathlib import Path
 from flask import Response, jsonify
 from werkzeug.serving import make_server
 
-from speedcube import create_app
+from speedcube import create_app, db
 
 APP_NAME = 'speedcube-training-explorer'
 HOST = '127.0.0.1'  # only reachable from this computer, since the API has no login (and
@@ -200,6 +201,12 @@ def main():
         return
 
     app = create_app(DATABASE)
+    # A copy of your data each day, the first time the app starts that day (db.keep_daily_copy).
+    # It's a safety net, so failing to make one mustn't stop the app.
+    try:
+        db.keep_daily_copy(DATABASE)
+    except (OSError, sqlite3.Error) as error:
+        print(f"  Couldn't make today's copy of your data: {error}", flush=True)
     pages = OpenPages()
     add_lifetime_routes(app, pages, version)
     # Werkzeug logs every request by default; keep the console to warnings and errors.

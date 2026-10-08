@@ -116,16 +116,24 @@ def connect(path):
     return conn
 
 
-# Safety copies of the database, made before anything that rewrites a lot of it: restoring a
-# backup, or updating an existing database to a newer version of the app. They go in a backups
-# folder next to the database, and only the newest few are kept.
+# Copies of the database, in a backups folder next to it, made with SQLite's backup API (which
+# is safe while the app is running). There are two kinds, each keeping only its own newest few,
+# so neither can push the other out:
+#  - safety copies, made before anything that rewrites a lot of the database: restoring a
+#    backup, or updating an existing database to a newer version of the app;
+#  - daily copies, made the first time the app starts each day.
 SAFETY_COPIES_KEPT = 5
+DAILY_COPIES_KEPT = 7
+
+
+def _copy_database(conn, target):
+    with closing(sqlite3.connect(target)) as copy:
+        conn.backup(copy)
 
 
 def keep_safety_copy(conn, database_path, reason):
-    """Copy the database to backups/speedcube-<date>-<time>-before-<reason>.db next to it, using
-    SQLite's backup API (which is safe while the app is running), and keep only the newest
-    SAFETY_COPIES_KEPT. Returns the copy's path."""
+    """Copy the database to backups/speedcube-<date>-<time>-before-<reason>.db next to it, and
+    keep only the newest SAFETY_COPIES_KEPT. Returns the copy's path."""
     folder = Path(database_path).parent / 'backups'
     folder.mkdir(exist_ok=True)
     stamp = datetime.now().strftime('%Y-%m-%d-%H%M%S')
@@ -134,10 +142,37 @@ def keep_safety_copy(conn, database_path, reason):
     while target.exists():  # two in the same second
         target = folder / f'speedcube-{stamp}-{count}-before-{reason}.db'
         count += 1
-    with closing(sqlite3.connect(target)) as copy:
-        conn.backup(copy)
+    _copy_database(conn, target)
     copies = sorted(folder.glob('speedcube-*-before-*.db'), key=lambda p: (p.stat().st_mtime, p.name))
     for old in copies[:-SAFETY_COPIES_KEPT]:
+        old.unlink()
+    return target
+
+
+def keep_daily_copy(database_path):
+    """The day's copy of the database, as backups/speedcube-<date>-<time>-daily.db next to it,
+    keeping only the newest DAILY_COPIES_KEPT. It's made the first time the app starts each day,
+    but not for a database with nothing in it yet, nor when nothing has changed since the last
+    one, so the copies kept go back as far as they can. Returns the copy's path, or None."""
+    path = Path(database_path)
+    folder = path.parent / 'backups'
+    if not path.exists():
+        return None
+    earlier = sorted(folder.glob('speedcube-*-daily.db'))  # by name, so oldest first
+    if any(copy.name.startswith(f'speedcube-{today()}-') for copy in earlier):
+        return None
+    if earlier:
+        # Changes land in the -wal file first, and reach the database file itself later
+        changed = max(p.stat().st_mtime for p in (path, path.with_name(path.name + '-wal')) if p.exists())
+        if changed <= earlier[-1].stat().st_mtime:
+            return None
+    with closing(connect(path)) as conn:
+        if not conn.execute('SELECT EXISTS (SELECT 1 FROM sessions) OR EXISTS (SELECT 1 FROM cubes)').fetchone()[0]:
+            return None
+        folder.mkdir(exist_ok=True)
+        target = folder / f'speedcube-{today()}-{datetime.now():%H%M%S}-daily.db'
+        _copy_database(conn, target)
+    for old in sorted(folder.glob('speedcube-*-daily.db'))[:-DAILY_COPIES_KEPT]:
         old.unlink()
     return target
 

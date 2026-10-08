@@ -135,9 +135,14 @@ remembers your choice.
 - **Export solves as CSV:** **Export solves (CSV)** in the footer gives you every solve as a
   spreadsheet. It's handy for your own analysis, but it isn't a backup: only the JSON file can
   be restored
+- **Daily copies:** the first time you start the app each day, it copies `data/speedcube.db`
+  into `data/backups` by itself (unless nothing has changed since the last copy), and keeps the
+  newest seven. They take about seven times the space of your database
 - **Safety copies:** before restoring a backup, or updating your data for a new version of the
-  app, the app copies `data/speedcube.db` into `data/backups` by itself, and keeps the newest
-  five. To go back to one, close the app and copy it over `data/speedcube.db` (keeping that name)
+  app, the app copies `data/speedcube.db` into `data/backups` too, and keeps the newest five
+- **Going back to a copy:** close the app, then copy the one you want over `data/speedcube.db`
+  (keeping that name). The daily ones end in `-daily.db`, and the safety ones say what they
+  came before, such as `-before-restore.db`
 
 ### Bringing Your Data Across from the Browser-Only Version
 

@@ -174,8 +174,8 @@ itself. The first time you open a downloaded launcher, your system may ask you t
 - **Settings that stick.** The timer settings are saved with your data and your backups.
 - **No more pop-ups.** Messages appear in a corner without stopping you, and "are you sure?"
   questions appear in the page.
-- **Safety copies.** Before restoring a backup or updating your data for a new version, the app
-  keeps a copy of your database.
+- **Copies of your data, by themselves.** A copy each day you use the app, and a safety copy
+  before restoring a backup or updating your data for a new version.
 - **Statistics fixed up.** Singles are cut off and averages rounded as the WCA records them,
   the rolling and single-session charts count DNFs the WCA way, the progress chart shows your
   latest 500 sessions, and a world rank only shows when the WCA's rankings support it.
@@ -318,10 +318,14 @@ footer to download everything as one JSON file, and **Import backup** to restore
 at your solves in a spreadsheet, use **Export solves (CSV)** in the footer, or **Export CSV** in
 a session's solves; that's for reading, not restoring.
 
-The app also keeps a safety copy of the database by itself, in `data/backups`, just before
-anything that rewrites a lot of it: restoring a backup, or updating your data for a new version
-of the app. It keeps the newest five. See
-[INSTALLATION.md](INSTALLATION.md#-where-your-data-lives) for more.
+The app also keeps copies of the database by itself, in `data/backups`:
+
+- **A copy a day,** the first time you start the app each day (unless nothing has changed since
+  the last one). It keeps the newest seven.
+- **A safety copy** just before anything that rewrites a lot of it: restoring a backup, or
+  updating your data for a new version of the app. It keeps the newest five.
+
+See [INSTALLATION.md](INSTALLATION.md#-where-your-data-lives) for how to go back to one.
 
 ---
 
@@ -417,7 +421,7 @@ speedcube-training-explorer/
 ├── tests/                 # Automated tests (pytest), with small synthetic fixtures
 │   └── e2e/               # Browser tests (Playwright), run on request
 ├── .github/workflows/     # Runs the tests on GitHub for every push and pull request
-├── data/                  # Your database, and safety copies in data/backups (never committed)
+├── data/                  # Your database, and its copies in data/backups (never committed)
 ├── Speedcube Training Explorer.lnk  # Windows only: made on first start, never committed
 ├── LICENSE
 └── README.md, INSTALLATION.md
