@@ -411,7 +411,9 @@ function startTimer() {
 
     TimerState.running = true;
     TimerState.readyToStart = false;
-    TimerState.startTime = Date.now();
+    // performance.now() is a steady clock: unlike Date.now(), it can't jump when the computer's
+    // clock is changed (say, by a time sync or daylight saving) part-way through a solve.
+    TimerState.startTime = performance.now();
 
     const display = document.getElementById('timer-display');
     display.className = 'timer-display running';
@@ -427,7 +429,7 @@ function startTimer() {
             return;
         }
 
-        const elapsed = (Date.now() - TimerState.startTime) / 1000;
+        const elapsed = (performance.now() - TimerState.startTime) / 1000;
         display.textContent = TimerState.settings.hideTimer ? 'solve' : elapsed.toFixed(2);
     }, 10);
 }
@@ -436,7 +438,7 @@ function stopTimer() {
     if (!TimerState.running) return;
 
     TimerState.running = false;
-    TimerState.time = (Date.now() - TimerState.startTime) / 1000;
+    TimerState.time = (performance.now() - TimerState.startTime) / 1000;
     TimerState.showingResult = true;
 
     const display = document.getElementById('timer-display');

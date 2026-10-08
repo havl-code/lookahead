@@ -316,9 +316,11 @@ def test_more_events_get_a_world_rank(app, client, fake_wca, event):
 
 # ---- 7 and 10: things the page's code shouldn't do ----
 
-@finding('7', 'the timer uses Date.now(), which jumps when the clock changes')
 def test_the_timer_uses_a_steady_clock():
-    assert 'Date.now()' not in (WEB_JS / 'timer.js').read_text(encoding='utf-8')
+    """Finding 7 (fixed): the timer uses Date.now(), which jumps when the clock changes."""
+    code = [line for line in (WEB_JS / 'timer.js').read_text(encoding='utf-8').splitlines()
+            if not line.strip().startswith('//')]  # comments may explain why it's not used
+    assert not any('Date.now()' in line for line in code)
 
 
 def test_no_blocking_dialogs():
