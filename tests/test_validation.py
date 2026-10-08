@@ -101,10 +101,18 @@ class TestSmallFields:
 
 
 def test_the_event_list_matches_the_page():
+    """The same events, names, and order (the order the menus list them) on both sides."""
     config = (PROJECT_DIR / 'web' / 'js' / 'config.js').read_text(encoding='utf-8')
     block = re.search(r'const EVENT_NAMES = \{(.*?)\};', config, re.S).group(1)
-    page_events = dict(re.findall(r"'(\w+)': '([^']+)'", block))
-    assert page_events == EVENTS
+    assert re.findall(r"'(\w+)': '([^']+)'", block) == list(EVENTS.items())
+
+
+def test_event_menus_come_from_the_one_list():
+    """No menu writes out events by hand: they're all built from EVENT_NAMES."""
+    web = PROJECT_DIR / 'web'
+    for path in (web / 'index.html', *sorted((web / 'js').glob('*.js'))):
+        text = path.read_text(encoding='utf-8')
+        assert re.findall(r'<option value="(?:%s)"' % '|'.join(map(re.escape, EVENTS)), text) == [], path.name
 
 
 class TestRoutes:

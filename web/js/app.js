@@ -1,6 +1,7 @@
 // app.js: starts the app and switches between tabs
 
 async function init() {
+    fillEventMenus();       // before anything reads the event menus
     // Holding this connection open tells the server the page is still open. The server stops
     // itself shortly after the last page closes, and the browser reconnects after a reload.
     new EventSource(`${API_BASE}/presence`);

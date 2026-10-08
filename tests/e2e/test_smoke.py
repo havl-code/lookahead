@@ -445,3 +445,22 @@ def test_timers_for_2x2x2_and_4x4x4(app_page, live_app):
     page.wait_for_selector('#timer-under-construction')
     assert 'ready for 2x2x2, 3x3x3, and 4x4x4' in page.inner_text('#timer-under-construction')
     assert page.errors == []
+
+
+def test_every_event_menu_comes_from_one_list(app_page):
+    """Each menu of events lists the same events from EVENT_NAMES (every one but Multi-Blind,
+    which is scored in points), with 3x3x3 chosen where a menu has a default."""
+    page = app_page
+    menus = ['#timer-event-select', '#new-event-id', '#new-cube-type', '#import-event-select']
+    events = page.evaluate("() => MENU_EVENTS")
+    assert len(events) == 15 and '444bf' in events and '333mbf' not in events
+    for menu in menus:
+        values = page.eval_on_selector(menu, "s => [...s.options].map(o => o.value).filter(v => v && v !== 'other')")
+        assert values == events, menu
+    assert [page.input_value(m) for m in menus] == ['333', '333', '', '333']
+    # A form reset goes back to the default, since it's the option's own default
+    page.eval_on_selector('#new-event-id', "s => { s.value = '444bf'; s.form.reset(); }")
+    assert page.input_value('#new-event-id') == '333'
+    open_tab(page, 'cubes')
+    page.wait_for_selector('#cubes-tbody')
+    assert page.errors == []

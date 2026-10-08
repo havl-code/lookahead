@@ -46,7 +46,9 @@ const COLORS = {
     info: '#EAB308'          // yellow: additional series
 };
 
-// Event name mapping
+// Every event the app knows, by its WCA event id, in the order the menus list them. Every menu
+// of events is built from this, so adding an event means adding it here and in
+// speedcube/events.py (a test keeps the two in step).
 const EVENT_NAMES = {
     '222': '2x2x2',
     '333': '3x3x3',
@@ -54,8 +56,8 @@ const EVENT_NAMES = {
     '555': '5x5x5',
     '666': '6x6x6',
     '777': '7x7x7',
-    '333bf': '3x3x3 Blindfolded',
     '333oh': '3x3x3 One-Handed',
+    '333bf': '3x3x3 Blindfolded',
     'clock': 'Clock',
     'minx': 'Megaminx',
     'pyram': 'Pyraminx',
@@ -65,6 +67,31 @@ const EVENT_NAMES = {
     '555bf': '5x5x5 Blindfolded',
     '333mbf': '3x3x3 Multi-Blind'
 };
+
+// Multi-Blind is scored in points (cubes solved minus cubes not solved), not time, so it can't be
+// timed or added like the others. It's only here to name results that come from elsewhere.
+const MENU_EVENTS = Object.keys(EVENT_NAMES).filter(eventId => eventId !== '333mbf');
+
+// The <option>s for a menu of events, with `selected` chosen (and kept as its default, so a form
+// reset goes back to it)
+function eventOptionsHtml(selected = null) {
+    return MENU_EVENTS.map(eventId => {
+        const chosen = eventId === selected ? ' selected' : '';
+        return `<option value="${eventId}"${chosen}>${escapeHtml(EVENT_NAMES[eventId])}</option>`;
+    }).join('');
+}
+
+// Fill the page's event menus: each <select data-events="..."> gets the events, with the one
+// named in data-events chosen. Any options already in it stay, with the events going before an
+// "Other" option if there is one.
+function fillEventMenus() {
+    document.querySelectorAll('select[data-events]').forEach(select => {
+        const other = select.querySelector('option[value="other"]');
+        const options = eventOptionsHtml(select.dataset.events || null);
+        if (other) other.insertAdjacentHTML('beforebegin', options);
+        else select.insertAdjacentHTML('beforeend', options);
+    });
+}
 
 // Plotly chart options
 const chartConfig = {

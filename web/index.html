@@ -165,20 +165,7 @@
                     <div class="timer-controls-left">
                         <label class="inline-field">
                             <span>Event</span>
-                            <select id="timer-event-select" data-change="change-timer-event">
-                                <option value="333" selected>3x3x3</option>
-                                <option value="222">2x2x2</option>
-                                <option value="444">4x4x4</option>
-                                <option value="555">5x5x5</option>
-                                <option value="666">6x6x6</option>
-                                <option value="777">7x7x7</option>
-                                <option value="333oh">3x3x3 One-Handed</option>
-                                <option value="333bf">3x3x3 Blindfolded</option>
-                                <option value="clock">Clock</option>
-                                <option value="minx">Megaminx</option>
-                                <option value="pyram">Pyraminx</option>
-                                <option value="skewb">Skewb</option>
-                                <option value="sq1">Square-1</option>
+                            <select id="timer-event-select" data-change="change-timer-event" data-events="333">
                             </select>
                         </label>
                         <label class="inline-field">
@@ -272,20 +259,7 @@
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="new-event-id">Event</label>
-                                <select id="new-event-id" required>
-                                    <option value="222">2x2x2</option>
-                                    <option value="333" selected>3x3x3</option>
-                                    <option value="444">4x4x4</option>
-                                    <option value="555">5x5x5</option>
-                                    <option value="666">6x6x6</option>
-                                    <option value="777">7x7x7</option>
-                                    <option value="333oh">3x3x3 One-Handed</option>
-                                    <option value="333bf">3x3x3 Blindfolded</option>
-                                    <option value="clock">Clock</option>
-                                    <option value="minx">Megaminx</option>
-                                    <option value="pyram">Pyraminx</option>
-                                    <option value="skewb">Skewb</option>
-                                    <option value="sq1">Square-1</option>
+                                <select id="new-event-id" required data-events="333">
                                 </select>
                             </div>
                             <div class="form-group">
@@ -431,21 +405,8 @@
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="new-cube-type">Type <span class="required">*</span></label>
-                                <select id="new-cube-type" required>
+                                <select id="new-cube-type" required data-events>
                                     <option value="">Select a type</option>
-                                    <option value="222">2x2x2</option>
-                                    <option value="333">3x3x3</option>
-                                    <option value="444">4x4x4</option>
-                                    <option value="555">5x5x5</option>
-                                    <option value="666">6x6x6</option>
-                                    <option value="777">7x7x7</option>
-                                    <option value="333oh">3x3x3 One-Handed</option>
-                                    <option value="333bf">3x3x3 Blindfolded</option>
-                                    <option value="clock">Clock</option>
-                                    <option value="minx">Megaminx</option>
-                                    <option value="pyram">Pyraminx</option>
-                                    <option value="skewb">Skewb</option>
-                                    <option value="sq1">Square-1</option>
                                     <option value="other">Other</option>
                                 </select>
                             </div>
@@ -523,20 +484,7 @@
                         <h3>Select Sessions to Import</h3>
                         <div class="form-group import-event">
                             <label for="import-event-select">Import as event</label>
-                            <select id="import-event-select">
-                                <option value="222">2x2x2</option>
-                                <option value="333" selected>3x3x3</option>
-                                <option value="444">4x4x4</option>
-                                <option value="555">5x5x5</option>
-                                <option value="666">6x6x6</option>
-                                <option value="777">7x7x7</option>
-                                <option value="333oh">3x3x3 One-Handed</option>
-                                <option value="333bf">3x3x3 Blindfolded</option>
-                                <option value="clock">Clock</option>
-                                <option value="minx">Megaminx</option>
-                                <option value="pyram">Pyraminx</option>
-                                <option value="skewb">Skewb</option>
-                                <option value="sq1">Square-1</option>
+                            <select id="import-event-select" data-events="333">
                             </select>
                         </div>
                         <label class="checkbox-row" for="import-split-by-day">

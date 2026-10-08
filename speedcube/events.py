@@ -1,5 +1,5 @@
-"""The events the app knows about, by their WCA event ids. It's the same list as EVENT_NAMES in
-web/js/config.js (a test keeps the two in step)."""
+"""The events the app knows about, by their WCA event ids, in the order the page's menus list
+them. It's the same list as EVENT_NAMES in web/js/config.js (a test keeps the two in step)."""
 
 EVENTS = {
     '222': '2x2x2',
@@ -8,8 +8,8 @@ EVENTS = {
     '555': '5x5x5',
     '666': '6x6x6',
     '777': '7x7x7',
-    '333bf': '3x3x3 Blindfolded',
     '333oh': '3x3x3 One-Handed',
+    '333bf': '3x3x3 Blindfolded',
     'clock': 'Clock',
     'minx': 'Megaminx',
     'pyram': 'Pyraminx',
