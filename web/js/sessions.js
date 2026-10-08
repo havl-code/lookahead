@@ -4,6 +4,7 @@
 const SESSION_SORT_GETTERS = {
     date: s => s.date,
     event: s => getEventName(s.event_id),
+    cube: s => (s.cube ? cubeLabel(s.cube) : ''),
     solves: s => s.solve_count,
     best: s => s.best_single,
     mean: s => s.session_mean,
@@ -15,6 +16,8 @@ registerActions('click', {
     'show-add-session': () => showAddSessionForm(),
     'hide-add-session': () => hideAddSessionForm(),
     'view-session': button => viewSessionSolves(Number(button.dataset.sessionId)),
+    'edit-session': button => showEditSession(Number(button.dataset.sessionId)),
+    'close-edit-session': () => closeEditSession(),
     'delete-session': button => deleteSession(Number(button.dataset.sessionId)),
     'delete-session-solve': button => deleteSessionSolve(Number(button.dataset.solveId)),
     'close-solve-modal': () => closeSolveModal(),
@@ -23,6 +26,7 @@ registerActions('click', {
 registerActions('change', { 'filter-sessions': () => applySessionFilters() });
 registerActions('submit', {
     'add-session': (form, event) => addSession(event),
+    'save-session': (form, event) => saveSession(event),
     'add-solve': (form, event) => addSolveToSession(event)
 });
 
@@ -76,7 +80,7 @@ function displayFilteredSessions(sessions) {
         const message = AppState.allSessions.length === 0
             ? 'No sessions yet. Use the timer, add one above, or import from CSTimer.'
             : 'No sessions for this event.';
-        tbody.innerHTML = `<tr><td colspan="8" class="loading">${message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" class="loading">${message}</td></tr>`;
         return;
     }
 
@@ -84,6 +88,7 @@ function displayFilteredSessions(sessions) {
         <tr>
             <td>${escapeHtml(session.date || 'N/A')}</td>
             <td>${escapeHtml(getEventName(session.event_id) || 'N/A')}</td>
+            <td>${session.cube ? escapeHtml(cubeLabel(session.cube)) : '-'}</td>
             <td class="num">${Number(session.solve_count || 0).toLocaleString('en-NZ')}</td>
             <td class="num">${formatTime(session.best_single)}</td>
             <td class="num">${formatTime(session.session_mean)}</td>
@@ -91,6 +96,7 @@ function displayFilteredSessions(sessions) {
             <td class="num">${formatTime(session.ao12)}</td>
             <td class="actions-col">
                 <button class="action-btn" data-action="view-session" data-session-id="${session.id}">View</button>
+                <button class="action-btn" data-action="edit-session" data-session-id="${session.id}">Edit</button>
                 <button class="action-btn danger" data-action="delete-session" data-session-id="${session.id}">Delete</button>
             </td>
         </tr>
@@ -121,6 +127,10 @@ async function deleteSession(sessionId) {
 }
 
 function showAddSessionForm() {
+    // Today by default; a session can be added for an earlier day, but not a later one
+    const date = document.getElementById('new-session-date');
+    date.value = localToday();
+    date.max = localToday();
     document.getElementById('add-session-form').style.display = 'block';
 }
 
@@ -134,6 +144,7 @@ async function addSession(event) {
     const eventId = document.getElementById('new-event-id').value;
     const cubeId = document.getElementById('new-cube-id').value || null;
     const notes = document.getElementById('new-session-notes').value;
+    const date = document.getElementById('new-session-date').value || localToday();
 
     try {
         const response = await apiFetch(`/sessions/add`, {
@@ -142,7 +153,8 @@ async function addSession(event) {
             body: JSON.stringify({
                 event_id: eventId,
                 cube_id: cubeId,
-                notes: notes
+                notes: notes,
+                date: date
             })
         });
 
@@ -163,6 +175,77 @@ async function addSession(event) {
         showError(error.message);
     }
 }
+
+// ---- Editing a session ----
+// A session's date, cube, and notes can be changed; its solves (and so its stats) stay the same.
+
+async function showEditSession(sessionId) {
+    const session = AppState.allSessions.find(s => s.id === sessionId);
+    if (!session) return;
+    let cubes = [];
+    try {
+        cubes = await (await apiFetch('/cubes')).json();
+    } catch (error) {
+        console.error('Failed to load cubes:', error);
+    }
+
+    document.getElementById('edit-session-id').value = sessionId;
+    const date = document.getElementById('edit-session-date');
+    date.value = session.date;
+    date.max = localToday();
+    document.getElementById('edit-session-notes').value = session.notes || '';
+
+    // Active cubes, plus the session's own cube even if it's since been deactivated
+    const select = document.getElementById('edit-session-cube');
+    select.innerHTML = '<option value="">None</option>';
+    cubes.filter(cube => cube.is_active || cube.id === session.cube_id).forEach(cube => {
+        const option = document.createElement('option');
+        option.value = cube.id;
+        option.textContent = cube.is_active ? cubeLabel(cube) : `${cubeLabel(cube)}, inactive`;
+        select.appendChild(option);
+    });
+    select.value = session.cube_id || '';
+
+    document.getElementById('edit-session-modal').style.display = 'flex';
+    date.focus();
+}
+
+function closeEditSession() {
+    document.getElementById('edit-session-modal').style.display = 'none';
+}
+
+async function saveSession(event) {
+    event.preventDefault();
+    const sessionId = document.getElementById('edit-session-id').value;
+    try {
+        const response = await apiFetch(`/sessions/${sessionId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                date: document.getElementById('edit-session-date').value,
+                cube_id: document.getElementById('edit-session-cube').value || null,
+                notes: document.getElementById('edit-session-notes').value
+            })
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error);
+        showSuccess('Session updated');
+        closeEditSession();
+        loadSessionsTab();
+        loadStats();
+    } catch (error) {
+        showError(`Couldn't save the session: ${error.message}`);
+    }
+}
+
+document.getElementById('edit-session-modal').addEventListener('click', (e) => {
+    if (e.target.id === 'edit-session-modal') closeEditSession();
+});
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && document.getElementById('edit-session-modal').style.display === 'flex') {
+        closeEditSession();
+    }
+});
 
 // ============================================
 // ONE SESSION'S SOLVES

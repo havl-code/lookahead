@@ -208,6 +208,18 @@ def create_session(conn, event_id='333', notes='', cube_id=None, date=None):
     return cur.lastrowid
 
 
+SESSION_FIELDS = ('date', 'cube_id', 'notes')
+
+
+def update_session(conn, session_id, fields):
+    """Change whichever of a session's date, cube, and notes are in `fields` (already checked).
+    Its stats don't depend on any of them, so they stay as they are."""
+    updates = {key: value for key, value in fields.items() if key in SESSION_FIELDS}
+    if updates:
+        assignments = ', '.join(f'{key} = ?' for key in updates)
+        conn.execute(f'UPDATE sessions SET {assignments} WHERE id = ?', (*updates.values(), session_id))
+
+
 def start_timer_session(conn, event_id):
     """A new session for the timer. It keeps the cube from the event's latest session, since
     people usually stick with the same cube from one day to the next."""

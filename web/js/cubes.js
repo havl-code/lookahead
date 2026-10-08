@@ -346,9 +346,7 @@ async function loadCubesForDropdown() {
             if (cube.is_active) {
                 const option = document.createElement('option');
                 option.value = cube.id;
-                // e.g. "GAN 14 MagLev (3x3x3)"
-                const name = [cube.brand, cube.model].filter(Boolean).join(' ') || 'Unnamed cube';
-                option.textContent = cube.cube_type ? `${name} (${getEventName(cube.cube_type)})` : name;
+                option.textContent = cubeLabel(cube);
                 select.appendChild(option);
             }
         });

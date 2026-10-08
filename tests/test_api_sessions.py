@@ -11,9 +11,15 @@ class TestSessionList:
         new = seed_session(app, [20], date='2026-09-02', event='222')
         sessions = client.get('/api/sessions').get_json()
         assert [s['id'] for s in sessions] == [new, old]
-        assert sessions[1] == {'id': old, 'date': '2026-09-01', 'event_id': '333', 'solve_count': 5,
-                               'best_single': 10.0, 'session_mean': 12.0, 'ao5': 12.0,
-                               'ao12': None, 'notes': 'old'}
+        assert sessions[1] == {'id': old, 'date': '2026-09-01', 'event_id': '333', 'cube_id': None,
+                               'cube': None, 'solve_count': 5, 'best_single': 10.0,
+                               'session_mean': 12.0, 'ao5': 12.0, 'ao12': None, 'notes': 'old'}
+
+    def test_each_session_comes_with_its_cube(self, app, client):
+        cube = seed_cube(app, '333', 'GAN', '14 MagLev', active=False)
+        seed_session(app, [10], cube_id=cube)
+        assert client.get('/api/sessions').get_json()[0]['cube'] == {
+            'id': cube, 'cube_type': '333', 'brand': 'GAN', 'model': '14 MagLev', 'is_active': False}
 
     def test_same_day_newest_first(self, app, client):
         first = seed_session(app, [10], date='2026-09-01')
@@ -35,6 +41,57 @@ class TestAddSession:
                                                      'notes': 'Big cube day'}).get_json()['session_id']
         assert query(app, 'SELECT event_id, cube_id, notes FROM sessions WHERE id = ?', (sid,)) == [
             {'event_id': '444', 'cube_id': cube, 'notes': 'Big cube day'}]
+
+
+    def test_for_an_earlier_day(self, app, client, set_today):
+        set_today('2026-10-08')
+        sid = client.post('/api/sessions/add', json={'date': '2026-09-30'}).get_json()['session_id']
+        assert query(app, 'SELECT date FROM sessions WHERE id = ?', (sid,)) == [{'date': '2026-09-30'}]
+
+    @pytest.mark.parametrize('date', ['2026-10-09', '30/09/2026', '2026-02-30'])
+    def test_not_for_a_later_day_or_a_bad_date(self, client, set_today, date):
+        set_today('2026-10-08')
+        assert client.post('/api/sessions/add', json={'date': date}).status_code == 400
+
+
+class TestEditSession:
+    def test_date_cube_and_notes_can_change(self, app, client, set_today):
+        set_today('2026-10-08')
+        sid = seed_session(app, [10, 11, 12, 13, 14], date='2026-10-08')
+        cube = seed_cube(app)
+        response = client.put(f'/api/sessions/{sid}', json={'date': '2026-10-01', 'cube_id': cube,
+                                                            'notes': '  Morning  '})
+        assert response.get_json() == {'success': True, 'message': 'Session updated'}
+        assert query(app, 'SELECT date, cube_id, notes, solve_count, ao5 FROM sessions WHERE id = ?', (sid,)) == [
+            {'date': '2026-10-01', 'cube_id': cube, 'notes': 'Morning', 'solve_count': 5, 'ao5': 12000}]
+
+    def test_only_what_is_sent_changes(self, app, client):
+        cube = seed_cube(app)
+        sid = seed_session(app, [10], date='2026-09-01', cube_id=cube, notes='keep')
+        client.put(f'/api/sessions/{sid}', json={'notes': 'changed'})
+        assert query(app, 'SELECT date, cube_id, notes FROM sessions WHERE id = ?', (sid,)) == [
+            {'date': '2026-09-01', 'cube_id': cube, 'notes': 'changed'}]
+
+    def test_the_cube_can_be_cleared(self, app, client):
+        sid = seed_session(app, [10], cube_id=seed_cube(app))
+        client.put(f'/api/sessions/{sid}', json={'cube_id': None})
+        assert query(app, 'SELECT cube_id FROM sessions') == [{'cube_id': None}]
+
+    def test_an_inactive_cube_can_stay(self, app, client):
+        cube = seed_cube(app, active=False)
+        sid = seed_session(app, [10])
+        assert client.put(f'/api/sessions/{sid}', json={'cube_id': cube}).status_code == 200
+
+    @pytest.mark.parametrize('body, status', [
+        ({}, 400), ({'colour': 'red'}, 400), ({'date': ''}, 400), ({'date': '2999-01-01'}, 400),
+        ({'cube_id': 999}, 404), ({'notes': 'x' * 1001}, 400)])
+    def test_bad_changes_are_refused(self, app, client, body, status):
+        sid = seed_session(app, [10], date='2026-09-01')
+        assert client.put(f'/api/sessions/{sid}', json=body).status_code == status
+        assert query(app, 'SELECT date FROM sessions') == [{'date': '2026-09-01'}]
+
+    def test_a_missing_session(self, client):
+        assert client.put('/api/sessions/999', json={'notes': 'x'}).status_code == 404
 
 
 def test_delete_session_takes_its_solves(app, client):

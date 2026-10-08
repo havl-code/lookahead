@@ -176,6 +176,34 @@ def test_sessions(app_page, live_app):
     assert page.errors == []
 
 
+def test_add_and_edit_a_session(app_page, live_app):
+    """A session added by hand can be for an earlier day, and its date, cube, and notes can be
+    changed afterwards; the Sessions table shows its cube."""
+    from helpers import query, seed_cube
+    seed_cube(live_app, '333', 'GAN', '14')
+    seed_cube(live_app, '333', 'MoYu', 'RS3M')
+    page = app_page
+    open_tab(page, 'sessions')
+    page.click('#tab-sessions .section-actions .btn-primary')
+    today = page.evaluate('localToday()')
+    assert page.input_value('#new-session-date') == today
+    page.fill('#new-session-date', '2026-09-15')
+    page.select_option('#new-cube-id', label='GAN 14 (3x3x3)')
+    page.click('#add-session-form button[type=submit]')
+    page.wait_for_selector('#sessions-tbody td.num')
+    assert 'GAN 14 (3x3x3)' in page.text_content('#sessions-tbody tr')
+
+    page.click('#sessions-tbody button:has-text("Edit")')
+    page.fill('#edit-session-date', '2026-09-14')
+    page.select_option('#edit-session-cube', label='MoYu RS3M (3x3x3)')
+    page.fill('#edit-session-notes', 'Warm-up')
+    page.click('#edit-session-form button[type=submit]')
+    page.wait_for_function("() => document.getElementById('sessions-tbody').textContent.includes('MoYu')")
+    assert query(live_app, 'SELECT date, notes FROM sessions') == [{'date': '2026-09-14', 'notes': 'Warm-up'}]
+    assert page.is_hidden('#edit-session-modal')
+    assert page.errors == []
+
+
 def test_cubes(app_page):
     page = app_page
     open_tab(page, 'cubes')

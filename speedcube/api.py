@@ -174,14 +174,28 @@ def get_pb_details():
 
 # ---- Sessions ----
 
+def _session_cube(row):
+    """The cube a session row (joined to its cube) was done with, or None."""
+    if row['cube_id'] is None or row['cube_type'] is None:
+        return None
+    return {'id': row['cube_id'], 'cube_type': row['cube_type'], 'brand': row['brand'] or '',
+            'model': row['model'] or '', 'is_active': bool(row['cube_active'])}
+
+
 @api.get('/sessions')
 def get_sessions():
-    rows = db.get_db().execute('SELECT * FROM sessions ORDER BY date DESC, id DESC')
+    rows = db.get_db().execute(
+        'SELECT se.*, cu.cube_type, cu.brand, cu.model, cu.is_active AS cube_active '
+        'FROM sessions se LEFT JOIN cubes cu ON cu.id = se.cube_id '
+        'ORDER BY se.date DESC, se.id DESC'
+    )
     return jsonify([
         {
             'id': s['id'],
             'date': s['date'],
             'event_id': s['event_id'],
+            'cube_id': s['cube_id'],
+            'cube': _session_cube(s),
             'solve_count': s['solve_count'] or 0,
             'best_single': single_seconds(s['best_single']),
             'session_mean': average_seconds(s['session_mean']),
@@ -206,9 +220,32 @@ def add_session():
     event_id = validation.event(body.get('event_id'))
     notes = validation.text(body.get('notes'), 'Notes', MAX_NOTES)
     cube_id = _cube_or_none(conn, body.get('cube_id'))
+    # Today unless another day is given (a session added by hand can be for an earlier day)
+    date = validation.iso_date(body.get('date'), 'Date', today=db.today())
     with conn:
-        session_id = db.create_session(conn, event_id, notes, cube_id)
+        session_id = db.create_session(conn, event_id, notes, cube_id, date=date)
     return jsonify(success=True, session_id=session_id)
+
+
+@api.put('/sessions/<int:session_id>')
+def update_session(session_id):
+    """Change a session's date, cube, or notes: whichever of them are sent. A cube that has
+    since been deactivated can stay, since the session was done with it."""
+    body = _json_body()
+    conn = db.get_db()
+    validation.require(conn, 'sessions', session_id, 'Session')
+    fields = {}
+    if 'date' in body:
+        fields['date'] = validation.iso_date(body['date'], 'Date', today=db.today(), required=True)
+    if 'cube_id' in body:
+        fields['cube_id'] = _cube_or_none(conn, body['cube_id'])
+    if 'notes' in body:
+        fields['notes'] = validation.text(body['notes'], 'Notes', MAX_NOTES)
+    if not fields:
+        return _error('Nothing to update', 400)
+    with conn:
+        db.update_session(conn, session_id, fields)
+    return jsonify(success=True, message='Session updated')
 
 
 @api.delete('/sessions/<int:session_id>')

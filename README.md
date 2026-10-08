@@ -62,8 +62,10 @@ and a double-click (or one command) starts it.
   and click again to reverse the order
 - **Every Solve:** open a session to see all its solves, sorted however you like, even if it
   holds tens of thousands
-- **Add by Hand:** create sessions and add solves yourself
-- **Cube Inventory:** record each cube's type, brand, model and when you got it, and link cubes
+- **Add by Hand:** create sessions (for today or an earlier day) and add solves yourself
+- **Edit Sessions:** change a session's date, cube, and notes afterwards; the table shows each
+  session's cube
+- **Cube Inventory:** record each cube's type, brand, model, and when you got it, and link cubes
   to sessions
 
 ### 📈 Analytics
@@ -235,7 +237,9 @@ safely import a newer export of the same sessions: only the new solves are added
 - **See all sessions:** the Sessions tab lists your training; pick an event to narrow it down
 - **Sort:** click a column heading to sort by it, and click again to reverse
 - **See every solve:** click **View** on a session, then **Show more** to load further solves
-- **Add solves by hand:** click **Add Session**, then **View** to add individual solves
+- **Add solves by hand:** click **Add Session** (it's for today unless you pick an earlier
+  date), then **View** to add individual solves
+- **Edit a session:** click **Edit** to change its date, its cube, or its notes
 - **Delete:** remove sessions or single solves you don't want
 
 ### Backing Up Your Data

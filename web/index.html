@@ -264,6 +264,10 @@
                                     <option value="">None</option>
                                 </select>
                             </div>
+                            <div class="form-group">
+                                <label for="new-session-date">Date</label>
+                                <input type="date" id="new-session-date" required>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="new-session-notes">Notes</label>
@@ -282,6 +286,7 @@
                             <tr>
                                 <th data-sort="date" data-default-dir="desc">Date</th>
                                 <th data-sort="event">Event</th>
+                                <th data-sort="cube">Cube</th>
                                 <th data-sort="solves" data-default-dir="desc" class="num">Solves</th>
                                 <th data-sort="best" class="num">Best</th>
                                 <th data-sort="mean" class="num">Mean</th>
@@ -291,9 +296,40 @@
                             </tr>
                         </thead>
                         <tbody id="sessions-tbody">
-                            <tr><td colspan="8" class="loading">Loading sessions...</td></tr>
+                            <tr><td colspan="9" class="loading">Loading sessions...</td></tr>
                         </tbody>
                     </table>
+                </div>
+
+                <!-- Edit a session's date, cube, and notes -->
+                <div id="edit-session-modal" class="modal" style="display: none;">
+                    <div class="modal-content modal-small" role="dialog" aria-modal="true" aria-labelledby="edit-session-title">
+                        <div class="modal-header">
+                            <h3 id="edit-session-title">Edit Session</h3>
+                            <button class="modal-close" data-action="close-edit-session" aria-label="Close">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <form data-submit="save-session" id="edit-session-form">
+                                <input type="hidden" id="edit-session-id">
+                                <div class="form-group">
+                                    <label for="edit-session-date">Date</label>
+                                    <input type="date" id="edit-session-date" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="edit-session-cube">Cube</label>
+                                    <select id="edit-session-cube"></select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="edit-session-notes">Notes</label>
+                                    <input type="text" id="edit-session-notes" maxlength="1000">
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn-primary">Save Changes</button>
+                                    <button type="button" class="btn-secondary" data-action="close-edit-session">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Solves in one session -->

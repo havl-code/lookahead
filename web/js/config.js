@@ -105,6 +105,12 @@ function truncatedSeconds(ms) {
     return ms >= 600000 ? Math.floor(ms / 1000) : Math.floor(ms / 10) / 100;
 }
 
+// A cube's name for menus and tables, such as "GAN 14 MagLev (3x3x3)"
+function cubeLabel(cube) {
+    const name = [cube.brand, cube.model].filter(Boolean).join(' ') || 'Unnamed cube';
+    return cube.cube_type ? `${name} (${getEventName(cube.cube_type)})` : name;
+}
+
 // Today's date on this computer as YYYY-MM-DD, the way session dates are stored
 function localToday() {
     const now = new Date();
