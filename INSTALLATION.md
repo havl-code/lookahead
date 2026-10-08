@@ -183,6 +183,8 @@ this version and use **Import backup** with that file.
 - **WCA ID setup fails:** check the ID format (four digits, four letters, and two digits, such as
   `2003POCH01`) and your internet connection. The app looks your name up on the official WCA
   website.
+- **Ctrl+1 switches browser tabs instead of marking a solve OK:** many browsers keep Ctrl and a
+  number for themselves. Use Alt+1, Alt+2, and Alt+3 instead (Option on a Mac).
 - **CSTimer import fails:** make sure the file is a `.json` or `.txt` export straight from
   CSTimer's Export menu, without any changes.
 
@@ -198,6 +200,11 @@ to what the app needs by itself.
 A new version sometimes needs to update your data (for example, to work out your stats under
 newer rules). It does that by itself on its first start, after keeping a safety copy of your
 database in `data/backups`, so there's always a way back.
+
+**Updating to 3.1:** the first start adds room for best averages and timer settings,
+and works out every session's stats again under the WCA's rounding rules. With a big history
+this takes a few seconds, once. If you'd like a copy of your own as well as the safety copy,
+click **Export backup** in the old version before you update.
 
 On Windows, the shortcut with the app's icon (and any copy of it on your desktop or Start menu)
 still points to the old folder. Delete it; the new folder makes its own on its first start.

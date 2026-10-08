@@ -153,6 +153,42 @@ itself. The first time you open a downloaded launcher, your system may ask you t
 
 ## 🆕 What's New
 
+### 3.1
+
+- **Safe from other websites.** A page open in your browser can no longer change your data,
+  read it, or keep the app running. See [Security](#-security).
+- **CSTimer imports keep their history.** Every solve keeps the date and time you did it, its
+  penalty, and its comment. Sessions keep their CSTimer names and can be split into one a day,
+  and importing the same file again only adds the new solves.
+- **WCA inspection.** Starting after 15 seconds is a +2, and after 17 a DNF, with calls at 8
+  and 12 seconds that can also beep or be spoken.
+- **Timers for 2x2x2 and 4x4x4,** each with scrambles of the length the WCA set for it.
+- **Notes, shortcuts, and Undo.** Add a note to any solve, make your last solve OK, +2, or DNF
+  with Alt+1, Alt+2, or Alt+3, delete it with Ctrl+Z, and bring back a deleted solve with Undo.
+- **Best averages.** The Dashboard shows your best Ao5, Ao12, Ao50, and Ao100 for each event,
+  with the solves behind each one.
+- **Edit sessions and solves.** Change a session's date, cube, and notes, add a session for an
+  earlier day, and change any solve's penalty or note from the Sessions tab.
+- **Cube stats.** Each cube shows its sessions, solves, PB single, and best Ao5.
+- **CSV export.** Download every solve, or one session's, to open in a spreadsheet.
+- **Settings that stick.** The timer settings are saved with your data and your backups.
+- **No more pop-ups.** Messages appear in a corner without stopping you, and "are you sure?"
+  questions appear in the page.
+- **Safety copies.** Before restoring a backup or updating your data for a new version, the app
+  keeps a copy of your database.
+- **Statistics fixed up.** Singles are cut off and averages rounded as the WCA records them,
+  the rolling and single-session charts count DNFs the WCA way, the progress chart shows your
+  latest 500 sessions, and a world rank only shows when the WCA's rankings support it.
+  Scrambles can now have moves like R L, as a fair scramble should, and the timer can't jump
+  if the computer's clock changes mid-solve.
+- **Long solves.** A practice solve can run for up to 2 hours.
+- **Tested.** Automated tests, including browser tests, run on Windows, macOS, and Linux.
+
+The first start of 3.1 updates your data once (see
+[Updating the App](INSTALLATION.md#-updating-the-app)).
+
+### 3.0
+
 - **Start with a double-click.** Every system has its own launcher (**Start on Windows**,
   **Start on Mac**, **Start on Linux**), and on Windows the app adds a shortcut with its icon
   that opens it with no window at all. Typing `uv run app.py` still works too.
@@ -348,7 +384,7 @@ speedcube-training-explorer/
 │   ├── __init__.py        # Creates the Flask app and serves web/
 │   ├── api.py             # The JSON API the web page talks to (/api/...)
 │   ├── db.py              # SQLite tables, connections, and core data operations
-│   ├── stats.py           # Ao5/Ao12 rules and chart maths
+│   ├── stats.py           # Averages (Ao5 to Ao100), WCA rounding, and chart maths
 │   ├── scores.py          # The Analytics scores (see docs/SCORES.md)
 │   ├── wca_reference.json # Summary of WCA results the scores compare against
 │   ├── wca.py             # WCA rank and percentile, and WCA ID lookup
@@ -378,7 +414,7 @@ speedcube-training-explorer/
 │   ├── SCORES.md          # How the Analytics scores are worked out
 │   └── screenshots/       # Images used in this README
 ├── tests/                 # Automated tests (pytest), with small synthetic fixtures
-│   └── e2e/               # A browser smoke test (Playwright), run on request
+│   └── e2e/               # Browser tests (Playwright), run on request
 ├── .github/workflows/     # Runs the tests on GitHub for every push and pull request
 ├── data/                  # Your database, and safety copies in data/backups (never committed)
 ├── Speedcube Training Explorer.lnk  # Windows only: made on first start, never committed
