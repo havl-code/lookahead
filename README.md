@@ -38,7 +38,9 @@ and a double-click (or one command) starts it.
 
 - **Competition-Style Timing:** hold the space bar until the time turns green, let go to
   start, and press again to stop
-- **Inspection:** an optional inspection countdown (8, 12, 15 or 17 seconds)
+- **WCA Inspection:** an optional 15 second inspection that follows the WCA rules: starting
+  after 15 seconds is a +2, and after 17 a DNF. The 8 and 12 second calls show on screen, and
+  can also beep or be spoken
 - **Scrambles:** a new random 3x3x3 scramble for every solve
 - **Live Statistics:** solve count, best, mean and Ao5 for the whole session as you solve
 - **A Session a Day:** your first solve each day starts a new session automatically
@@ -173,7 +175,9 @@ itself. The first time you open a downloaded launcher, your system may ask you t
    starts a new session automatically (with the same cube as your last one), and the rest of
    the day's solves go into it. To add solves to an older session instead, pick it from the
    menu; choose **+ Create New Session** to split a day into more than one session.
-3. Press the **space bar** to start inspection (if it's turned on).
+3. Press the **space bar** to start inspection (if it's turned on). The countdown shows the
+   seconds left, with calls at 8 and 12 seconds. From 15 seconds it shows +2, and at 17 the
+   attempt is a DNF, as in a WCA competition.
 4. Hold the **space bar** until the time turns green.
 5. Let go to start solving.
 6. Press the **space bar** again to stop.

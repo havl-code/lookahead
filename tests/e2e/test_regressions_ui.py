@@ -13,14 +13,15 @@ def finding(number, reason):
     return pytest.mark.xfail(strict=True, reason=f'finding {number}: {reason}')
 
 
-@finding('5', 'running out of inspection is an instant DNF, with no +2 window (A4d1)')
 def test_starting_between_15_and_17_seconds_is_a_plus_two(app_page, live_app):
+    """Finding 5 (fixed): running out of inspection is an instant DNF, with no +2 window (A4d1)."""
     open_tab(app_page, 'timer')
     app_page.wait_for_selector('.solves-list-container .empty-note')
     time_a_solve(app_page, 10.0, inspection_seconds=16)
     app_page.wait_for_selector('.solve-item')
     solve = solves_in(live_app)[-1]
-    assert (solve['penalty'], solve['dnf'], solve['time_ms']) == ('+2', 0, 10000)
+    # Playwright's clock also runs in real time between steps, so allow a few milliseconds
+    assert (solve['penalty'], solve['dnf']) == ('+2', 0) and 10000 <= solve['time_ms'] < 10100
 
 
 @finding('6', 'timer settings are lost on reload')

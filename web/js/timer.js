@@ -7,8 +7,10 @@ const TimerState = {
     startTime: 0,
     running: false,
     inspection: false,
-    inspectionTime: 15,
+    inspectionStart: 0,     // performance.now() when inspection began
     inspectionInterval: null,
+    callsMade: [],          // the inspection calls (8 and 12 seconds) made so far
+    pendingPenalty: 'OK',   // what inspection earned the solve that's running: OK or +2
     spacePressed: false,
     readyToStart: false,
     holdTimer: null,
@@ -22,11 +24,24 @@ const TimerState = {
     showingResult: false,   // true while the last result is on screen
     settings: {
         inspectionEnabled: true,
-        inspectionSeconds: 15,
+        inspectionCalls: 'off',   // a sound at 8 and 12 seconds: 'off', 'beep', or 'voice'
         hideTimer: false,
         hideStats: false
     }
 };
+
+// WCA inspection (Regulations A3 and A4): the competitor has 15 seconds to inspect and start
+// the solve. Starting at 15.00 seconds or later but before 17.00 is a +2 (A4d1, which says
+// exactly 15.00 is a +2), and 17.00 or later is a DNF (A4d2). Inspection is timed until the
+// timer starts (A3b5). The judge calls "8 SECONDS" and "12 SECONDS" (A3b3 and A3b4).
+const INSPECTION = { plusTwoAt: 15, dnfAt: 17, calls: [8, 12] };
+
+// The penalty for starting a solve after this many seconds of inspection: 'OK', '+2', or 'DNF'
+function inspectionPenalty(elapsedSeconds) {
+    if (elapsedSeconds >= INSPECTION.dnfAt) return 'DNF';
+    if (elapsedSeconds >= INSPECTION.plusTwoAt) return '+2';
+    return 'OK';
+}
 
 // Generate a random-move 3x3x3 scramble
 function generate333Scramble() {
@@ -223,19 +238,22 @@ function showTimerSettings() {
             <h3>Timer Settings</h3>
             <div class="settings-grid">
                 <div class="setting-item">
-                    <span class="setting-label">Inspection</span>
+                    <span class="setting-label">WCA Inspection (15 seconds)</span>
                     <div class="setting-toggle ${TimerState.settings.inspectionEnabled ? 'active' : ''}"
                          data-action="toggle-timer-setting" data-setting="inspectionEnabled"></div>
                 </div>
                 <div class="setting-item">
-                    <span class="setting-label">Inspection Time</span>
-                    <select class="setting-select" data-change="change-inspection-time">
-                        <option value="8" ${TimerState.settings.inspectionSeconds === 8 ? 'selected' : ''}>8 seconds</option>
-                        <option value="12" ${TimerState.settings.inspectionSeconds === 12 ? 'selected' : ''}>12 seconds</option>
-                        <option value="15" ${TimerState.settings.inspectionSeconds === 15 ? 'selected' : ''}>15 seconds</option>
-                        <option value="17" ${TimerState.settings.inspectionSeconds === 17 ? 'selected' : ''}>17 seconds</option>
+                    <span class="setting-label">Sound at 8 and 12 Seconds</span>
+                    <select class="setting-select" data-change="change-inspection-calls">
+                        <option value="off" ${TimerState.settings.inspectionCalls === 'off' ? 'selected' : ''}>Off</option>
+                        <option value="beep" ${TimerState.settings.inspectionCalls === 'beep' ? 'selected' : ''}>Beep</option>
+                        <option value="voice" ${TimerState.settings.inspectionCalls === 'voice' ? 'selected' : ''}>Voice</option>
                     </select>
                 </div>
+                <p class="setting-note">
+                    Starting after 15 seconds of inspection is a +2, and after 17 seconds a DNF, as
+                    in WCA competitions. The calls at 8 and 12 seconds always show on screen.
+                </p>
                 <div class="setting-item">
                     <span class="setting-label">Hide Timer While Solving</span>
                     <div class="setting-toggle ${TimerState.settings.hideTimer ? 'active' : ''}"
@@ -271,8 +289,8 @@ function toggleTimerSetting(setting, element) {
     }
 }
 
-function changeInspectionTime(value) {
-    TimerState.settings.inspectionSeconds = parseInt(value, 10);
+function changeInspectionCalls(value) {
+    TimerState.settings.inspectionCalls = value;
 }
 
 function closeTimerSettings() {
@@ -366,47 +384,116 @@ function handleTimerKeyUp(e) {
     document.getElementById('timer-display').classList.remove('ready', 'holding');
 }
 
-// Inspection countdown
+// Inspection: counts down from 15, shows +2 from 15 to 17 seconds, and ends the attempt as a
+// DNF at 17. It's timed with performance.now(), checked ten times a second, so it never drifts.
 function startInspection() {
     TimerState.inspection = true;
-    TimerState.inspectionTime = TimerState.settings.inspectionSeconds;
-
+    TimerState.inspectionStart = performance.now();
+    TimerState.callsMade = [];
+    showInspectionCall('');
     const display = document.getElementById('timer-display');
     display.className = 'timer-display inspection';
-    display.textContent = TimerState.settings.hideTimer ? 'inspect' : TimerState.inspectionTime;
+    updateInspection();
+    TimerState.inspectionInterval = setInterval(updateInspection, 100);
+}
 
-    TimerState.inspectionInterval = setInterval(() => {
-        TimerState.inspectionTime--;
+function inspectionElapsed() {
+    return (performance.now() - TimerState.inspectionStart) / 1000;
+}
 
-        if (!TimerState.settings.hideTimer) {
-            display.textContent = TimerState.inspectionTime;
+function updateInspection() {
+    if (!TimerState.inspection) {
+        clearInterval(TimerState.inspectionInterval);
+        return;
+    }
+    const elapsed = inspectionElapsed();
+    const display = document.getElementById('timer-display');
+    const penalty = inspectionPenalty(elapsed);
+
+    if (penalty === 'DNF') {
+        // Seventeen seconds without starting: the attempt is a DNF, with no time (A4d2)
+        endInspection();
+        TimerState.time = 0;
+        display.textContent = 'DNF';
+        display.className = 'timer-display stopped';
+        TimerState.showingResult = true;
+        saveSolve('DNF');
+        setTimeout(generateNewScramble, 100);
+        return;
+    }
+
+    INSPECTION.calls.forEach(call => {
+        if (elapsed >= call && !TimerState.callsMade.includes(call)) {
+            TimerState.callsMade.push(call);
+            makeInspectionCall(call);
         }
+    });
 
-        if (TimerState.inspectionTime <= 0) {
-            clearInterval(TimerState.inspectionInterval);
-            // Running out of inspection time is a DNF
-            TimerState.inspection = false;
-            TimerState.time = 0;
-            display.textContent = 'DNF';
-            display.className = 'timer-display stopped';
-            TimerState.showingResult = true;
-            saveSolve('DNF');
-            setTimeout(generateNewScramble, 100);
-        }
+    // Holding the space bar keeps its own colour; otherwise show the time left, or +2
+    const holding = display.classList.contains('holding') || display.classList.contains('ready');
+    if (penalty === '+2') {
+        display.textContent = '+2';
+        if (!holding) display.className = 'timer-display inspection plus-two';
+    } else {
+        display.textContent = TimerState.settings.hideTimer ? 'inspect' : Math.ceil(INSPECTION.plusTwoAt - elapsed);
+    }
+}
 
-        if (!TimerState.inspection) {
-            clearInterval(TimerState.inspectionInterval);
-        }
-    }, 1000);
+function endInspection() {
+    TimerState.inspection = false;
+    clearInterval(TimerState.inspectionInterval);
+    TimerState.inspectionInterval = null;
+    showInspectionCall('');
+}
+
+// The judge's calls: always on screen, and with a sound if the settings ask for one
+function makeInspectionCall(seconds) {
+    showInspectionCall(`${seconds} seconds`);
+    if (TimerState.settings.inspectionCalls === 'voice' && speakCall(`${seconds} seconds`)) return;
+    if (TimerState.settings.inspectionCalls !== 'off') beep();
+}
+
+function showInspectionCall(text) {
+    const call = document.getElementById('inspection-call');
+    if (call) call.textContent = text;
+}
+
+// A short beep made in the browser, so it works offline
+let audioContext = null;
+function beep() {
+    try {
+        audioContext = audioContext || new AudioContext();
+        const tone = audioContext.createOscillator();
+        const volume = audioContext.createGain();
+        tone.frequency.value = 880;
+        volume.gain.value = 0.15;
+        tone.connect(volume).connect(audioContext.destination);
+        tone.start();
+        tone.stop(audioContext.currentTime + 0.15);
+    } catch (e) {
+        // No sound available; the call still shows on screen
+    }
+}
+
+// Says the call with one of the computer's own voices (so it works offline). Returns false if
+// there isn't one, so a beep can be used instead.
+function speakCall(text) {
+    if (!('speechSynthesis' in window)) return false;
+    const voices = speechSynthesis.getVoices();
+    const voice = voices.find(v => v.localService && v.lang.startsWith('en')) || voices.find(v => v.localService);
+    if (!voice) return false;
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.voice = voice;
+    speechSynthesis.speak(utterance);
+    return true;
 }
 
 function startTimer() {
+    TimerState.pendingPenalty = 'OK';
     if (TimerState.inspection) {
-        TimerState.inspection = false;
-        if (TimerState.inspectionInterval) {
-            clearInterval(TimerState.inspectionInterval);
-            TimerState.inspectionInterval = null;
-        }
+        // Starting the timer ends inspection (A3b5); starting after 15 seconds earns a +2
+        TimerState.pendingPenalty = inspectionPenalty(inspectionElapsed()) === '+2' ? '+2' : 'OK';
+        endInspection();
     }
 
     TimerState.running = true;
@@ -445,8 +532,12 @@ function stopTimer() {
     display.className = 'timer-display stopped';
     display.textContent = TimerState.time.toFixed(2);
 
-    // Save straight away, then show a new scramble while keeping the time on screen
-    saveSolve('OK');
+    // Save straight away (with any +2 from inspection), then show a new scramble while keeping
+    // the time on screen
+    const penalty = TimerState.pendingPenalty;
+    TimerState.pendingPenalty = 'OK';
+    if (penalty === '+2') display.textContent = `${(TimerState.time + 2).toFixed(2)} (+2)`;
+    saveSolve(penalty);
     setTimeout(generateNewScramble, 100);
 }
 
@@ -614,11 +705,10 @@ function toggleFullscreen() {
 // Called off part-way through: stop inspection, a hold or a running solve without saving
 // anything, and keep the same scramble for the next try.
 function cancelAttempt() {
-    clearInterval(TimerState.inspectionInterval);
+    endInspection();
     clearTimeout(TimerState.holdTimer);
-    TimerState.inspectionInterval = null;
     TimerState.holdTimer = null;
-    TimerState.inspection = false;
+    TimerState.pendingPenalty = 'OK';
     TimerState.running = false;  // the running display stops itself on its next tick
     TimerState.spacePressed = false;
     TimerState.readyToStart = false;
@@ -652,6 +742,6 @@ registerActions('click', {
 });
 registerActions('change', {
     'change-timer-event': select => changeTimerEvent(select.value),
-    'change-inspection-time': select => changeInspectionTime(select.value),
+    'change-inspection-calls': select => changeInspectionCalls(select.value),
     'change-solve-penalty': select => changeSolvePenalty(Number(select.dataset.solveId), select.value)
 });

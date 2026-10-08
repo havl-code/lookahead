@@ -77,6 +77,36 @@ def test_timer(app_page, live_app):
     assert page.errors == []
 
 
+def test_wca_inspection(app_page, live_app):
+    """Regulations A3 and A4: 15 seconds to start, +2 from 15 to 17, DNF at 17, with calls at
+    8 and 12 seconds."""
+    page = app_page
+    page.click('.tab[data-tab="timer"]')
+    page.wait_for_selector('.solves-list-container .empty-note')
+    assert page.evaluate("[14.99, 15, 16.99, 17, 20].map(inspectionPenalty)") == ['OK', '+2', '+2', 'DNF', 'DNF']
+
+    page.keyboard.press('Space')
+    page.clock.run_for(2000)
+    assert page.text_content('#timer-display') == '13'
+    page.clock.run_for(6200)
+    assert page.text_content('#inspection-call') == '8 seconds'
+    page.clock.run_for(4000)
+    assert page.text_content('#inspection-call') == '12 seconds'
+    page.clock.run_for(3500)
+    assert page.text_content('#timer-display') == '+2'
+    page.clock.run_for(2000)  # now past 17 seconds without starting
+    page.wait_for_selector('.solve-item')
+    solve = solves_in(live_app)[-1]
+    assert (solve['penalty'], solve['dnf'], solve['time_ms']) == ('DNF', 1, 0)
+    assert page.text_content('#timer-display') == 'DNF'
+    assert page.text_content('#inspection-call') == ''
+
+    page.click('#timer-settings-btn')
+    assert page.locator('#timer-settings-modal select option').all_text_contents() == ['Off', 'Beep', 'Voice']
+    assert 'WCA Inspection (15 seconds)' in page.text_content('#timer-settings-modal')
+    assert page.errors == []
+
+
 def test_sessions(app_page, live_app):
     page = app_page
     open_tab(page, 'sessions')
