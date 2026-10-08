@@ -12,11 +12,9 @@ from pathlib import Path
 import pytest
 
 import app as app_module
+from helpers import FIXTURES, REAL_DATA
 from speedcube import create_app, db, wca
 
-PROJECT_DIR = Path(__file__).resolve().parent.parent
-REAL_DATA = (PROJECT_DIR / 'data').resolve()
-FIXTURES = Path(__file__).resolve().parent / 'fixtures'
 # The real fetcher, kept so its own test can call it (with urlopen faked)
 REAL_FETCH_JSON = wca._fetch_json
 
@@ -31,7 +29,10 @@ def protect_real_data(monkeypatch, tmp_path):
         resolved = Path(path).resolve()
         if resolved == REAL_DATA or REAL_DATA in resolved.parents:
             raise AssertionError(f'A test tried to open the real data: {resolved}')
-        return real_connect(path)
+        conn = real_connect(path)
+        # Test databases are thrown away, so skip waiting for the disk (much quicker on Windows)
+        conn.execute('PRAGMA synchronous = OFF')
+        return conn
 
     monkeypatch.setattr(db, 'connect', guarded_connect)
     monkeypatch.setattr(app_module, 'DATABASE', tmp_path / 'app-module.db')

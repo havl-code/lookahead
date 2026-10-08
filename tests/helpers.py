@@ -6,8 +6,13 @@ Results are written the way people read them: a number of seconds, a (seconds, '
 
 import io
 from contextlib import closing
+from pathlib import Path
 
 from speedcube import db
+
+PROJECT_DIR = Path(__file__).resolve().parent.parent
+REAL_DATA = (PROJECT_DIR / 'data').resolve()
+FIXTURES = Path(__file__).resolve().parent / 'fixtures'
 
 
 def to_record(result, scramble=''):

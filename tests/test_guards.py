@@ -5,7 +5,7 @@ import urllib.request
 import pytest
 
 import app as app_module
-from conftest import REAL_DATA
+from helpers import REAL_DATA
 from speedcube import db, wca
 
 

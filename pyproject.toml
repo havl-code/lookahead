@@ -28,8 +28,9 @@ testpaths = ["tests"]
 # app.py lives at the top of the project rather than in a package, and tests/helpers.py is
 # shared by the tests in subfolders
 pythonpath = [".", "tests"]
-# The browser test is left out unless asked for with `-m e2e` (a later -m replaces this one)
-addopts = "-ra --strict-markers -m 'not e2e' --cov --cov-report=term-missing:skip-covered"
+# The browser test is left out unless asked for with `-m e2e` (a later -m replaces this one).
+# The summary lists failures, errors, and skips; expected failures are only counted.
+addopts = "-rfEs --strict-markers -m 'not e2e' --cov --cov-report=term-missing:skip-covered"
 markers = [
     "e2e: browser smoke tests, run with: uv run --group e2e pytest -m e2e",
 ]

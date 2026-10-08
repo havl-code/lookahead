@@ -13,7 +13,7 @@ class TestLoad:
         assert cstimer.load(cstimer_bytes) == cstimer_data
 
     def test_reads_the_txt_export_with_a_bom(self, cstimer_data):
-        from conftest import FIXTURES
+        from helpers import FIXTURES
         raw = (FIXTURES / 'cstimer_export.txt').read_bytes()
         assert raw.startswith(b'\xef\xbb\xbf')
         assert cstimer.load(raw) == cstimer_data
