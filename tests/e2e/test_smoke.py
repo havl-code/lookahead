@@ -2,7 +2,7 @@
 
 import pytest
 
-from e2e_helpers import open_tab, open_timer, solves_in, time_a_solve
+from e2e_helpers import open_tab, open_timer, paused_clock, solves_in, time_a_solve
 from helpers import FIXTURES, query, seed_session
 
 pytestmark = pytest.mark.e2e
@@ -76,15 +76,14 @@ def test_timer(app_page, live_app):
 
     time_a_solve(page, 9.87)
     page.wait_for_selector('.solve-item')
-    # The saved time includes a few milliseconds of key handling, so compare with what was saved
-    saved = solves_in(live_app)[0]['time_ms'] / 1000
-    assert 9.87 <= saved < 9.9
-    assert float(page.text_content('.solve-item .solve-time')) == pytest.approx(saved, abs=0.01)
+    # The clock is held still while timing, so the solve takes exactly as long as it was run for
+    assert solves_in(live_app)[0]['time_ms'] == 9870
+    assert page.text_content('.solve-item .solve-time').strip() == '9.87'
 
     # Mark it +2
     page.select_option('.solve-action-select', '+2')
     page.wait_for_function("() => document.querySelector('.solve-time').textContent.includes('(+2)')")
-    assert float(page.text_content('#stat-best')) == pytest.approx(saved + 2, abs=0.01)
+    assert page.text_content('#stat-best') == '11.87'
 
     # Esc cancels a solve in progress, and nothing is saved
     page.keyboard.press('Space')
@@ -107,17 +106,18 @@ def test_wca_inspection(app_page, live_app):
     open_timer(page)
     assert page.evaluate("[14.99, 15, 16.99, 17, 20].map(inspectionPenalty)") == ['OK', '+2', '+2', 'DNF', 'DNF']
 
-    page.keyboard.press('Space')
-    page.clock.run_for(2000)
-    assert page.text_content('#timer-display') == '13'
-    page.clock.run_for(6200)
-    assert page.text_content('#inspection-call') == '8 seconds'
-    page.clock.run_for(4000)
-    assert page.text_content('#inspection-call') == '12 seconds'
-    page.clock.run_for(3500)
-    assert page.text_content('#timer-display') == '+2'
-    page.clock.run_for(2000)  # now past 17 seconds without starting
-    page.wait_for_selector('.solve-item')
+    with paused_clock(page):  # so only run_for moves inspection on, however slow the computer
+        page.keyboard.press('Space')
+        page.clock.run_for(2000)
+        assert page.text_content('#timer-display') == '13'
+        page.clock.run_for(6200)
+        assert page.text_content('#inspection-call') == '8 seconds'
+        page.clock.run_for(4000)
+        assert page.text_content('#inspection-call') == '12 seconds'
+        page.clock.run_for(3500)
+        assert page.text_content('#timer-display') == '+2'
+        page.clock.run_for(2000)  # now past 17 seconds without starting
+        page.wait_for_selector('.solve-item')
     solve = solves_in(live_app)[-1]
     assert (solve['penalty'], solve['dnf'], solve['time_ms']) == ('DNF', 1, 0)
     assert page.text_content('#timer-display') == 'DNF'
@@ -140,7 +140,7 @@ def test_a_failed_save_can_be_retried(app_page, live_app):
     page.unroute('**/api/timer/solve')
     page.click('.toast >> text=Retry')
     page.wait_for_selector('.solve-item')
-    assert len(solves_in(live_app)) == 1 and 7500 <= solves_in(live_app)[0]['time_ms'] < 7600
+    assert [s['time_ms'] for s in solves_in(live_app)] == [7500]
     assert page.dialogs == []
 
 

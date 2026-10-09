@@ -19,8 +19,7 @@ def test_starting_between_15_and_17_seconds_is_a_plus_two(app_page, live_app):
     time_a_solve(app_page, 10.0, inspection_seconds=16)
     app_page.wait_for_selector('.solve-item')
     solve = solves_in(live_app)[-1]
-    # Playwright's clock also runs in real time between steps, so allow a few milliseconds
-    assert (solve['penalty'], solve['dnf']) == ('+2', 0) and 10000 <= solve['time_ms'] < 10100
+    assert (solve['penalty'], solve['dnf'], solve['time_ms']) == ('+2', 0, 10000)
 
 
 def test_timer_settings_survive_a_reload(app_page):

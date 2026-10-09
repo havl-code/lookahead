@@ -25,11 +25,11 @@ def test_shortcuts_change_and_delete_the_last_solve(app_page, live_app):
     time_and_wait(page, 10.0, 1)
     time_and_wait(page, 11.0, 2)
     display = page.locator('#timer-display')
-    assert display.text_content().startswith('11.0')
+    assert display.text_content() == '11.00'
 
     page.keyboard.press('Alt+2')
     page.wait_for_function("() => TimerState.currentSolves[0].penalty === '+2'")
-    assert display.text_content().startswith('13.0') and display.text_content().endswith('(+2)')
+    assert display.text_content() == '13.00 (+2)'
     assert [(s['penalty'], s['dnf']) for s in solves(live_app)] == [('OK', 0), ('+2', 0)]
 
     page.keyboard.press('Control+3')
@@ -37,16 +37,16 @@ def test_shortcuts_change_and_delete_the_last_solve(app_page, live_app):
     assert display.text_content() == 'DNF'
     page.keyboard.press('Alt+1')
     page.wait_for_function("() => TimerState.currentSolves[0].penalty === 'OK'")
-    assert display.text_content().startswith('11.0')
+    assert display.text_content() == '11.00'
 
     # Ctrl+Z deletes the last solve and clears it off the screen; Undo puts it back
     page.keyboard.press('Control+z')
     page.wait_for_function("() => TimerState.currentSolves.length === 1")
     assert display.text_content() == '0.00'
-    assert [s['time_ms'] // 1000 for s in solves(live_app)] == [10]
+    assert [s['time_ms'] for s in solves(live_app)] == [10000]
     page.click('.toast >> text=Undo')
     page.wait_for_function("() => TimerState.currentSolves.length === 2")
-    assert [(s['solve_number'], s['time_ms'] // 1000) for s in solves(live_app)] == [(1, 10), (2, 11)]
+    assert [(s['solve_number'], s['time_ms']) for s in solves(live_app)] == [(1, 10000), (2, 11000)]
     assert page.errors == []
 
 
