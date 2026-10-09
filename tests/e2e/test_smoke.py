@@ -464,3 +464,25 @@ def test_every_event_menu_comes_from_one_list(app_page):
     open_tab(page, 'cubes')
     page.wait_for_selector('#cubes-tbody')
     assert page.errors == []
+
+
+def test_the_scores_explanation_opens_offline(app_page, live_app):
+    """How the scores work opens in the app, from the app's own copy of docs/SCORES.md, with
+    nothing fetched from the internet."""
+    page = app_page
+    outside = []
+    page.route(lambda url: not url.startswith(live_app.config['BASE_URL']),
+               lambda route: (outside.append(route.request.url), route.abort()))
+    # Enough for every chart to draw, so nothing on the tab answers "not enough data yet"
+    seed_session(live_app, [12 + i / 10 for i in range(12)], date='2026-10-01')
+    seed_session(live_app, [11 + i / 10 for i in range(12)], date='2026-10-02')
+    page.reload()
+    open_tab(page, 'analytics')
+    page.click('#scores-note a:has-text("How the scores work")')
+    page.wait_for_selector('#doc-modal-body table')
+    assert page.text_content('#doc-modal-title').startswith('How the Analytics Scores Work')
+    assert page.locator('#doc-modal-body h2').count() >= 8
+    assert page.get_attribute('#doc-modal-github', 'href').endswith('/docs/SCORES.md')
+    page.keyboard.press('Escape')
+    assert page.is_hidden('#doc-modal')
+    assert outside == [] and page.errors == []

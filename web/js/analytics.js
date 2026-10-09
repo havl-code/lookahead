@@ -68,10 +68,10 @@ async function loadSessionsForCharts() {
 
 // ---- Scores and insights ----
 // The server works the scores out (speedcube/scores.py): each is the percentage of WCA
-// competitors in the event that a session beats. docs/SCORES.md explains them for users.
+// competitors in the event that a session beats. docs/SCORES.md explains them for users, and
+// the "How the scores work" link shows it in the app (docs.js), so it works offline.
 
 const METRICS = ['speed', 'consistency', 'overall'];
-const SCORES_DOC_URL = 'https://github.com/havl-code/speedcube-training-explorer/blob/main/docs/SCORES.md';
 
 // The average of a score over some sessions, leaving out sessions without one (null if none)
 function averageScore(sessions, key) {
@@ -155,7 +155,7 @@ function missingScoreText(metric, data) {
 function showScoresNote(eventId, data) {
     const date = iso => new Date(`${iso}T00:00:00`).toLocaleDateString('en-NZ', { day: 'numeric', month: 'long', year: 'numeric' });
     const eventName = escapeHtml(getEventName(eventId));
-    const docLink = `<a href="${SCORES_DOC_URL}" target="_blank" rel="noopener noreferrer">How the scores work</a>.`;
+    const docLink = '<a href="#" data-action="show-doc" data-doc="SCORES">How the scores work</a>.';
     document.getElementById('scores-note').innerHTML = !data.has_speed_reference && !data.has_consistency_reference
         ? `There isn't enough WCA data to score ${eventName}. ${docLink}`
         : `Each score is the percentage of WCA competitors in ${eventName} a session beats, ` +

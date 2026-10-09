@@ -83,7 +83,8 @@ and a double-click (or one command) starts it.
 - **Scores:** Speed, Consistency and Overall, each the percentage of WCA competitors in the
   same event that your session beats (using official results from the last two years, bundled
   with the app so it works offline). Colour-coded from red (needs work) to green (excellent),
-  with how they've changed recently. [How the scores are worked out](docs/SCORES.md)
+  with how they've changed recently. [How the scores are worked out](docs/SCORES.md), which
+  you can also read in the app, offline
 - **Insights:** plain-English tips on what to work on next
 - **Charts:** progress over time, time distribution, rolling Ao5 and Ao12, and consistency across
   sessions, for a whole event or a single session. Averages count DNFs the WCA way, and a DNF
@@ -278,6 +279,7 @@ solve that never started (a DNF from running out of inspection) has no time, so 
 4. Use the **Charts for** menu to narrow the charts down to a single session.
 
 [How the Analytics Scores Work](docs/SCORES.md) explains exactly how each score is worked out.
+The **How the scores work** link under the scores opens it in the app, even offline.
 
 ### Importing CSTimer Data
 
@@ -407,6 +409,7 @@ speedcube-training-explorer/
 │   │   ├── scramble.js    # Random-move scrambles
 │   │   ├── tables.js      # Sortable table headings
 │   │   ├── backup.js      # Backup export and import, and the CSV export
+│   │   ├── docs.js        # Shows the app's own docs (such as SCORES.md) in the app
 │   │   ├── dashboard.js, sessions.js, cubes.js, timer.js,
 │   │   │   import.js, analytics.js, charts.js, greeting.js,
 │   │   │   app.js, theme.js, theme-init.js   # One file per tab or feature

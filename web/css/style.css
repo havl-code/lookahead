@@ -847,6 +847,109 @@ textarea {
     color: var(--danger);
 }
 
+/* One of the app's docs, shown in a window (docs.js) */
+.doc-modal-content {
+    max-width: 820px;
+}
+
+.doc-modal-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 14px;
+}
+
+.doc-view {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.doc-view h2,
+.doc-view h3 {
+    margin: 28px 0 10px;
+    color: var(--text-primary);
+}
+
+.doc-view h2 {
+    font-size: 20px;
+}
+
+.doc-view h3 {
+    font-size: 16px;
+}
+
+.doc-view > :first-child {
+    margin-top: 0;
+}
+
+.doc-view p,
+.doc-view ul,
+.doc-view ol,
+.doc-view pre,
+.doc-view table,
+.doc-view blockquote {
+    margin-bottom: 14px;
+}
+
+.doc-view ul,
+.doc-view ol {
+    padding-left: 24px;
+}
+
+.doc-view li + li {
+    margin-top: 6px;
+}
+
+.doc-view strong {
+    color: var(--text-primary);
+}
+
+.doc-view code,
+.doc-view pre {
+    font-family: var(--font-mono);
+    font-size: 13px;
+}
+
+.doc-view code {
+    padding: 1px 5px;
+    border-radius: 4px;
+    background: var(--bg-tertiary);
+}
+
+.doc-view pre {
+    padding: 12px 14px;
+    border-radius: var(--radius-small);
+    background: var(--bg-tertiary);
+    overflow-x: auto;
+}
+
+.doc-view pre code {
+    padding: 0;
+    background: none;
+}
+
+.doc-view blockquote {
+    padding: 4px 0 4px 14px;
+    border-left: 3px solid var(--border-secondary);
+}
+
+.doc-view table {
+    border-collapse: collapse;
+}
+
+.doc-view th,
+.doc-view td {
+    padding: 6px 14px 6px 0;
+    border-bottom: 1px solid var(--border-primary);
+    text-align: left;
+}
+
+.doc-view hr {
+    margin: 24px 0;
+    border: none;
+    border-top: 1px solid var(--border-primary);
+}
+
 /* The "are you sure?" window for actions that can't be undone, and the one that asks for a
    note (ui.js) */
 .confirm-message {

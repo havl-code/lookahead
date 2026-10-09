@@ -11,6 +11,7 @@ from . import db, security
 from .api import api
 
 WEB_DIR = Path(__file__).resolve().parent.parent / 'web'
+DOCS_DIR = WEB_DIR.parent / 'docs'
 
 # Content types come from the operating system, and some Windows setups map these to the wrong
 # thing (e.g. .js as text/plain) or not at all, so set the ones the web page needs.
@@ -39,6 +40,11 @@ def create_app(database_path, port=None):
     @app.get('/')
     def index():
         return send_from_directory(WEB_DIR, 'index.html')
+
+    # The app's own docs (docs/*.md), as Markdown, so the page can show them offline (docs.js)
+    @app.get('/docs/<name>.md')
+    def doc(name):
+        return send_from_directory(DOCS_DIR, f'{name}.md', mimetype='text/markdown')
 
     # The UI expects JSON errors from the API, so don't hand it Flask's HTML error pages.
     # This also catches unhandled exceptions, which Flask turns into a 500 and logs first.

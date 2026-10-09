@@ -121,8 +121,9 @@ the internet, and the rest of the app works fine without them:
 - **Name Lookup:** finding your name from your WCA ID, for the personalised greeting
 
 Everything else (the timer, sessions, cubes, analytics, charts, and CSTimer import) works
-completely offline. The fonts, the charting library, and the summary of WCA results that the
-Analytics scores compare with are all bundled with the app.
+completely offline, and so does the explanation of the Analytics scores. The fonts, the
+charting library, and the summary of WCA results that the Analytics scores compare with are
+all bundled with the app.
 
 The app starts in dark mode. Use the sun or moon button at the top right to switch; it
 remembers your choice.
