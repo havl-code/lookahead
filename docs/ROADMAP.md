@@ -66,6 +66,15 @@ found, and six new features. The commit links work once the branch is on GitHub.
 - [`2e8f5ec`](https://github.com/havl-code/speedcube-training-explorer/commit/2e8f5ec) Timers
   for 2x2x2 and 4x4x4
 
+### From the First Roadmap's Now List
+
+- [`ef66a38`](https://github.com/havl-code/speedcube-training-explorer/commit/ef66a38) Every event menu built from one list (and 4x4x4 and 5x5x5
+  Blindfolded added to them)
+- [`40fc454`](https://github.com/havl-code/speedcube-training-explorer/commit/40fc454) A copy of the database each day, keeping the newest seven
+- [`f95d454`](https://github.com/havl-code/speedcube-training-explorer/commit/f95d454) The Scores explanation inside the app, so it works offline
+- [`33da1ba`](https://github.com/havl-code/speedcube-training-explorer/commit/33da1ba) Everything works from the keyboard, windows behave alike, and text meets
+  WCAG 2.1 AA contrast in both themes
+
 ### Tests, Tooling, and Docs
 
 - [`3f56928`](https://github.com/havl-code/speedcube-training-explorer/commit/3f56928) to
@@ -74,6 +83,8 @@ found, and six new features. The commit links work once the branch is on GitHub.
   and GitHub Actions on Windows, macOS, and Ubuntu with Python 3.11 and 3.14
 - [`8e54bad`](https://github.com/havl-code/speedcube-training-explorer/commit/8e54bad) Checks
   on the docs' links, anchors, and writing style
+- [`9d9cedf`](https://github.com/havl-code/speedcube-training-explorer/commit/9d9cedf) Browser tests that hold the page's clock still, so a busy computer can't
+  make a timing test fail
 - [`e177c61`](https://github.com/havl-code/speedcube-training-explorer/commit/e177c61) The ZIP
   download and `uv run app.py` leave out everything only developers need
 - [`db2b071`](https://github.com/havl-code/speedcube-training-explorer/commit/db2b071),
@@ -90,7 +101,8 @@ found, and six new features. The commit links work once the branch is on GitHub.
 - **Three events have a timer:** 2x2x2, 3x3x3, and 4x4x4. Other events can be added by hand or
   imported, but not timed in the app.
 - **The timer is keyboard only.** There's no touch support, and no Stackmat or Bluetooth
-  smart cube.
+  smart cube. On the Timer tab the space bar always belongs to the timer, even with a button
+  focused, so buttons there are pressed with Enter.
 - **Ctrl+1 to Ctrl+3 are often taken by the browser** for switching tabs, so the hint shows
   Alt+1 to Alt+3, which always work.
 - **World rank stops at the top 1,000.** The rankings come from a community-run copy of the
@@ -106,13 +118,17 @@ found, and six new features. The commit links work once the branch is on GitHub.
 - **One person on one computer.** There are no profiles and no syncing; moving to another
   computer means copying the database or a backup.
 - **CSV is export only.** CSTimer imports ask which event each session is for.
-- **The Scores explanation in the app links to GitHub,** so it needs the internet.
-- **CI hasn't run yet.** It's set up, and runs once the branch is pushed.
+- **Charts are pictures to a screen reader.** The numbers behind them are in the tables and
+  cards, but the charts themselves have no text version.
+- **Field and button borders are faint.** Text meets WCAG 2.1 AA, but the edges of fields and
+  buttons are about 1.5:1 against the page, short of the 3:1 that 1.4.11 asks for.
 
 ### Tech Debt
 
-- The event list is written out in six places: four menus in `index.html`, `EVENT_NAMES` in
-  `config.js`, and `speedcube/events.py`.
+- The events are listed twice, as `EVENT_NAMES` in `config.js` and in `speedcube/events.py`
+  (a test keeps them in step).
+- The charts' routes answer 400 when there isn't enough data to draw yet, which the page shows
+  as a message, but the browser also logs as an error.
 - `solves.penalty` stores OK as either `NULL` or `'OK'`, so every reader has to handle both.
 - The timer sends a +2 solve's time with the 2 seconds already added, and the server takes them
   off again (documented and tested, but easy to trip over).
@@ -134,11 +150,10 @@ Small, safe steps that build on 3.1.
 
 | # | What | Why | Size |
 | --- | --- | --- | --- |
-| 1 | Push the branch, let CI run on all three systems, merge, and tag a v3.1.0 release | The tests have only run on Windows so far, and a release gives people a clean download | S |
-| 2 | One shared event list, served by the existing `/api/events` | Adding an event means editing six places today, and every new timer needs it | S |
-| 3 | Automatic local backups, such as a copy on the first start of each day, keeping the last few | Cheap protection for the one file that matters, building on the safety copies | S |
-| 4 | An offline copy of the Scores explanation | Everything except the WCA rank and name lookup should work offline | S |
-| 5 | Accessibility pass: keyboard and screen reader, and WCAG 2.1 AA contrast | The timer setting toggles and scramble menu are clickable `div`s that a keyboard can't reach, and the paler text colours need checking | M |
+| 1 | Merge the branch and tag a v3.1.0 release | CI passes on Windows, macOS, and Ubuntu, and a release gives people a clean download | S |
+| 2 | Field and button borders at 3:1 against the page (WCAG 2.1 1.4.11) | The last part of AA contrast; it changes the look a little, so it waits for the owner's say | S |
+| 3 | Charts answer "not enough data yet" with an empty chart rather than a 400 | Keeps the browser's console free of errors that aren't errors, so real ones stand out | S |
+| 4 | A text summary for each chart, for screen readers | The charts are the one part of the app a screen reader can't read | M |
 
 ## Next
 
@@ -181,3 +196,5 @@ Larger changes to how the app works, each worth a design discussion first.
 6. **Scores data:** is a monthly automatic refresh fine, given that scores shift a little as the
    two-year window moves?
 7. **Old timer routes:** remove the timer's own solve routes in 3.2, or keep them for good?
+8. **Borders:** is it fine to darken the edges of fields and buttons to 3:1 (WCAG 1.4.11)? It
+   makes them noticeably stronger, especially in the dark theme.

@@ -186,6 +186,10 @@ itself. The first time you open a downloaded launcher, your system may ask you t
   Scrambles can now have moves like R L, as a fair scramble should, and the timer can't jump
   if the computer's clock changes mid-solve.
 - **Long solves.** A practice solve can run for up to 2 hours.
+- **Keyboard friendly.** Every button, menu, and window works from the keyboard, and text meets
+  WCAG 2.1 AA contrast in both themes.
+- **The Scores explanation, offline.** How the scores work opens in the app, internet or not.
+- **4x4x4 and 5x5x5 Blindfolded** are in every event menu.
 - **Tested.** Automated tests, including browser tests, run on Windows, macOS, and Linux.
 
 The first start of 3.1 updates your data once (see
