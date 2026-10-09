@@ -84,12 +84,14 @@ function showWCASetupModal() {
         });
     
     modal.style.display = 'flex';
+    windowOpened(modal, input);
 }
 
 // Close WCA ID setup modal
 function closeWCASetupModal() {
     const modal = document.getElementById('wca-setup-modal');
     modal.style.display = 'none';
+    windowClosed(modal);
 }
 
 // Save WCA ID

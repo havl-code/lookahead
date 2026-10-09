@@ -40,12 +40,32 @@ function changeEvent() {
     loadStats();
 }
 
-// Show a stat, and make it a link to somewhere when there's something to see
+// Show a stat, and make it a link to somewhere when there's something to see. A clickable stat
+// is a button to a keyboard (Tab to it, then Enter or Space) and to a screen reader, which
+// hears its card's name with it, such as "Personal Best 9.83s".
 function setStat(id, text, onClick = null) {
     const element = document.getElementById(id);
     element.textContent = text;
     element.classList.toggle('clickable', Boolean(onClick));
     element.onclick = onClick;
+    if (onClick) {
+        const card = element.closest('.stat-card');
+        const name = card?.querySelector('.stat-label')?.textContent.trim();
+        element.setAttribute('role', 'button');
+        element.tabIndex = 0;
+        element.setAttribute('aria-label', name ? `${name} ${text}` : text);
+        element.onkeydown = (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onClick(e);
+            }
+        };
+    } else {
+        element.removeAttribute('role');
+        element.removeAttribute('tabindex');
+        element.removeAttribute('aria-label');
+        element.onkeydown = null;
+    }
 }
 
 async function loadStats() {
@@ -143,9 +163,9 @@ async function showPBDetails(pbTime, eventId, kind = 'single') {
 
         const modalHTML = `
             <div id="pb-modal" class="modal">
-                <div class="modal-content modal-small">
+                <div class="modal-content modal-small" role="dialog" aria-modal="true" aria-labelledby="pb-modal-title">
                     <div class="modal-header">
-                        <h3>Personal Best</h3>
+                        <h3 id="pb-modal-title">Personal Best</h3>
                         <button class="modal-close" data-action="close-pb-modal" aria-label="Close">&times;</button>
                     </div>
                     <div class="modal-body">
@@ -163,8 +183,10 @@ async function showPBDetails(pbTime, eventId, kind = 'single') {
 
         closePBModal();
         document.body.insertAdjacentHTML('beforeend', modalHTML);
+        const modal = document.getElementById('pb-modal');
+        windowOpened(modal);
         // Clicking the dark area around the window closes it
-        document.getElementById('pb-modal').addEventListener('click', (e) => {
+        modal.addEventListener('click', (e) => {
             if (e.target === e.currentTarget) closePBModal();
         });
     } catch (error) {
@@ -174,7 +196,9 @@ async function showPBDetails(pbTime, eventId, kind = 'single') {
 }
 
 function closePBModal() {
-    document.getElementById('pb-modal')?.remove();
+    const modal = document.getElementById('pb-modal');
+    modal?.remove();
+    windowClosed(modal);
 }
 
 async function loadRecentSessions() {

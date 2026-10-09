@@ -136,6 +136,7 @@ function showAddSessionForm() {
     date.value = localToday();
     date.max = localToday();
     document.getElementById('add-session-form').style.display = 'block';
+    document.getElementById('new-event-id').focus();
 }
 
 function hideAddSessionForm() {
@@ -210,12 +211,15 @@ async function showEditSession(sessionId) {
     });
     select.value = session.cube_id || '';
 
-    document.getElementById('edit-session-modal').style.display = 'flex';
-    date.focus();
+    const modal = document.getElementById('edit-session-modal');
+    modal.style.display = 'flex';
+    windowOpened(modal, date);
 }
 
 function closeEditSession() {
-    document.getElementById('edit-session-modal').style.display = 'none';
+    const modal = document.getElementById('edit-session-modal');
+    modal.style.display = 'none';
+    windowClosed(modal);
 }
 
 async function saveSession(event) {
@@ -245,11 +249,6 @@ async function saveSession(event) {
 document.getElementById('edit-session-modal').addEventListener('click', (e) => {
     if (e.target.id === 'edit-session-modal') closeEditSession();
 });
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && document.getElementById('edit-session-modal').style.display === 'flex') {
-        closeEditSession();
-    }
-});
 
 // ============================================
 // ONE SESSION'S SOLVES
@@ -274,7 +273,9 @@ async function viewSessionSolves(sessionId) {
     updateSortArrows('solves-table');
 
     await loadSessionSolvesPage(true);
-    document.getElementById('solve-details-modal').style.display = 'flex';
+    const modal = document.getElementById('solve-details-modal');
+    modal.style.display = 'flex';
+    windowOpened(modal);
 }
 
 // Load the first page (reset) or the next page of the open session's solves
@@ -346,7 +347,9 @@ initSortableTable('sessions-table', 'date', 'desc', applySessionFilters);
 initSortableTable('solves-table', 'number', 'asc', () => loadSessionSolvesPage(true));
 
 function closeSolveModal() {
-    document.getElementById('solve-details-modal').style.display = 'none';
+    const modal = document.getElementById('solve-details-modal');
+    modal.style.display = 'none';
+    windowClosed(modal);
     document.getElementById('add-solve-form').reset();
 }
 

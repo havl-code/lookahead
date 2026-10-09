@@ -94,6 +94,7 @@ function showAddCubeForm() {
     document.getElementById('add-cube-form').style.display = 'block';
     const editForm = document.getElementById('edit-cube-form');
     if (editForm) editForm.style.display = 'none';
+    document.getElementById('new-cube-type').focus();
 }
 
 function hideAddCubeForm() {
@@ -246,6 +247,7 @@ function showEditCubeForm(cubeId) {
     // Hide add form and show edit form
     document.getElementById('add-cube-form').style.display = 'none';
     editForm.style.display = 'block';
+    typeSelect.focus();
 }
 
 function hideEditCubeForm() {

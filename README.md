@@ -107,6 +107,9 @@ and a double-click (or one command) starts it.
 - **Personalised Greeting:** add your WCA ID and the app greets you by name
 - **Fast with Big Histories:** long lists load a page at a time, so even tens of thousands of
   solves stay quick
+- **Keyboard Friendly:** every button, menu, and window works from the keyboard (windows take
+  focus, keep Tab inside, and close with Esc), and text meets WCAG 2.1 AA contrast in both
+  themes
 - **Works Offline:** everything except the WCA rank and name lookup works without internet
 - **No Accounts:** nothing to sign up for, and your data never leaves your computer
 

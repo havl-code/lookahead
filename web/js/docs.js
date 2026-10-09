@@ -121,11 +121,13 @@ async function showDoc(name) {
     body.innerHTML = shownDocs[name].html;
     body.scrollTop = 0;
     modal.style.display = 'flex';
-    modal.querySelector('.modal-close').focus();
+    windowOpened(modal, modal.querySelector('.modal-close'));
 }
 
 function closeDoc() {
-    document.getElementById('doc-modal').style.display = 'none';
+    const modal = document.getElementById('doc-modal');
+    modal.style.display = 'none';
+    windowClosed(modal);
 }
 
 registerActions('click', {
@@ -135,7 +137,4 @@ registerActions('click', {
 
 document.getElementById('doc-modal').addEventListener('click', (e) => {
     if (e.target.id === 'doc-modal') closeDoc();
-});
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && document.getElementById('doc-modal').style.display === 'flex') closeDoc();
 });

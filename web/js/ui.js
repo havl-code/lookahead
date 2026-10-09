@@ -197,3 +197,59 @@ function promptDialog(label, { title = 'Note', value = '', confirmLabel = 'Save'
         field.setSelectionRange(field.value.length, field.value.length);
     });
 }
+
+// ---- The app's windows ----
+// Every other window (a .modal overlay) behaves the same way for keyboard and screen reader
+// users: opening one moves focus into it (windowOpened), Tab stays inside it, Esc closes it
+// (with its own close button, so it closes the usual way), and closing it puts focus back where
+// it was (windowClosed). The two windows above handle their own keys.
+const FOCUSABLE = 'a[href], button:not([disabled]), input:not([type="hidden"]):not([disabled]), ' +
+                  'select:not([disabled]), textarea:not([disabled]), [tabindex="0"]';
+const focusBeforeWindow = new WeakMap();
+
+function windowOpened(modal, focusTarget = null) {
+    focusBeforeWindow.set(modal, document.activeElement);
+    (focusTarget || modal.querySelector(FOCUSABLE))?.focus();
+}
+
+function windowClosed(modal) {
+    const before = modal && focusBeforeWindow.get(modal);
+    if (!before) return;
+    focusBeforeWindow.delete(modal);
+    if (before.isConnected && typeof before.focus === 'function') before.focus();
+}
+
+// The open window on top, if there is one
+function topWindow() {
+    const open = [...document.querySelectorAll('.modal:not(.confirm-dialog):not(.prompt-dialog)')]
+        .filter(modal => getComputedStyle(modal).display !== 'none');
+    return open[open.length - 1] || null;
+}
+
+// This loads before the tabs' own scripts, so it hears keys first, and an Esc that closes a
+// window goes no further (it mustn't also, say, take the timer out of fullscreen).
+document.addEventListener('keydown', (e) => {
+    const modal = topWindow();
+    if (!modal) return;
+    if (e.key === 'Escape') {
+        const close = modal.querySelector('[data-action^="close"]');
+        if (!close) return;
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        close.click();
+    } else if (e.key === 'Tab') {
+        const stops = [...modal.querySelectorAll(FOCUSABLE)].filter(el => el.getClientRects().length > 0);
+        if (stops.length === 0) return;
+        const [first, last] = [stops[0], stops[stops.length - 1]];
+        if (!modal.contains(document.activeElement)) {
+            e.preventDefault();
+            first.focus();
+        } else if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+        }
+    }
+});

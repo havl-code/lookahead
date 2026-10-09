@@ -28,7 +28,10 @@ function initSortableTable(tableId, defaultKey, defaultDir, onSort) {
         };
         th.addEventListener('click', sortByThisColumn);
         th.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') sortByThisColumn();
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();  // Space would otherwise scroll the page
+                sortByThisColumn();
+            }
         });
     });
     updateSortArrows(tableId);

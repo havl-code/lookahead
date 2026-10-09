@@ -43,7 +43,7 @@
     --border-secondary: #38383f;
     --text-primary: #ededef;
     --text-secondary: #a1a1a9;
-    --text-tertiary: #6f6f78;
+    --text-tertiary: #8a8a93;   /* the faintest text that still reads at 4.5:1 (WCAG 2.1 AA) */
 
     --accent: #ff7a1a;
     --accent-hover: #ff9142;
@@ -73,19 +73,20 @@
     --border-secondary: #d4d4d8;
     --text-primary: #18181b;
     --text-secondary: #55555e;
-    --text-tertiary: #8e8e96;
+    --text-tertiary: #6b6b74;
 
-    --accent: #ea580c;
-    --accent-hover: #c2410c;
-    --accent-soft: rgba(234, 88, 12, 0.1);
+    /* Dark enough to read at 4.5:1 as text on any background here, and with white on them */
+    --accent: #c2410c;
+    --accent-hover: #9a3412;
+    --accent-soft: rgba(194, 65, 12, 0.1);
     --accent-contrast: #ffffff;
 
-    --success: #16a34a;
-    --success-soft: rgba(22, 163, 74, 0.1);
-    --warning: #d97706;
-    --warning-soft: rgba(217, 119, 6, 0.1);
-    --danger: #dc2626;
-    --danger-soft: rgba(220, 38, 38, 0.1);
+    --success: #147a3b;
+    --success-soft: rgba(20, 122, 59, 0.1);
+    --warning: #a95005;
+    --warning-soft: rgba(169, 80, 5, 0.1);
+    --danger: #c42424;
+    --danger-soft: rgba(196, 36, 36, 0.1);
 
     --overlay: rgba(24, 24, 27, 0.45);
     --shadow: 0 12px 32px rgba(24, 24, 27, 0.12);

@@ -129,33 +129,42 @@ function generateNewScramble() {
     document.getElementById('scramble-text').textContent = TimerState.scramble;
 }
 
-// Scramble menu (copy / new scramble), opened by clicking the scramble. Clicks on its items
-// carry on to the page's action listener, which runs them (and they close the menu).
+// Scramble menu (copy / new scramble), opened by clicking the scramble or its options button
+// (which is how a keyboard opens it, with Enter). Clicks on its items carry on to the page's
+// action listener, which runs them (and they close the menu).
+function setScrambleMenu(open) {
+    document.querySelector('.scramble-menu')?.classList.toggle('show', open);
+    document.querySelector('.scramble-options-btn')?.setAttribute('aria-expanded', String(open));
+}
+
+function scrambleMenuOpen() {
+    return Boolean(document.querySelector('.scramble-menu.show'));
+}
+
 function setupScrambleMenu() {
     document.querySelector('.scramble-display').onclick = (e) => {
-        if (!e.target.closest('.scramble-menu-item')) {
-            document.querySelector('.scramble-menu').classList.toggle('show');
-        }
+        if (e.target.closest('.scramble-menu-item')) return;
+        setScrambleMenu(!scrambleMenuOpen());
+        // Opened from the keyboard (a click with no mouse behind it), so go to its first item
+        if (scrambleMenuOpen() && e.detail === 0) document.querySelector('.scramble-menu-item').focus();
     };
 }
 
 // Clicking anywhere else closes the scramble menu.
 document.addEventListener('click', (e) => {
-    if (!e.target.closest('.scramble-display')) {
-        document.querySelector('.scramble-menu')?.classList.remove('show');
-    }
+    if (!e.target.closest('.scramble-display')) setScrambleMenu(false);
 });
 
 function copyScramble() {
     navigator.clipboard.writeText(TimerState.scramble).catch(() => {
         // Clipboard access can be refused; there's nothing useful to do about it.
     });
-    document.querySelector('.scramble-menu').classList.remove('show');
+    setScrambleMenu(false);
 }
 
 function newScramble() {
     generateNewScramble();
-    document.querySelector('.scramble-menu').classList.remove('show');
+    setScrambleMenu(false);
 }
 
 // Session selector: lists this event's sessions and keeps showing the one being timed into.
@@ -238,17 +247,16 @@ function showTimerSettings() {
     modal.className = 'modal';
     modal.style.display = 'flex';
     modal.innerHTML = `
-        <div class="timer-settings-modal">
-            <h3>Timer Settings</h3>
+        <div class="timer-settings-modal" role="dialog" aria-modal="true" aria-labelledby="timer-settings-title">
+            <h3 id="timer-settings-title">Timer Settings</h3>
             <div class="settings-grid">
                 <div class="setting-item">
-                    <span class="setting-label">WCA Inspection (15 seconds)</span>
-                    <div class="setting-toggle ${TimerState.settings.inspectionEnabled ? 'active' : ''}"
-                         data-action="toggle-timer-setting" data-setting="inspectionEnabled"></div>
+                    <span class="setting-label" id="setting-inspection">WCA Inspection (15 seconds)</span>
+                    ${settingSwitch('inspectionEnabled', 'setting-inspection')}
                 </div>
                 <div class="setting-item">
-                    <span class="setting-label">Sound at 8 and 12 Seconds</span>
-                    <select class="setting-select" data-change="change-inspection-calls">
+                    <label class="setting-label" for="setting-calls">Sound at 8 and 12 Seconds</label>
+                    <select class="setting-select" id="setting-calls" data-change="change-inspection-calls">
                         <option value="off" ${TimerState.settings.inspectionCalls === 'off' ? 'selected' : ''}>Off</option>
                         <option value="beep" ${TimerState.settings.inspectionCalls === 'beep' ? 'selected' : ''}>Beep</option>
                         <option value="voice" ${TimerState.settings.inspectionCalls === 'voice' ? 'selected' : ''}>Voice</option>
@@ -259,14 +267,12 @@ function showTimerSettings() {
                     in WCA competitions. The calls at 8 and 12 seconds always show on screen.
                 </p>
                 <div class="setting-item">
-                    <span class="setting-label">Hide Timer While Solving</span>
-                    <div class="setting-toggle ${TimerState.settings.hideTimer ? 'active' : ''}"
-                         data-action="toggle-timer-setting" data-setting="hideTimer"></div>
+                    <span class="setting-label" id="setting-hide-timer">Hide Timer While Solving</span>
+                    ${settingSwitch('hideTimer', 'setting-hide-timer')}
                 </div>
                 <div class="setting-item">
-                    <span class="setting-label">Hide Stats</span>
-                    <div class="setting-toggle ${TimerState.settings.hideStats ? 'active' : ''}"
-                         data-action="toggle-timer-setting" data-setting="hideStats"></div>
+                    <span class="setting-label" id="setting-hide-stats">Hide Stats</span>
+                    ${settingSwitch('hideStats', 'setting-hide-stats')}
                 </div>
             </div>
             <div class="form-actions align-end">
@@ -275,6 +281,7 @@ function showTimerSettings() {
         </div>
     `;
     document.body.appendChild(modal);
+    windowOpened(modal);
 
     modal.addEventListener('click', (e) => {
         if (e.target === modal) {
@@ -283,9 +290,17 @@ function showTimerSettings() {
     });
 }
 
+// An on/off setting: a switch that a keyboard reaches and a screen reader announces as on or off
+function settingSwitch(setting, labelId) {
+    const on = Boolean(TimerState.settings[setting]);
+    return `<button type="button" class="setting-toggle${on ? ' active' : ''}" role="switch" aria-checked="${on}"
+                    aria-labelledby="${labelId}" data-action="toggle-timer-setting" data-setting="${setting}"></button>`;
+}
+
 function toggleTimerSetting(setting, element) {
     TimerState.settings[setting] = !TimerState.settings[setting];
-    element.classList.toggle('active');
+    element.classList.toggle('active', TimerState.settings[setting]);
+    element.setAttribute('aria-checked', String(TimerState.settings[setting]));
 
     if (setting === 'hideStats') {
         document.querySelector('.timer-session-stats')
@@ -301,7 +316,9 @@ function changeInspectionCalls(value) {
 
 function closeTimerSettings() {
     // Look this modal up by its own id: the first ".modal" on the page is a different one.
-    document.getElementById('timer-settings-modal')?.remove();
+    const modal = document.getElementById('timer-settings-modal');
+    modal?.remove();
+    windowClosed(modal);
 }
 
 // Timer keyboard controls
@@ -792,11 +809,13 @@ function cancelAttempt() {
     resetTimerDisplay();
 }
 
-// Escape cancels an attempt in progress; otherwise it leaves fullscreen.
+// Escape closes the scramble menu, or cancels an attempt in progress; otherwise it leaves
+// fullscreen. (An open window, such as the timer settings, closes first: see ui.js.)
 document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
-    if (document.getElementById('timer-settings-modal')) {
-        closeTimerSettings();
+    if (scrambleMenuOpen()) {
+        setScrambleMenu(false);
+        document.querySelector('.scramble-options-btn').focus();
     } else if (TimerState.inspection || TimerState.running || TimerState.spacePressed) {
         e.preventDefault();
         cancelAttempt();

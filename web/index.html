@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en-NZ" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -190,9 +190,11 @@
                         <div class="scramble-display" title="Click for scramble options">
                             <div class="scramble-label">Scramble</div>
                             <div class="scramble-text" id="scramble-text">Press the space bar to start</div>
-                            <div class="scramble-menu">
-                                <div class="scramble-menu-item" data-action="copy-scramble">Copy Scramble</div>
-                                <div class="scramble-menu-item" data-action="new-scramble">New Scramble</div>
+                            <button type="button" class="scramble-options-btn" aria-label="Scramble options"
+                                    aria-haspopup="true" aria-expanded="false" aria-controls="scramble-menu">&#8943;</button>
+                            <div class="scramble-menu" id="scramble-menu">
+                                <button type="button" class="scramble-menu-item" data-action="copy-scramble">Copy Scramble</button>
+                                <button type="button" class="scramble-menu-item" data-action="new-scramble">New Scramble</button>
                             </div>
                         </div>
 
@@ -338,7 +340,7 @@
 
                 <!-- Solves in one session -->
                 <div id="solve-details-modal" class="modal" style="display: none;">
-                    <div class="modal-content">
+                    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="solve-modal-title">
                         <div class="modal-header">
                             <h3 id="solve-modal-title">Session Solves</h3>
                             <button class="modal-close" data-action="close-solve-modal" aria-label="Close">&times;</button>
@@ -585,9 +587,9 @@
 
         <!-- WCA ID Setup Modal -->
         <div id="wca-setup-modal" class="modal" style="display: none;">
-            <div class="modal-content modal-small">
+            <div class="modal-content modal-small" role="dialog" aria-modal="true" aria-labelledby="wca-setup-title">
                 <div class="modal-header">
-                    <h3>Your WCA ID</h3>
+                    <h3 id="wca-setup-title">Your WCA ID</h3>
                     <button class="modal-close" data-action="close-wca-setup" aria-label="Close">&times;</button>
                 </div>
                 <div class="modal-body">
