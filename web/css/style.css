@@ -1160,6 +1160,12 @@ kbd {
     color: var(--warning);
 }
 
+.session-checkbox .import-session-event {
+    flex-shrink: 0;
+    width: auto;
+    max-width: 200px;
+}
+
 .session-checkbox.imported,
 .session-checkbox.empty {
     opacity: 0.7;

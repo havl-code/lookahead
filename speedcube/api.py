@@ -811,6 +811,15 @@ def import_selected():
     except ValueError:
         selected = []
     event_id = validation.event(request.form.get('event_id'))
+    # Each session's own event, chosen in the picker (CSTimer's scramble type suggests it); a
+    # session that isn't in here takes event_id
+    try:
+        events = json.loads(request.form.get('events') or '{}')
+    except ValueError:
+        events = None
+    if not isinstance(events, dict):
+        return _error('events must map each session to its event', 400)
+    events = {str(key): validation.event(value) for key, value in events.items()}
 
     if file is None or not isinstance(selected, list) or not selected:
         return _error('Missing file or sessions', 400)
@@ -824,7 +833,7 @@ def import_selected():
     conn = db.get_db()
     with conn:
         results = cstimer.import_sessions(conn, data, [str(key) for key in selected], event_id,
-                                          split_by_day=split_by_day)
+                                          split_by_day=split_by_day, events=events)
     if not results.pop('sessions_found'):
         return _error('None of the chosen sessions are in this file.', 400)
     return jsonify(success=True, message=_import_message(results), details=results)

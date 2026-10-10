@@ -5,6 +5,14 @@ registerActions('click', {
     'import-selected': () => importSelectedSessions(),
     'cancel-import': () => cancelImport()
 });
+registerActions('change', {
+    // The menu above the sessions sets every session's event at once
+    'set-import-events': select => {
+        document.querySelectorAll('#session-checkboxes .import-session-event').forEach(menu => {
+            menu.value = select.value;
+        });
+    }
+});
 
 // Set up the file upload listeners when the tab loads
 function loadImportTab() {
@@ -72,6 +80,9 @@ async function previewSessions() {
         // Session names come from the file, so they're escaped, and the ids use the position
         // rather than the name (which may contain spaces or quotes). Sessions with nothing new
         // to bring in start unticked.
+        // Each session's event starts as the one CSTimer's scramble type says, if it says one,
+        // or else the menu above's
+        const defaultEvent = document.getElementById('import-event-select').value;
         checkboxesDiv.innerHTML = result.sessions.map((session, i) => {
             const empty = session.solve_count === 0;
             const imported = !empty && session.solve_count === session.already_imported;
@@ -96,7 +107,12 @@ async function previewSessions() {
                             Mean: ${session.mean ? formatTime(session.mean) : 'N/A'}
                         </span>
                         ${notes.length ? `<span class="session-meta session-warning">${notes.join('. ')}.</span>` : ''}
+                        ${session.suggested_event ? '<span class="session-meta">Event from its scramble type in CSTimer</span>' : ''}
                     </label>
+                    <select class="import-session-event" data-key="${escapeHtml(session.key)}"
+                            aria-label="Event for ${escapeHtml(session.name)}">
+                        ${eventOptionsHtml(session.suggested_event || defaultEvent)}
+                    </select>
                 </div>
             `;
         }).join('');
@@ -114,6 +130,12 @@ async function importSelectedSessions() {
     const checkboxes = document.querySelectorAll('#session-checkboxes input[type="checkbox"]:checked');
     const selectedSessions = Array.from(checkboxes).map(cb => cb.value);
     const eventId = document.getElementById('import-event-select').value;
+    // Each chosen session's own event, from its menu
+    const events = {};
+    document.querySelectorAll('#session-checkboxes .import-session-event').forEach(select => {
+        if (selectedSessions.includes(select.dataset.key)) events[select.dataset.key] = select.value;
+    });
+    const eventNames = [...new Set(Object.values(events))].map(getEventName);
     
     if (selectedSessions.length === 0) {
         showError('Please select at least one session to import');
@@ -128,7 +150,9 @@ async function importSelectedSessions() {
     }
     
     const statusDiv = document.getElementById('import-status');
-    statusDiv.textContent = `Importing ${selectedSessions.length} session(s) as ${getEventName(eventId)}...`;
+    statusDiv.textContent = eventNames.length === 1
+        ? `Importing ${countLabel(selectedSessions.length, 'session')} as ${eventNames[0]}...`
+        : `Importing ${countLabel(selectedSessions.length, 'session')}...`;
     statusDiv.className = '';
     
     // The server doesn't keep the previewed file around, so send it again with the selection.
@@ -136,6 +160,7 @@ async function importSelectedSessions() {
     formData.append('file', AppState.selectedFile);
     formData.append('sessions', JSON.stringify(selectedSessions));
     formData.append('event_id', eventId);
+    formData.append('events', JSON.stringify(events));
     formData.append('split_by_day', document.getElementById('import-split-by-day').checked ? 'true' : 'false');
 
     try {

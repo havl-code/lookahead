@@ -43,6 +43,27 @@ class TestImport:
         client.post('/api/import/selected', data=self.form(cstimer_bytes, ['session2']))
         assert query(app, 'SELECT event_id FROM sessions') == [{'event_id': '333'}]
 
+    def test_each_session_can_have_its_own_event(self, app, client, cstimer_bytes):
+        """The picker sends each session's event (CSTimer's scramble type suggests it); a session
+        it leaves out takes event_id."""
+        data = {**self.form(cstimer_bytes, ['session1', 'session2'], '222'),
+                'events': json.dumps({'session2': '333oh'})}
+        client.post('/api/import/selected', data=data)
+        rows = query(app, "SELECT notes, event_id FROM sessions ORDER BY id")
+        assert {(r['notes'], r['event_id']) for r in rows} == {
+            ('Imported from CSTimer: Main 3x3', '222'), ('Imported from CSTimer: 2', '333oh')}
+
+    @pytest.mark.parametrize('events, message', [
+        ('["333"]', 'events must map each session to its event'),
+        ('not json', 'events must map each session to its event'),
+        ('{"session2": "999"}', 'That event is not one the app knows.'),
+    ])
+    def test_bad_events_are_refused(self, app, client, cstimer_bytes, events, message):
+        data = {**self.form(cstimer_bytes, ['session2']), 'events': events}
+        response = client.post('/api/import/selected', data=data)
+        assert (response.status_code, response.get_json()['error']) == (400, message)
+        assert query(app, 'SELECT COUNT(*) AS n FROM sessions') == [{'n': 0}]
+
     def test_needs_a_file_and_a_choice(self, client, cstimer_bytes):
         assert client.post('/api/import/selected', data={'sessions': '["session1"]'}).status_code == 400
         assert client.post('/api/import/selected', data=self.form(cstimer_bytes, [])).status_code == 400

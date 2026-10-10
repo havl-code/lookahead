@@ -173,3 +173,34 @@ class TestImport:
 
     def test_the_fixture_names_its_sessions(self, cstimer_data):
         assert json.loads(cstimer_data['properties']['sessionData'])['1']['name'] == 'Main 3x3'
+
+
+class TestSessionEvents:
+    """Each session's event, from the scramble type in its CSTimer options (the WCA scramble
+    types in CSTimer's own scramble menu)."""
+
+    def test_from_the_fixture(self, cstimer_data):
+        assert cstimer.session_events(cstimer_data) == {'session2': '333oh'}
+        suggested = {s['key']: s['suggested_event'] for s in cstimer.preview(cstimer_data)}
+        assert suggested == {'session1': None, 'session2': '333oh', 'session3': None}
+
+    @pytest.mark.parametrize('scramble_type, event', [
+        ('333', '333'), ('222so', '222'), ('444wca', '444'), ('555wca', '555'), ('666wca', '666'),
+        ('777wca', '777'), ('333ni', '333bf'), ('333oh', '333oh'), ('clkwca', 'clock'),
+        ('mgmp', 'minx'), ('pyrso', 'pyram'), ('skbso', 'skewb'), ('sqrs', 'sq1'),
+        ('444bld', '444bf'), ('555bld', '555bf'),
+        ('333fm', None), ('ftoso', None), ('r3ni', None), ('nonsense', None),
+    ])
+    def test_each_wca_scramble_type(self, scramble_type, event):
+        # sessionData can be an object as well as a JSON string
+        data = {'session1': [], 'properties': {'sessionData': {'1': {'opt': {'scrType': scramble_type}}}}}
+        assert cstimer.session_events(data).get('session1') == event
+
+    def test_every_event_is_one_the_app_knows(self):
+        from speedcube.events import EVENTS
+        assert set(cstimer.CSTIMER_EVENTS.values()) <= set(EVENTS)
+
+    @pytest.mark.parametrize('session_data', [None, 'not json', '[]', {'1': 'oops'}, {'1': {'opt': 'oops'}},
+                                              {'1': {'opt': {}}}])
+    def test_odd_session_data_suggests_nothing(self, session_data):
+        assert cstimer.session_events({'properties': {'sessionData': session_data}}) == {}

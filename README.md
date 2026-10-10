@@ -94,9 +94,10 @@ and a double-click (or one command) starts it.
 ### 📥 Import and Backup
 
 - **CSTimer Import:** bring in your existing CSTimer sessions (JSON or TXT export), choosing
-  which ones to import. Every solve keeps its own date, penalty, and comment, sessions keep
-  their CSTimer names, and each one can be split into a session per day. Importing the same
-  file again only adds solves that aren't already there.
+  which ones to import and the event for each (CSTimer's scramble type picks it where it can).
+  Every solve keeps its own date, penalty, and comment, sessions keep their CSTimer names, and
+  each one can be split into a session per day. Importing the same file again only adds solves
+  that aren't already there.
 - **Backup and Restore:** export all your data to one JSON file, or restore from one
 - **CSV Export:** download every solve, or one session's, as a spreadsheet (CSV), with its date,
   event, cube, time, penalty, result, scramble, and notes
@@ -163,8 +164,9 @@ itself. The first time you open a downloaded launcher, your system may ask you t
 - **Safe from other websites.** A page open in your browser can no longer change your data,
   read it, or keep the app running. See [Security](#-security).
 - **CSTimer imports keep their history.** Every solve keeps the date and time you did it, its
-  penalty, and its comment. Sessions keep their CSTimer names and can be split into one a day,
-  and importing the same file again only adds the new solves.
+  penalty, and its comment. Sessions keep their CSTimer names, take their event from CSTimer's
+  scramble type, and can be split into one a day, and importing the same file again only adds
+  the new solves.
 - **WCA inspection.** Starting after 15 seconds is a +2, and after 17 a DNF, with calls at 8
   and 12 seconds that can also beep or be spoken.
 - **Timers for 2x2x2, 4x4x4, 5x5x5, 6x6x6, and 7x7x7,** each with scrambles of the length the
@@ -301,7 +303,9 @@ The **How the scores work** link under the scores opens it in the app, even offl
    - Open the **Import** tab
    - Click **Choose File** and pick your export
    - Click **Preview Sessions**
-   - Tick the sessions you want and choose which event they're for
+   - Tick the sessions you want, and check each one's event. Where CSTimer says which
+     scramble type a session uses, its event is already picked; **Set every session's event
+     to** changes them all at once
    - Leave **Split each CSTimer session into one session per day** ticked to match the
      timer's session a day, or untick it to keep each CSTimer session whole
    - Click **Import Selected**

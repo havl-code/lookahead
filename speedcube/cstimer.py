@@ -95,8 +95,8 @@ def _readable_solves(rows):
     return solves, unreadable
 
 
-def session_names(data):
-    """CSTimer's name for each session key, from properties.sessionData."""
+def _session_data(data):
+    """properties.sessionData as {session key: its details}, or {} if it's missing or unreadable."""
     properties = data.get('properties')
     session_data = properties.get('sessionData') if isinstance(properties, dict) else None
     if isinstance(session_data, str):
@@ -106,12 +106,41 @@ def session_names(data):
             session_data = None
     if not isinstance(session_data, dict):
         return {}
+    return {f'session{number}': info for number, info in session_data.items() if isinstance(info, dict)}
+
+
+def session_names(data):
+    """CSTimer's name for each session key, from properties.sessionData."""
     names = {}
-    for number, info in session_data.items():
-        name = info.get('name') if isinstance(info, dict) else None
+    for key, info in _session_data(data).items():
+        name = info.get('name')
         if name is not None and str(name).strip():
-            names[f'session{number}'] = str(name).strip()
+            names[key] = str(name).strip()
     return names
+
+
+# CSTimer's scramble type for each WCA event (the "WCA" group of its scramble menu, in
+# src/lang/en-us.js in CSTimer's source), and the event it is here. Fewest Moves (333fm) and
+# FTO (ftoso) aren't events in the app, and Multi-Blind (r3ni) is scored in points, not time, so
+# those suggest nothing.
+CSTIMER_EVENTS = {
+    '333': '333', '222so': '222', '444wca': '444', '555wca': '555', '666wca': '666',
+    '777wca': '777', '333ni': '333bf', '333oh': '333oh', 'clkwca': 'clock', 'mgmp': 'minx',
+    'pyrso': 'pyram', 'skbso': 'skewb', 'sqrs': 'sq1', '444bld': '444bf', '555bld': '555bf',
+}
+
+
+def session_events(data):
+    """The event each session is for, where CSTimer's session data says (its scramble type, in
+    the session's own options). A session that doesn't say, or uses a scramble type for
+    something the app doesn't time, has none."""
+    events = {}
+    for key, info in _session_data(data).items():
+        options = info.get('opt')
+        scramble_type = options.get('scrType') if isinstance(options, dict) else None
+        if scramble_type in CSTIMER_EVENTS:
+            events[key] = CSTIMER_EVENTS[scramble_type]
+    return events
 
 
 def _sessions(data):
@@ -136,9 +165,11 @@ def already_imported(conn, solves):
 
 
 def preview(data, conn=None):
-    """A summary of each session for the import picker: its name, how many solves can be read
-    (and how many can't), the days they span, how many are already in the app, and the best,
-    worst, and mean in seconds (+2s included, DNFs left out)."""
+    """A summary of each session for the import picker: its name, the event CSTimer says it's
+    for (if it says), how many solves can be read (and how many can't), the days they span, how
+    many are already in the app, and the best, worst, and mean in seconds (+2s included, DNFs
+    left out)."""
+    events = session_events(data)
     sessions = []
     for key, name, rows in _sessions(data):
         solves, unreadable = _readable_solves(rows)
@@ -148,6 +179,7 @@ def preview(data, conn=None):
         sessions.append({
             'key': key,
             'name': name,
+            'suggested_event': events.get(key),
             'solve_count': len(solves),
             'unreadable': unreadable,
             'first_date': days[0] if days else None,
@@ -161,9 +193,10 @@ def preview(data, conn=None):
     return sessions
 
 
-def import_sessions(conn, data, selected_keys, event_id='333', split_by_day=True):
-    """Import the chosen CSTimer sessions as sessions of `event_id`, keeping each solve's own
-    time, penalty, scramble, comment (as its note), and timestamp.
+def import_sessions(conn, data, selected_keys, event_id='333', split_by_day=True, events=None):
+    """Import the chosen CSTimer sessions as sessions of `event_id`, or of the event `events`
+    gives a session by its key, keeping each solve's own time, penalty, scramble, comment (as
+    its note), and timestamp.
 
     With split_by_day (the default, since the app keeps a session a day), each CSTimer session
     becomes one session for each day it has solves on, dated that day. Otherwise it stays one
@@ -189,8 +222,8 @@ def import_sessions(conn, data, selected_keys, event_id='333', split_by_day=True
             groups.setdefault(day, []).append(solve)
 
         for day, day_solves in groups.items():
-            session_id = db.create_session(conn, event_id, f'Imported from CSTimer: {name}',
-                                           date=day)
+            session_id = db.create_session(conn, (events or {}).get(key, event_id),
+                                           f'Imported from CSTimer: {name}', date=day)
             db.add_solves_to_new_session(conn, session_id, [
                 (s['time_ms'], s['scramble'], s['penalty'], s['dnf'], s['notes'], s['timestamp'])
                 for s in day_solves

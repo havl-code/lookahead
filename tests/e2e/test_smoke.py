@@ -280,10 +280,20 @@ def test_import(app_page, live_app):
     assert page.text_content('.session-checkbox strong') == 'Main 3x3'  # CSTimer's own name
     assert "can't be read" in page.text_content('.session-checkbox')
     assert page.is_checked('#import-split-by-day')
+    # Each session has its own event: session 2's comes from its scramble type in CSTimer
+    menus = page.locator('.import-session-event')
+    assert [menus.nth(i).input_value() for i in range(3)] == ['333', '333oh', '333']
+    assert 'scramble type' in page.locator('.session-checkbox').nth(1).text_content()
+    page.select_option('#import-event-select', '222')  # sets them all at once
+    assert [menus.nth(i).input_value() for i in range(3)] == ['222', '222', '222']
+    page.select_option('#import-event-select', '333')
+    menus.nth(1).select_option('333oh')
     page.click('#session-selection .btn-primary')
     page.wait_for_selector('#import-status.success')
     assert 'Imported 10 solves into 4 sessions' in page.text_content('#import-status')
     assert len(solves_in(live_app)) == 10
+    assert query(live_app, "SELECT event_id, COUNT(*) AS n FROM sessions GROUP BY event_id ORDER BY event_id") == [
+        {'event_id': '333', 'n': 3}, {'event_id': '333oh', 'n': 1}]
 
     # The same file again: everything is marked as already in the app, and nothing is added
     page.set_input_files('#file-input', str(FIXTURES / 'cstimer_export.txt'))
