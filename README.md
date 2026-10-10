@@ -43,14 +43,17 @@ and a double-click (or one command) starts it.
   time) until it turns green, let go to start, and press again (or tap) to stop
 - **WCA Inspection:** an optional 15 second inspection that follows the WCA rules: starting
   after 15 seconds is a +2, and after 17 a DNF. The 8 and 12 second calls show on screen, and
-  can also beep or be spoken
-- **2x2x2 to 7x7x7, and One-Handed:** the timer works for every cube from 2x2x2 to 7x7x7, and
-  for 3x3x3 One-Handed, so far
+  can also beep or be spoken. The blindfolded events have none, as in competition, so
+  memorisation is part of the time
+- **Eleven Events:** the timer works for every cube from 2x2x2 to 7x7x7, 3x3x3 One-Handed, the
+  three blindfolded events (3x3x3, 4x4x4, and 5x5x5), and Megaminx, so far
 - **Scrambles:** a new scramble for every solve: 25 moves for 2x2x2 and 3x3x3, 40 for 4x4x4, 60
   for 5x5x5, 80 for 6x6x6, and 100 for 7x7x7 (with wide turns such as Rw and 3Rw). They're
   random-move, the lengths the WCA itself used. Official scrambles for 2x2x2 to 4x4x4 are
   random-state today, so those mix the cube well for practice but aren't exactly like
-  competition ones; the WCA still scrambles 5x5x5 to 7x7x7 with random moves
+  competition ones; the WCA still scrambles 5x5x5 to 7x7x7 with random moves. Blindfolded
+  scrambles end by turning the cube to a random orientation, as the WCA's do, and Megaminx
+  scrambles are 70 moves in seven lines, written the way the WCA writes them
 - **Live Statistics:** solve count, best, mean and Ao5 for the whole session as you solve
 - **A Session a Day:** your first solve each day starts a new session automatically
 - **Penalties and Notes:** mark any solve as +2 or DNF afterwards, or add a note about how it
@@ -112,7 +115,8 @@ and a double-click (or one command) starts it.
   solves stay quick
 - **Keyboard and Screen Reader Friendly:** every button, menu, and window works from the
   keyboard (windows take focus, keep Tab inside, and close with Esc), each chart is described in
-  words for screen readers, and text meets WCAG 2.1 AA contrast in both themes
+  words for screen readers, and text, fields, buttons, and switches meet WCAG 2.1 AA contrast
+  in both themes
 - **Works Offline:** everything except the WCA rank and name lookup works without internet
 - **No Accounts:** nothing to sign up for, and your data never leaves your computer
 
@@ -159,6 +163,15 @@ itself. The first time you open a downloaded launcher, your system may ask you t
 ---
 
 ## 🆕 What's New
+
+### Since 3.2 (Not Released Yet)
+
+- **Blindfolded timers.** 3x3x3, 4x4x4, and 5x5x5 Blindfolded have a timer, with no inspection
+  (memorisation is part of the time) and scrambles that end by turning the cube to a random
+  orientation, as in competition.
+- **A Megaminx timer,** with 70 move scrambles in seven lines, as the WCA writes them.
+- **Clearer fields and buttons.** Their edges, and the switches in the timer settings, now meet
+  WCAG 2.1 AA contrast in both themes, as text already did.
 
 ### 3.2
 
@@ -255,8 +268,9 @@ The first start of 3.2 updates your data once (see
 
 ### Using the Timer
 
-1. Open the **Timer** tab and pick your event. (Every cube from 2x2x2 to 7x7x7, and 3x3x3
-   One-Handed, has a timer so far.)
+1. Open the **Timer** tab and pick your event. (Every cube from 2x2x2 to 7x7x7, 3x3x3
+   One-Handed, the blindfolded events, and Megaminx have a timer so far. For the blindfolded
+   events, holding and letting go starts the solve straight away, with no inspection.)
 2. Just start solving. The timer keeps one session per day: your first solve of the day
    starts a new session automatically (with the same cube as your last one), and the rest of
    the day's solves go into it. To add solves to an older session instead, pick it from the

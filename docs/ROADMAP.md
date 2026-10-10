@@ -102,15 +102,29 @@ as [v3.2.0](https://github.com/havl-code/speedcube-training-explorer/releases/ta
   [`3fa5ba4`](https://github.com/havl-code/speedcube-training-explorer/commit/3fa5ba4) Docs for
   3.2, the version number, and a new screenshot
 
+## Done Since 3.2
+
+Not released yet.
+
+- [`7828f84`](https://github.com/havl-code/speedcube-training-explorer/commit/7828f84) Timers for 3x3x3, 4x4x4, and 5x5x5
+  Blindfolded, with no inspection (Regulation B1a) and scrambles that end in a random
+  orientation, each of the 24 equally likely (4b3a)
+- [`88f66c4`](https://github.com/havl-code/speedcube-training-explorer/commit/88f66c4) A Megaminx timer, with 70 move
+  scrambles (4b3e, and the 2008 Regulations, Article 4f) in seven lines, as TNoodle writes them
+- [`b94e87e`](https://github.com/havl-code/speedcube-training-explorer/commit/b94e87e) Fields, buttons, and switches stand
+  out at 3:1 (WCAG 2.1 1.4.11), which finishes AA contrast
+
 ---
 
 ## Known Limitations
 
 - **Scrambles are random-move.** Official WCA scrambles for 2x2x2 to 4x4x4 are random-state
   (Regulation 4b3), so these mix the cube well for practice but aren't spread over positions in
-  exactly the same way. (The WCA scrambles 5x5x5 to 7x7x7 with random moves too, 4b3e.)
-- **Seven events have a timer:** every cube from 2x2x2 to 7x7x7, and 3x3x3 One-Handed. Other
-  events can be added by hand or imported, but not timed in the app.
+  exactly the same way. (The WCA scrambles 5x5x5 to 7x7x7 and Megaminx with random moves too,
+  4b3e.)
+- **Eleven events have a timer:** every cube from 2x2x2 to 7x7x7, 3x3x3 One-Handed, the three
+  blindfolded events (3x3x3, 4x4x4, and 5x5x5), and Megaminx. Clock, Pyraminx, Skewb, and
+  Square-1 can be added by hand or imported, but not timed in the app.
 - **The timer takes the space bar or a touchscreen,** but not a Stackmat timer or a Bluetooth
   smart cube. On the Timer tab the space bar always belongs to the timer, even with a button
   focused, so buttons there are pressed with Enter.
@@ -131,8 +145,6 @@ as [v3.2.0](https://github.com/havl-code/speedcube-training-explorer/releases/ta
 - **CSV is export only.**
 - **CSTimer only says a session's event when that session has its own scramble type** (set in
   the session's options). Sessions that use the overall one start as the import menu's event.
-- **Field and button borders are faint.** Text meets WCAG 2.1 AA, but the edges of fields and
-  buttons are about 1.5:1 against the page, short of the 3:1 that 1.4.11 asks for.
 
 ### Tech Debt
 
@@ -155,11 +167,8 @@ as [v3.2.0](https://github.com/havl-code/speedcube-training-explorer/releases/ta
 
 ## Now
 
-Small, safe steps that build on 3.2.
-
-| # | What | Why | Size |
-| --- | --- | --- | --- |
-| 1 | Field and button borders at 3:1 against the page (WCAG 2.1 1.4.11) | The last part of AA contrast; it changes the look a little, so it waits for the owner's say | S |
+Nothing small is left: the borders and the blindfolded and Megaminx timers are done (see
+[Done Since 3.2](#done-since-32)). Each item below needs a decision or some design first.
 
 ## Next
 
@@ -167,12 +176,10 @@ Bigger features, once the basics above are in.
 
 | # | What | Why | Size |
 | --- | --- | --- | --- |
-| 2 | Timers for the blindfolded events | 3x3x3 scrambles (and 4x4x4 and 5x5x5 ones) already exist; blindfolded solves have no inspection (Regulation B1a), and their scrambles leave the cube in a random orientation (4b3a) | S |
-| 3 | A Megaminx timer | The WCA scrambles Megaminx with random moves too (4b3e), 70 of them (2008 Regulations, 4f) | S |
-| 4 | Goals and streaks: a daily solve target, days in a row, and a target average | Builds on a session a day, and gives a reason to come back | M |
-| 5 | Refresh `wca_reference.json` on a schedule, with CI rebuilding it and opening a pull request | Keeps the scores' comparison current without anyone remembering to do it (the scoring method stays the same) | M |
-| 6 | Random-state scrambles, bundled so they work offline | Matches competition scrambles (Regulation 4b3); needs a scrambler whose licence fits the app's MIT Licence | L |
-| 7 | A world rank model for the whole field, beyond the top 1,000 | Most people are outside the top 1,000, so they see no rank at all today | M |
+| 1 | Goals and streaks: a daily solve target, days in a row, and a target average | Builds on a session a day, and gives a reason to come back | M |
+| 2 | Refresh `wca_reference.json` on a schedule, with CI rebuilding it and opening a pull request | Keeps the scores' comparison current without anyone remembering to do it (the scoring method stays the same) | M |
+| 3 | Random-state scrambles, bundled so they work offline | Matches competition scrambles (Regulation 4b3); needs a scrambler whose licence fits the app's MIT Licence | L |
+| 4 | A world rank model for the whole field, beyond the top 1,000 | Most people are outside the top 1,000, so they see no rank at all today | M |
 
 ## Later
 
@@ -180,12 +187,12 @@ Larger changes to how the app works, each worth a design discussion first.
 
 | # | What | Why | Size |
 | --- | --- | --- | --- |
-| 8 | Timers for every WCA event | Pyraminx, Skewb, Square-1, and Clock need scramblers of their own (6 is a start), and Fewest Moves and Multi-Blind need new flows | L |
-| 9 | Per-event training plans | Turns the insights into a weekly plan you can follow | L |
-| 10 | Stackmat timer support, through the computer's audio input | The timer cubers already own and use at competitions | L |
-| 11 | Bluetooth smart cubes, through Web Bluetooth | Move-by-move solve data, but only in Chromium-based browsers | L |
-| 12 | Multiple user profiles | Families and clubs sharing one computer | L |
-| 13 | A PWA or a packaged desktop build | A packaged build would remove the uv step; a PWA adds an app window, but still needs the server | L |
+| 5 | Timers for every WCA event | Pyraminx, Skewb, Square-1, and Clock need scramblers of their own (3 is a start), and Fewest Moves and Multi-Blind need new flows | L |
+| 6 | Per-event training plans | Turns the insights into a weekly plan you can follow | L |
+| 7 | Stackmat timer support, through the computer's audio input | The timer cubers already own and use at competitions | L |
+| 8 | Bluetooth smart cubes, through Web Bluetooth | Move-by-move solve data, but only in Chromium-based browsers | L |
+| 9 | Multiple user profiles | Families and clubs sharing one computer | L |
+| 10 | A PWA or a packaged desktop build | A packaged build would remove the uv step; a PWA adds an app window, but still needs the server | L |
 
 ---
 
@@ -201,5 +208,3 @@ Larger changes to how the app works, each worth a design discussion first.
    two-year window moves?
 6. **Old timer routes:** remove the timer's own solve routes in a later version, or keep them
    for good?
-7. **Borders:** is it fine to darken the edges of fields and buttons to 3:1 (WCAG 1.4.11)? It
-   makes them noticeably stronger, especially in the dark theme.
