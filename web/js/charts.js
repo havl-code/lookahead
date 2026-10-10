@@ -57,6 +57,7 @@ async function renderAllCharts() {
 // Returns null if there's nothing to draw (or the selection has changed in the meantime).
 async function fetchChartData(request, containerId, url, hasData) {
     const container = document.getElementById(containerId);
+    labelChart(container, null);  // a message in its place is read as it is
     container.innerHTML = '<div class="loading">Loading...</div>';
     try {
         const response = await apiFetch(url);
@@ -99,10 +100,85 @@ function chartLayout(xTitle, yTitle = 'Time (seconds)') {
     };
 }
 
-function draw(containerId, traces, layout) {
+// Draw a chart. `summary` says in words what it shows, for anyone who can't see it.
+function draw(containerId, traces, layout, summary) {
     const container = document.getElementById(containerId);
     container.innerHTML = '';
     Plotly.newPlot(container, traces, layout, chartConfig);
+    labelChart(container, summary);
+}
+
+// ---- Each chart in words ----
+// A screen reader can't make sense of a chart's drawing (a jumble of shapes and axis labels), so
+// a drawn chart is marked as one image, named with a sentence or two saying what it shows. The
+// sentences come from the same numbers the chart is drawn from.
+
+function labelChart(container, summary) {
+    if (summary) {
+        container.setAttribute('role', 'img');
+        container.setAttribute('aria-label', summary);
+    } else {
+        container.removeAttribute('role');
+        container.removeAttribute('aria-label');
+    }
+}
+
+const timeOrDnf = seconds => (seconds == null ? 'a DNF' : formatTime(seconds));
+
+function bestOf(values) {
+    const done = values.filter(v => v != null);
+    return done.length ? Math.min(...done) : null;
+}
+
+function progressSummary(points) {
+    const first = points[0];
+    const last = points[points.length - 1];
+    let text = `Progress over ${countLabel(points.length, 'session')}, from ${first.date} to ${last.date}.`;
+    const ao5s = points.filter(p => p.ao5 != null);
+    if (ao5s.length >= 2) {
+        text += ` The last Ao5 went from ${formatTime(ao5s[0].ao5)} to ${formatTime(ao5s[ao5s.length - 1].ao5)}.`;
+    }
+    const best = points.filter(p => p.best != null).sort((a, b) => a.best - b.best)[0];
+    if (best) text += ` Best single ${formatTime(best.best)}, on ${best.date}.`;
+    return text;
+}
+
+function sessionProgressSummary(points) {
+    const first = points[0];
+    const last = points[points.length - 1];
+    const fastest = bestOf(points.map(p => p.time));
+    const dnfs = points.filter(p => p.time == null).length;
+    const parts = [`Solves ${first.solve_number} to ${last.solve_number} of this session`];
+    if (fastest != null) parts.push(`fastest ${formatTime(fastest)}`);
+    if (last.mean != null) parts.push(`mean ${formatTime(last.mean)}`);
+    if (last.ao5 !== undefined && points.length >= 5) parts.push(`latest Ao5 ${timeOrDnf(last.ao5)}`);
+    if (dnfs) parts.push(countLabel(dnfs, 'DNF'));
+    return `${parts.join(', ')}.`;
+}
+
+function distributionSummary(sorted, mean, median) {
+    return `How ${countLabel(sorted.length, 'solve')} spread out: fastest ${formatTime(sorted[0])}, ` +
+           `median ${formatTime(median)}, mean ${formatTime(mean)}, and slowest ${formatTime(sorted[sorted.length - 1])}.`;
+}
+
+function rollingSummary(data) {
+    const latest = values => (values.length ? values[values.length - 1] : null);
+    const describe = (name, values) => {
+        if (!values.some(v => v != null)) return null;
+        return `${name} now ${timeOrDnf(latest(values))}, best ${formatTime(bestOf(values))}`;
+    };
+    const parts = [describe('Ao5', data.rolling5 || []), describe('Ao12', data.rolling12 || [])].filter(Boolean);
+    return `The last ${countLabel(data.times.length, 'solve')} with rolling averages` +
+           (parts.length ? `: ${parts.join('; ')}.` : '.');
+}
+
+function consistencySummary(sessions) {
+    const medians = sessions.map(s => s.median);
+    const steadiest = [...sessions].sort((a, b) => (a.q3 - a.q1) - (b.q3 - b.q1))[0];
+    return `How spread out the times were in the last ${countLabel(sessions.length, 'session')}. ` +
+           `Median times ranged from ${formatTime(Math.min(...medians))} to ${formatTime(Math.max(...medians))}. ` +
+           `The steadiest was on ${steadiest.date}, with the middle half of its solves within ` +
+           `${(steadiest.q3 - steadiest.q1).toFixed(2)} seconds of each other.`;
 }
 
 const line = (x, y, name, color, extra = {}) => ({ x, y, name, type: 'scatter', mode: 'lines', line: { color, width: 2 }, ...extra });
@@ -139,7 +215,8 @@ async function loadProgressChart(request, eventId, sessionId) {
         // Whole sessions only (no 1.5), with at most about 10 labels
         layout.xaxis.dtick = Math.max(1, Math.ceil(points.length / 10));
     }
-    draw('progress-chart', traces, layout);
+    draw('progress-chart', traces, layout,
+         sessionId === 'all' ? progressSummary(points) : sessionProgressSummary(points));
 }
 
 async function loadDistributionChart(request, eventId, sessionId) {
@@ -176,7 +253,7 @@ async function loadDistributionChart(request, eventId, sessionId) {
         marker: { color: COLORS.primary },
         opacity: 0.9,
         name: 'Solves'
-    }], layout);
+    }], layout, distributionSummary(sorted, mean, median));
 }
 
 async function loadRollingChart(request, eventId, sessionId) {
@@ -193,12 +270,13 @@ async function loadRollingChart(request, eventId, sessionId) {
         line(x, data.times, 'Solves', COLORS.gray, { mode: 'markers', marker: { color: COLORS.gray, size: 4, opacity: 0.35 } }),
         line(x, data.rolling5 || [], 'Rolling Ao5', COLORS.primary),
         line(x, data.rolling12 || [], 'Rolling Ao12', COLORS.secondary)
-    ], chartLayout('Recent solves'));
+    ], chartLayout('Recent solves'), rollingSummary(data));
 }
 
 async function loadConsistencyChart(request, eventId, sessionId) {
     const container = document.getElementById('consistency-chart');
     if (sessionId !== 'all') {
+        labelChart(container, null);
         container.innerHTML = '<div class="loading">This chart compares sessions, so it shows when "All sessions" is selected.</div>';
         return;
     }
@@ -229,5 +307,5 @@ async function loadConsistencyChart(request, eventId, sessionId) {
     });
     const layout = chartLayout('');
     layout.showlegend = false;
-    draw('consistency-chart', traces, layout);
+    draw('consistency-chart', traces, layout, consistencySummary(data.sessions));
 }

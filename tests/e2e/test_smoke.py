@@ -499,3 +499,29 @@ def test_charts_without_enough_data_say_so_quietly(app_page, live_app):
     assert 'Need at least 5 solves' in page.text_content('#distribution-chart')
     assert 'Need at least 12 solves' in page.text_content('#breakdown-chart')
     assert page.errors == []
+
+
+def test_charts_are_described_in_words(app_page, live_app):
+    """Each drawn chart is one image to a screen reader, named with what it shows; a chart that
+    shows a message instead is read as that message."""
+    seed_session(live_app, list(range(10, 22)), date='2026-09-01')
+    seed_session(live_app, list(range(9, 21)), date='2026-09-02')
+    page = app_page
+    open_tab(page, 'analytics')
+    for chart in ('progress-chart', 'distribution-chart', 'breakdown-chart', 'consistency-chart'):
+        page.wait_for_selector(f'#{chart}[role="img"]')
+    label = lambda chart: page.get_attribute(f'#{chart}', 'aria-label')
+    assert label('progress-chart') == ('Progress over 2 sessions, from 2026-09-01 to 2026-09-02. '
+                                       'The last Ao5 went from 19.00s to 18.00s. Best single 9.00s, on 2026-09-02.')
+    assert label('distribution-chart') == ('How 24 solves spread out: fastest 9.00s, median 15.00s, '
+                                           'mean 15.00s, and slowest 21.00s.')
+    assert label('breakdown-chart').startswith('The last 24 solves with rolling averages: Ao5 now ')
+    assert 'Median times ranged from 14.50s to 15.50s. The steadiest was on 2026-09-0' in label('consistency-chart')
+
+    # One session: the consistency chart shows a message, so it's no longer an image
+    page.select_option('#analytics-session-select', index=1)
+    page.wait_for_selector('#consistency-chart >> text=compares sessions')
+    assert page.get_attribute('#consistency-chart', 'role') is None
+    page.wait_for_function("() => (document.getElementById('progress-chart').getAttribute('aria-label') || '')"
+                           ".startsWith('Solves 1 to 12 of this session')")
+    assert page.errors == []
