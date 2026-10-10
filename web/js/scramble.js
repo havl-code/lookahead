@@ -44,7 +44,8 @@ const SCRAMBLES = {
     // randomOrientation, below), and have no inspection (Regulation B1a)
     '333bf': { length: 25, layers: movesOf('R L U D F B'), blindfolded: true },
     '444bf': { length: 40, layers: movesOf('R L U D F B Rw Uw Fw'), blindfolded: true },
-    '555bf': { length: 60, layers: movesOf('R L U D F B Rw Lw Uw Dw Fw Bw'), blindfolded: true }
+    '555bf': { length: 60, layers: movesOf('R L U D F B Rw Lw Uw Dw Fw Bw'), blindfolded: true },
+    'minx': { length: 70, generate: megaminxScramble }
 };
 
 // Whether an event has a timer: every event with a scramble here does
@@ -75,8 +76,29 @@ function randomOrientation() {
     return [pick(TOP_FACE), pick(FRONT_FACE)].filter(Boolean);
 }
 
+// The WCA still scrambles Megaminx with random moves (Regulation 4b3e), 70 of them (2008
+// Regulations, Article 4f), in Stefan Pochmann's way, as TNoodle writes it: seven lines of ten
+// moves that take turns between R and D, each ++ or -- (two fifths of a turn of the whole
+// puzzle but the three pieces at the top left, Regulation 12d2), and each line ending with U or
+// U' (Regulation 12d1), turned the same way as the line's last D.
+function megaminxScramble() {
+    const lines = [];
+    for (let line = 0; line < 7; line++) {
+        const moves = [];
+        let turn = '';
+        for (let i = 0; i < 10; i++) {
+            turn = pick(['++', '--']);
+            moves.push((i % 2 === 0 ? 'R' : 'D') + turn);
+        }
+        moves.push(turn === '++' ? 'U' : "U'");
+        lines.push(moves.join(' '));
+    }
+    return lines.join('\n');
+}
+
 function generateScramble(eventId) {
-    const { length, layers, blindfolded } = SCRAMBLES[eventId];
+    const { length, layers, blindfolded, generate } = SCRAMBLES[eventId];
+    if (generate) return generate();
     const moves = [];
     let axis = null;
     let layersOnAxis = new Set();  // the layers used since the axis last changed

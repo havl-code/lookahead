@@ -64,6 +64,7 @@
     font-size: 19px;
     line-height: 1.5;
     word-spacing: 6px;
+    white-space: pre-line;  /* Megaminx scrambles come in lines */
 }
 
 .scramble-text.long {

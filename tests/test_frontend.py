@@ -193,6 +193,25 @@ def test_blindfolded_scrambles_leave_the_cube_in_a_random_orientation():
 
 
 @pytest.mark.skipif(shutil.which('node') is None, reason='Node.js is not installed')
+def test_megaminx_scrambles():
+    """Megaminx: seven lines of ten moves that take turns between R and D, each ++ or --
+    (Regulation 12d2), and a U or U' to end each line, turned the same way as the line's last D
+    (70 moves, as in the 2008 Regulations, Article 4f, laid out the way TNoodle does it)."""
+    plus_turns = 0
+    for scramble in run_scramble_js('minx', 1000):
+        lines = scramble.split('\n')
+        assert len(lines) == 7
+        for line in lines:
+            moves = line.split(' ')
+            assert len(moves) == 11
+            for i, move in enumerate(moves[:10]):
+                assert re.fullmatch(('R' if i % 2 == 0 else 'D') + r'(\+\+|--)', move), line
+                plus_turns += move.endswith('++')
+            assert moves[10] == ('U' if moves[9] == 'D++' else "U'"), line
+    assert 0.45 < plus_turns / 70000 < 0.55
+
+
+@pytest.mark.skipif(shutil.which('node') is None, reason='Node.js is not installed')
 def test_times_are_written_the_cubing_way():
     """config.js's formatClock and truncatedSeconds, run in Node: 12.34, 1:23.45, whole seconds
     from 10 minutes (Regulation 9f2), hours from an hour, and running times cut off, not rounded."""

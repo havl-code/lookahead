@@ -458,7 +458,7 @@ def test_timers_for_2x2x2_and_4x4x4(app_page, live_app):
     page.select_option('#timer-event-select', 'clock')
     page.wait_for_selector('#timer-under-construction')
     assert ('ready for 2x2x2, 3x3x3, 4x4x4, 5x5x5, 6x6x6, 7x7x7, 3x3x3 One-Handed, 3x3x3 Blindfolded, '
-            '4x4x4 Blindfolded, and 5x5x5 Blindfolded' in page.inner_text('#timer-under-construction'))
+            'Megaminx, 4x4x4 Blindfolded, and 5x5x5 Blindfolded' in page.inner_text('#timer-under-construction'))
     assert page.errors == []
 
 
@@ -482,6 +482,19 @@ def test_blindfolded_timers_have_no_inspection(app_page, live_app):
     page.wait_for_selector('.solve-item')
     assert [(s['time_ms'], s['penalty']) for s in solves_in(live_app)] == [(95000, 'OK')]
     assert query(live_app, 'SELECT event_id FROM sessions') == [{'event_id': '444bf'}]
+    assert page.errors == []
+
+
+def test_megaminx_scrambles_show_in_lines(app_page):
+    """A Megaminx scramble is seven lines of moves, set smaller like the big cubes' scrambles."""
+    page = app_page
+    open_timer(page)
+    page.select_option('#timer-event-select', 'minx')
+    page.wait_for_function("() => document.getElementById('scramble-text').textContent.includes('R++') "
+                           "|| document.getElementById('scramble-text').textContent.includes('R--')")
+    lines = page.inner_text('#scramble-text').split('\n')
+    assert len(lines) == 7 and all(line.endswith(('U', "U'")) for line in lines)
+    assert 'long' in page.get_attribute('#scramble-text', 'class')
     assert page.errors == []
 
 
