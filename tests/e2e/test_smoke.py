@@ -540,3 +540,15 @@ def test_charts_are_described_in_words(app_page, live_app):
     page.wait_for_function("() => (document.getElementById('progress-chart').getAttribute('aria-label') || '')"
                            ".startsWith('Solves 1 to 12 of this session')")
     assert page.errors == []
+
+
+def test_a_new_scramble_after_switching_to_an_event_without_a_timer(app_page):
+    """A solve asks for its next scramble a moment after it stops. If the event has been switched
+    to one without a timer in the meantime, that's not an error (it used to throw, which CI
+    caught when its slower machine switched events within the moment)."""
+    page = app_page
+    open_timer(page)
+    page.select_option('#timer-event-select', 'clock')
+    page.wait_for_selector('#timer-under-construction')
+    page.evaluate('() => generateNewScramble()')  # as the timer does 100 ms after a solve
+    assert page.errors == []

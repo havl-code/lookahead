@@ -126,6 +126,9 @@ function resetTimerDisplay() {
 }
 
 function generateNewScramble() {
+    // A solve asks for its next scramble a moment after it stops, and the event may have been
+    // switched to one without a timer (and so without scrambles) in the meantime
+    if (!hasTimer(TimerState.event)) return;
     TimerState.scramble = generateScramble(TimerState.event);
     const text = document.getElementById('scramble-text');
     text.textContent = TimerState.scramble;
