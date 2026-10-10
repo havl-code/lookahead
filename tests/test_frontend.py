@@ -93,6 +93,7 @@ def test_scripts_load_in_order():
 @pytest.mark.parametrize('event, length, faces', [
     ('222', 25, {'R', 'U', 'F'}),
     ('333', 25, {'R', 'L', 'U', 'D', 'F', 'B'}),
+    ('333oh', 25, {'R', 'L', 'U', 'D', 'F', 'B'}),
     ('444', 40, {'R', 'L', 'U', 'D', 'F', 'B', 'Rw', 'Uw', 'Fw'}),
     ('555', 60, {'R', 'L', 'U', 'D', 'F', 'B', 'Rw', 'Lw', 'Uw', 'Dw', 'Fw', 'Bw'}),
     ('666', 80, {'R', 'L', 'U', 'D', 'F', 'B', 'Rw', 'Lw', 'Uw', 'Dw', 'Fw', 'Bw', '3Rw', '3Uw', '3Fw'}),

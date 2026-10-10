@@ -457,7 +457,8 @@ def test_timers_for_2x2x2_and_4x4x4(app_page, live_app):
 
     page.select_option('#timer-event-select', 'clock')
     page.wait_for_selector('#timer-under-construction')
-    assert 'ready for 2x2x2, 3x3x3, 4x4x4, 5x5x5, 6x6x6, and 7x7x7' in page.inner_text('#timer-under-construction')
+    assert ('ready for 2x2x2, 3x3x3, 4x4x4, 5x5x5, 6x6x6, 7x7x7, and 3x3x3 One-Handed'
+            in page.inner_text('#timer-under-construction'))
     assert page.errors == []
 
 

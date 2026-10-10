@@ -36,7 +36,10 @@ const SCRAMBLES = {
     '444': { length: 40, layers: movesOf('R L U D F B Rw Uw Fw') },
     '555': { length: 60, layers: movesOf('R L U D F B Rw Lw Uw Dw Fw Bw') },
     '666': { length: 80, layers: movesOf('R L U D F B Rw Lw Uw Dw Fw Bw 3Rw 3Uw 3Fw') },
-    '777': { length: 100, layers: movesOf('R L U D F B Rw Lw Uw Dw Fw Bw 3Rw 3Lw 3Uw 3Dw 3Fw 3Bw') }
+    '777': { length: 100, layers: movesOf('R L U D F B Rw Lw Uw Dw Fw Bw 3Rw 3Lw 3Uw 3Dw 3Fw 3Bw') },
+    // One-Handed is a 3x3x3 solved the usual way, inspection and all (Article C follows the
+    // speed solving procedures of Article A), so it takes a 3x3x3 scramble
+    '333oh': { length: 25, layers: movesOf('R L U D F B') }
 };
 
 // Whether an event has a timer: every event with a scramble here does
