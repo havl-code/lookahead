@@ -39,30 +39,58 @@ const SCRAMBLES = {
     '777': { length: 100, layers: movesOf('R L U D F B Rw Lw Uw Dw Fw Bw 3Rw 3Lw 3Uw 3Dw 3Fw 3Bw') },
     // One-Handed is a 3x3x3 solved the usual way, inspection and all (Article C follows the
     // speed solving procedures of Article A), so it takes a 3x3x3 scramble
-    '333oh': { length: 25, layers: movesOf('R L U D F B') }
+    '333oh': { length: 25, layers: movesOf('R L U D F B') },
+    // The blindfolded events take their cube's scramble, then a random orientation (see
+    // randomOrientation, below), and have no inspection (Regulation B1a)
+    '333bf': { length: 25, layers: movesOf('R L U D F B'), blindfolded: true },
+    '444bf': { length: 40, layers: movesOf('R L U D F B Rw Uw Fw'), blindfolded: true },
+    '555bf': { length: 60, layers: movesOf('R L U D F B Rw Lw Uw Dw Fw Bw'), blindfolded: true }
 };
 
 // Whether an event has a timer: every event with a scramble here does
 function hasTimer(eventId) {
     return Object.hasOwn(SCRAMBLES, eventId);
 }
+
+// Whether an event is solved blindfolded, and so has no inspection (Regulation B1a)
+function isBlindfolded(eventId) {
+    return hasTimer(eventId) && Boolean(SCRAMBLES[eventId].blindfolded);
+}
+
 const TURNS = ['', "'", '2'];
 
+function pick(choices) {
+    return choices[Math.floor(Math.random() * choices.length)];
+}
+
+// A blindfolded scramble must leave the cube in a random orientation, each one equally likely
+// (Regulation 4b3a). There are 24: one of six faces on top, then one of four faces in front.
+// TNoodle, the WCA's scramble program, picks them the same way. Here they're written as turns
+// of the whole cube (Regulation 12a4): nothing, x, x2, or x' (U, F, D, or B on top) or z or z'
+// (L or R on top), then nothing, y, y2, or y'.
+const TOP_FACE = ['', 'x', 'x2', "x'", 'z', "z'"];
+const FRONT_FACE = ['', 'y', 'y2', "y'"];
+
+function randomOrientation() {
+    return [pick(TOP_FACE), pick(FRONT_FACE)].filter(Boolean);
+}
+
 function generateScramble(eventId) {
-    const { length, layers } = SCRAMBLES[eventId];
+    const { length, layers, blindfolded } = SCRAMBLES[eventId];
     const moves = [];
     let axis = null;
     let layersOnAxis = new Set();  // the layers used since the axis last changed
 
     while (moves.length < length) {
-        const [layer, layerAxis] = layers[Math.floor(Math.random() * layers.length)];
+        const [layer, layerAxis] = pick(layers);
         if (layerAxis === axis && layersOnAxis.has(layer)) continue;  // would cancel out
         if (layerAxis !== axis) {
             axis = layerAxis;
             layersOnAxis = new Set();
         }
         layersOnAxis.add(layer);
-        moves.push(layer + TURNS[Math.floor(Math.random() * TURNS.length)]);
+        moves.push(layer + pick(TURNS));
     }
+    if (blindfolded) moves.push(...randomOrientation());
     return moves.join(' ');
 }

@@ -457,8 +457,31 @@ def test_timers_for_2x2x2_and_4x4x4(app_page, live_app):
 
     page.select_option('#timer-event-select', 'clock')
     page.wait_for_selector('#timer-under-construction')
-    assert ('ready for 2x2x2, 3x3x3, 4x4x4, 5x5x5, 6x6x6, 7x7x7, and 3x3x3 One-Handed'
-            in page.inner_text('#timer-under-construction'))
+    assert ('ready for 2x2x2, 3x3x3, 4x4x4, 5x5x5, 6x6x6, 7x7x7, 3x3x3 One-Handed, 3x3x3 Blindfolded, '
+            '4x4x4 Blindfolded, and 5x5x5 Blindfolded' in page.inner_text('#timer-under-construction'))
+    assert page.errors == []
+
+
+def test_blindfolded_timers_have_no_inspection(app_page, live_app):
+    """Regulation B1a: blindfolded solves have no inspection, so the first press of the space
+    bar gets ready to start, and memorisation is part of the time, even with inspection on."""
+    page = app_page
+    open_timer(page)
+    page.select_option('#timer-event-select', '444bf')
+    page.wait_for_function("() => document.getElementById('scramble-text').textContent.split(' ').length >= 40")
+    assert page.evaluate('TimerState.settings.inspectionEnabled') is True
+    with paused_clock(page):
+        page.keyboard.down('Space')
+        assert page.evaluate('TimerState.inspection') is False
+        page.clock.run_for(400)
+        page.keyboard.up('Space')
+        assert page.evaluate('TimerState.running') is True
+        page.clock.run_for(95000)
+        page.keyboard.down('Space')
+        page.keyboard.up('Space')
+    page.wait_for_selector('.solve-item')
+    assert [(s['time_ms'], s['penalty']) for s in solves_in(live_app)] == [(95000, 'OK')]
+    assert query(live_app, 'SELECT event_id FROM sessions') == [{'event_id': '444bf'}]
     assert page.errors == []
 
 

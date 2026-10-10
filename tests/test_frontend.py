@@ -89,35 +89,56 @@ def test_scripts_load_in_order():
     assert set(scripts) == on_disk  # every script is loaded, and none is missing
 
 
-@pytest.mark.skipif(shutil.which('node') is None, reason='Node.js is not installed')
-@pytest.mark.parametrize('event, length, faces', [
-    ('222', 25, {'R', 'U', 'F'}),
-    ('333', 25, {'R', 'L', 'U', 'D', 'F', 'B'}),
-    ('333oh', 25, {'R', 'L', 'U', 'D', 'F', 'B'}),
-    ('444', 40, {'R', 'L', 'U', 'D', 'F', 'B', 'Rw', 'Uw', 'Fw'}),
-    ('555', 60, {'R', 'L', 'U', 'D', 'F', 'B', 'Rw', 'Lw', 'Uw', 'Dw', 'Fw', 'Bw'}),
-    ('666', 80, {'R', 'L', 'U', 'D', 'F', 'B', 'Rw', 'Lw', 'Uw', 'Dw', 'Fw', 'Bw', '3Rw', '3Uw', '3Fw'}),
-    ('777', 100, {'R', 'L', 'U', 'D', 'F', 'B', 'Rw', 'Lw', 'Uw', 'Dw', 'Fw', 'Bw',
-                  '3Rw', '3Lw', '3Uw', '3Dw', '3Fw', '3Bw'}),
-])
-def test_scrambles_for_each_timer_event(event, length, faces):
-    """scramble.js, run in Node: each event's length and moves (2006 Regulations, Article 4g, and
-    2009 Regulations, Article 4f), written as in Regulation 12a, and never a move that cancels
-    out. Every layer and turn turns up, and moves next to each other share an axis about as
-    often as in a fair random scramble."""
+def run_scramble_js(event, count):
+    """scramble.js, run in Node: `count` scrambles for an event, and what hasTimer and
+    isBlindfolded say about it (and about Clock, which has no timer, and a name every object
+    has, which mustn't count as an event)."""
     code = (WEB / 'js' / 'scramble.js').read_text(encoding='utf-8')
     script = code + f'''
 const all = [];
-for (let i = 0; i < 2000; i++) all.push(generateScramble('{event}').split(' '));
-console.log(JSON.stringify({{ all, has: [hasTimer('{event}'), hasTimer('clock'), hasTimer('toString')] }}));'''
+for (let i = 0; i < {count}; i++) all.push(generateScramble('{event}'));
+console.log(JSON.stringify({{ all, has: [hasTimer('{event}'), hasTimer('clock'), hasTimer('toString')],
+                              blindfolded: [isBlindfolded('{event}'), isBlindfolded('clock')] }}));'''
     result = subprocess.run(['node', '-e', script], capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
     data = json.loads(result.stdout)
     assert data['has'] == [True, False, False]
+    assert data['blindfolded'] == [event.endswith('bf'), False]
+    return data['all']
+
+
+THREE = {'R', 'L', 'U', 'D', 'F', 'B'}
+FOUR = THREE | {'Rw', 'Uw', 'Fw'}
+FIVE = THREE | {'Rw', 'Lw', 'Uw', 'Dw', 'Fw', 'Bw'}
+
+
+@pytest.mark.skipif(shutil.which('node') is None, reason='Node.js is not installed')
+@pytest.mark.parametrize('event, length, faces', [
+    ('222', 25, {'R', 'U', 'F'}),
+    ('333', 25, THREE),
+    ('333oh', 25, THREE),
+    ('444', 40, FOUR),
+    ('555', 60, FIVE),
+    ('666', 80, FIVE | {'3Rw', '3Uw', '3Fw'}),
+    ('777', 100, FIVE | {'3Rw', '3Lw', '3Uw', '3Dw', '3Fw', '3Bw'}),
+    ('333bf', 25, THREE),
+    ('444bf', 40, FOUR),
+    ('555bf', 60, FIVE),
+])
+def test_scrambles_for_each_timer_event(event, length, faces):
+    """Each event's length and moves (2006 Regulations, Article 4g, and 2009 Regulations,
+    Article 4f), written as in Regulation 12a, and never a move that cancels out. Every layer
+    and turn turns up, and moves next to each other share an axis about as often as in a fair
+    random scramble. Only the blindfolded events end with turns of the whole cube."""
     faces_axis = {'R': 'x', 'L': 'x', 'U': 'y', 'D': 'y', 'F': 'z', 'B': 'z'}
     axis = {layer: faces_axis[layer.lstrip('3')[0]] for layer in faces}
     used, pairs, same_axis = set(), 0, 0
-    for scramble in data['all']:
+    for scramble in run_scramble_js(event, 2000):
+        scramble = scramble.split(' ')
+        rotations = [move for move in scramble if move[0] in 'xyz']
+        assert event.endswith('bf') or rotations == []
+        assert scramble[len(scramble) - len(rotations):] == rotations  # only at the end
+        scramble = scramble[:len(scramble) - len(rotations)]
         assert len(scramble) == length
         layers = []
         for move in scramble:
@@ -138,6 +159,37 @@ console.log(JSON.stringify({{ all, has: [hasTimer('{event}'), hasTimer('clock'),
         assert same_axis == 0  # one layer an axis, so the axis always changes
     else:
         assert 0.1 < same_axis / pairs < 0.45
+
+
+def turn_whole_cube(centres, rotation):
+    """Where each centre ends up after a turn of the whole cube (Regulation 12a4): x turns the
+    way R does, y the way U does, and z the way F does. `centres` maps each side (U, D, F, B, R,
+    and L) to the centre that's there."""
+    cycles = {'x': 'FUBD', 'y': 'FLBR', 'z': 'URDL'}  # each side's centre moves to the next side
+    turns = {'': 1, '2': 2, "'": 3}[rotation[1:]]
+    for _ in range(turns):
+        cycle = cycles[rotation[0]]
+        centres = {**centres, **{cycle[(i + 1) % 4]: centres[side] for i, side in enumerate(cycle)}}
+    return centres
+
+
+@pytest.mark.skipif(shutil.which('node') is None, reason='Node.js is not installed')
+def test_blindfolded_scrambles_leave_the_cube_in_a_random_orientation():
+    """Regulation 4b3a: a blindfolded scramble orients the cube randomly, with every orientation
+    equally likely. Each scramble's closing turns are played on the centres, and all 24 ways to
+    hold a cube come up about equally often (400 each in 9,600, give or take 100, which is five
+    times the spread a fair draw would have)."""
+    counts = {}
+    for scramble in run_scramble_js('333bf', 9600):
+        centres = {side: side for side in 'UDFBRL'}
+        rotations = [move for move in scramble.split(' ') if move[0] in 'xyz']
+        assert len(rotations) <= 2
+        for rotation in rotations:
+            centres = turn_whole_cube(centres, rotation)
+        held = (centres['U'], centres['F'])
+        counts[held] = counts.get(held, 0) + 1
+    assert len(counts) == 24
+    assert all(300 < count < 500 for count in counts.values()), counts
 
 
 @pytest.mark.skipif(shutil.which('node') is None, reason='Node.js is not installed')

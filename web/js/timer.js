@@ -102,7 +102,7 @@ function setUnderConstruction(show) {
     const content = document.querySelector('.timer-main-content');
     let notice = document.getElementById('timer-under-construction');
     if (!notice) {
-        const names = Object.keys(SCRAMBLES).map(getEventName);
+        const names = MENU_EVENTS.filter(hasTimer).map(getEventName);
         notice = document.createElement('div');
         notice.id = 'timer-under-construction';
         notice.className = 'under-construction';
@@ -271,7 +271,8 @@ function showTimerSettings() {
                 </div>
                 <p class="setting-note">
                     Starting after 15 seconds of inspection is a +2, and after 17 seconds a DNF, as
-                    in WCA competitions. The calls at 8 and 12 seconds always show on screen.
+                    in WCA competitions. The calls at 8 and 12 seconds always show on screen. The
+                    blindfolded events have no inspection, so memorisation is part of the time.
                 </p>
                 <div class="setting-item">
                     <span class="setting-label" id="setting-hide-timer">Hide Timer While Solving</span>
@@ -451,9 +452,10 @@ function timerPress() {
         return;
     }
 
-    // From a shown result or the initial 0.00: start inspection, or get ready to start
+    // From a shown result or the initial 0.00: start inspection, or get ready to start. The
+    // blindfolded events have no inspection: the solve starts with memorisation (Regulation B1a).
     TimerState.showingResult = false;
-    if (TimerState.settings.inspectionEnabled) {
+    if (TimerState.settings.inspectionEnabled && !isBlindfolded(TimerState.event)) {
         startInspection();
     } else {
         startHoldTimer();
