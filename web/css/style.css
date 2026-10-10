@@ -41,6 +41,7 @@
     --bg-tertiary: #212125;     /* hover and inset areas */
     --border-primary: #27272c;
     --border-secondary: #38383f;
+    --border-control: #6b6b72;  /* fields, buttons, and switches: 3:1 on every background (WCAG 2.1 1.4.11) */
     --text-primary: #ededef;
     --text-secondary: #a1a1a9;
     --text-tertiary: #8a8a93;   /* the faintest text that still reads at 4.5:1 (WCAG 2.1 AA) */
@@ -71,6 +72,7 @@
     --bg-tertiary: #f0f0f2;
     --border-primary: #e4e4e7;
     --border-secondary: #d4d4d8;
+    --border-control: #8a8a8e;
     --text-primary: #18181b;
     --text-secondary: #55555e;
     --text-tertiary: #6b6b74;
@@ -225,7 +227,7 @@ main.container {
     flex-shrink: 0;
     width: 36px;
     height: 36px;
-    border: 1px solid var(--border-primary);
+    border: 1px solid var(--border-control);
     border-radius: var(--radius-small);
     background: var(--bg-secondary);
     cursor: pointer;
@@ -340,7 +342,7 @@ section h3 {
 
 .btn-secondary {
     background: transparent;
-    border: 1px solid var(--border-secondary);
+    border: 1px solid var(--border-control);
     color: var(--text-primary);
 }
 
@@ -365,7 +367,7 @@ section h3 {
 
 .action-btn {
     padding: 4px 10px;
-    border: 1px solid var(--border-secondary);
+    border: 1px solid var(--border-control);
     border-radius: 6px;
     background: transparent;
     color: var(--text-primary);
@@ -671,7 +673,7 @@ textarea {
     width: 100%;
     padding: 8px 12px;
     background: var(--bg-primary);
-    border: 1px solid var(--border-secondary);
+    border: 1px solid var(--border-control);
     border-radius: var(--radius-small);
     font-size: 14px;
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
@@ -1403,7 +1405,7 @@ footer {
     align-items: center;
     gap: 8px;
     padding: 7px 14px;
-    border: 1px solid var(--border-secondary);
+    border: 1px solid var(--border-control);
     border-radius: 999px;
     color: var(--text-primary);
     text-decoration: none;

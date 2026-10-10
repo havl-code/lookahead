@@ -277,7 +277,7 @@
 
 .solve-action-btn {
     padding: 4px 10px;
-    border: 1px solid var(--border-secondary);
+    border: 1px solid var(--border-control);
     border-radius: 6px;
     background: transparent;
     font-size: 12px;
@@ -403,7 +403,7 @@
     height: 24px;
     padding: 0;
     border: none;
-    background: var(--border-secondary);
+    background: var(--border-control);
     border-radius: 999px;
     cursor: pointer;
     transition: background-color 0.2s ease;
@@ -425,8 +425,11 @@
     background: var(--accent);
 }
 
+/* The knob takes the accent's own text colour when on, since white on the dark theme's
+   orange is under 3:1 */
 .setting-toggle.active::after {
     left: 21px;
+    background: var(--accent-contrast);
 }
 
 .setting-select {
