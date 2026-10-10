@@ -11,7 +11,9 @@ Sizes are rough: **S** is a few hours, **M** is a day or two, and **L** is a wee
 ## Done in 3.2
 
 Version 3.2 came from an audit of every feature, a test suite, fixes for everything the audit
-found, and six new features. The commit links work once the branch is on GitHub.
+found, and six new features, followed by the work in From This Roadmap below. It was released
+as [v3.2.0](https://github.com/havl-code/speedcube-training-explorer/releases/tag/v3.2.0) on
+10 October 2026.
 
 ### Safety and Security
 
@@ -157,8 +159,7 @@ Small, safe steps that build on 3.2.
 
 | # | What | Why | Size |
 | --- | --- | --- | --- |
-| 1 | Merge the branch and tag a v3.2.0 release | CI passes on Windows, macOS, and Ubuntu, and a release gives people a clean download | S |
-| 2 | Field and button borders at 3:1 against the page (WCAG 2.1 1.4.11) | The last part of AA contrast; it changes the look a little, so it waits for the owner's say | S |
+| 1 | Field and button borders at 3:1 against the page (WCAG 2.1 1.4.11) | The last part of AA contrast; it changes the look a little, so it waits for the owner's say | S |
 
 ## Next
 
@@ -166,12 +167,12 @@ Bigger features, once the basics above are in.
 
 | # | What | Why | Size |
 | --- | --- | --- | --- |
-| 3 | Timers for the blindfolded events | 3x3x3 scrambles (and 4x4x4 and 5x5x5 ones) already exist; blindfolded solves have no inspection (Regulation B1a), and their scrambles leave the cube in a random orientation (4b3a) | S |
-| 4 | A Megaminx timer | The WCA scrambles Megaminx with random moves too (4b3e), 70 of them (2008 Regulations, 4f) | S |
-| 5 | Goals and streaks: a daily solve target, days in a row, and a target average | Builds on a session a day, and gives a reason to come back | M |
-| 6 | Refresh `wca_reference.json` on a schedule, with CI rebuilding it and opening a pull request | Keeps the scores' comparison current without anyone remembering to do it (the scoring method stays the same) | M |
-| 7 | Random-state scrambles, bundled so they work offline | Matches competition scrambles (Regulation 4b3); needs a scrambler whose licence fits the app's MIT Licence | L |
-| 8 | A world rank model for the whole field, beyond the top 1,000 | Most people are outside the top 1,000, so they see no rank at all today | M |
+| 2 | Timers for the blindfolded events | 3x3x3 scrambles (and 4x4x4 and 5x5x5 ones) already exist; blindfolded solves have no inspection (Regulation B1a), and their scrambles leave the cube in a random orientation (4b3a) | S |
+| 3 | A Megaminx timer | The WCA scrambles Megaminx with random moves too (4b3e), 70 of them (2008 Regulations, 4f) | S |
+| 4 | Goals and streaks: a daily solve target, days in a row, and a target average | Builds on a session a day, and gives a reason to come back | M |
+| 5 | Refresh `wca_reference.json` on a schedule, with CI rebuilding it and opening a pull request | Keeps the scores' comparison current without anyone remembering to do it (the scoring method stays the same) | M |
+| 6 | Random-state scrambles, bundled so they work offline | Matches competition scrambles (Regulation 4b3); needs a scrambler whose licence fits the app's MIT Licence | L |
+| 7 | A world rank model for the whole field, beyond the top 1,000 | Most people are outside the top 1,000, so they see no rank at all today | M |
 
 ## Later
 
@@ -179,26 +180,26 @@ Larger changes to how the app works, each worth a design discussion first.
 
 | # | What | Why | Size |
 | --- | --- | --- | --- |
-| 9 | Timers for every WCA event | Pyraminx, Skewb, Square-1, and Clock need scramblers of their own (7 is a start), and Fewest Moves and Multi-Blind need new flows | L |
-| 10 | Per-event training plans | Turns the insights into a weekly plan you can follow | L |
-| 11 | Stackmat timer support, through the computer's audio input | The timer cubers already own and use at competitions | L |
-| 12 | Bluetooth smart cubes, through Web Bluetooth | Move-by-move solve data, but only in Chromium-based browsers | L |
-| 13 | Multiple user profiles | Families and clubs sharing one computer | L |
-| 14 | A PWA or a packaged desktop build | A packaged build would remove the uv step; a PWA adds an app window, but still needs the server | L |
+| 8 | Timers for every WCA event | Pyraminx, Skewb, Square-1, and Clock need scramblers of their own (6 is a start), and Fewest Moves and Multi-Blind need new flows | L |
+| 9 | Per-event training plans | Turns the insights into a weekly plan you can follow | L |
+| 10 | Stackmat timer support, through the computer's audio input | The timer cubers already own and use at competitions | L |
+| 11 | Bluetooth smart cubes, through Web Bluetooth | Move-by-move solve data, but only in Chromium-based browsers | L |
+| 12 | Multiple user profiles | Families and clubs sharing one computer | L |
+| 13 | A PWA or a packaged desktop build | A packaged build would remove the uv step; a PWA adds an app window, but still needs the server | L |
 
 ---
 
 ## Open Questions
 
-1. **Release:** tag a v3.2.0 release on GitHub once the branch is merged?
-2. **Random-state scrambles:** is it fine to bundle a third-party scrambler, and which licences
+1. **Random-state scrambles:** is it fine to bundle a third-party scrambler, and which licences
    are acceptable alongside the MIT Licence?
-3. **Profiles:** one database file per person (simplest, and backups stay separate), or one
+2. **Profiles:** one database file per person (simplest, and backups stay separate), or one
    database with profiles inside it?
-4. **Packaging:** is removing the uv step worth a much bigger download for each system?
-5. **Deleting sessions:** should they get Undo as well, so the app never needs to ask first?
-6. **Scores data:** is a monthly automatic refresh fine, given that scores shift a little as the
+3. **Packaging:** is removing the uv step worth a much bigger download for each system?
+4. **Deleting sessions:** should they get Undo as well, so the app never needs to ask first?
+5. **Scores data:** is a monthly automatic refresh fine, given that scores shift a little as the
    two-year window moves?
-7. **Old timer routes:** remove the timer's own solve routes in 3.2, or keep them for good?
-8. **Borders:** is it fine to darken the edges of fields and buttons to 3:1 (WCAG 1.4.11)? It
+6. **Old timer routes:** remove the timer's own solve routes in a later version, or keep them
+   for good?
+7. **Borders:** is it fine to darken the edges of fields and buttons to 3:1 (WCAG 1.4.11)? It
    makes them noticeably stronger, especially in the dark theme.
