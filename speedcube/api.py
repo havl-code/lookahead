@@ -66,7 +66,7 @@ def _rolling_chart(results_ms):
     """The rolling chart's data: each result in seconds (None for a DNF) with the WCA-style
     rolling Ao5 and Ao12 through it."""
     if len(results_ms) < 12:
-        return _error('Need at least 12 solves', 400)
+        return _not_enough('Need at least 12 solves')
     return jsonify(times=[single_seconds(r) for r in results_ms],
                    rolling5=[average_seconds(a) for a in rolling_wca_averages(results_ms, 5)],
                    rolling12=[average_seconds(a) for a in rolling_wca_averages(results_ms, 12)])
@@ -91,6 +91,12 @@ def _int_arg(name, default=None, lowest=None, highest=None):
 
 def _error(message, status):
     return jsonify(error=message), status
+
+
+def _not_enough(message):
+    """A chart with too little data to draw yet. That's normal for a new event or session, not
+    an error, so it's an ordinary reply; the page shows the message in the chart's place."""
+    return jsonify(message=message)
 
 
 @api.errorhandler(ValidationError)
@@ -590,7 +596,7 @@ def chart_progress():
     ).fetchall()[::-1]
 
     if not sessions:
-        return _error('Need at least 1 session for this event', 400)
+        return _not_enough('Need at least 1 session for this event')
     return jsonify(data=[
         {
             'date': s['date'],
@@ -616,7 +622,7 @@ def chart_session_progress():
         (session_id, MAX_CHART_SOLVES),
     ).fetchall()[::-1]
     if not solves:
-        return _error('No solves in this session', 400)
+        return _not_enough('No solves in this session')
 
     results = [s['result_ms'] for s in solves]
     ao5s = rolling_wca_averages(results, 5)
@@ -646,7 +652,7 @@ def chart_distribution():
     times = sorted(row['result_ms'] / 1000 for row in rows)
 
     if len(times) < 5:
-        return _error('Need at least 5 solves', 400)
+        return _not_enough('Need at least 5 solves')
     return jsonify(times=filter_distribution_outliers(times))
 
 
@@ -661,7 +667,7 @@ def chart_session_distribution():
     times = sorted(row['result_ms'] / 1000 for row in rows)
 
     if len(times) < 5:
-        return _error('Need at least 5 solves', 400)
+        return _not_enough('Need at least 5 solves')
 
     mean = sum(times) / len(times)
     std_dev = population_std_dev(times)
@@ -716,7 +722,7 @@ def chart_consistency():
 
     last10 = result[-10:]
     if len(last10) < 2:
-        return _error('Need at least 2 sessions', 400)
+        return _not_enough('Need at least 2 sessions')
     return jsonify(sessions=last10)
 
 

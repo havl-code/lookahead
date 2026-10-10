@@ -486,3 +486,16 @@ def test_the_scores_explanation_opens_offline(app_page, live_app):
     page.keyboard.press('Escape')
     assert page.is_hidden('#doc-modal')
     assert outside == [] and page.errors == []
+
+
+def test_charts_without_enough_data_say_so_quietly(app_page, live_app):
+    """A chart with too little data says what it needs, and the browser logs no errors (the
+    routes answer normally rather than with a 400)."""
+    page = app_page
+    seed_session(live_app, [12, 13, 14])
+    page.reload()
+    open_tab(page, 'analytics')
+    page.wait_for_function("() => document.getElementById('consistency-chart').textContent.includes('Need at least')")
+    assert 'Need at least 5 solves' in page.text_content('#distribution-chart')
+    assert 'Need at least 12 solves' in page.text_content('#breakdown-chart')
+    assert page.errors == []

@@ -23,7 +23,8 @@ class TestProgress:
         ]
 
     def test_needs_a_session(self, client):
-        assert get(client, '/api/charts/progress?event_id=333')[0] == 400
+        assert get(client, '/api/charts/progress?event_id=333') == (
+            200, {'message': 'Need at least 1 session for this event'})
 
 
 class TestSessionProgress:
@@ -41,7 +42,8 @@ class TestSessionProgress:
 
     def test_needs_a_solve(self, app, client):
         sid = seed_session(app, [])
-        assert get(client, f'/api/charts/session-progress?session_id={sid}')[0] == 400
+        assert get(client, f'/api/charts/session-progress?session_id={sid}') == (
+            200, {'message': 'No solves in this session'})
 
 
 class TestDistribution:
@@ -59,7 +61,7 @@ class TestDistribution:
                                      '/api/charts/session-distribution?session_id={sid}'])
     def test_needs_five_solves(self, app, client, url):
         sid = seed_session(app, [10, 11, 12, 13])
-        assert get(client, url.format(sid=sid)) == (400, {'error': 'Need at least 5 solves'})
+        assert get(client, url.format(sid=sid)) == (200, {'message': 'Need at least 5 solves'})
 
 
 class TestRolling:
@@ -76,7 +78,7 @@ class TestRolling:
                                      '/api/charts/session-rolling?session_id={sid}'])
     def test_needs_twelve_solves(self, app, client, url):
         sid = seed_session(app, list(range(1, 12)))
-        assert get(client, url.format(sid=sid)) == (400, {'error': 'Need at least 12 solves'})
+        assert get(client, url.format(sid=sid)) == (200, {'message': 'Need at least 12 solves'})
 
 
 class TestConsistency:
@@ -92,4 +94,4 @@ class TestConsistency:
     def test_sessions_need_five_completed_solves(self, app, client):
         seed_session(app, [10, 11, 12, 13, 14], date='2026-09-01')
         seed_session(app, [10, 11, 'DNF', 'DNF', 12], date='2026-09-02')
-        assert get(client, '/api/charts/consistency?event_id=333') == (400, {'error': 'Need at least 2 sessions'})
+        assert get(client, '/api/charts/consistency?event_id=333') == (200, {'message': 'Need at least 2 sessions'})

@@ -62,8 +62,9 @@ async function fetchChartData(request, containerId, url, hasData) {
         const response = await apiFetch(url);
         const data = await response.json();
         if (request !== chartRequest) return null;
+        // A chart without enough data yet comes back with a message saying what it needs
         if (data.error || !hasData(data)) {
-            container.innerHTML = `<div class="loading">${escapeHtml(data.error || 'No data yet')}</div>`;
+            container.innerHTML = `<div class="loading">${escapeHtml(data.message || data.error || 'No data yet')}</div>`;
             return null;
         }
         return data;
