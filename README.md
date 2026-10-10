@@ -110,9 +110,9 @@ and a double-click (or one command) starts it.
 - **Personalised Greeting:** add your WCA ID and the app greets you by name
 - **Fast with Big Histories:** long lists load a page at a time, so even tens of thousands of
   solves stay quick
-- **Keyboard Friendly:** every button, menu, and window works from the keyboard (windows take
-  focus, keep Tab inside, and close with Esc), and text meets WCAG 2.1 AA contrast in both
-  themes
+- **Keyboard and Screen Reader Friendly:** every button, menu, and window works from the
+  keyboard (windows take focus, keep Tab inside, and close with Esc), each chart is described in
+  words for screen readers, and text meets WCAG 2.1 AA contrast in both themes
 - **Works Offline:** everything except the WCA rank and name lookup works without internet
 - **No Accounts:** nothing to sign up for, and your data never leaves your computer
 
@@ -191,8 +191,10 @@ itself. The first time you open a downloaded launcher, your system may ask you t
   Scrambles can now have moves like R L, as a fair scramble should, and the timer can't jump
   if the computer's clock changes mid-solve.
 - **Long solves.** A practice solve can run for up to 2 hours.
-- **Keyboard friendly.** Every button, menu, and window works from the keyboard, and text meets
-  WCAG 2.1 AA contrast in both themes.
+- **Keyboard and screen reader friendly.** Every button, menu, and window works from the
+  keyboard, each chart is described in words, and text meets WCAG 2.1 AA contrast in both
+  themes.
+- **Touchscreens.** Hold the time to get ready, let go to start, and tap to stop.
 - **The Scores explanation, offline.** How the scores work opens in the app, internet or not.
 - **4x4x4 and 5x5x5 Blindfolded** are in every event menu.
 - **Tested.** Automated tests, including browser tests, run on Windows, macOS, and Linux.
