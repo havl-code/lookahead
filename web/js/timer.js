@@ -11,7 +11,7 @@ const TimerState = {
     inspectionInterval: null,
     callsMade: [],          // the inspection calls (8 and 12 seconds) made so far
     pendingPenalty: 'OK',   // what inspection earned the solve that's running: OK or +2
-    spacePressed: false,
+    spacePressed: false,    // the space bar (or a finger on the time) is down
     readyToStart: false,
     holdTimer: null,
     currentSolves: [],      // the latest solves in the session, newest first
@@ -87,6 +87,7 @@ async function loadTimerTab() {
 
     await loadSessionSelector();
     setupTimerKeyboard();
+    setupTimerTouch();
     setupScrambleMenu();
     // Leave the display and scramble alone if a solve is in progress.
     if (!TimerState.running && !TimerState.inspection) {
@@ -390,7 +391,48 @@ function handleTimerKeyDown(e) {
     e.preventDefault();
 
     if (e.repeat) return;
+    timerPress();
+}
 
+function handleTimerKeyUp(e) {
+    // Always finish a hold that started on the timer, even if focus has moved since.
+    if (e.key !== ' ' || !(timerOwnsKeys(e) || TimerState.spacePressed)) return;
+    e.preventDefault();
+    timerRelease();
+}
+
+// Touchscreens: press and hold the time until it turns green, let go to start, and tap it to
+// stop, just as with the space bar. Only fingers and pens count, so a mouse click on the time
+// can't start anything by surprise.
+function setupTimerTouch() {
+    const display = document.getElementById('timer-display');
+    const isTouch = e => e.pointerType === 'touch' || e.pointerType === 'pen';
+    display.onpointerdown = (e) => {
+        if (!isTouch(e) || !timerOwnsKeys(e)) return;
+        e.preventDefault();
+        try {
+            display.setPointerCapture(e.pointerId);  // so letting go off the time still counts
+        } catch (error) {
+            // Nothing to capture (the pointer has already gone); the hold still works
+        }
+        timerPress();
+    };
+    display.onpointerup = (e) => {
+        if (!isTouch(e) || !(timerOwnsKeys(e) || TimerState.spacePressed)) return;
+        e.preventDefault();
+        timerRelease();
+    };
+    // The browser took the touch back (say, for a system gesture): call off the hold, and
+    // don't start the timer
+    display.onpointercancel = (e) => {
+        if (isTouch(e)) cancelHold();
+    };
+    // A long press would otherwise open the browser's menu for the text
+    display.oncontextmenu = (e) => e.preventDefault();
+}
+
+// The space bar or a finger going down
+function timerPress() {
     // If the timer is running, stop it
     if (TimerState.running) {
         stopTimer();
@@ -415,23 +457,20 @@ function handleTimerKeyDown(e) {
     }
 }
 
-function handleTimerKeyUp(e) {
-    // Always finish a hold that started on the timer, even if focus has moved since.
-    if (e.key !== ' ' || !(timerOwnsKeys(e) || TimerState.spacePressed)) return;
-    e.preventDefault();
+// The space bar or a finger coming up: starts the timer if it was held long enough
+function timerRelease() {
+    const ready = TimerState.readyToStart && !TimerState.running;
+    cancelHold();
+    if (ready) startTimer();
+}
 
+function cancelHold() {
     if (TimerState.holdTimer) {
         clearTimeout(TimerState.holdTimer);
         TimerState.holdTimer = null;
     }
-
     TimerState.spacePressed = false;
-
-    // Start the timer if the hold was long enough
-    if (TimerState.readyToStart && !TimerState.running) {
-        startTimer();
-    }
-
+    TimerState.readyToStart = false;
     document.getElementById('timer-display').classList.remove('ready', 'holding');
 }
 

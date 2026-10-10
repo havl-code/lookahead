@@ -39,8 +39,8 @@ and a double-click (or one command) starts it.
 
 ### ⏱️ Live Timer
 
-- **Competition-Style Timing:** hold the space bar until the time turns green, let go to
-  start, and press again to stop
+- **Competition-Style Timing:** hold the space bar (or, on a touchscreen, your finger on the
+  time) until it turns green, let go to start, and press again (or tap) to stop
 - **WCA Inspection:** an optional 15 second inspection that follows the WCA rules: starting
   after 15 seconds is a +2, and after 17 a DNF. The 8 and 12 second calls show on screen, and
   can also beep or be spoken
@@ -259,6 +259,9 @@ The first start of 3.1 updates your data once (see
 4. Hold the **space bar** until the time turns green.
 5. Let go to start solving.
 6. Press the **space bar** again to stop.
+
+On a touchscreen, your finger on the time does the same: touch it to start inspection, hold it
+until it turns green, let go to start, and tap it to stop.
 
 Changed your mind? Press **Esc** during inspection (or even mid-solve) to cancel. Nothing is
 saved, and you keep the same scramble for your next try.
