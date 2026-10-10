@@ -126,7 +126,10 @@ function resetTimerDisplay() {
 
 function generateNewScramble() {
     TimerState.scramble = generateScramble(TimerState.event);
-    document.getElementById('scramble-text').textContent = TimerState.scramble;
+    const text = document.getElementById('scramble-text');
+    text.textContent = TimerState.scramble;
+    // The big cubes' scrambles (60 to 100 moves) are set a little smaller, so they fit
+    text.classList.toggle('long', SCRAMBLES[TimerState.event].length > 40);
 }
 
 // Scramble menu (copy / new scramble), opened by clicking the scramble or its options button

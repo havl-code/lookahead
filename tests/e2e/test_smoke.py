@@ -441,9 +441,13 @@ def test_timers_for_2x2x2_and_4x4x4(app_page, live_app):
     assert page.is_visible('#timer-display') and page.is_hidden('#timer-under-construction')
     assert page.locator('.solve-item').count() == 0  # the 2x2x2 solve isn't in 4x4x4's list
 
-    page.select_option('#timer-event-select', '555')
+    page.select_option('#timer-event-select', '777')
+    page.wait_for_function("() => document.getElementById('scramble-text').textContent.split(' ').length === 100")
+    assert 'long' in page.get_attribute('#scramble-text', 'class')  # set smaller, so it fits
+
+    page.select_option('#timer-event-select', 'clock')
     page.wait_for_selector('#timer-under-construction')
-    assert 'ready for 2x2x2, 3x3x3, and 4x4x4' in page.inner_text('#timer-under-construction')
+    assert 'ready for 2x2x2, 3x3x3, 4x4x4, 5x5x5, 6x6x6, and 7x7x7' in page.inner_text('#timer-under-construction')
     assert page.errors == []
 
 

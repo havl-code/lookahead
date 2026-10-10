@@ -66,6 +66,11 @@
     word-spacing: 6px;
 }
 
+.scramble-text.long {
+    font-size: 15px;
+    word-spacing: 3px;
+}
+
 .scramble-menu {
     position: absolute;
     top: calc(100% + 6px);

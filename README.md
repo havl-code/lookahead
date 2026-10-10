@@ -44,11 +44,12 @@ and a double-click (or one command) starts it.
 - **WCA Inspection:** an optional 15 second inspection that follows the WCA rules: starting
   after 15 seconds is a +2, and after 17 a DNF. The 8 and 12 second calls show on screen, and
   can also beep or be spoken
-- **2x2x2, 3x3x3, and 4x4x4:** the timer works for these three events so far
-- **Scrambles:** a new scramble for every solve: 25 moves for 2x2x2 and 3x3x3, and 40 for
-  4x4x4 (with wide turns such as Rw). They're random-move, as the WCA's own were in its 2006
-  Regulations, rather than random-state like official WCA scrambles today, so they mix the cube
-  well for practice but aren't exactly like competition ones
+- **2x2x2 to 7x7x7:** the timer works for every cube from 2x2x2 to 7x7x7 so far
+- **Scrambles:** a new scramble for every solve: 25 moves for 2x2x2 and 3x3x3, 40 for 4x4x4, 60
+  for 5x5x5, 80 for 6x6x6, and 100 for 7x7x7 (with wide turns such as Rw and 3Rw). They're
+  random-move, the lengths the WCA itself used. Official scrambles for 2x2x2 to 4x4x4 are
+  random-state today, so those mix the cube well for practice but aren't exactly like
+  competition ones; the WCA still scrambles 5x5x5 to 7x7x7 with random moves
 - **Live Statistics:** solve count, best, mean and Ao5 for the whole session as you solve
 - **A Session a Day:** your first solve each day starts a new session automatically
 - **Penalties and Notes:** mark any solve as +2 or DNF afterwards, or add a note about how it
@@ -166,7 +167,8 @@ itself. The first time you open a downloaded launcher, your system may ask you t
   and importing the same file again only adds the new solves.
 - **WCA inspection.** Starting after 15 seconds is a +2, and after 17 a DNF, with calls at 8
   and 12 seconds that can also beep or be spoken.
-- **Timers for 2x2x2 and 4x4x4,** each with scrambles of the length the WCA set for it.
+- **Timers for 2x2x2, 4x4x4, 5x5x5, 6x6x6, and 7x7x7,** each with scrambles of the length the
+  WCA set for it.
 - **Notes, shortcuts, and Undo.** Add a note to any solve, make your last solve OK, +2, or DNF
   with Alt+1, Alt+2, or Alt+3, delete it with Ctrl+Z, and bring back a deleted solve with Undo.
 - **Best averages.** The Dashboard shows your best Ao5, Ao12, Ao50, and Ao100 for each event,
@@ -245,7 +247,8 @@ The first start of 3.1 updates your data once (see
 
 ### Using the Timer
 
-1. Open the **Timer** tab and pick your event. (2x2x2, 3x3x3, and 4x4x4 have a timer so far.)
+1. Open the **Timer** tab and pick your event. (Every cube from 2x2x2 to 7x7x7 has a timer so
+   far.)
 2. Just start solving. The timer keeps one session per day: your first solve of the day
    starts a new session automatically (with the same cube as your last one), and the rest of
    the day's solves go into it. To add solves to an older session instead, pick it from the
