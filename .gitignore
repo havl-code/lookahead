@@ -1,5 +1,4 @@
-# Local tooling files: settings, instructions, and the plan for the current piece of
-# work. They're for working on the app, not part of it.
+# Local tooling files
 .claude/
 CLAUDE.md
 CLAUDE.local.md
