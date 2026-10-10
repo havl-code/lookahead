@@ -160,7 +160,7 @@ itself. The first time you open a downloaded launcher, your system may ask you t
 
 ## 🆕 What's New
 
-### 3.1
+### 3.2
 
 - **Safe from other websites.** A page open in your browser can no longer change your data,
   read it, or keep the app running. See [Security](#-security).
@@ -199,10 +199,10 @@ itself. The first time you open a downloaded launcher, your system may ask you t
 - **4x4x4 and 5x5x5 Blindfolded** are in every event menu.
 - **Tested.** Automated tests, including browser tests, run on Windows, macOS, and Linux.
 
-The first start of 3.1 updates your data once (see
+The first start of 3.2 updates your data once (see
 [Updating the App](INSTALLATION.md#-updating-the-app)).
 
-### 3.0
+### 3.1
 
 - **Start with a double-click.** Every system has its own launcher (**Start on Windows**,
   **Start on Mac**, **Start on Linux**), and on Windows the app adds a shortcut with its icon
@@ -217,19 +217,22 @@ The first start of 3.1 updates your data once (see
 - **A session a day.** The timer starts a new session with your first solve of each day.
 - **Cancel with Esc.** Changed your mind during inspection, or even mid-solve? Press Esc and
   nothing is saved.
+
+### 3.0
+
 - **Runs on your computer, not just in the browser.** The older browser-only version (2.x)
   kept your data inside the browser, so clearing your browsing data (or switching browsers)
   could lose it. Now a small server on your computer saves everything to one file,
   `data/speedcube.db`. It's easy to back up, and it doesn't matter which browser you use.
 - **Quick with huge histories.** Importing tens of thousands of solves no longer slows the app
   down: long lists load a page at a time, and stats are worked out by the database.
-- **Sortable tables.** Every table of sessions, solves and cubes sorts by any column.
-- **Charts are part of Analytics.** One tab now has your scores, insights and charts, all
+- **Sortable tables.** Every table of sessions, solves, and cubes sorts by any column.
+- **Charts are part of Analytics.** One tab now has your scores, insights, and charts, all
   driven by the same event menu.
 - **A fresh look.** Dark mode by default, an orange accent, the Space Grotesk font, and a
   simpler layout.
 - **More accurate statistics.** Ao5 and Ao12 follow the WCA rules for DNFs, and +2 penalties
-  are counted in your PBs, means and charts. Stats for your existing sessions are recalculated
+  are counted in your PBs, means, and charts. Stats for your existing sessions are recalculated
   automatically.
 - **Fully offline.** The fonts and the charting library are bundled with the app, so only the
   WCA rank and name lookup need the internet.

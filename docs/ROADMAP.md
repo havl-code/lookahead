@@ -1,6 +1,6 @@
 # Roadmap
 
-Where Speedcube Training Explorer stands after version 3.1, what it can't do yet, and what
+Where Speedcube Training Explorer stands after version 3.2, what it can't do yet, and what
 could come next, roughly in order. It's a plan, not a promise: ideas and pull requests are
 welcome (see [Contributing](../README.md#-contributing)).
 
@@ -8,9 +8,9 @@ Sizes are rough: **S** is a few hours, **M** is a day or two, and **L** is a wee
 
 ---
 
-## Done in 3.1
+## Done in 3.2
 
-Version 3.1 came from an audit of every feature, a test suite, fixes for everything the audit
+Version 3.2 came from an audit of every feature, a test suite, fixes for everything the audit
 found, and six new features. The commit links work once the branch is on GitHub.
 
 ### Safety and Security
@@ -98,7 +98,7 @@ found, and six new features. The commit links work once the branch is on GitHub.
 - [`db2b071`](https://github.com/havl-code/speedcube-training-explorer/commit/db2b071),
   [`4199ee1`](https://github.com/havl-code/speedcube-training-explorer/commit/4199ee1), and
   [`b83bb53`](https://github.com/havl-code/speedcube-training-explorer/commit/b83bb53) Docs for
-  3.1, the version number, and a new screenshot
+  3.2, the version number, and a new screenshot
 
 ---
 
@@ -147,17 +147,17 @@ found, and six new features. The commit links work once the branch is on GitHub.
   rebuilding the tables of existing databases.
 - The add and edit cube forms duplicate their markup (`cubes.js`).
 - The timer's own `/api/timer/solve/<id>` routes are kept beside the shared `/api/solves/<id>`
-  ones, for pages opened before 3.1, and could go in a later version.
+  ones, for pages opened before 3.2, and could go in a later version.
 
 ---
 
 ## Now
 
-Small, safe steps that build on 3.1.
+Small, safe steps that build on 3.2.
 
 | # | What | Why | Size |
 | --- | --- | --- | --- |
-| 1 | Merge the branch and tag a v3.1.0 release | CI passes on Windows, macOS, and Ubuntu, and a release gives people a clean download | S |
+| 1 | Merge the branch and tag a v3.2.0 release | CI passes on Windows, macOS, and Ubuntu, and a release gives people a clean download | S |
 | 2 | Field and button borders at 3:1 against the page (WCAG 2.1 1.4.11) | The last part of AA contrast; it changes the look a little, so it waits for the owner's say | S |
 
 ## Next
@@ -190,7 +190,7 @@ Larger changes to how the app works, each worth a design discussion first.
 
 ## Open Questions
 
-1. **Release:** tag a v3.1.0 release on GitHub once the branch is merged?
+1. **Release:** tag a v3.2.0 release on GitHub once the branch is merged?
 2. **Random-state scrambles:** is it fine to bundle a third-party scrambler, and which licences
    are acceptable alongside the MIT Licence?
 3. **Profiles:** one database file per person (simplest, and backups stay separate), or one

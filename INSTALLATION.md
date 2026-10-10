@@ -207,7 +207,7 @@ A new version sometimes needs to update your data (for example, to work out your
 newer rules). It does that by itself on its first start, after keeping a safety copy of your
 database in `data/backups`, so there's always a way back.
 
-**Updating to 3.1:** the first start adds room for best averages and timer settings,
+**Updating to 3.2:** the first start adds room for best averages and timer settings,
 and works out every session's stats again under the WCA's rounding rules. With a big history
 this takes a few seconds, once. If you'd like a copy of your own as well as the safety copy,
 click **Export backup** in the old version before you update.

@@ -95,8 +95,8 @@ CREATE TABLE IF NOT EXISTS wca_cache (
 # Columns added since a table was first made. CREATE TABLE IF NOT EXISTS leaves an existing
 # table as it is, so init_db adds any of these a database doesn't have yet. Adding a column
 # never touches the rows already there.
-#   settings.value: the timer settings, as JSON in the 'timer' row (3.1)
-#   sessions.best_ao5 to best_ao100: the session's best averages, for the PB averages (3.1)
+#   settings.value: the timer settings, as JSON in the 'timer' row (3.2)
+#   sessions.best_ao5 to best_ao100: the session's best averages, for the PB averages (3.2)
 ADDED_COLUMNS = {
     'settings': {'value': 'TEXT'},
     'sessions': {f'best_ao{size}': 'NUMERIC' for size in AVERAGE_SIZES},
@@ -105,8 +105,8 @@ ADDED_COLUMNS = {
 # Bump this whenever recompute_session_stats changes, so the stats already stored on existing
 # sessions get recalculated once on the next start. It's kept in SQLite's user_version.
 # 1: Ao5/Ao12 follow the WCA rules for DNFs (3.0).
-# 2: means and averages use singles truncated the WCA way (Regulation 9f1) (3.1).
-# 3: each session's best Ao5, Ao12, Ao50, and Ao100 (3.1).
+# 2: means and averages use singles truncated the WCA way (Regulation 9f1) (3.2).
+# 3: each session's best Ao5, Ao12, Ao50, and Ao100 (3.2).
 STATS_VERSION = 3
 
 
