@@ -33,7 +33,7 @@ It's rebuilt from the latest export each month, so the two years move on with it
 shows the dates it covers under the scores.
 
 > This information is based on competition results owned and maintained by the World Cube
-> Association, published at <https://worldcubeassociation.org/results> as of September 30, 2026.
+> Association, published at <https://worldcubeassociation.org/results> as of October 11, 2026.
 
 ---
 
