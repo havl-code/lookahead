@@ -1,11 +1,13 @@
 # Runs the tests on every push and pull request, on all three systems the app supports, with
 # the oldest Python that still gets security fixes (3.11) and the newest stable one (3.14).
-# The browser smoke test runs once, on Ubuntu.
+# The browser smoke test runs once, on Ubuntu. The WCA reference workflow starts it by hand
+# (workflow_dispatch) on the pull requests it opens, since its pushes can't start it.
 name: Tests
 
 on:
   push:
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read

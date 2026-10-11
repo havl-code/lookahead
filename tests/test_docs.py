@@ -1,7 +1,9 @@
 """The docs: every relative link and heading anchor works, and the writing follows the
 project's style (NZ English, with no em or en dashes)."""
 
+import json
 import re
+from datetime import date
 
 import pytest
 
@@ -62,3 +64,18 @@ def test_no_em_or_en_dashes(path):
 @pytest.mark.parametrize('doc', DOCS, ids=lambda p: p.name)
 def test_docs_use_nz_spelling(doc):
     assert re.findall(US_SPELLINGS, prose(doc.read_text(encoding='utf-8')), re.I) == []
+
+
+def test_docs_quote_the_current_wca_reference():
+    """The WCA notice's date and 3x3x3's competitors, as tools/sync_wca_reference_docs.py
+    writes them after each rebuild of the table."""
+    reference = json.loads((PROJECT_DIR / 'speedcube' / 'wca_reference.json').read_text(encoding='utf-8'))
+    day = date.fromisoformat(reference['export_date'])
+    as_of = f'as of {day.strftime("%B")} {day.day}, {day.year}.'
+    assert as_of in reference['notice']
+    readme, scores = (path.read_text(encoding='utf-8') for path in (PROJECT_DIR / 'README.md',
+                                                                     PROJECT_DIR / 'docs' / 'SCORES.md'))
+    assert re.search(r'<https://worldcubeassociation\.org/results>\s+' + re.escape(as_of), readme)
+    assert re.search(r'<https://worldcubeassociation\.org/results>\s+' + re.escape(as_of), scores)
+    competitors = round(reference['events']['333']['speed']['competitors'], -3)
+    assert f'about {competitors:,} for 3x3x3' in scores

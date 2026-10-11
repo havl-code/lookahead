@@ -1,0 +1,98 @@
+# Rebuilds speedcube/wca_reference.json from the latest WCA results export once a month and, when
+# it changes, opens a pull request (or updates the one already open) for the owner to review.
+# The scoring method stays the same; only the two years of competitors it compares with move on.
+# It can also be run by hand from the Actions tab.
+name: WCA reference
+
+on:
+  schedule:
+    - cron: '17 4 3 * *'  # 04:17 UTC on the 3rd of each month, after the WCA's daily export
+  workflow_dispatch:
+
+permissions:
+  contents: write       # push the refresh branch
+  pull-requests: write  # open or update its pull request
+  actions: write        # start the Tests workflow on it
+
+concurrency:
+  group: wca-reference
+
+defaults:
+  run:
+    shell: bash  # with pipefail, so a failed build isn't hidden behind tee
+
+jobs:
+  refresh:
+    name: Refresh the WCA reference
+    runs-on: ubuntu-latest
+    env:
+      BRANCH: chore/refresh-wca-reference
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: astral-sh/setup-uv@v10.2.0
+        with:
+          enable-cache: true
+
+      - name: Download the latest results export
+        run: >-
+          curl --fail --silent --show-error --location --retry 3
+          --output "$RUNNER_TEMP/wca-export.zip"
+          https://www.worldcubeassociation.org/export/results/v2/tsv
+
+      - name: Rebuild the reference, and the docs that quote it
+        run: |
+          uv run --locked tools/build_wca_reference.py "$RUNNER_TEMP/wca-export.zip" | tee "$RUNNER_TEMP/build.log"
+          uv run --locked tools/sync_wca_reference_docs.py
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if git diff --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "The reference is already up to date."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run the tests
+        if: steps.changes.outputs.changed == 'true'
+        run: uv run --locked --dev pytest
+
+      - name: Open or update the pull request
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          start=$(jq -r .window_start speedcube/wca_reference.json)
+          end=$(jq -r .export_date speedcube/wca_reference.json)
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git switch --create "$BRANCH"
+          git commit --all --quiet \
+            --message "chore: refresh the WCA reference to $end" \
+            --message "The monthly rebuild from the WCA results export: the scores now compare with competitors from $start to $end. The scoring method is unchanged."
+          # The branch only ever holds this one commit, so each month replaces the last
+          git push --force --quiet origin "$BRANCH"
+
+          {
+            echo "The monthly rebuild of \`speedcube/wca_reference.json\` from the WCA results export. The scores now compare with competitors from **$start** to **$end**; the scoring method is unchanged, so scores shift a little as the two-year window moves."
+            echo
+            echo "The README and \`docs/SCORES.md\` quote the new export date, and the tests passed before this was opened."
+            echo
+            echo '<details><summary>Build output</summary>'
+            echo
+            echo '```'
+            cat "$RUNNER_TEMP/build.log"
+            echo '```'
+            echo
+            echo '</details>'
+          } > "$RUNNER_TEMP/body.md"
+
+          title="Refresh the WCA reference to $end"
+          if [ "$(gh pr view "$BRANCH" --json state --jq .state 2>/dev/null)" = OPEN ]; then
+            gh pr edit "$BRANCH" --title "$title" --body-file "$RUNNER_TEMP/body.md"
+          else
+            gh pr create --base main --head "$BRANCH" --title "$title" --body-file "$RUNNER_TEMP/body.md"
+          fi
+          # Pushes made with this workflow's token don't start other workflows, but a dispatch
+          # does, so the pull request gets its usual checks on every system
+          gh workflow run tests.yml --ref "$BRANCH"

@@ -1,8 +1,11 @@
 """The Analytics scores route (/api/analytics/session-heatmap)."""
 
-from helpers import seed_session
+import json
+
+from helpers import PROJECT_DIR, seed_session
 
 URL = '/api/analytics/session-heatmap?event_id='
+REFERENCE = json.loads((PROJECT_DIR / 'speedcube' / 'wca_reference.json').read_text(encoding='utf-8'))
 
 
 def steady(n, start=12000):
@@ -23,7 +26,8 @@ def test_scores_and_reference_details(app, client):
     assert session['typical_result'] is not None and session['spread_percent'] is not None
     assert (data['has_speed_reference'], data['has_consistency_reference']) == (True, True)
     assert (data['result_kind'], data['solves_per_round'], data['min_pairs']) == ('average', 5, 20)
-    assert data['reference_date'] == '2026-09-30' and 'World Cube Association' in data['wca_notice']
+    assert data['reference_date'] == REFERENCE['export_date']
+    assert 'World Cube Association' in data['wca_notice']
 
 
 def test_short_sessions_get_speed_only(app, client):
