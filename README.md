@@ -164,7 +164,7 @@ itself. The first time you open a downloaded launcher, your system may ask you t
 
 ## 🆕 What's New
 
-### Since 3.2 (Not Released Yet)
+### 3.3
 
 - **Blindfolded timers.** 3x3x3, 4x4x4, and 5x5x5 Blindfolded have a timer, with no inspection
   (memorisation is part of the time) and scrambles that end by turning the cube to a random

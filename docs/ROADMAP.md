@@ -1,6 +1,6 @@
 # Roadmap
 
-Where Speedcube Training Explorer stands after version 3.2, what it can't do yet, and what
+Where Speedcube Training Explorer stands after version 3.3, what it can't do yet, and what
 could come next, roughly in order. It's a plan, not a promise: ideas and pull requests are
 welcome (see [Contributing](../README.md#-contributing)).
 
@@ -102,9 +102,11 @@ as [v3.2.0](https://github.com/havl-code/speedcube-training-explorer/releases/ta
   [`3fa5ba4`](https://github.com/havl-code/speedcube-training-explorer/commit/3fa5ba4) Docs for
   3.2, the version number, and a new screenshot
 
-## Done Since 3.2
+## Done in 3.3
 
-Not released yet.
+Version 3.3 added timers for the blindfolded events and Megaminx, and finished AA contrast. It
+was released as [v3.3.0](https://github.com/havl-code/speedcube-training-explorer/releases/tag/v3.3.0)
+on 11 October 2026.
 
 - [`7828f84`](https://github.com/havl-code/speedcube-training-explorer/commit/7828f84) Timers for 3x3x3, 4x4x4, and 5x5x5
   Blindfolded, with no inspection (Regulation B1a) and scrambles that end in a random
@@ -168,7 +170,7 @@ Not released yet.
 ## Now
 
 Nothing small is left: the borders and the blindfolded and Megaminx timers are done (see
-[Done Since 3.2](#done-since-32)). Each item below needs a decision or some design first.
+[Done in 3.3](#done-in-33)). Each item below needs a decision or some design first.
 
 ## Next
 
