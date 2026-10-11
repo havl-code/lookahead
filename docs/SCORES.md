@@ -29,8 +29,8 @@ over a thousand even for the rarest ones.
 
 The app ships with a small summary of those results, so it works offline. The summary keeps
 where competitors fall (the time at every 0.1% of competitors), not anyone's personal results.
-It's updated by rebuilding it from a newer export; the app shows the dates it covers under the
-scores.
+It's rebuilt from the latest export each month, so the two years move on with it, and the app
+shows the dates it covers under the scores.
 
 > This information is based on competition results owned and maintained by the World Cube
 > Association, published at <https://worldcubeassociation.org/results> as of September 30, 2026.
@@ -208,6 +208,10 @@ The tips under the scores come from the same numbers:
 - The scores are worked out in [`speedcube/scores.py`](../speedcube/scores.py).
 - The WCA summary is [`speedcube/wca_reference.json`](../speedcube/wca_reference.json), built by
   [`tools/build_wca_reference.py`](../tools/build_wca_reference.py) from the TSV results export.
-  To refresh it, download the latest export and run
-  `uv run tools/build_wca_reference.py path/to/export.zip`. The build uses the same
-  measuring code as the app, so competitors and sessions are always measured alike.
+  The build uses the same measuring code as the app, so competitors and sessions are always
+  measured alike.
+- A GitHub Actions workflow ([`wca-reference.yml`](../.github/workflows/wca-reference.yml))
+  rebuilds it on the 3rd of each month and opens a pull request when it changes. To rebuild it
+  by hand, download the latest export and run
+  `uv run tools/build_wca_reference.py path/to/export.zip`, then
+  `uv run tools/sync_wca_reference_docs.py` to update the export date the docs quote.

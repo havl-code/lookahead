@@ -116,6 +116,14 @@ on 11 October 2026.
 - [`b94e87e`](https://github.com/havl-code/speedcube-training-explorer/commit/b94e87e) Fields, buttons, and switches stand
   out at 3:1 (WCAG 2.1 1.4.11), which finishes AA contrast
 
+## Done Since 3.3
+
+Not released yet.
+
+- [`f205221`](https://github.com/havl-code/speedcube-training-explorer/commit/f205221) The Scores' comparison rebuilt from
+  the latest WCA results export each month, by a GitHub Actions workflow that opens a pull
+  request (the scoring method stays the same)
+
 ---
 
 ## Known Limitations
@@ -135,9 +143,9 @@ on 11 October 2026.
 - **World rank stops at the top 1,000.** The rankings come from a community-run copy of the
   WCA's results export, which lists the fastest 1,000 people in each event. If it stops
   loading, the Dashboard shows No data.
-- **The Analytics scores compare with a fixed snapshot** of WCA results (30 September 2024 to 30
-  September 2026). It only moves on when someone rebuilds it with
-  [`tools/build_wca_reference.py`](../tools/build_wca_reference.py).
+- **The Analytics scores move on once a month.** The summary of WCA results they compare with
+  is rebuilt each month, but only reaches the app once its pull request is merged and the app
+  is updated, so scores can shift a little from one version to the next.
 - **Undo lasts 8 seconds** and is lost if the page reloads. Deleting a whole session can't be
   undone (the app asks first, and backups and safety copies are the way back).
 - **Averages never span two sessions,** and Ao50 and Ao100 follow the community's convention,
@@ -179,9 +187,8 @@ Bigger features, once the basics above are in.
 | # | What | Why | Size |
 | --- | --- | --- | --- |
 | 1 | Goals and streaks: a daily solve target, days in a row, and a target average | Builds on a session a day, and gives a reason to come back | M |
-| 2 | Refresh `wca_reference.json` on a schedule, with CI rebuilding it and opening a pull request | Keeps the scores' comparison current without anyone remembering to do it (the scoring method stays the same) | M |
-| 3 | Random-state scrambles, bundled so they work offline | Matches competition scrambles (Regulation 4b3); needs a scrambler whose licence fits the app's MIT Licence | L |
-| 4 | A world rank model for the whole field, beyond the top 1,000 | Most people are outside the top 1,000, so they see no rank at all today | M |
+| 2 | Random-state scrambles, bundled so they work offline | Matches competition scrambles (Regulation 4b3); needs a scrambler whose licence fits the app's MIT Licence | L |
+| 3 | A world rank model for the whole field, beyond the top 1,000 | Most people are outside the top 1,000, so they see no rank at all today | M |
 
 ## Later
 
@@ -189,12 +196,12 @@ Larger changes to how the app works, each worth a design discussion first.
 
 | # | What | Why | Size |
 | --- | --- | --- | --- |
-| 5 | Timers for every WCA event | Pyraminx, Skewb, Square-1, and Clock need scramblers of their own (3 is a start), and Fewest Moves and Multi-Blind need new flows | L |
-| 6 | Per-event training plans | Turns the insights into a weekly plan you can follow | L |
-| 7 | Stackmat timer support, through the computer's audio input | The timer cubers already own and use at competitions | L |
-| 8 | Bluetooth smart cubes, through Web Bluetooth | Move-by-move solve data, but only in Chromium-based browsers | L |
-| 9 | Multiple user profiles | Families and clubs sharing one computer | L |
-| 10 | A PWA or a packaged desktop build | A packaged build would remove the uv step; a PWA adds an app window, but still needs the server | L |
+| 4 | Timers for every WCA event | Pyraminx, Skewb, Square-1, and Clock need scramblers of their own (3 is a start), and Fewest Moves and Multi-Blind need new flows | L |
+| 5 | Per-event training plans | Turns the insights into a weekly plan you can follow | L |
+| 6 | Stackmat timer support, through the computer's audio input | The timer cubers already own and use at competitions | L |
+| 7 | Bluetooth smart cubes, through Web Bluetooth | Move-by-move solve data, but only in Chromium-based browsers | L |
+| 8 | Multiple user profiles | Families and clubs sharing one computer | L |
+| 9 | A PWA or a packaged desktop build | A packaged build would remove the uv step; a PWA adds an app window, but still needs the server | L |
 
 ---
 
@@ -206,7 +213,5 @@ Larger changes to how the app works, each worth a design discussion first.
    database with profiles inside it?
 3. **Packaging:** is removing the uv step worth a much bigger download for each system?
 4. **Deleting sessions:** should they get Undo as well, so the app never needs to ask first?
-5. **Scores data:** is a monthly automatic refresh fine, given that scores shift a little as the
-   two-year window moves?
-6. **Old timer routes:** remove the timer's own solve routes in a later version, or keep them
+5. **Old timer routes:** remove the timer's own solve routes in a later version, or keep them
    for good?

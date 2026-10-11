@@ -453,14 +453,15 @@ speedcube-training-explorer/
 │   ├── images/            # Logo, favicon, and the shortcut icon (app-icon.ico)
 │   └── vendor/            # Bundled Plotly.js and Space Grotesk (with their licences)
 ├── tools/
-│   └── build_wca_reference.py  # Rebuilds wca_reference.json from a WCA results export
+│   ├── build_wca_reference.py  # Rebuilds wca_reference.json from a WCA results export
+│   └── sync_wca_reference_docs.py  # Updates the export date the docs quote
 ├── docs/
 │   ├── SCORES.md          # How the Analytics scores are worked out
 │   ├── ROADMAP.md         # What's done, known limitations, and what could come next
 │   └── screenshots/       # Images used in this README
 ├── tests/                 # Automated tests (pytest), with small synthetic fixtures
 │   └── e2e/               # Browser tests (Playwright), run on request
-├── .github/workflows/     # Runs the tests on GitHub for every push and pull request
+├── .github/workflows/     # The tests on every push, and the monthly WCA summary refresh
 ├── data/                  # Your database, and its copies in data/backups (never committed)
 ├── Speedcube Training Explorer.lnk  # Windows only: made on first start, never committed
 ├── LICENSE
