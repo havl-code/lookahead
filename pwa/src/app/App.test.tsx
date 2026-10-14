@@ -1,5 +1,7 @@
 import { act, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { DbProvider } from '../db/DbProvider.tsx';
+import { createTestDb } from '../test/db.ts';
 import { App } from './App.tsx';
 
 vi.mock('virtual:pwa-register/react', () => ({
@@ -14,15 +16,23 @@ afterEach(() => {
   window.location.hash = '';
 });
 
+function renderApp() {
+  return render(
+    <DbProvider db={createTestDb()}>
+      <App />
+    </DbProvider>,
+  );
+}
+
 describe('App', () => {
   it('opens on the Timer tab', () => {
-    render(<App />);
+    renderApp();
     expect(screen.getByRole('heading', { level: 1, name: 'Timer' })).toBeDefined();
     expect(screen.getByRole('link', { name: 'Timer' }).getAttribute('aria-current')).toBe('page');
   });
 
   it('follows the hash to another tab', async () => {
-    render(<App />);
+    renderApp();
     act(() => {
       window.location.hash = '#/analytics';
       window.dispatchEvent(new HashChangeEvent('hashchange'));

@@ -1,11 +1,13 @@
 import { Preview, repoUrl } from '../../app/Preview.tsx';
 import { ScreenHeader } from '../../app/ScreenHeader.tsx';
+import { BackupSection } from '../backup/BackupSection.tsx';
 
 export function MoreScreen() {
   return (
     <>
       <ScreenHeader title="More" />
-      <Preview>Cubes, CSTimer import, backups, and settings.</Preview>
+      <BackupSection />
+      <Preview>Cubes, CSTimer import, and settings.</Preview>
       <section className="mt-6">
         <h2 className="font-semibold">About</h2>
         <ul className="mt-2 divide-y divide-line rounded-xl border border-line bg-raised">
