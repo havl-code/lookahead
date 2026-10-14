@@ -15,6 +15,16 @@ no server, and no tracking. Once it does everything the desktop app does, it rep
 
 It works offline after the first visit, and updates itself the next time you leave the app.
 
+## What works so far
+
+- **Backups:** on the More tab, **Restore from a backup** takes a backup from the desktop app
+  (its **Export backup** link) or from here, and **Make backup** saves one to share or keep.
+  Restoring over what's here can be undone. The same file restores in the desktop app.
+- **Sessions:** every session, newest first, with its best, Ao5, Ao12, and mean worked out
+  exactly as the desktop app does.
+
+The timer, analytics, cubes, and CSTimer import come next.
+
 ## Development
 
 Requirements: Node 22.12 or later (CI uses Node 24) and pnpm. From this folder:
@@ -34,6 +44,11 @@ distributions, run `pnpm test:e2e:chromium` locally instead; CI always runs the 
 
 `.github/workflows/pwa.yml` runs all of these on every push and pull request that touches this
 folder, and deploys `main` to GitHub Pages once they pass.
+
+The stats and backup code is checked against the desktop app's: `tools/build_pwa_golden.py`
+writes the answers the Python code gives to `src/lib/golden/` and `src/features/backup/golden/`,
+and the tests compare. Run `uv run tools/build_pwa_golden.py` from the project folder after
+changing the desktop app's stats or backups.
 
 The app icons are made from `public/favicon.svg`; see `pwa-assets.config.js` to remake them.
 The Space Grotesk font in `src/assets/fonts/` is under the SIL Open Font License 1.1

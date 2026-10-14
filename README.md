@@ -2,17 +2,13 @@
 
 **Track your progress. Analyse your solves. Compare with the world.**
 
-Formerly Speedcube Training Explorer.
-
-A training tracker for speedcubers that runs on your own computer and opens in your web
-browser. Time your solves, analyse your progress with charts, keep track of your cubes, and
-see how you stack up against the WCA world rankings. Everything is stored on your computer,
-and a double-click (or one command) starts it.
+Named after **lookahead**, the speedcubing skill of finding your next pieces while you're still solving the current ones, so you can solve without pauses. It's one of the most useful skills to train, and this app helps you track that training. Formerly Speedcube Training Explorer.
 
 **On your phone:** Lookahead is being rebuilt as an app for your phone's Home Screen that
-works offline, at https://havl-code.github.io/lookahead/. It's an early preview for now, so
-keep using the desktop app below for your training. Once it does everything the desktop app
-does, it replaces it, and a backup brings your solves across.
+works offline, at https://havl-code.github.io/lookahead/. It's an early preview for now: it can
+restore a backup from the desktop app and list your sessions with the same stats, but it has no
+timer yet, so keep using the desktop app below for your training. Once it does everything the
+desktop app does, it replaces it.
 
 ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)
 ![Flask](https://img.shields.io/badge/Flask-000000?logo=flask&logoColor=white)
@@ -363,6 +359,10 @@ app isn't running) is a complete backup. You can also use the **Export backup** 
 footer to download everything as one JSON file, and **Import backup** to restore it. To look
 at your solves in a spreadsheet, use **Export solves (CSV)** in the footer, or **Export CSV** in
 a session's solves; that's for reading, not restoring.
+
+The same JSON backup restores in [Lookahead on your phone](https://havl-code.github.io/lookahead/)
+(on its **More** tab), and a backup made there restores here, so it's also how you move your
+solves between the two.
 
 The app also keeps copies of the database by itself, in `data/backups`:
 
