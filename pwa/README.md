@@ -21,10 +21,11 @@ It works offline after the first visit, and updates itself the next time you lea
   to start; touch anywhere to stop. Everything but the time hides while you solve, and the screen
   stays on. WCA inspection gives a +2 from 15 seconds and a DNF at 17 (Regulations A4d1 and A4d2),
   with optional sounds at 8 and 12 seconds, and the blindfolded events have none (B1a). Solves go
-  into today's session, with OK, +2, DNF, and Delete (with Undo) after each one. On a computer or
+  into today's session, with OK, +2, DNF, and Delete (with Undo) after each one; tap a recent
+  solve to add a note. On a computer or
   an iPad with a keyboard, the space bar works too, and Escape calls an attempt off.
 - **Backups:** on the More tab, **Restore from a backup** takes a backup from the desktop app
-  (its **Export backup** link) or from here, and **Make backup** saves one to share or keep.
+  (**Export backup** on its **Import and Export** tab) or from here, and **Make backup** saves one to share or keep.
   Restoring over what's here can be undone. The same file restores in the desktop app. The Timer
   tab reminds you when 100 solves, or a week's worth, aren't backed up yet.
 - **Sessions:** every session, for one event or all of them, newest or oldest first, or by best

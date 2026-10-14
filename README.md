@@ -2,19 +2,6 @@
 
 **Track your progress. Analyse your solves. Compare with the world.**
 
-Named after **lookahead**, the speedcubing skill of finding your next pieces while you're still solving the current ones, so you can solve without pauses. It's one of the most useful skills to train, and this app helps you track that training. Formerly Speedcube Training Explorer.
-
-**On your phone:** Lookahead is being rebuilt as an app for your phone's Home Screen that
-works offline, at https://havl-code.github.io/lookahead/. It's a preview for now: it has the
-timer, with WCA inspection, your sessions and solves (to look through, edit, and add to), your
-cubes, and your WCA ID, and a backup moves your solves between it and the desktop app below.
-Analytics, scores, and CSTimer import are still desktop only. Once the phone app does everything the desktop app does, it replaces it.
-
-To try it, open the link on your phone, then add it to your Home Screen (in Safari, tap Share,
-then **Add to Home Screen**; in Chrome, tap **Install app**). It works offline from then on.
-
-<img src="docs/screenshots/phone-app.png" width="620" alt="Lookahead on a phone: the timer with a scramble and today's solves and averages, and the sessions list with each day's best, Ao5, Ao12, and mean">
-
 ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)
 ![Flask](https://img.shields.io/badge/Flask-000000?logo=flask&logoColor=white)
 ![SQLite](https://img.shields.io/badge/SQLite-003B57?logo=sqlite&logoColor=white)
@@ -23,9 +10,30 @@ then **Add to Home Screen**; in Chrome, tap **Install app**). It works offline f
 ![CSS](https://img.shields.io/badge/CSS-1572B6?logo=css&logoColor=white)
 ![Plotly](https://img.shields.io/badge/Plotly-3F4F75?logo=plotly&logoColor=white)
 ![uv](https://img.shields.io/badge/uv-DE5FE9?logo=uv&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
+![React](https://img.shields.io/badge/React-087EA4?logo=react&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-0F766E?logo=tailwindcss&logoColor=white)
+![PWA](https://img.shields.io/badge/PWA-5A0FC8?logo=pwa&logoColor=white)
+![GitHub Pages](https://img.shields.io/badge/GitHub_Pages-222222?logo=githubpages&logoColor=white)
 ![Licence: MIT](https://img.shields.io/badge/licence-MIT-FF7A1A)
 
+Named after **lookahead**, the speedcubing skill of finding your next pieces while you're still solving the current ones, so you can solve without pauses. It's one of the most useful skills to train, and this app helps you track that training. Formerly Speedcube Training Explorer. It runs on your computer, and a version for your phone is on the way (see [On Your Phone](#-on-your-phone)).
+
 ![The dashboard in dark mode, greeting the user by name with their personal best, world rank, average time, best averages, and recent sessions](docs/screenshots/dashboard-dark.png)
+
+## 📱 On Your Phone
+
+Lookahead is being rebuilt as an app for your phone's Home Screen that
+works offline, at https://havl-code.github.io/lookahead/. It's a preview for now: it has the
+timer, with WCA inspection, your sessions and solves (to look through, edit, and add to), your
+cubes, and your WCA ID, and a backup moves your solves between it and the desktop app.
+Analytics, scores, and CSTimer import are still desktop only. Once the phone app does everything the desktop app does, it replaces it.
+
+To try it, open the link on your phone, then add it to your Home Screen (in Safari, tap Share,
+then **Add to Home Screen**; in Chrome, tap **Install app**). It works offline from then on.
+
+<img src="docs/screenshots/phone-app.png" width="620" alt="Lookahead on a phone: the timer with a scramble and today's solves and averages, and the sessions list with each day's best, Ao5, Ao12, and mean">
 
 ---
 
@@ -110,7 +118,8 @@ then **Add to Home Screen**; in Chrome, tap **Install app**). It works offline f
   Every solve keeps its own date, penalty, and comment, sessions keep their CSTimer names, and
   each one can be split into a session per day. Importing the same file again only adds solves
   that aren't already there.
-- **Backup and Restore:** export all your data to one JSON file, or restore from one
+- **Backup and Restore:** export all your data to one JSON file, or restore from one, on the
+  **Import and Export** tab. The same file works in the phone app, both ways
 - **CSV Export:** download every solve, or one session's, as a spreadsheet (CSV), with its date,
   event, cube, time, penalty, result, scramble, and notes
 
@@ -171,6 +180,16 @@ itself. The first time you open a downloaded launcher, your system may ask you t
 ---
 
 ## 🆕 What's New
+
+### Since 3.3 (not released yet)
+
+- **A new name.** The app is now called Lookahead. Backups made under the old name still
+  restore, and your data stays in `data/speedcube.db`.
+- **Import and Export.** The Import tab is now **Import and Export**, with Export backup,
+  Export solves (CSV), and Import backup beside the CSTimer import. Backups, CSV files, and the
+  copies in `data/backups` are named `lookahead-...`.
+- **Lookahead on your phone,** an early preview (see [On Your Phone](#-on-your-phone)).
+- **Scores kept current.** The WCA results the scores compare with are rebuilt each month.
 
 ### 3.3
 
@@ -424,6 +443,11 @@ like.
 - **WCA results summary:** the Analytics scores compare with a summary of official results
   from the [WCA results export](https://www.worldcubeassociation.org/export/results), which is
   bundled with the app (see [docs/SCORES.md](docs/SCORES.md)).
+- **Phone app (`pwa/`):** TypeScript and [React](https://react.dev/), built with
+  [Vite](https://vite.dev/) and styled with [Tailwind CSS](https://tailwindcss.com/). Data stays
+  on the phone in IndexedDB (through [Dexie](https://dexie.org/)), and a service worker
+  ([Workbox](https://developer.chrome.com/docs/workbox)) makes it work offline. It's served by
+  GitHub Pages, with no server of its own. See [pwa/README.md](pwa/README.md).
 
 ---
 
@@ -465,7 +489,7 @@ lookahead/
 │   │   │   app.js, theme.js, theme-init.js   # One file per tab or feature
 │   ├── images/            # Logo, favicon, and the shortcut icon (app-icon.ico)
 │   └── vendor/            # Bundled Plotly.js and Space Grotesk (with their licences)
-├── pwa/                  # The phone app (an early preview), with its own README
+├── pwa/                   # The phone app (an early preview), with its own README
 ├── tools/
 │   ├── build_wca_reference.py  # Rebuilds wca_reference.json from a WCA results export
 │   └── sync_wca_reference_docs.py  # Updates the export date the docs quote
@@ -475,7 +499,7 @@ lookahead/
 │   └── screenshots/       # Images used in this README
 ├── tests/                 # Automated tests (pytest), with small synthetic fixtures
 │   └── e2e/               # Browser tests (Playwright), run on request
-├── .github/workflows/     # The tests on every push, and the monthly WCA summary refresh
+├── .github/workflows/     # Tests for both apps, the phone app's deploy, and the monthly WCA refresh
 ├── data/                  # Your database, and its copies in data/backups (never committed)
 ├── Lookahead.lnk          # Windows only: made on first start, never committed
 ├── LICENSE

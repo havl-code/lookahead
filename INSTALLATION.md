@@ -10,6 +10,10 @@ Both do the same thing, so use whichever you prefer. Everything else happens in 
 The only thing to install is **uv**, a free tool that downloads the right version of Python and
 everything the app needs, automatically.
 
+On a phone, there's nothing to install from here: open https://havl-code.github.io/lookahead/
+and add it to your Home Screen (see [On Your Phone](README.md#-on-your-phone)). It's an early
+preview, and a backup moves your solves between it and this app.
+
 ---
 
 ## 🧰 1. Install uv

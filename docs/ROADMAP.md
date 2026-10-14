@@ -123,13 +123,17 @@ Not released yet.
 - [`f205221`](https://github.com/havl-code/lookahead/commit/f205221) The Scores' comparison rebuilt from
   the latest WCA results export each month, by a GitHub Actions workflow that opens a pull
   request (the scoring method stays the same)
-- The app is now called Lookahead (it was Speedcube Training Explorer). Backups made under
-  the old name still restore
+- [`467d9ed`](https://github.com/havl-code/lookahead/commit/467d9ed) The app is now called
+  Lookahead (it was Speedcube Training Explorer). Backups made under the old name still restore
+- [`e2aa888`](https://github.com/havl-code/lookahead/commit/e2aa888) and
+  [`944b82f`](https://github.com/havl-code/lookahead/commit/944b82f) Backups, CSV files, and
+  the copies in `data/backups` are named `lookahead-...`, and the Import tab is now Import and
+  Export, with the backup and CSV buttons
 - An early preview of Lookahead for phones, an offline app for the Home Screen, at
   https://havl-code.github.io/lookahead/. It's being rebuilt to do everything the desktop app
   does, and then replaces it. So far it has the timer for every event the desktop app times,
-  restores and makes backups (in the same format as the desktop app's, both ways), and lists
-  your sessions with their stats
+  sessions and solves to look through, edit, and add to, cubes, the WCA ID, and backups in the
+  same format as the desktop app's, both ways
 
 ---
 
