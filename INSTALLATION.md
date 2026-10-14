@@ -131,9 +131,10 @@ remembers your choice.
 ### Backing Up
 
 - **Copy the file:** copy `data/speedcube.db` somewhere safe while the app isn't running
-- **Export a backup:** click **Export backup** in the app's footer to download everything as one
-  JSON file, and **Import backup** to restore from it (this replaces all current data)
-- **Export solves as CSV:** **Export solves (CSV)** in the footer gives you every solve as a
+- **Export a backup:** click **Export backup** on the **Import and Export** tab (or in the
+  footer) to download everything as one JSON file, and **Import backup** to restore from it
+  (this replaces all current data)
+- **Export solves as CSV:** **Export solves (CSV)** on the same tab gives you every solve as a
   spreadsheet. It's handy for your own analysis, but it isn't a backup: only the JSON file can
   be restored
 - **Daily copies:** the first time you start the app each day, it copies `data/speedcube.db`
@@ -142,8 +143,9 @@ remembers your choice.
 - **Safety copies:** before restoring a backup, or updating your data for a new version of the
   app, the app copies `data/speedcube.db` into `data/backups` too, and keeps the newest five
 - **Going back to a copy:** close the app, then copy the one you want over `data/speedcube.db`
-  (keeping that name). The daily ones end in `-daily.db`, and the safety ones say what they
-  came before, such as `-before-restore.db`
+  (keeping that name). The copies start with `lookahead-` (or `speedcube-` for ones made
+  before the app was renamed). The daily ones end in `-daily.db`, and the safety ones say what
+  they came before, such as `-before-restore.db`
 
 ### Bringing Your Data Across from the Browser-Only Version
 

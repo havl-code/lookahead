@@ -10,6 +10,11 @@ timer, with WCA inspection, and lists your sessions with the same stats, and a b
 solves between it and the desktop app below. Analytics, scores, cubes, and CSTimer import are
 still desktop only. Once the phone app does everything the desktop app does, it replaces it.
 
+To try it, open the link on your phone, then add it to your Home Screen (in Safari, tap Share,
+then **Add to Home Screen**; in Chrome, tap **Install app**). It works offline from then on.
+
+<img src="docs/screenshots/phone-app.png" width="620" alt="Lookahead on a phone: the timer with a scramble and today's solves and averages, and the sessions list with each day's best, Ao5, Ao12, and mean">
+
 ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)
 ![Flask](https://img.shields.io/badge/Flask-000000?logo=flask&logoColor=white)
 ![SQLite](https://img.shields.io/badge/SQLite-003B57?logo=sqlite&logoColor=white)
@@ -257,7 +262,7 @@ The first start of 3.2 updates your data once (see
 
 1. Open your old copy of the app (the 2.x `index.html`) and click **Export backup** in the footer
 2. Start this version (see [Quick Start](#-quick-start))
-3. Click **Import backup** in the footer and choose the file from step 1
+3. Click **Import backup** on the **Import and Export** tab and choose the file from step 1
 
 ---
 
@@ -323,7 +328,7 @@ The **How the scores work** link under the scores opens it in the app, even offl
 
 1. **In CSTimer:** open the Export menu and download your data as JSON or TXT.
 2. **In Lookahead:**
-   - Open the **Import** tab
+   - Open the **Import and Export** tab
    - Click **Choose File** and pick your export
    - Click **Preview Sessions**
    - Tick the sessions you want, and check each one's event. Where CSTimer says which
@@ -355,10 +360,11 @@ safely import a newer export of the same sessions: only the new solves are added
 ### Backing Up Your Data
 
 Everything lives in one file, `data/speedcube.db`. Copying that file somewhere safe (while the
-app isn't running) is a complete backup. You can also use the **Export backup** link in the
-footer to download everything as one JSON file, and **Import backup** to restore it. To look
-at your solves in a spreadsheet, use **Export solves (CSV)** in the footer, or **Export CSV** in
-a session's solves; that's for reading, not restoring.
+app isn't running) is a complete backup. You can also use **Export backup** on the **Import
+and Export** tab (or in the footer) to download everything as one JSON file, named
+`lookahead-backup-<date>.json`, and **Import backup** to restore it. To look at your solves in a
+spreadsheet, use **Export solves (CSV)** there, or **Export CSV** in a session's solves; that's
+for reading, not restoring.
 
 The same JSON backup restores in [Lookahead on your phone](https://havl-code.github.io/lookahead/)
 (on its **More** tab), and a backup made there restores here, so it's also how you move your
