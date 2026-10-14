@@ -96,12 +96,13 @@ export default defineConfig({
     restoreMocks: true,
     projects: [
       {
-        // Logic tests.
+        // Logic and database tests.
         extends: true,
         test: {
           name: 'unit',
           include: ['src/**/*.test.ts'],
           environment: 'node',
+          setupFiles: ['src/test/setup-indexeddb.ts'],
         },
       },
       {
@@ -111,7 +112,7 @@ export default defineConfig({
           name: 'dom',
           include: ['src/**/*.test.tsx'],
           environment: 'happy-dom',
-          setupFiles: ['src/test/setup-dom.ts'],
+          setupFiles: ['src/test/setup-indexeddb.ts', 'src/test/setup-dom.ts'],
         },
       },
     ],

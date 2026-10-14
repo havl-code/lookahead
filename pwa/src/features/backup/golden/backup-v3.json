@@ -1,0 +1,317 @@
+{
+ "backup": {
+  "app": "speedcube-training-explorer",
+  "version": 1,
+  "exported_at": "2026-10-01T09:00:00.000Z",
+  "cubes": [
+   {
+    "id": 1,
+    "cube_type": "333",
+    "brand": "GAN",
+    "model": "14 MagLev",
+    "purchase_date": "2026-01-15",
+    "notes": "Main",
+    "is_active": true,
+    "created_at": "2026-10-01T08:00:00.000Z"
+   },
+   {
+    "id": 2,
+    "cube_type": "222",
+    "brand": "MoYu",
+    "model": "RS2M",
+    "purchase_date": null,
+    "notes": "",
+    "is_active": true,
+    "created_at": "2026-10-01T08:00:00.000Z"
+   }
+  ],
+  "sessions": [
+   {
+    "id": 1,
+    "date": "2026-10-01",
+    "event_id": "333",
+    "cube_id": 1,
+    "solve_count": 6,
+    "best_single": 10990,
+    "worst_single": 14200,
+    "session_mean": 12606,
+    "ao5": 13233.333333333334,
+    "ao12": null,
+    "notes": "Morning",
+    "created_at": "2026-10-01T08:00:00.000Z"
+   },
+   {
+    "id": 2,
+    "date": "2026-10-01",
+    "event_id": "222",
+    "cube_id": null,
+    "solve_count": 1,
+    "best_single": 3210,
+    "worst_single": 3210,
+    "session_mean": 3210,
+    "ao5": null,
+    "ao12": null,
+    "notes": "",
+    "created_at": "2026-10-01T08:00:00.000Z"
+   }
+  ],
+  "solves": [
+   {
+    "id": 1,
+    "session_id": 1,
+    "solve_number": 1,
+    "time_ms": 12340,
+    "scramble": "",
+    "penalty": null,
+    "dnf": false,
+    "notes": "",
+    "timestamp": "2026-10-01T08:00:00.000Z"
+   },
+   {
+    "id": 2,
+    "session_id": 1,
+    "solve_number": 2,
+    "time_ms": 11500,
+    "scramble": "",
+    "penalty": "+2",
+    "dnf": false,
+    "notes": "",
+    "timestamp": "2026-10-01T08:00:00.000Z"
+   },
+   {
+    "id": 3,
+    "session_id": 1,
+    "solve_number": 3,
+    "time_ms": 13000,
+    "scramble": "",
+    "penalty": "DNF",
+    "dnf": true,
+    "notes": "",
+    "timestamp": "2026-10-01T08:00:00.000Z"
+   },
+   {
+    "id": 4,
+    "session_id": 1,
+    "solve_number": 4,
+    "time_ms": 10990,
+    "scramble": "R U",
+    "penalty": null,
+    "dnf": false,
+    "notes": "",
+    "timestamp": "2026-10-01T08:00:00.000Z"
+   },
+   {
+    "id": 5,
+    "session_id": 1,
+    "solve_number": 5,
+    "time_ms": 12000,
+    "scramble": "",
+    "penalty": null,
+    "dnf": false,
+    "notes": "",
+    "timestamp": "2026-10-01T08:00:00.000Z"
+   },
+   {
+    "id": 6,
+    "session_id": 1,
+    "solve_number": 6,
+    "time_ms": 14200,
+    "scramble": "",
+    "penalty": null,
+    "dnf": false,
+    "notes": "lockup",
+    "timestamp": "2026-10-01T08:00:00.000Z"
+   },
+   {
+    "id": 7,
+    "session_id": 2,
+    "solve_number": 1,
+    "time_ms": 3210,
+    "scramble": "",
+    "penalty": null,
+    "dnf": false,
+    "notes": "",
+    "timestamp": "2026-10-01T08:00:00.000Z"
+   }
+  ],
+  "settings": [
+   {
+    "id": "user",
+    "wca_id": "2003POCH01",
+    "wca_name": "Test Person"
+   }
+  ]
+ },
+ "desktop": {
+  "leftOut": 0,
+  "exported": {
+   "app": "lookahead",
+   "version": 1,
+   "cubes": [
+    {
+     "id": 1,
+     "cube_type": "333",
+     "brand": "GAN",
+     "model": "14 MagLev",
+     "purchase_date": "2026-01-15",
+     "notes": "Main",
+     "is_active": true,
+     "created_at": "2026-10-01T08:00:00.000Z"
+    },
+    {
+     "id": 2,
+     "cube_type": "222",
+     "brand": "MoYu",
+     "model": "RS2M",
+     "purchase_date": null,
+     "notes": "",
+     "is_active": true,
+     "created_at": "2026-10-01T08:00:00.000Z"
+    }
+   ],
+   "sessions": [
+    {
+     "id": 1,
+     "date": "2026-10-01",
+     "event_id": "333",
+     "cube_id": 1,
+     "solve_count": 6,
+     "best_single": 10990,
+     "worst_single": 14200,
+     "session_mean": 12606,
+     "ao5": 13233.333333333334,
+     "ao12": null,
+     "notes": "Morning",
+     "created_at": "2026-10-01T08:00:00.000Z"
+    },
+    {
+     "id": 2,
+     "date": "2026-10-01",
+     "event_id": "222",
+     "cube_id": null,
+     "solve_count": 1,
+     "best_single": 3210,
+     "worst_single": 3210,
+     "session_mean": 3210,
+     "ao5": null,
+     "ao12": null,
+     "notes": "",
+     "created_at": "2026-10-01T08:00:00.000Z"
+    }
+   ],
+   "solves": [
+    {
+     "id": 1,
+     "session_id": 1,
+     "solve_number": 1,
+     "time_ms": 12340,
+     "scramble": "",
+     "penalty": null,
+     "dnf": false,
+     "notes": "",
+     "timestamp": "2026-10-01T08:00:00.000Z"
+    },
+    {
+     "id": 2,
+     "session_id": 1,
+     "solve_number": 2,
+     "time_ms": 11500,
+     "scramble": "",
+     "penalty": "+2",
+     "dnf": false,
+     "notes": "",
+     "timestamp": "2026-10-01T08:00:00.000Z"
+    },
+    {
+     "id": 3,
+     "session_id": 1,
+     "solve_number": 3,
+     "time_ms": 13000,
+     "scramble": "",
+     "penalty": "DNF",
+     "dnf": true,
+     "notes": "",
+     "timestamp": "2026-10-01T08:00:00.000Z"
+    },
+    {
+     "id": 4,
+     "session_id": 1,
+     "solve_number": 4,
+     "time_ms": 10990,
+     "scramble": "R U",
+     "penalty": null,
+     "dnf": false,
+     "notes": "",
+     "timestamp": "2026-10-01T08:00:00.000Z"
+    },
+    {
+     "id": 5,
+     "session_id": 1,
+     "solve_number": 5,
+     "time_ms": 12000,
+     "scramble": "",
+     "penalty": null,
+     "dnf": false,
+     "notes": "",
+     "timestamp": "2026-10-01T08:00:00.000Z"
+    },
+    {
+     "id": 6,
+     "session_id": 1,
+     "solve_number": 6,
+     "time_ms": 14200,
+     "scramble": "",
+     "penalty": null,
+     "dnf": false,
+     "notes": "lockup",
+     "timestamp": "2026-10-01T08:00:00.000Z"
+    },
+    {
+     "id": 7,
+     "session_id": 2,
+     "solve_number": 1,
+     "time_ms": 3210,
+     "scramble": "",
+     "penalty": null,
+     "dnf": false,
+     "notes": "",
+     "timestamp": "2026-10-01T08:00:00.000Z"
+    }
+   ],
+   "settings": [
+    {
+     "id": "user",
+     "wca_id": "2003POCH01",
+     "wca_name": "Test Person",
+     "value": null
+    }
+   ]
+  },
+  "stats": {
+   "1": {
+    "solve_count": 6,
+    "best_single": 10990,
+    "worst_single": 14200,
+    "session_mean": 12606,
+    "ao5": 13233.333333333334,
+    "ao12": null,
+    "best_ao5": 12613.333333333334,
+    "best_ao12": null,
+    "best_ao50": null,
+    "best_ao100": null
+   },
+   "2": {
+    "solve_count": 1,
+    "best_single": 3210,
+    "worst_single": 3210,
+    "session_mean": 3210,
+    "ao5": null,
+    "ao12": null,
+    "best_ao5": null,
+    "best_ao12": null,
+    "best_ao50": null,
+    "best_ao100": null
+   }
+  }
+ }
+}

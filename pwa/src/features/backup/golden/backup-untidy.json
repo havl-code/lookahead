@@ -1,0 +1,813 @@
+{
+ "backup": {
+  "app": "lookahead",
+  "version": 1,
+  "exported_at": "2026-10-14T03:00:00.000Z",
+  "cubes": [
+   {
+    "id": 4,
+    "cube_type": "222",
+    "brand": "MoYu",
+    "model": "RS2M",
+    "purchase_date": null,
+    "notes": "",
+    "is_active": 0,
+    "created_at": "2026-02-01T00:00:00.000Z"
+   }
+  ],
+  "sessions": [
+   {
+    "id": 3,
+    "date": "2026-10-13",
+    "event_id": "333",
+    "cube_id": 99,
+    "solve_count": 1,
+    "best_single": 1,
+    "notes": "Cube went missing",
+    "created_at": "2026-10-13T05:00:00.000Z"
+   },
+   {
+    "id": 8,
+    "date": "2026-10-14",
+    "event_id": "222",
+    "cube_id": 4,
+    "notes": "",
+    "created_at": "2026-10-14T01:00:00.000Z"
+   }
+  ],
+  "solves": [
+   {
+    "id": 10,
+    "session_id": 3,
+    "solve_number": 1,
+    "time_ms": 11889,
+    "scramble": "R U R' U'",
+    "penalty": null,
+    "dnf": false,
+    "notes": "",
+    "timestamp": "2026-10-13T05:00:00.000Z"
+   },
+   {
+    "id": 11,
+    "session_id": 3,
+    "solve_number": 2,
+    "time_ms": 16759,
+    "scramble": "R U R' U'",
+    "penalty": null,
+    "dnf": false,
+    "notes": "",
+    "timestamp": "2026-10-13T05:01:00.000Z"
+   },
+   {
+    "id": 12,
+    "session_id": 3,
+    "solve_number": 3,
+    "time_ms": 10099,
+    "scramble": "R U R' U'",
+    "penalty": null,
+    "dnf": false,
+    "notes": "",
+    "timestamp": "2026-10-13T05:02:00.000Z"
+   },
+   {
+    "id": 13,
+    "session_id": 3,
+    "solve_number": 4,
+    "time_ms": 7941,
+    "scramble": "R U R' U'",
+    "penalty": null,
+    "dnf": false,
+    "notes": "",
+    "timestamp": "2026-10-13T05:03:00.000Z"
+   },
+   {
+    "id": 14,
+    "session_id": 3,
+    "solve_number": 5,
+    "time_ms": 18829,
+    "scramble": "R U R' U'",
+    "penalty": null,
+    "dnf": false,
+    "notes": "",
+    "timestamp": "2026-10-13T05:04:00.000Z"
+   },
+   {
+    "id": 15,
+    "session_id": 3,
+    "solve_number": 6,
+    "time_ms": 12299,
+    "scramble": "R U R' U'",
+    "penalty": null,
+    "dnf": false,
+    "notes": "",
+    "timestamp": "2026-10-13T05:05:00.000Z"
+   },
+   {
+    "id": 16,
+    "session_id": 3,
+    "solve_number": 7,
+    "time_ms": 14213,
+    "scramble": "R U R' U'",
+    "penalty": null,
+    "dnf": false,
+    "notes": "",
+    "timestamp": "2026-10-13T05:06:00.000Z"
+   },
+   {
+    "id": 17,
+    "session_id": 3,
+    "solve_number": 8,
+    "time_ms": 15775,
+    "scramble": "R U R' U'",
+    "penalty": null,
+    "dnf": false,
+    "notes": "",
+    "timestamp": "2026-10-13T05:07:00.000Z"
+   },
+   {
+    "id": 18,
+    "session_id": 3,
+    "solve_number": 9,
+    "time_ms": 12676,
+    "scramble": "R U R' U'",
+    "penalty": null,
+    "dnf": false,
+    "notes": "",
+    "timestamp": "2026-10-13T05:08:00.000Z"
+   },
+   {
+    "id": 19,
+    "session_id": 3,
+    "solve_number": 10,
+    "time_ms": 18869,
+    "scramble": "R U R' U'",
+    "penalty": "OK",
+    "dnf": false,
+    "notes": "",
+    "timestamp": "2026-10-13T05:09:00.000Z"
+   },
+   {
+    "id": 20,
+    "session_id": 3,
+    "solve_number": 11,
+    "time_ms": 8015,
+    "scramble": "R U R' U'",
+    "penalty": null,
+    "dnf": false,
+    "notes": "",
+    "timestamp": "2026-10-13T05:10:00.000Z"
+   },
+   {
+    "id": 21,
+    "session_id": 3,
+    "solve_number": 12,
+    "time_ms": 12687,
+    "scramble": "R U R' U'",
+    "penalty": null,
+    "dnf": false,
+    "notes": "",
+    "timestamp": "2026-10-13T05:11:00.000Z"
+   },
+   {
+    "id": 22,
+    "session_id": 3,
+    "solve_number": 13,
+    "time_ms": 16826,
+    "scramble": "R U R' U'",
+    "penalty": null,
+    "dnf": false,
+    "notes": "",
+    "timestamp": "2026-10-13T05:12:00.000Z"
+   },
+   {
+    "id": 23,
+    "session_id": 3,
+    "solve_number": 14,
+    "time_ms": 12359,
+    "scramble": "R U R' U'",
+    "penalty": null,
+    "dnf": false,
+    "notes": "",
+    "timestamp": "2026-10-13T05:13:00.000Z"
+   },
+   {
+    "id": 24,
+    "session_id": 3,
+    "solve_number": 15,
+    "time_ms": 10458,
+    "scramble": "R U R' U'",
+    "penalty": null,
+    "dnf": false,
+    "notes": "",
+    "timestamp": "2026-10-13T05:14:00.000Z"
+   },
+   {
+    "id": 25,
+    "session_id": 3,
+    "solve_number": 16,
+    "time_ms": 10297,
+    "scramble": "R U R' U'",
+    "penalty": null,
+    "dnf": false,
+    "notes": "",
+    "timestamp": "2026-10-13T05:15:00.000Z"
+   },
+   {
+    "id": 26,
+    "session_id": 3,
+    "solve_number": 17,
+    "time_ms": 9947,
+    "scramble": "R U R' U'",
+    "penalty": "OK",
+    "dnf": false,
+    "notes": "",
+    "timestamp": "2026-10-13T05:16:00.000Z"
+   },
+   {
+    "id": 27,
+    "session_id": 3,
+    "solve_number": 18,
+    "time_ms": 6743,
+    "scramble": "R U R' U'",
+    "penalty": "OK",
+    "dnf": false,
+    "notes": "",
+    "timestamp": "2026-10-13T05:17:00.000Z"
+   },
+   {
+    "id": 28,
+    "session_id": 3,
+    "solve_number": 19,
+    "time_ms": 12274,
+    "scramble": "R U R' U'",
+    "penalty": null,
+    "dnf": false,
+    "notes": "",
+    "timestamp": "2026-10-13T05:18:00.000Z"
+   },
+   {
+    "id": 29,
+    "session_id": 3,
+    "solve_number": 20,
+    "time_ms": 8193,
+    "scramble": "R U R' U'",
+    "penalty": "DNF",
+    "dnf": true,
+    "notes": "",
+    "timestamp": "2026-10-13T05:19:00.000Z"
+   },
+   {
+    "id": 30,
+    "session_id": 8,
+    "solve_number": 1,
+    "time_ms": 18339,
+    "scramble": "R U R' U'",
+    "penalty": null,
+    "dnf": false,
+    "notes": "",
+    "timestamp": "2026-10-13T05:20:00.000Z"
+   },
+   {
+    "id": 31,
+    "session_id": 8,
+    "solve_number": 2,
+    "time_ms": 479,
+    "scramble": "R U R' U'",
+    "penalty": null,
+    "dnf": false,
+    "notes": "",
+    "timestamp": "2026-10-13T05:21:00.000Z"
+   },
+   {
+    "id": 32,
+    "session_id": 8,
+    "solve_number": 3,
+    "time_ms": 12076,
+    "scramble": "R U R' U'",
+    "penalty": null,
+    "dnf": false,
+    "notes": "",
+    "timestamp": "2026-10-13T05:22:00.000Z"
+   },
+   {
+    "id": 33,
+    "session_id": 8,
+    "solve_number": 4,
+    "time_ms": 8264,
+    "scramble": "R U R' U'",
+    "penalty": null,
+    "dnf": false,
+    "notes": "",
+    "timestamp": "2026-10-13T05:23:00.000Z"
+   },
+   {
+    "id": 34,
+    "session_id": 8,
+    "solve_number": 5,
+    "time_ms": 14401,
+    "scramble": "R U R' U'",
+    "penalty": "OK",
+    "dnf": false,
+    "notes": "",
+    "timestamp": "2026-10-13T05:24:00.000Z"
+   },
+   {
+    "id": 35,
+    "session_id": 8,
+    "solve_number": 6,
+    "time_ms": 14768,
+    "scramble": "R U R' U'",
+    "penalty": null,
+    "dnf": false,
+    "notes": "",
+    "timestamp": "2026-10-13T05:25:00.000Z"
+   },
+   {
+    "id": 36,
+    "session_id": 8,
+    "solve_number": 7,
+    "time_ms": 12214,
+    "scramble": "R U R' U'",
+    "penalty": null,
+    "dnf": false,
+    "notes": "",
+    "timestamp": "2026-10-13T05:26:00.000Z"
+   },
+   {
+    "id": 37,
+    "session_id": 8,
+    "solve_number": 8,
+    "time_ms": 8952,
+    "scramble": "R U R' U'",
+    "penalty": null,
+    "dnf": false,
+    "notes": "",
+    "timestamp": "2026-10-13T05:27:00.000Z"
+   },
+   {
+    "id": 38,
+    "session_id": 8,
+    "solve_number": 9,
+    "time_ms": 13593,
+    "scramble": "R U R' U'",
+    "penalty": null,
+    "dnf": false,
+    "notes": "",
+    "timestamp": "2026-10-13T05:28:00.000Z"
+   },
+   {
+    "id": 39,
+    "session_id": 8,
+    "solve_number": 10,
+    "time_ms": 13786,
+    "scramble": "R U R' U'",
+    "penalty": null,
+    "dnf": false,
+    "notes": "",
+    "timestamp": "2026-10-13T05:29:00.000Z"
+   },
+   {
+    "id": 500,
+    "session_id": 42,
+    "solve_number": 1,
+    "time_ms": 9000,
+    "dnf": false
+   }
+  ],
+  "settings": [
+   {
+    "id": "user",
+    "wca_id": "2009ZEMD01",
+    "wca_name": "Feliks Zemdegs",
+    "value": null
+   },
+   {
+    "id": "timer",
+    "wca_id": null,
+    "wca_name": null,
+    "value": "{\"inspection\": true}"
+   }
+  ]
+ },
+ "desktop": {
+  "leftOut": 1,
+  "exported": {
+   "app": "lookahead",
+   "version": 1,
+   "cubes": [
+    {
+     "id": 4,
+     "cube_type": "222",
+     "brand": "MoYu",
+     "model": "RS2M",
+     "purchase_date": null,
+     "notes": "",
+     "is_active": false,
+     "created_at": "2026-02-01T00:00:00.000Z"
+    }
+   ],
+   "sessions": [
+    {
+     "id": 3,
+     "date": "2026-10-13",
+     "event_id": "333",
+     "cube_id": null,
+     "solve_count": 20,
+     "best_single": 6743,
+     "worst_single": 18869,
+     "session_mean": 12570,
+     "ao5": 10833.333333333334,
+     "ao12": 12434,
+     "notes": "Cube went missing",
+     "created_at": "2026-10-13T05:00:00.000Z"
+    },
+    {
+     "id": 8,
+     "date": "2026-10-14",
+     "event_id": "222",
+     "cube_id": 4,
+     "solve_count": 10,
+     "best_single": 479,
+     "worst_single": 18339,
+     "session_mean": 11682,
+     "ao5": 13193.333333333334,
+     "ao12": null,
+     "notes": "",
+     "created_at": "2026-10-14T01:00:00.000Z"
+    }
+   ],
+   "solves": [
+    {
+     "id": 10,
+     "session_id": 3,
+     "solve_number": 1,
+     "time_ms": 11889,
+     "scramble": "R U R' U'",
+     "penalty": null,
+     "dnf": false,
+     "notes": "",
+     "timestamp": "2026-10-13T05:00:00.000Z"
+    },
+    {
+     "id": 11,
+     "session_id": 3,
+     "solve_number": 2,
+     "time_ms": 16759,
+     "scramble": "R U R' U'",
+     "penalty": null,
+     "dnf": false,
+     "notes": "",
+     "timestamp": "2026-10-13T05:01:00.000Z"
+    },
+    {
+     "id": 12,
+     "session_id": 3,
+     "solve_number": 3,
+     "time_ms": 10099,
+     "scramble": "R U R' U'",
+     "penalty": null,
+     "dnf": false,
+     "notes": "",
+     "timestamp": "2026-10-13T05:02:00.000Z"
+    },
+    {
+     "id": 13,
+     "session_id": 3,
+     "solve_number": 4,
+     "time_ms": 7941,
+     "scramble": "R U R' U'",
+     "penalty": null,
+     "dnf": false,
+     "notes": "",
+     "timestamp": "2026-10-13T05:03:00.000Z"
+    },
+    {
+     "id": 14,
+     "session_id": 3,
+     "solve_number": 5,
+     "time_ms": 18829,
+     "scramble": "R U R' U'",
+     "penalty": null,
+     "dnf": false,
+     "notes": "",
+     "timestamp": "2026-10-13T05:04:00.000Z"
+    },
+    {
+     "id": 15,
+     "session_id": 3,
+     "solve_number": 6,
+     "time_ms": 12299,
+     "scramble": "R U R' U'",
+     "penalty": null,
+     "dnf": false,
+     "notes": "",
+     "timestamp": "2026-10-13T05:05:00.000Z"
+    },
+    {
+     "id": 16,
+     "session_id": 3,
+     "solve_number": 7,
+     "time_ms": 14213,
+     "scramble": "R U R' U'",
+     "penalty": null,
+     "dnf": false,
+     "notes": "",
+     "timestamp": "2026-10-13T05:06:00.000Z"
+    },
+    {
+     "id": 17,
+     "session_id": 3,
+     "solve_number": 8,
+     "time_ms": 15775,
+     "scramble": "R U R' U'",
+     "penalty": null,
+     "dnf": false,
+     "notes": "",
+     "timestamp": "2026-10-13T05:07:00.000Z"
+    },
+    {
+     "id": 18,
+     "session_id": 3,
+     "solve_number": 9,
+     "time_ms": 12676,
+     "scramble": "R U R' U'",
+     "penalty": null,
+     "dnf": false,
+     "notes": "",
+     "timestamp": "2026-10-13T05:08:00.000Z"
+    },
+    {
+     "id": 19,
+     "session_id": 3,
+     "solve_number": 10,
+     "time_ms": 18869,
+     "scramble": "R U R' U'",
+     "penalty": "OK",
+     "dnf": false,
+     "notes": "",
+     "timestamp": "2026-10-13T05:09:00.000Z"
+    },
+    {
+     "id": 20,
+     "session_id": 3,
+     "solve_number": 11,
+     "time_ms": 8015,
+     "scramble": "R U R' U'",
+     "penalty": null,
+     "dnf": false,
+     "notes": "",
+     "timestamp": "2026-10-13T05:10:00.000Z"
+    },
+    {
+     "id": 21,
+     "session_id": 3,
+     "solve_number": 12,
+     "time_ms": 12687,
+     "scramble": "R U R' U'",
+     "penalty": null,
+     "dnf": false,
+     "notes": "",
+     "timestamp": "2026-10-13T05:11:00.000Z"
+    },
+    {
+     "id": 22,
+     "session_id": 3,
+     "solve_number": 13,
+     "time_ms": 16826,
+     "scramble": "R U R' U'",
+     "penalty": null,
+     "dnf": false,
+     "notes": "",
+     "timestamp": "2026-10-13T05:12:00.000Z"
+    },
+    {
+     "id": 23,
+     "session_id": 3,
+     "solve_number": 14,
+     "time_ms": 12359,
+     "scramble": "R U R' U'",
+     "penalty": null,
+     "dnf": false,
+     "notes": "",
+     "timestamp": "2026-10-13T05:13:00.000Z"
+    },
+    {
+     "id": 24,
+     "session_id": 3,
+     "solve_number": 15,
+     "time_ms": 10458,
+     "scramble": "R U R' U'",
+     "penalty": null,
+     "dnf": false,
+     "notes": "",
+     "timestamp": "2026-10-13T05:14:00.000Z"
+    },
+    {
+     "id": 25,
+     "session_id": 3,
+     "solve_number": 16,
+     "time_ms": 10297,
+     "scramble": "R U R' U'",
+     "penalty": null,
+     "dnf": false,
+     "notes": "",
+     "timestamp": "2026-10-13T05:15:00.000Z"
+    },
+    {
+     "id": 26,
+     "session_id": 3,
+     "solve_number": 17,
+     "time_ms": 9947,
+     "scramble": "R U R' U'",
+     "penalty": "OK",
+     "dnf": false,
+     "notes": "",
+     "timestamp": "2026-10-13T05:16:00.000Z"
+    },
+    {
+     "id": 27,
+     "session_id": 3,
+     "solve_number": 18,
+     "time_ms": 6743,
+     "scramble": "R U R' U'",
+     "penalty": "OK",
+     "dnf": false,
+     "notes": "",
+     "timestamp": "2026-10-13T05:17:00.000Z"
+    },
+    {
+     "id": 28,
+     "session_id": 3,
+     "solve_number": 19,
+     "time_ms": 12274,
+     "scramble": "R U R' U'",
+     "penalty": null,
+     "dnf": false,
+     "notes": "",
+     "timestamp": "2026-10-13T05:18:00.000Z"
+    },
+    {
+     "id": 29,
+     "session_id": 3,
+     "solve_number": 20,
+     "time_ms": 8193,
+     "scramble": "R U R' U'",
+     "penalty": "DNF",
+     "dnf": true,
+     "notes": "",
+     "timestamp": "2026-10-13T05:19:00.000Z"
+    },
+    {
+     "id": 30,
+     "session_id": 8,
+     "solve_number": 1,
+     "time_ms": 18339,
+     "scramble": "R U R' U'",
+     "penalty": null,
+     "dnf": false,
+     "notes": "",
+     "timestamp": "2026-10-13T05:20:00.000Z"
+    },
+    {
+     "id": 31,
+     "session_id": 8,
+     "solve_number": 2,
+     "time_ms": 479,
+     "scramble": "R U R' U'",
+     "penalty": null,
+     "dnf": false,
+     "notes": "",
+     "timestamp": "2026-10-13T05:21:00.000Z"
+    },
+    {
+     "id": 32,
+     "session_id": 8,
+     "solve_number": 3,
+     "time_ms": 12076,
+     "scramble": "R U R' U'",
+     "penalty": null,
+     "dnf": false,
+     "notes": "",
+     "timestamp": "2026-10-13T05:22:00.000Z"
+    },
+    {
+     "id": 33,
+     "session_id": 8,
+     "solve_number": 4,
+     "time_ms": 8264,
+     "scramble": "R U R' U'",
+     "penalty": null,
+     "dnf": false,
+     "notes": "",
+     "timestamp": "2026-10-13T05:23:00.000Z"
+    },
+    {
+     "id": 34,
+     "session_id": 8,
+     "solve_number": 5,
+     "time_ms": 14401,
+     "scramble": "R U R' U'",
+     "penalty": "OK",
+     "dnf": false,
+     "notes": "",
+     "timestamp": "2026-10-13T05:24:00.000Z"
+    },
+    {
+     "id": 35,
+     "session_id": 8,
+     "solve_number": 6,
+     "time_ms": 14768,
+     "scramble": "R U R' U'",
+     "penalty": null,
+     "dnf": false,
+     "notes": "",
+     "timestamp": "2026-10-13T05:25:00.000Z"
+    },
+    {
+     "id": 36,
+     "session_id": 8,
+     "solve_number": 7,
+     "time_ms": 12214,
+     "scramble": "R U R' U'",
+     "penalty": null,
+     "dnf": false,
+     "notes": "",
+     "timestamp": "2026-10-13T05:26:00.000Z"
+    },
+    {
+     "id": 37,
+     "session_id": 8,
+     "solve_number": 8,
+     "time_ms": 8952,
+     "scramble": "R U R' U'",
+     "penalty": null,
+     "dnf": false,
+     "notes": "",
+     "timestamp": "2026-10-13T05:27:00.000Z"
+    },
+    {
+     "id": 38,
+     "session_id": 8,
+     "solve_number": 9,
+     "time_ms": 13593,
+     "scramble": "R U R' U'",
+     "penalty": null,
+     "dnf": false,
+     "notes": "",
+     "timestamp": "2026-10-13T05:28:00.000Z"
+    },
+    {
+     "id": 39,
+     "session_id": 8,
+     "solve_number": 10,
+     "time_ms": 13786,
+     "scramble": "R U R' U'",
+     "penalty": null,
+     "dnf": false,
+     "notes": "",
+     "timestamp": "2026-10-13T05:29:00.000Z"
+    }
+   ],
+   "settings": [
+    {
+     "id": "timer",
+     "wca_id": null,
+     "wca_name": null,
+     "value": "{\"inspection\": true}"
+    },
+    {
+     "id": "user",
+     "wca_id": "2009ZEMD01",
+     "wca_name": "Feliks Zemdegs",
+     "value": null
+    }
+   ]
+  },
+  "stats": {
+   "3": {
+    "solve_count": 20,
+    "best_single": 6743,
+    "worst_single": 18869,
+    "session_mean": 12570,
+    "ao5": 10833.333333333334,
+    "ao12": 12434,
+    "best_ao5": 10226.666666666666,
+    "best_ao12": 12125,
+    "best_ao50": null,
+    "best_ao100": null
+   },
+   "8": {
+    "solve_count": 10,
+    "best_single": 479,
+    "worst_single": 18339,
+    "session_mean": 11682,
+    "ao5": 13193.333333333334,
+    "ao12": null,
+    "best_ao5": 11576.666666666666,
+    "best_ao12": null,
+    "best_ao50": null,
+    "best_ao100": null
+   }
+  }
+ }
+}

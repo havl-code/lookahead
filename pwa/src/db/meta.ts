@@ -1,0 +1,26 @@
+import type { LookaheadDb } from './database.ts';
+
+export type PersistResult = 'granted' | 'denied' | 'unsupported';
+
+/** This device's own values, kept out of backups. */
+export interface Meta {
+  /** When a backup was last saved or shared from here, in ms since 1970. */
+  lastBackupAt: number | null;
+  /** What the browser said when asked to keep Lookahead's data. */
+  persistResult: PersistResult | null;
+}
+
+const defaults: Meta = { lastBackupAt: null, persistResult: null };
+
+export async function getMeta<K extends keyof Meta>(db: LookaheadDb, key: K): Promise<Meta[K]> {
+  const row = await db.meta.get(key);
+  return row === undefined ? defaults[key] : (row.value as Meta[K]);
+}
+
+export async function setMeta<K extends keyof Meta>(
+  db: LookaheadDb,
+  key: K,
+  value: Meta[K],
+): Promise<void> {
+  await db.meta.put({ key, value });
+}

@@ -1,0 +1,8490 @@
+{
+ "sessions": [
+  {
+   "name": "empty",
+   "solves": [],
+   "stats": {
+    "solve_count": 0,
+    "best_single": null,
+    "worst_single": null,
+    "session_mean": null,
+    "ao5": null,
+    "ao12": null,
+    "best_ao5": null,
+    "best_ao12": null,
+    "best_ao50": null,
+    "best_ao100": null
+   }
+  },
+  {
+   "name": "one solve",
+   "solves": [
+    {
+     "time_ms": 12345,
+     "penalty": null,
+     "dnf": false
+    }
+   ],
+   "stats": {
+    "solve_count": 1,
+    "best_single": 12345,
+    "worst_single": 12345,
+    "session_mean": 12340,
+    "ao5": null,
+    "ao12": null,
+    "best_ao5": null,
+    "best_ao12": null,
+    "best_ao50": null,
+    "best_ao100": null
+   }
+  },
+  {
+   "name": "four solves",
+   "solves": [
+    {
+     "time_ms": 10000,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11000,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12000,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13000,
+     "penalty": null,
+     "dnf": false
+    }
+   ],
+   "stats": {
+    "solve_count": 4,
+    "best_single": 10000,
+    "worst_single": 13000,
+    "session_mean": 11500,
+    "ao5": null,
+    "ao12": null,
+    "best_ao5": null,
+    "best_ao12": null,
+    "best_ao50": null,
+    "best_ao100": null
+   }
+  },
+  {
+   "name": "five solves",
+   "solves": [
+    {
+     "time_ms": 10000,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11000,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12000,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13000,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14000,
+     "penalty": null,
+     "dnf": false
+    }
+   ],
+   "stats": {
+    "solve_count": 5,
+    "best_single": 10000,
+    "worst_single": 14000,
+    "session_mean": 12000,
+    "ao5": 12000,
+    "ao12": null,
+    "best_ao5": 12000,
+    "best_ao12": null,
+    "best_ao50": null,
+    "best_ao100": null
+   }
+  },
+  {
+   "name": "five with one DNF",
+   "solves": [
+    {
+     "time_ms": 10000,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11000,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 12000,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13000,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14000,
+     "penalty": null,
+     "dnf": false
+    }
+   ],
+   "stats": {
+    "solve_count": 5,
+    "best_single": 10000,
+    "worst_single": 14000,
+    "session_mean": 12250,
+    "ao5": 13000,
+    "ao12": null,
+    "best_ao5": 13000,
+    "best_ao12": null,
+    "best_ao50": null,
+    "best_ao100": null
+   }
+  },
+  {
+   "name": "five with two DNFs",
+   "solves": [
+    {
+     "time_ms": 10000,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 11000,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 12000,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13000,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14000,
+     "penalty": null,
+     "dnf": false
+    }
+   ],
+   "stats": {
+    "solve_count": 5,
+    "best_single": 12000,
+    "worst_single": 14000,
+    "session_mean": 13000,
+    "ao5": null,
+    "ao12": null,
+    "best_ao5": null,
+    "best_ao12": null,
+    "best_ao50": null,
+    "best_ao100": null
+   }
+  },
+  {
+   "name": "all DNFs",
+   "solves": [
+    {
+     "time_ms": 10000,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 11000,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 12000,
+     "penalty": "DNF",
+     "dnf": true
+    }
+   ],
+   "stats": {
+    "solve_count": 3,
+    "best_single": null,
+    "worst_single": null,
+    "session_mean": null,
+    "ao5": null,
+    "ao12": null,
+    "best_ao5": null,
+    "best_ao12": null,
+    "best_ao50": null,
+    "best_ao100": null
+   }
+  },
+  {
+   "name": "a +2 that becomes the best",
+   "solves": [
+    {
+     "time_ms": 9000,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 13000,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12000,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11500,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12500,
+     "penalty": null,
+     "dnf": false
+    }
+   ],
+   "stats": {
+    "solve_count": 5,
+    "best_single": 11000,
+    "worst_single": 13000,
+    "session_mean": 12000,
+    "ao5": 12000,
+    "ao12": null,
+    "best_ao5": 12000,
+    "best_ao12": null,
+    "best_ao50": null,
+    "best_ao100": null
+   }
+  },
+  {
+   "name": "hundredths truncated",
+   "solves": [
+    {
+     "time_ms": 10019,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11999,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12001,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13555,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9999,
+     "penalty": null,
+     "dnf": false
+    }
+   ],
+   "stats": {
+    "solve_count": 5,
+    "best_single": 9999,
+    "worst_single": 13555,
+    "session_mean": 11508,
+    "ao5": 11333.333333333334,
+    "ao12": null,
+    "best_ao5": 11333.333333333334,
+    "best_ao12": null,
+    "best_ao50": null,
+    "best_ao100": null
+   }
+  },
+  {
+   "name": "over ten minutes",
+   "solves": [
+    {
+     "time_ms": 600999,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 612345,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 599999,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 630500,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 605000,
+     "penalty": null,
+     "dnf": false
+    }
+   ],
+   "stats": {
+    "solve_count": 5,
+    "best_single": 599999,
+    "worst_single": 630500,
+    "session_mean": 609398,
+    "ao5": 605666.6666666666,
+    "ao12": null,
+    "best_ao5": 605666.6666666666,
+    "best_ao12": null,
+    "best_ao50": null,
+    "best_ao100": null
+   }
+  },
+  {
+   "name": "12 random solves",
+   "solves": [
+    {
+     "time_ms": 12827,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 4787,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14698,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 3068,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 19127,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14819,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9564,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9519,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11005,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 13665,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 10449,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 21070,
+     "penalty": null,
+     "dnf": false
+    }
+   ],
+   "stats": {
+    "solve_count": 12,
+    "best_single": 3068,
+    "worst_single": 21070,
+    "session_mean": 12210,
+    "ao5": 12366.666666666666,
+    "ao12": 12239,
+    "best_ao5": 10333.333333333334,
+    "best_ao12": 12239,
+    "best_ao50": null,
+    "best_ao100": null
+   }
+  },
+  {
+   "name": "13 random solves",
+   "solves": [
+    {
+     "time_ms": 14127,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 11360,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9483,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14947,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11605,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11952,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 5312,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 10302,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 15977,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15411,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 11899,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 9222,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12405,
+     "penalty": null,
+     "dnf": false
+    }
+   ],
+   "stats": {
+    "solve_count": 13,
+    "best_single": 7312,
+    "worst_single": 16127,
+    "session_mean": 12171.666666666666,
+    "ao5": 14593.333333333334,
+    "ao12": 12263,
+    "best_ao5": 11010,
+    "best_ao12": 12263,
+    "best_ao50": null,
+    "best_ao100": null
+   }
+  },
+  {
+   "name": "49 random solves",
+   "solves": [
+    {
+     "time_ms": 13750,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8764,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15712,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 16359,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12635,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11846,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11516,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15784,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 5858,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 8344,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15883,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9669,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13763,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12861,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 17215,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 19795,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11835,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 16543,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14251,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 4518,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 16098,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14399,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13774,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12631,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13853,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 6768,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13208,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9122,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 16273,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10573,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10622,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9924,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 18289,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 7519,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 13747,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8637,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8630,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11659,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14432,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 7261,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9084,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 17495,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9604,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13061,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 9470,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15396,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9616,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 17813,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13025,
+     "penalty": null,
+     "dnf": false
+    }
+   ],
+   "stats": {
+    "solve_count": 49,
+    "best_single": 4518,
+    "worst_single": 19795,
+    "session_mean": 12491.666666666666,
+    "ao5": 12673.333333333334,
+    "ao12": 12755,
+    "best_ao5": 9636.666666666666,
+    "best_ao12": 10478,
+    "best_ao50": null,
+    "best_ao100": null
+   }
+  },
+  {
+   "name": "50 random solves",
+   "solves": [
+    {
+     "time_ms": 16295,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 16314,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9548,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11377,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 17779,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 8879,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10281,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12054,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 11403,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15531,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9879,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 17614,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 11777,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13867,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12139,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11248,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10049,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10900,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 12335,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 8463,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 14432,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 7437,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 19835,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 9516,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11926,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10601,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9218,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14079,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11310,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 9866,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10350,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13820,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 3018,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 16765,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 4265,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12882,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 19646,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12904,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12733,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12717,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11285,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 18823,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 13620,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 11168,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15001,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12385,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 17483,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11517,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 5753,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10338,
+     "penalty": null,
+     "dnf": false
+    }
+   ],
+   "stats": {
+    "solve_count": 50,
+    "best_single": 3018,
+    "worst_single": 19835,
+    "session_mean": 12050.90909090909,
+    "ao5": 11406.666666666666,
+    "ao12": 13020,
+    "best_ao5": 9476.666666666666,
+    "best_ao12": 10491,
+    "best_ao50": null,
+    "best_ao100": null
+   }
+  },
+  {
+   "name": "51 random solves",
+   "solves": [
+    {
+     "time_ms": 9335,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8197,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 18881,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 6756,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13643,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 18851,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15085,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11655,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 19538,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 19038,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 5840,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8792,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 16459,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10235,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14772,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 18553,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10588,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 5475,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 4510,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14757,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 7404,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10607,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14115,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 12635,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11694,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12028,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12990,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9457,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 17210,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9009,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14337,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12724,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13914,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11355,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13092,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 5309,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 16915,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13387,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 10396,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8578,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13132,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12386,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12240,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11149,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9006,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13274,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 9620,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12589,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 12281,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12412,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10267,
+     "penalty": null,
+     "dnf": false
+    }
+   ],
+   "stats": {
+    "solve_count": 51,
+    "best_single": 4510,
+    "worst_single": 19538,
+    "session_mean": 12161.372549019608,
+    "ao5": 11650,
+    "ao12": 11573,
+    "best_ao5": 7816.666666666667,
+    "best_ao12": 10488,
+    "best_ao50": 12210.227272727272,
+    "best_ao100": null
+   }
+  },
+  {
+   "name": "100 random solves",
+   "solves": [
+    {
+     "time_ms": 12527,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 14173,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 7254,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 18575,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8825,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 15319,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 14411,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 5174,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9865,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8672,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10223,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 12117,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9047,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 13352,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14864,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9507,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 16480,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 7898,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 17972,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13680,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8401,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 17441,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 7304,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12204,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 17554,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8061,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12964,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14004,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11528,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 15080,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10634,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12944,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 17464,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12059,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 19795,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 7489,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 12264,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14097,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 6742,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10382,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13346,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10214,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 16576,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 14278,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14904,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 15538,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 16089,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14040,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9426,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9853,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14582,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15188,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12616,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 6560,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11061,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 16429,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 18705,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 5518,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10401,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11376,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 19532,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 15409,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 8722,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14366,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 19350,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 2606,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 11525,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 21462,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15874,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 1057,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13913,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11450,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8058,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 13060,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8416,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11070,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 12648,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 6769,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 8958,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13733,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10625,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11310,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 8365,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10384,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 7022,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12411,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 5457,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11674,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 15436,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8073,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 6704,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13951,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 16490,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 18966,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 6343,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14300,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12466,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 22088,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 17839,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 8279,
+     "penalty": null,
+     "dnf": false
+    }
+   ],
+   "stats": {
+    "solve_count": 100,
+    "best_single": 1057,
+    "worst_single": 22088,
+    "session_mean": 12395.652173913044,
+    "ao5": 14863.333333333334,
+    "ao12": 13246,
+    "best_ao5": 8586.666666666666,
+    "best_ao12": 10394,
+    "best_ao50": 12452.5,
+    "best_ao100": null
+   }
+  },
+  {
+   "name": "101 random solves",
+   "solves": [
+    {
+     "time_ms": 12539,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 8246,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 8250,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 16319,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 12764,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14710,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14938,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9772,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 12651,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 16625,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 12036,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 13387,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15047,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11188,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12763,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12849,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10140,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14033,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 4648,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 7357,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 18073,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 14591,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 4816,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14846,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 15545,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 13598,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 16221,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 19492,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11524,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9171,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12480,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 8215,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 12453,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8883,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 17146,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13532,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 16658,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15314,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 19184,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14724,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 16633,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13318,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11240,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 14209,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 1,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11194,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13162,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 20258,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 2337,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 21113,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9066,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15103,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 2863,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15005,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14196,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11905,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 17870,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9817,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 7856,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11015,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8924,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13527,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 17965,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14954,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11730,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 1740,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13054,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13846,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12188,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9231,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 10558,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11327,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13051,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 17229,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10238,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12679,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14382,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14241,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9292,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 13094,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13796,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8906,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12757,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13902,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14960,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10195,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 12717,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11618,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12538,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13114,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 20886,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15827,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 7561,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15473,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 11187,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9837,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14019,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11381,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12172,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 15821,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15034,
+     "penalty": null,
+     "dnf": false
+    }
+   ],
+   "stats": {
+    "solve_count": 101,
+    "best_single": 1,
+    "worst_single": 21113,
+    "session_mean": 12709.347826086956,
+    "ao5": 14953.333333333334,
+    "ao12": 14453,
+    "best_ao5": 8893.333333333334,
+    "best_ao12": 11270,
+    "best_ao50": 12567.272727272728,
+    "best_ao100": null
+   }
+  },
+  {
+   "name": "250 random solves",
+   "solves": [
+    {
+     "time_ms": 7866,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 7565,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9016,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8329,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 8370,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9932,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 7641,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13050,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 5795,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8344,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15161,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13370,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 7075,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15027,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 13714,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12118,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 23377,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13969,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9568,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 16440,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 7833,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9853,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 11477,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 11348,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 17657,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 3962,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 2516,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 18004,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 7345,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 6418,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9856,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 11398,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8489,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15620,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15748,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 18821,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 16420,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 14149,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8772,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15047,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 11383,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8348,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 17399,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9088,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 12170,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9107,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13555,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12747,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10122,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 16361,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12161,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 5789,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13775,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12287,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8721,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 6026,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15125,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14902,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14582,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 25013,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14499,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14963,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 17877,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14651,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 10605,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 12513,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10734,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 16161,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15499,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15699,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 11601,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 19532,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9232,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14248,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 7600,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 17252,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13371,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 16185,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10117,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14314,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12831,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13845,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8305,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15573,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 14982,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14118,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 16310,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12560,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 7062,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8677,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 16371,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 13842,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 10620,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9792,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15286,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12724,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 13085,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15591,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 4147,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11949,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 14483,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 14180,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9377,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 12206,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12958,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13176,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8349,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 23607,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 12272,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13261,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 7898,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 7280,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14375,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11276,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 7557,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11622,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9170,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9811,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 7223,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 12358,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 19526,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9439,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 17263,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8724,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13949,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12543,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 16393,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11144,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 5822,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15384,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14642,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12301,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13347,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10404,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13727,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 10536,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15089,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 20150,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14802,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14333,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13591,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9555,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 17126,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15896,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 5964,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 19902,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 18137,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 17826,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 6779,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15237,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15666,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10935,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11944,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 10199,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9081,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13485,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 10914,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9977,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10679,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11442,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 7758,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13287,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8483,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 14088,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12319,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15383,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 7046,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 14743,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14811,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 16057,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11283,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14729,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 5293,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11713,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 17856,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 16312,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 6584,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 6995,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 6898,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15411,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14731,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 5769,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 7681,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 5514,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 18982,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 6327,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13606,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12666,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 15448,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11999,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 15413,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13838,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 15814,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11925,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13196,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 6873,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12155,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8778,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 7684,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 22935,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8670,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11439,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10372,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13577,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13841,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 6660,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10241,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9011,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15591,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 17489,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 16396,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13514,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 3557,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14785,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 2918,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 1908,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12574,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14915,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 5929,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 16072,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 9957,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 7690,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 10460,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9783,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 13408,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11730,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8258,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 5652,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8070,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12507,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 16935,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10183,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15311,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8427,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11307,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9385,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10485,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9495,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 17072,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9316,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15769,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 16522,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 16106,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 18445,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 23251,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10778,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 18835,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9559,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13115,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11143,
+     "penalty": null,
+     "dnf": false
+    }
+   ],
+   "stats": {
+    "solve_count": 250,
+    "best_single": 1908,
+    "worst_single": 25013,
+    "session_mean": 12378.083333333334,
+    "ao5": 11673.333333333334,
+    "ao12": 14729,
+    "best_ao5": 6343.333333333333,
+    "best_ao12": 10074,
+    "best_ao50": 11784.545454545454,
+    "best_ao100": 12097.555555555555
+   }
+  },
+  {
+   "name": "300 solves with many DNFs",
+   "solves": [
+    {
+     "time_ms": 10745,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11996,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 16359,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9965,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12622,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10262,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13149,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13003,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 18613,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 14860,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14384,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 16288,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 20275,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 20088,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11433,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15416,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 7967,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12764,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 13824,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 3263,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 21001,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9708,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12108,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13954,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13993,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 16054,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11730,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10310,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 3961,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8977,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 11386,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 11672,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14988,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9436,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15693,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15576,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8136,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 10037,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 16616,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 16824,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10779,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9186,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 13850,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8296,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10424,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 14690,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14016,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 697,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 11847,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14726,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 17086,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13091,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 6710,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 8315,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15185,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11546,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9288,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11540,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12872,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10258,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 3329,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 5267,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10241,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11167,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 2928,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14406,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 13248,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 8735,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 19415,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 10007,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 14938,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9359,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 13849,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13152,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9247,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14507,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9150,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 24612,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12900,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 16140,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11067,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9681,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 5799,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 11564,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 6992,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8767,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11610,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15169,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 16161,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 9347,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13803,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10190,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8459,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14759,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 7059,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 18002,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 7623,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12125,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 13745,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15719,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11368,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 15200,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 14155,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10682,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 7293,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8516,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15069,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14360,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14048,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 17149,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 17311,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8115,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 16512,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12194,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 17689,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 18887,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10106,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 16224,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13441,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 16689,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14740,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10381,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 4032,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11054,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 8625,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 20881,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11923,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9190,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11448,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12434,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 7234,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 17455,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 17209,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12141,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 16008,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 15055,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 19095,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 7471,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 7975,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12886,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11349,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 2735,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 16228,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 9600,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12593,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 12919,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9407,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 18291,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 6227,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 19484,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14357,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10153,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 12040,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13253,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11626,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12898,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 8431,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 18154,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8350,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 18322,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 19810,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10712,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 7617,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 3523,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10996,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 10113,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13153,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10931,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13955,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 15149,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 17905,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 7491,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10630,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 6303,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 16444,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 12467,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9419,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9314,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9953,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9247,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 14101,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13795,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11748,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 16724,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 4699,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10577,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 7458,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 10195,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 4233,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 7272,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 10637,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 13113,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 10989,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14739,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 7244,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8415,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 18835,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 11696,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 19494,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 12985,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 3685,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10317,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 18112,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 16121,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 11395,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15524,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11855,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 17205,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11547,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 6652,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10063,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9194,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 9928,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 16115,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 19182,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13891,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 13388,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11529,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 11689,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11981,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 5869,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13734,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13116,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 4376,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11533,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12908,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 17214,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 15458,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 14368,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 17732,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 9826,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11534,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 18506,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 8340,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 18022,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 14919,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10981,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 14727,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15990,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 17231,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 6640,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 20751,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 7443,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9858,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 11107,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 11051,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12294,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 8499,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 7653,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 4508,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 4007,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 19857,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 8741,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 7288,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 17911,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 7857,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 5096,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 6862,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13405,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 19747,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 3862,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12493,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15013,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14889,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 11943,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 12910,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 4314,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 9520,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12428,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 12016,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 10974,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14435,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15868,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9969,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 6434,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 11030,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 15585,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9652,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12817,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14617,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13958,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13371,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 14807,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 7531,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12540,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 8953,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 7524,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 13675,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 12370,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 18357,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13605,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 8145,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 11996,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 13784,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13114,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 5585,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 9910,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 13811,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 15329,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 17029,
+     "penalty": null,
+     "dnf": false
+    }
+   ],
+   "stats": {
+    "solve_count": 300,
+    "best_single": 2735,
+    "worst_single": 24612,
+    "session_mean": 12432.786885245901,
+    "ao5": 13013.333333333334,
+    "ao12": null,
+    "best_ao5": 7406.666666666667,
+    "best_ao12": 10812,
+    "best_ao50": null,
+    "best_ao100": null
+   }
+  },
+  {
+   "name": "120 slow solves",
+   "solves": [
+    {
+     "time_ms": 86970,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 88182,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 105805,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 1,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 121134,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 84974,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 64880,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 94088,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 72491,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 60613,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 105814,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 74077,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 60216,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 47610,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 76845,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 116457,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 113820,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 80972,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 61271,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 78339,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 125948,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 86571,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 118664,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 80396,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 111019,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 116502,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 132194,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 110408,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 98730,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 83052,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 118142,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 27339,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 95669,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 51581,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 113370,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 86560,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 133440,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 90211,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 38155,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 122851,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 89996,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 61531,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 49524,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 131865,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 88864,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 106710,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 22004,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 63493,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 54008,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 54556,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 58692,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 99575,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 85494,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 78815,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 96527,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 98314,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 76809,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 68208,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 109829,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 111168,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 39408,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 73525,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 69032,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 43094,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 83628,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 58471,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 111317,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 118290,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 100529,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 49816,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 93052,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 111438,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 109206,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 123588,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 96806,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 77813,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 109600,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 53148,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 101150,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 121470,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 108160,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 95065,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 124625,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 133150,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 87085,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 102875,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 120508,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 116417,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 124856,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 102356,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 100677,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 61079,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 85113,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 37679,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 26126,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 133137,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 63369,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 111024,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 73752,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 167044,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 59927,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 102540,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 71804,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 132637,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 73344,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 81590,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 102026,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 77210,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 162223,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 49736,
+     "penalty": "DNF",
+     "dnf": true
+    },
+    {
+     "time_ms": 58213,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 48067,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 109738,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 111658,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 117363,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 93789,
+     "penalty": "+2",
+     "dnf": false
+    },
+    {
+     "time_ms": 146929,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 137186,
+     "penalty": "OK",
+     "dnf": false
+    },
+    {
+     "time_ms": 77509,
+     "penalty": null,
+     "dnf": false
+    },
+    {
+     "time_ms": 96774,
+     "penalty": null,
+     "dnf": false
+    }
+   ],
+   "stats": {
+    "solve_count": 120,
+    "best_single": 1,
+    "worst_single": 167044,
+    "session_mean": 90446.69642857143,
+    "ao5": 109910,
+    "ao12": 111332,
+    "best_ao5": 55746.666666666664,
+    "best_ao12": 74169,
+    "best_ao50": 88536.36363636363,
+    "best_ao100": 92410.44444444444
+   }
+  }
+ ],
+ "rounding": [
+  {
+   "ms": null,
+   "single": null,
+   "average": null
+  },
+  {
+   "ms": 1251573,
+   "single": 1251.0,
+   "average": 1252.0
+  },
+  {
+   "ms": 2801791,
+   "single": 2801.0,
+   "average": 2802.0
+  },
+  {
+   "ms": 1061898,
+   "single": 1061.0,
+   "average": 1062.0
+  },
+  {
+   "ms": 799632,
+   "single": 799.0,
+   "average": 800.0
+  },
+  {
+   "ms": 2866538,
+   "single": 2866.0,
+   "average": 2867.0
+  },
+  {
+   "ms": 242384,
+   "single": 242.38,
+   "average": 242.38
+  },
+  {
+   "ms": 2599639,
+   "single": 2599.0,
+   "average": 2600.0
+  },
+  {
+   "ms": 3216350,
+   "single": 3216.0,
+   "average": 3216.0
+  },
+  {
+   "ms": 2209572,
+   "single": 2209.0,
+   "average": 2210.0
+  },
+  {
+   "ms": 555812,
+   "single": 555.81,
+   "average": 555.81
+  },
+  {
+   "ms": 2706770,
+   "single": 2706.0,
+   "average": 2707.0
+  },
+  {
+   "ms": 1643711,
+   "single": 1643.0,
+   "average": 1644.0
+  },
+  {
+   "ms": 904145,
+   "single": 904.0,
+   "average": 904.0
+  },
+  {
+   "ms": 675864,
+   "single": 675.0,
+   "average": 676.0
+  },
+  {
+   "ms": 362962,
+   "single": 362.96,
+   "average": 362.96
+  },
+  {
+   "ms": 3081173,
+   "single": 3081.0,
+   "average": 3081.0
+  },
+  {
+   "ms": 938829,
+   "single": 938.0,
+   "average": 939.0
+  },
+  {
+   "ms": 2054299,
+   "single": 2054.0,
+   "average": 2054.0
+  },
+  {
+   "ms": 2819815,
+   "single": 2819.0,
+   "average": 2820.0
+  },
+  {
+   "ms": 83269,
+   "single": 83.26,
+   "average": 83.27
+  },
+  {
+   "ms": 3523722,
+   "single": 3523.0,
+   "average": 3524.0
+  },
+  {
+   "ms": 2514005,
+   "single": 2514.0,
+   "average": 2514.0
+  },
+  {
+   "ms": 1319827,
+   "single": 1319.0,
+   "average": 1320.0
+  },
+  {
+   "ms": 3430399,
+   "single": 3430.0,
+   "average": 3430.0
+  },
+  {
+   "ms": 539861,
+   "single": 539.86,
+   "average": 539.86
+  },
+  {
+   "ms": 2706295,
+   "single": 2706.0,
+   "average": 2706.0
+  },
+  {
+   "ms": 2614428,
+   "single": 2614.0,
+   "average": 2614.0
+  },
+  {
+   "ms": 1470404,
+   "single": 1470.0,
+   "average": 1470.0
+  },
+  {
+   "ms": 1649800,
+   "single": 1649.0,
+   "average": 1650.0
+  },
+  {
+   "ms": 1526887,
+   "single": 1526.0,
+   "average": 1527.0
+  },
+  {
+   "ms": 304071,
+   "single": 304.07,
+   "average": 304.07
+  },
+  {
+   "ms": 2700795,
+   "single": 2700.0,
+   "average": 2701.0
+  },
+  {
+   "ms": 2416830,
+   "single": 2416.0,
+   "average": 2417.0
+  },
+  {
+   "ms": 1837547,
+   "single": 1837.0,
+   "average": 1838.0
+  },
+  {
+   "ms": 1900182,
+   "single": 1900.0,
+   "average": 1900.0
+  },
+  {
+   "ms": 1768961,
+   "single": 1768.0,
+   "average": 1769.0
+  },
+  {
+   "ms": 2126614,
+   "single": 2126.0,
+   "average": 2127.0
+  },
+  {
+   "ms": 616585,
+   "single": 616.0,
+   "average": 617.0
+  },
+  {
+   "ms": 875013,
+   "single": 875.0,
+   "average": 875.0
+  },
+  {
+   "ms": 1553758,
+   "single": 1553.0,
+   "average": 1554.0
+  },
+  {
+   "ms": 1666525,
+   "single": 1666.0,
+   "average": 1667.0
+  },
+  {
+   "ms": 412829,
+   "single": 412.82,
+   "average": 412.83
+  },
+  {
+   "ms": 2912583,
+   "single": 2912.0,
+   "average": 2913.0
+  },
+  {
+   "ms": 2266374,
+   "single": 2266.0,
+   "average": 2266.0
+  },
+  {
+   "ms": 3245820,
+   "single": 3245.0,
+   "average": 3246.0
+  },
+  {
+   "ms": 183407,
+   "single": 183.4,
+   "average": 183.41
+  },
+  {
+   "ms": 3907140,
+   "single": 3907.0,
+   "average": 3907.0
+  },
+  {
+   "ms": 1845426,
+   "single": 1845.0,
+   "average": 1845.0
+  },
+  {
+   "ms": 1558233,
+   "single": 1558.0,
+   "average": 1558.0
+  },
+  {
+   "ms": 1761795,
+   "single": 1761.0,
+   "average": 1762.0
+  },
+  {
+   "ms": 463158,
+   "single": 463.15,
+   "average": 463.16
+  },
+  {
+   "ms": 2897306,
+   "single": 2897.0,
+   "average": 2897.0
+  },
+  {
+   "ms": 987909,
+   "single": 987.0,
+   "average": 988.0
+  },
+  {
+   "ms": 3350195,
+   "single": 3350.0,
+   "average": 3350.0
+  },
+  {
+   "ms": 1723277,
+   "single": 1723.0,
+   "average": 1723.0
+  },
+  {
+   "ms": 3577446,
+   "single": 3577.0,
+   "average": 3577.0
+  },
+  {
+   "ms": 1463880,
+   "single": 1463.0,
+   "average": 1464.0
+  },
+  {
+   "ms": 3660266,
+   "single": 3660.0,
+   "average": 3660.0
+  },
+  {
+   "ms": 3116319,
+   "single": 3116.0,
+   "average": 3116.0
+  },
+  {
+   "ms": 3191089,
+   "single": 3191.0,
+   "average": 3191.0
+  },
+  {
+   "ms": 2609999,
+   "single": 2609.0,
+   "average": 2610.0
+  },
+  {
+   "ms": 44624,
+   "single": 44.62,
+   "average": 44.62
+  },
+  {
+   "ms": 20568,
+   "single": 20.56,
+   "average": 20.57
+  },
+  {
+   "ms": 3702374,
+   "single": 3702.0,
+   "average": 3702.0
+  },
+  {
+   "ms": 2412734,
+   "single": 2412.0,
+   "average": 2413.0
+  },
+  {
+   "ms": 149336,
+   "single": 149.33,
+   "average": 149.34
+  },
+  {
+   "ms": 1331917,
+   "single": 1331.0,
+   "average": 1332.0
+  },
+  {
+   "ms": 407553,
+   "single": 407.55,
+   "average": 407.55
+  },
+  {
+   "ms": 3258486,
+   "single": 3258.0,
+   "average": 3258.0
+  },
+  {
+   "ms": 2828716,
+   "single": 2828.0,
+   "average": 2829.0
+  },
+  {
+   "ms": 1059216,
+   "single": 1059.0,
+   "average": 1059.0
+  },
+  {
+   "ms": 2697812,
+   "single": 2697.0,
+   "average": 2698.0
+  },
+  {
+   "ms": 3429173,
+   "single": 3429.0,
+   "average": 3429.0
+  },
+  {
+   "ms": 3391476,
+   "single": 3391.0,
+   "average": 3391.0
+  },
+  {
+   "ms": 3075137,
+   "single": 3075.0,
+   "average": 3075.0
+  },
+  {
+   "ms": 2090960,
+   "single": 2090.0,
+   "average": 2091.0
+  },
+  {
+   "ms": 1119719,
+   "single": 1119.0,
+   "average": 1120.0
+  },
+  {
+   "ms": 2447669,
+   "single": 2447.0,
+   "average": 2448.0
+  },
+  {
+   "ms": 1067076,
+   "single": 1067.0,
+   "average": 1067.0
+  },
+  {
+   "ms": 3190981,
+   "single": 3190.0,
+   "average": 3191.0
+  },
+  {
+   "ms": 2110722,
+   "single": 2110.0,
+   "average": 2111.0
+  },
+  {
+   "ms": 599051,
+   "single": 599.05,
+   "average": 599.05
+  },
+  {
+   "ms": 2236021,
+   "single": 2236.0,
+   "average": 2236.0
+  },
+  {
+   "ms": 3937280,
+   "single": 3937.0,
+   "average": 3937.0
+  },
+  {
+   "ms": 1137702,
+   "single": 1137.0,
+   "average": 1138.0
+  },
+  {
+   "ms": 1667171,
+   "single": 1667.0,
+   "average": 1667.0
+  },
+  {
+   "ms": 2254750,
+   "single": 2254.0,
+   "average": 2255.0
+  },
+  {
+   "ms": 700080,
+   "single": 700.0,
+   "average": 700.0
+  },
+  {
+   "ms": 1348790,
+   "single": 1348.0,
+   "average": 1349.0
+  },
+  {
+   "ms": 2937585,
+   "single": 2937.0,
+   "average": 2938.0
+  },
+  {
+   "ms": 3403197,
+   "single": 3403.0,
+   "average": 3403.0
+  },
+  {
+   "ms": 1126800,
+   "single": 1126.0,
+   "average": 1127.0
+  },
+  {
+   "ms": 2894254,
+   "single": 2894.0,
+   "average": 2894.0
+  },
+  {
+   "ms": 2196296,
+   "single": 2196.0,
+   "average": 2196.0
+  },
+  {
+   "ms": 2651774,
+   "single": 2651.0,
+   "average": 2652.0
+  },
+  {
+   "ms": 1572069,
+   "single": 1572.0,
+   "average": 1572.0
+  },
+  {
+   "ms": 2622936,
+   "single": 2622.0,
+   "average": 2623.0
+  },
+  {
+   "ms": 1867410,
+   "single": 1867.0,
+   "average": 1867.0
+  },
+  {
+   "ms": 1119072,
+   "single": 1119.0,
+   "average": 1119.0
+  },
+  {
+   "ms": 1509777,
+   "single": 1509.0,
+   "average": 1510.0
+  },
+  {
+   "ms": 3247327,
+   "single": 3247.0,
+   "average": 3247.0
+  },
+  {
+   "ms": 61299,
+   "single": 61.29,
+   "average": 61.3
+  },
+  {
+   "ms": 3108117,
+   "single": 3108.0,
+   "average": 3108.0
+  },
+  {
+   "ms": 1396957,
+   "single": 1396.0,
+   "average": 1397.0
+  },
+  {
+   "ms": 1084392,
+   "single": 1084.0,
+   "average": 1084.0
+  },
+  {
+   "ms": 1690754,
+   "single": 1690.0,
+   "average": 1691.0
+  },
+  {
+   "ms": 1633635,
+   "single": 1633.0,
+   "average": 1634.0
+  },
+  {
+   "ms": 143375,
+   "single": 143.37,
+   "average": 143.38
+  },
+  {
+   "ms": 951103,
+   "single": 951.0,
+   "average": 951.0
+  },
+  {
+   "ms": 606292,
+   "single": 606.0,
+   "average": 606.0
+  },
+  {
+   "ms": 1397871,
+   "single": 1397.0,
+   "average": 1398.0
+  },
+  {
+   "ms": 2452348,
+   "single": 2452.0,
+   "average": 2452.0
+  },
+  {
+   "ms": 3092761,
+   "single": 3092.0,
+   "average": 3093.0
+  },
+  {
+   "ms": 652958,
+   "single": 652.0,
+   "average": 653.0
+  },
+  {
+   "ms": 2517782,
+   "single": 2517.0,
+   "average": 2518.0
+  },
+  {
+   "ms": 2594750,
+   "single": 2594.0,
+   "average": 2595.0
+  },
+  {
+   "ms": 331422,
+   "single": 331.42,
+   "average": 331.42
+  },
+  {
+   "ms": 3334576,
+   "single": 3334.0,
+   "average": 3335.0
+  },
+  {
+   "ms": 1903866,
+   "single": 1903.0,
+   "average": 1904.0
+  },
+  {
+   "ms": 1122646,
+   "single": 1122.0,
+   "average": 1123.0
+  },
+  {
+   "ms": 693755,
+   "single": 693.0,
+   "average": 694.0
+  },
+  {
+   "ms": 3020495,
+   "single": 3020.0,
+   "average": 3020.0
+  },
+  {
+   "ms": 3436689,
+   "single": 3436.0,
+   "average": 3437.0
+  },
+  {
+   "ms": 457278,
+   "single": 457.27,
+   "average": 457.28
+  },
+  {
+   "ms": 2734870,
+   "single": 2734.0,
+   "average": 2735.0
+  },
+  {
+   "ms": 1444372,
+   "single": 1444.0,
+   "average": 1444.0
+  },
+  {
+   "ms": 3544371,
+   "single": 3544.0,
+   "average": 3544.0
+  },
+  {
+   "ms": 2984437,
+   "single": 2984.0,
+   "average": 2984.0
+  },
+  {
+   "ms": 398722,
+   "single": 398.72,
+   "average": 398.72
+  },
+  {
+   "ms": 3002566,
+   "single": 3002.0,
+   "average": 3003.0
+  },
+  {
+   "ms": 93762,
+   "single": 93.76,
+   "average": 93.76
+  },
+  {
+   "ms": 2460892,
+   "single": 2460.0,
+   "average": 2461.0
+  },
+  {
+   "ms": 2437518,
+   "single": 2437.0,
+   "average": 2438.0
+  },
+  {
+   "ms": 694543,
+   "single": 694.0,
+   "average": 695.0
+  },
+  {
+   "ms": 1229426,
+   "single": 1229.0,
+   "average": 1229.0
+  },
+  {
+   "ms": 3491516,
+   "single": 3491.0,
+   "average": 3492.0
+  },
+  {
+   "ms": 1778345,
+   "single": 1778.0,
+   "average": 1778.0
+  },
+  {
+   "ms": 850455,
+   "single": 850.0,
+   "average": 850.0
+  },
+  {
+   "ms": 2286282,
+   "single": 2286.0,
+   "average": 2286.0
+  },
+  {
+   "ms": 2267099,
+   "single": 2267.0,
+   "average": 2267.0
+  },
+  {
+   "ms": 2633176,
+   "single": 2633.0,
+   "average": 2633.0
+  },
+  {
+   "ms": 3077536,
+   "single": 3077.0,
+   "average": 3078.0
+  },
+  {
+   "ms": 1206934,
+   "single": 1206.0,
+   "average": 1207.0
+  },
+  {
+   "ms": 961888,
+   "single": 961.0,
+   "average": 962.0
+  },
+  {
+   "ms": 2923684,
+   "single": 2923.0,
+   "average": 2924.0
+  },
+  {
+   "ms": 1975454,
+   "single": 1975.0,
+   "average": 1975.0
+  },
+  {
+   "ms": 1633514,
+   "single": 1633.0,
+   "average": 1634.0
+  },
+  {
+   "ms": 1390730,
+   "single": 1390.0,
+   "average": 1391.0
+  },
+  {
+   "ms": 3339858,
+   "single": 3339.0,
+   "average": 3340.0
+  },
+  {
+   "ms": 1855294,
+   "single": 1855.0,
+   "average": 1855.0
+  },
+  {
+   "ms": 2146397,
+   "single": 2146.0,
+   "average": 2146.0
+  },
+  {
+   "ms": 2123532,
+   "single": 2123.0,
+   "average": 2124.0
+  },
+  {
+   "ms": 2407225,
+   "single": 2407.0,
+   "average": 2407.0
+  },
+  {
+   "ms": 3918691,
+   "single": 3918.0,
+   "average": 3919.0
+  },
+  {
+   "ms": 3312192,
+   "single": 3312.0,
+   "average": 3312.0
+  },
+  {
+   "ms": 2565040,
+   "single": 2565.0,
+   "average": 2565.0
+  },
+  {
+   "ms": 930346,
+   "single": 930.0,
+   "average": 930.0
+  },
+  {
+   "ms": 1616814,
+   "single": 1616.0,
+   "average": 1617.0
+  },
+  {
+   "ms": 789686,
+   "single": 789.0,
+   "average": 790.0
+  },
+  {
+   "ms": 679,
+   "single": 0.67,
+   "average": 0.68
+  },
+  {
+   "ms": 1386366,
+   "single": 1386.0,
+   "average": 1386.0
+  },
+  {
+   "ms": 281999,
+   "single": 281.99,
+   "average": 282.0
+  },
+  {
+   "ms": 2093567,
+   "single": 2093.0,
+   "average": 2094.0
+  },
+  {
+   "ms": 350159,
+   "single": 350.15,
+   "average": 350.16
+  },
+  {
+   "ms": 639188,
+   "single": 639.0,
+   "average": 639.0
+  },
+  {
+   "ms": 3456896,
+   "single": 3456.0,
+   "average": 3457.0
+  },
+  {
+   "ms": 2813220,
+   "single": 2813.0,
+   "average": 2813.0
+  },
+  {
+   "ms": 1572681,
+   "single": 1572.0,
+   "average": 1573.0
+  },
+  {
+   "ms": 1500342,
+   "single": 1500.0,
+   "average": 1500.0
+  },
+  {
+   "ms": 749762,
+   "single": 749.0,
+   "average": 750.0
+  },
+  {
+   "ms": 2037135,
+   "single": 2037.0,
+   "average": 2037.0
+  },
+  {
+   "ms": 3024760,
+   "single": 3024.0,
+   "average": 3025.0
+  },
+  {
+   "ms": 2954060,
+   "single": 2954.0,
+   "average": 2954.0
+  },
+  {
+   "ms": 763234,
+   "single": 763.0,
+   "average": 763.0
+  },
+  {
+   "ms": 3511917,
+   "single": 3511.0,
+   "average": 3512.0
+  },
+  {
+   "ms": 3328818,
+   "single": 3328.0,
+   "average": 3329.0
+  },
+  {
+   "ms": 896946,
+   "single": 896.0,
+   "average": 897.0
+  },
+  {
+   "ms": 3025367,
+   "single": 3025.0,
+   "average": 3025.0
+  },
+  {
+   "ms": 1967273,
+   "single": 1967.0,
+   "average": 1967.0
+  },
+  {
+   "ms": 3248522,
+   "single": 3248.0,
+   "average": 3249.0
+  },
+  {
+   "ms": 2150929,
+   "single": 2150.0,
+   "average": 2151.0
+  },
+  {
+   "ms": 2280896,
+   "single": 2280.0,
+   "average": 2281.0
+  },
+  {
+   "ms": 3649244,
+   "single": 3649.0,
+   "average": 3649.0
+  },
+  {
+   "ms": 3262254,
+   "single": 3262.0,
+   "average": 3262.0
+  },
+  {
+   "ms": 474104,
+   "single": 474.1,
+   "average": 474.1
+  },
+  {
+   "ms": 2469576,
+   "single": 2469.0,
+   "average": 2470.0
+  },
+  {
+   "ms": 3061353,
+   "single": 3061.0,
+   "average": 3061.0
+  },
+  {
+   "ms": 2568830,
+   "single": 2568.0,
+   "average": 2569.0
+  },
+  {
+   "ms": 1250736,
+   "single": 1250.0,
+   "average": 1251.0
+  },
+  {
+   "ms": 3805750,
+   "single": 3805.0,
+   "average": 3806.0
+  },
+  {
+   "ms": 2936584,
+   "single": 2936.0,
+   "average": 2937.0
+  },
+  {
+   "ms": 3606348,
+   "single": 3606.0,
+   "average": 3606.0
+  },
+  {
+   "ms": 1897381,
+   "single": 1897.0,
+   "average": 1897.0
+  },
+  {
+   "ms": 3511608,
+   "single": 3511.0,
+   "average": 3512.0
+  },
+  {
+   "ms": 760514,
+   "single": 760.0,
+   "average": 761.0
+  },
+  {
+   "ms": 21157,
+   "single": 21.15,
+   "average": 21.16
+  },
+  {
+   "ms": 2323860,
+   "single": 2323.0,
+   "average": 2324.0
+  },
+  {
+   "ms": 1434344,
+   "single": 1434.0,
+   "average": 1434.0
+  },
+  {
+   "ms": 1147726,
+   "single": 1147.0,
+   "average": 1148.0
+  },
+  {
+   "ms": 2414116,
+   "single": 2414.0,
+   "average": 2414.0
+  },
+  {
+   "ms": 9999,
+   "single": 9.99,
+   "average": 10.0
+  },
+  {
+   "ms": 10000,
+   "single": 10.0,
+   "average": 10.0
+  },
+  {
+   "ms": 59999,
+   "single": 59.99,
+   "average": 60.0
+  },
+  {
+   "ms": 60000,
+   "single": 60.0,
+   "average": 60.0
+  },
+  {
+   "ms": 599994,
+   "single": 599.99,
+   "average": 599.99
+  },
+  {
+   "ms": 599995,
+   "single": 599.99,
+   "average": 600.0
+  },
+  {
+   "ms": 599999,
+   "single": 599.99,
+   "average": 600.0
+  },
+  {
+   "ms": 600000,
+   "single": 600.0,
+   "average": 600.0
+  },
+  {
+   "ms": 600499,
+   "single": 600.0,
+   "average": 600.0
+  },
+  {
+   "ms": 600500,
+   "single": 600.0,
+   "average": 601.0
+  },
+  {
+   "ms": 3599999,
+   "single": 3599.0,
+   "average": 3600.0
+  },
+  {
+   "ms": 3600000,
+   "single": 3600.0,
+   "average": 3600.0
+  },
+  {
+   "ms": 12344.5,
+   "single": 12.34,
+   "average": 12.34
+  },
+  {
+   "ms": 12345.5,
+   "single": 12.34,
+   "average": 12.35
+  },
+  {
+   "ms": 13233.333333333334,
+   "single": 13.23,
+   "average": 13.23
+  },
+  {
+   "ms": 599994.9999,
+   "single": 599.99,
+   "average": 599.99
+  },
+  {
+   "ms": 599995.0,
+   "single": 599.99,
+   "average": 600.0
+  },
+  {
+   "ms": 600499.5,
+   "single": 600.0,
+   "average": 600.0
+  }
+ ],
+ "bestAverages": [
+  {
+   "size": 5,
+   "results": [
+    15735,
+    14123,
+    10729,
+    11483,
+    11907,
+    7562,
+    10552,
+    16442,
+    9501,
+    19155,
+    12318,
+    10698,
+    7987,
+    11914,
+    13201,
+    13049,
+    11915,
+    12234,
+    9335,
+    7168,
+    14381,
+    15721,
+    11725,
+    14216,
+    5303,
+    14750,
+    11855,
+    12418,
+    13592,
+    18458,
+    8259,
+    null,
+    19595,
+    null,
+    8144,
+    9721,
+    4716,
+    14118,
+    12952,
+    17751,
+    null,
+    13276,
+    11853,
+    13451,
+    7375,
+    17111,
+    5841,
+    5902,
+    8916,
+    null,
+    16232,
+    null,
+    11341,
+    12879,
+    17221,
+    10387,
+    12738,
+    12589,
+    8389,
+    12192,
+    13430,
+    14230,
+    12547,
+    11954,
+    10865,
+    10299,
+    8732,
+    5705,
+    6369,
+    8987,
+    11010,
+    5645,
+    8659,
+    15359,
+    13550,
+    15573,
+    16096,
+    11643,
+    7550,
+    null,
+    null,
+    3364,
+    6959,
+    13183,
+    16576,
+    11102,
+    15493,
+    12900,
+    14896,
+    15443,
+    15572,
+    11026,
+    17424,
+    11509,
+    13574,
+    17041,
+    4985,
+    12626,
+    10958,
+    null,
+    16017,
+    15853,
+    13177,
+    15967,
+    17177,
+    11019,
+    9013,
+    9063,
+    18996,
+    19201,
+    10761,
+    1149,
+    11340,
+    11989,
+    15793,
+    17899,
+    null,
+    12957,
+    10933,
+    17440,
+    11981,
+    15524,
+    13102,
+    15419,
+    11814,
+    13036,
+    6126,
+    18060,
+    19475,
+    11935,
+    19686,
+    11128,
+    5403,
+    10075,
+    20847,
+    15162,
+    11604,
+    12908,
+    14575,
+    8629,
+    15178,
+    9559,
+    8587,
+    19875,
+    null,
+    12162,
+    9512,
+    19453,
+    11669,
+    10711,
+    9113,
+    10758,
+    13674,
+    9848,
+    11904,
+    null,
+    8134,
+    1269,
+    6296,
+    17522,
+    14203,
+    8965,
+    11378,
+    6890,
+    17609,
+    8315,
+    8477,
+    15185,
+    10767,
+    6237,
+    10761,
+    14323,
+    9765,
+    18052,
+    21647,
+    8733,
+    15242,
+    null,
+    11951,
+    8468,
+    11175,
+    15408,
+    8903,
+    10715,
+    12664,
+    6618,
+    18399,
+    null,
+    7222,
+    14206,
+    10768,
+    20586,
+    10303,
+    19064,
+    14707,
+    13817,
+    12236,
+    15858,
+    11309,
+    10803,
+    7080,
+    14877,
+    12252,
+    18579,
+    17831,
+    13738,
+    8617,
+    16343,
+    13877,
+    6336,
+    19211,
+    19024,
+    10993,
+    11118,
+    8912,
+    7051,
+    6524,
+    13827,
+    14761,
+    10375,
+    14276,
+    null,
+    11258,
+    14622,
+    11230,
+    14659,
+    18609,
+    null,
+    14811,
+    9809,
+    8464,
+    964,
+    6271,
+    16402,
+    null,
+    15063,
+    9346,
+    13459,
+    9127,
+    15678,
+    10311,
+    16627,
+    11993,
+    18408,
+    11607,
+    5438,
+    12260,
+    19309,
+    14156,
+    14692,
+    8891,
+    15463,
+    null,
+    8065,
+    8702,
+    12112,
+    10427,
+    6509,
+    null,
+    16251,
+    8890,
+    7617,
+    12387,
+    14539,
+    7482,
+    17794,
+    12694,
+    7818,
+    12673,
+    14226,
+    12257,
+    13510,
+    9351,
+    13171,
+    10725,
+    13982,
+    9857,
+    9863,
+    18349,
+    9267,
+    10324,
+    7919,
+    12534,
+    16866,
+    6063,
+    13621,
+    11898,
+    14833,
+    10015,
+    13672,
+    11328,
+    9692,
+    5848,
+    null,
+    null,
+    10291,
+    12651,
+    5299,
+    8923,
+    16455,
+    11443,
+    15340,
+    19503,
+    11452,
+    3697,
+    10158,
+    4762,
+    9921,
+    9675,
+    12018,
+    16318,
+    8878,
+    10499,
+    null,
+    16250,
+    9644,
+    15212,
+    6777,
+    18183,
+    11710,
+    3988,
+    11281,
+    5468,
+    13331,
+    15743,
+    18413,
+    14545,
+    13409,
+    10348,
+    14872,
+    10733,
+    null,
+    null,
+    17571,
+    12667,
+    10117,
+    12767,
+    17554,
+    null,
+    5276,
+    14739,
+    null,
+    null,
+    17460,
+    16663,
+    18755,
+    9205,
+    null,
+    5377,
+    17829,
+    16784,
+    18418,
+    14587,
+    13764,
+    13380,
+    12820,
+    9904,
+    9421,
+    11406,
+    13379,
+    17007,
+    18286,
+    17307,
+    16323,
+    16655,
+    6509,
+    18188,
+    12698,
+    11476,
+    16293,
+    11247,
+    9797,
+    10891,
+    14507,
+    null,
+    12695,
+    8522,
+    7168,
+    null,
+    18006,
+    16004,
+    10267,
+    16853,
+    3553,
+    16296,
+    7377,
+    13229,
+    14863,
+    null,
+    12184,
+    17911,
+    14517,
+    19506,
+    15498,
+    11311,
+    11760,
+    17799,
+    null,
+    20249,
+    12511
+   ],
+   "average": 7013.333333333333,
+   "end": 71
+  },
+  {
+   "size": 12,
+   "results": [
+    9227,
+    16061,
+    13466,
+    17730,
+    13899,
+    null,
+    13934,
+    10725,
+    15523,
+    13653,
+    13970,
+    14510,
+    13213,
+    4382,
+    11266,
+    14399,
+    16842,
+    20748,
+    12418,
+    4893,
+    16662,
+    12780,
+    5960,
+    8259,
+    8137,
+    12416,
+    12152,
+    null,
+    14228,
+    11319,
+    12953,
+    null,
+    null,
+    6718,
+    14538,
+    18713,
+    15282,
+    8453,
+    12732,
+    13867,
+    16192,
+    16185,
+    13367,
+    13547,
+    9760,
+    8981,
+    11071,
+    11859,
+    7383,
+    14483,
+    10210,
+    10871,
+    13175,
+    16002,
+    13271,
+    12783,
+    5602,
+    11008,
+    4007,
+    11409,
+    11041,
+    10520,
+    9290,
+    13445,
+    null,
+    4485,
+    17022,
+    9187,
+    19534,
+    10232,
+    9322,
+    10489,
+    15429,
+    13006,
+    7392,
+    10349,
+    10368,
+    12427,
+    11131,
+    7586,
+    14230,
+    12199,
+    9930,
+    5443,
+    10261,
+    9291,
+    16124,
+    7994,
+    3486,
+    5675,
+    4356,
+    11056,
+    17527,
+    6628,
+    10452,
+    11555,
+    16899,
+    9106,
+    9425,
+    12433,
+    16087,
+    8104,
+    11051,
+    null,
+    10026,
+    12424,
+    12206,
+    11215,
+    6653,
+    6912,
+    19963,
+    null,
+    11169,
+    20824,
+    15422,
+    11902,
+    null,
+    9791,
+    14282,
+    12040,
+    12492,
+    10855,
+    11588,
+    18954,
+    null,
+    18186,
+    12840,
+    13247,
+    17584,
+    9491,
+    null,
+    13571,
+    7727,
+    5312,
+    16527,
+    15146,
+    16845,
+    12128,
+    10769,
+    12659,
+    10221,
+    9590,
+    10676,
+    17501,
+    15897,
+    14558,
+    14074,
+    10860,
+    13647,
+    12878,
+    13873,
+    14881,
+    14504,
+    18056,
+    1097,
+    null,
+    12329,
+    8288,
+    null,
+    12840,
+    12578,
+    null,
+    13709,
+    14085,
+    10984,
+    null,
+    19131,
+    null,
+    11479,
+    8714,
+    15532,
+    15054,
+    9839,
+    3578,
+    7544,
+    13080,
+    12179,
+    11036,
+    21292,
+    15779,
+    13482,
+    17685,
+    15003,
+    5454,
+    14525,
+    16915,
+    6174,
+    6612,
+    14099,
+    7646,
+    9709,
+    18334,
+    18031,
+    15752,
+    4220,
+    10766,
+    8010,
+    11287,
+    9918,
+    14934,
+    9528,
+    null,
+    3132,
+    9299,
+    8404,
+    9546,
+    13646,
+    16900,
+    13838,
+    11723,
+    14033,
+    16470,
+    15316,
+    null,
+    11761,
+    12275,
+    12681,
+    16884,
+    14043,
+    9666,
+    7874,
+    18406,
+    10969,
+    11527,
+    12268,
+    19206,
+    7742,
+    null,
+    null,
+    null,
+    null,
+    9876,
+    null,
+    8126,
+    8224,
+    13305,
+    16203,
+    16720,
+    12245,
+    16683,
+    9323,
+    15451,
+    16339,
+    12329,
+    8356,
+    11202,
+    8472,
+    16576,
+    15023,
+    13526,
+    11478,
+    9572,
+    8504,
+    11747,
+    10894,
+    5538,
+    9380,
+    9938,
+    16946,
+    5787,
+    12264,
+    9150,
+    18407,
+    15629,
+    null,
+    10866,
+    18458,
+    14240,
+    15594,
+    14598,
+    14297,
+    13433,
+    14305,
+    9514,
+    5071,
+    3905,
+    8488,
+    17843,
+    9049,
+    9922,
+    12752,
+    12052,
+    null,
+    14290,
+    9562,
+    15358,
+    10957,
+    5206,
+    12247,
+    7172,
+    15580,
+    14180,
+    16341,
+    8721,
+    10102,
+    10007,
+    19011,
+    6272,
+    8998,
+    11693,
+    10319,
+    14982,
+    5748,
+    16253,
+    6020,
+    15678,
+    11453,
+    14152,
+    15553,
+    18568,
+    16828,
+    12625,
+    8068,
+    null,
+    5747,
+    13202,
+    15810,
+    17349,
+    21688,
+    13848,
+    8624,
+    13734,
+    12680,
+    21716,
+    5287,
+    3508,
+    19410,
+    10877,
+    9630,
+    10389,
+    13728,
+    17301,
+    13649,
+    14398,
+    13427,
+    17082,
+    8864,
+    18845,
+    19331,
+    14119,
+    14133,
+    7292,
+    9727,
+    14760,
+    10881,
+    14314,
+    9662,
+    null,
+    11148,
+    16137,
+    1,
+    10596,
+    9589,
+    14305,
+    null,
+    13776,
+    20156,
+    17102,
+    10660,
+    17588,
+    8684,
+    14497,
+    11767,
+    14777,
+    17942,
+    11149,
+    11176,
+    18194,
+    10817,
+    1940,
+    16781,
+    15381,
+    9288,
+    16078,
+    14245,
+    12663,
+    11583,
+    13295,
+    14416,
+    null,
+    11403,
+    12867,
+    null,
+    10588,
+    null,
+    16167,
+    13709,
+    3458,
+    12800,
+    14811,
+    12881,
+    10202,
+    11892,
+    12712,
+    10356,
+    19454,
+    9021,
+    15444,
+    6246,
+    7207
+   ],
+   "average": 8672.0,
+   "end": 93
+  },
+  {
+   "size": 50,
+   "results": [
+    14520,
+    11383,
+    4610,
+    18498,
+    15519,
+    16554,
+    11485,
+    10127,
+    7391,
+    7911,
+    20566,
+    14715,
+    8591,
+    17977,
+    15218,
+    null,
+    null,
+    21041,
+    14700,
+    null,
+    5500,
+    null,
+    9958,
+    11732,
+    13933,
+    11597,
+    9923,
+    15986,
+    null,
+    15153,
+    12306,
+    3296,
+    11023,
+    null,
+    5973,
+    17450,
+    18963,
+    10039,
+    15852,
+    null,
+    10719,
+    10376,
+    8737,
+    9325,
+    null,
+    11806,
+    null,
+    20195,
+    13032,
+    8217,
+    null,
+    9102,
+    13191,
+    null,
+    19474,
+    13710,
+    null,
+    9121,
+    15038,
+    13718,
+    20987,
+    null,
+    11000,
+    11511,
+    14923,
+    13567,
+    10028,
+    7574,
+    13603,
+    15234,
+    1756,
+    14368,
+    11882,
+    9948,
+    17780,
+    10501,
+    10886,
+    12293,
+    null,
+    13670,
+    7562,
+    3003,
+    null,
+    11830,
+    20043,
+    9670,
+    14104,
+    4884,
+    9983,
+    10757,
+    10103,
+    16236,
+    12746,
+    9031,
+    7014,
+    null,
+    11077,
+    12712,
+    13308,
+    13499,
+    null,
+    null,
+    19713,
+    10129,
+    17618,
+    1183,
+    11906,
+    11145,
+    null,
+    5434,
+    8821,
+    16299,
+    18453,
+    19414,
+    null,
+    15019,
+    12041,
+    13225,
+    18637,
+    null,
+    20431,
+    null,
+    13730,
+    4761,
+    15845,
+    8588,
+    16238,
+    13569,
+    17759,
+    14151,
+    8813,
+    16983,
+    null,
+    10232,
+    16226,
+    14722,
+    9543,
+    7441,
+    10729,
+    5982,
+    9755,
+    7561,
+    18247,
+    17093,
+    14981,
+    6805,
+    17114,
+    10827,
+    11335,
+    7262,
+    18013,
+    9075,
+    8593,
+    16626,
+    13071,
+    13697,
+    18737,
+    11520,
+    14910,
+    8358,
+    13036,
+    9083,
+    null,
+    15899,
+    8088,
+    null,
+    10389,
+    18155,
+    15677,
+    11125,
+    16632,
+    15234,
+    7817,
+    15613,
+    null,
+    17367,
+    8262,
+    11672,
+    12693,
+    15568,
+    null,
+    13688,
+    11145,
+    13542,
+    9040,
+    15906,
+    11563,
+    6155,
+    13674,
+    11499,
+    11486,
+    12390,
+    12127,
+    13473,
+    14105,
+    8530,
+    15396,
+    7361,
+    12306,
+    16112,
+    11718,
+    13928,
+    9814,
+    15369,
+    null,
+    null,
+    22738,
+    16818,
+    7908,
+    129,
+    14382,
+    14711,
+    null,
+    15667,
+    9725,
+    8307,
+    null,
+    11326,
+    6859,
+    13282,
+    15378,
+    12134,
+    12379,
+    null,
+    17386,
+    14958,
+    14841,
+    12245,
+    9904,
+    null,
+    11068,
+    3335,
+    14874,
+    11849,
+    null,
+    16919,
+    12219,
+    5419,
+    20044,
+    13540,
+    3322,
+    13560,
+    11751,
+    6814,
+    12251,
+    15836,
+    8949,
+    10387,
+    14841,
+    9048,
+    null,
+    9235,
+    11573,
+    15923,
+    9572,
+    5660,
+    null,
+    11510,
+    11355,
+    7106,
+    10288,
+    9928,
+    null,
+    15763,
+    10464,
+    13090,
+    13758,
+    9398,
+    6119,
+    12057,
+    12510,
+    19682,
+    10508,
+    13580,
+    9540,
+    11812,
+    null,
+    null,
+    null,
+    18541,
+    20482,
+    14962,
+    18871,
+    18708,
+    14378,
+    8944,
+    12307,
+    6987,
+    14596,
+    11167,
+    10238,
+    13896,
+    16563,
+    13030,
+    7584,
+    4601,
+    16062,
+    7316,
+    null,
+    13859,
+    11456,
+    12070,
+    null,
+    7994,
+    9189,
+    12852,
+    null,
+    10057,
+    13498,
+    11737,
+    16429,
+    7691,
+    16896,
+    9599,
+    20037,
+    8644,
+    11638,
+    12386,
+    12682,
+    13566,
+    15121,
+    10680,
+    7581,
+    7939,
+    7077,
+    2207,
+    13434,
+    9910,
+    9298,
+    11399,
+    10486,
+    10224,
+    8918,
+    569,
+    13936,
+    6229,
+    null,
+    12735,
+    11945,
+    10110,
+    null,
+    15313,
+    7568,
+    11112,
+    11771,
+    13135,
+    10947,
+    null,
+    17156,
+    10822,
+    8846,
+    17105,
+    14845,
+    10522,
+    18322,
+    13874,
+    9512,
+    16585,
+    10620,
+    14471,
+    14407,
+    13408,
+    null,
+    12547,
+    15744,
+    null,
+    7176,
+    8507,
+    13430,
+    7508,
+    null,
+    12491,
+    14291,
+    14410,
+    17435,
+    14758,
+    7572,
+    11440,
+    null,
+    null,
+    6623,
+    10244,
+    11696,
+    16496,
+    null,
+    6460,
+    20278,
+    11398,
+    14124,
+    10270,
+    15160,
+    10485,
+    11012,
+    10140,
+    9439,
+    10349,
+    10454,
+    16114,
+    5271,
+    16993
+   ],
+   "average": 11455.0,
+   "end": 335
+  },
+  {
+   "size": 100,
+   "results": [
+    22005,
+    19676,
+    9425,
+    7702,
+    6539,
+    null,
+    10664,
+    8938,
+    7592,
+    8811,
+    18528,
+    10815,
+    14308,
+    null,
+    13532,
+    11049,
+    17894,
+    4135,
+    11883,
+    15293,
+    null,
+    4395,
+    15173,
+    12275,
+    8089,
+    10334,
+    15395,
+    12779,
+    11027,
+    8404,
+    15377,
+    17852,
+    16067,
+    8221,
+    7477,
+    14296,
+    null,
+    7981,
+    14598,
+    12671,
+    8979,
+    12119,
+    9511,
+    null,
+    6285,
+    10209,
+    9476,
+    6081,
+    12038,
+    12506,
+    14726,
+    null,
+    14273,
+    9151,
+    6885,
+    11326,
+    17288,
+    5842,
+    16202,
+    null,
+    10461,
+    11295,
+    14068,
+    18030,
+    12880,
+    8709,
+    11544,
+    13699,
+    11028,
+    null,
+    11088,
+    11819,
+    null,
+    12394,
+    13608,
+    12024,
+    12857,
+    null,
+    16169,
+    10123,
+    null,
+    8600,
+    9458,
+    6819,
+    13786,
+    13380,
+    10624,
+    10639,
+    4872,
+    9707,
+    16088,
+    10353,
+    4724,
+    14749,
+    13074,
+    9399,
+    9898,
+    null,
+    8657,
+    13753,
+    9893,
+    9554,
+    13044,
+    5722,
+    10432,
+    12784,
+    7689,
+    11403,
+    null,
+    14275,
+    10356,
+    13624,
+    11436,
+    7846,
+    3302,
+    17027,
+    18843,
+    null,
+    14868,
+    4076,
+    null,
+    14447,
+    11819,
+    5632,
+    5352,
+    6356,
+    6101,
+    10310,
+    12147,
+    11453,
+    10448,
+    17959,
+    5663,
+    7404,
+    11391,
+    13937,
+    8985,
+    7004,
+    14277,
+    10146,
+    17424,
+    11246,
+    5312,
+    6504,
+    18372,
+    6503,
+    13317,
+    18690,
+    14879,
+    19881,
+    14593,
+    13453,
+    12858,
+    6337,
+    16151,
+    9105,
+    19334,
+    14727,
+    14383,
+    11599,
+    15523,
+    11352,
+    10256,
+    9750,
+    null,
+    10921,
+    8399,
+    15441,
+    19817,
+    15455,
+    13644,
+    12043,
+    9727,
+    9122,
+    13248,
+    20170,
+    9432,
+    17468,
+    12812,
+    11785,
+    10202,
+    6718,
+    7656,
+    null,
+    9646,
+    10327,
+    11517,
+    9508,
+    11008,
+    5624,
+    8391,
+    19544,
+    19362,
+    10148,
+    10458,
+    8760,
+    17845,
+    11739,
+    null,
+    17862,
+    16360,
+    15882,
+    14168,
+    11317,
+    8219,
+    10319,
+    13358,
+    20422,
+    4486,
+    12543,
+    13695,
+    13646,
+    4846,
+    15659,
+    14599,
+    12372,
+    7718,
+    8673,
+    9666,
+    15269,
+    null,
+    13891,
+    11702,
+    10526,
+    19830,
+    11318,
+    14459,
+    12096,
+    11334,
+    7170,
+    13481,
+    10747,
+    10440,
+    null,
+    16257,
+    13482,
+    9876,
+    6720,
+    12596,
+    6008,
+    12757,
+    12446,
+    17653,
+    13059,
+    14906,
+    null,
+    3247,
+    8977,
+    16072,
+    16314,
+    18476,
+    3752,
+    11325,
+    17452,
+    3717,
+    15021,
+    12522,
+    15811,
+    12779,
+    13694,
+    16930,
+    8343,
+    18895,
+    14439,
+    13759,
+    12074,
+    11474,
+    19882,
+    10517,
+    6369,
+    8679,
+    15877,
+    null,
+    12354,
+    12343,
+    8055,
+    null,
+    9354,
+    9947,
+    null,
+    4322,
+    null,
+    17110,
+    15226,
+    4865,
+    5129,
+    14013,
+    19110,
+    9303,
+    13494,
+    11439,
+    null,
+    6203,
+    8645,
+    7045,
+    15384,
+    8552,
+    13708,
+    16181,
+    3848,
+    10422,
+    19816,
+    16887,
+    13896,
+    14674,
+    10264,
+    19217,
+    17504,
+    null,
+    9763,
+    21737,
+    9716,
+    20808,
+    12826,
+    12076,
+    12357,
+    18718,
+    12006,
+    8865,
+    11962,
+    15948,
+    11639,
+    17740,
+    17336,
+    7086,
+    21975,
+    14014,
+    2661,
+    null,
+    12540,
+    9476,
+    15289,
+    11213,
+    14902,
+    11266,
+    15111,
+    6968,
+    13725,
+    11992,
+    18806,
+    11321,
+    null,
+    9788,
+    13917,
+    6815,
+    11058,
+    7812,
+    9937,
+    20194,
+    9159,
+    15150,
+    9057,
+    null,
+    12115,
+    13934,
+    15905,
+    11849,
+    15749,
+    12863,
+    10358,
+    7086,
+    8919,
+    11610,
+    11559,
+    13298,
+    14094,
+    12953,
+    1,
+    14018,
+    10930,
+    null,
+    10898,
+    6680,
+    19257,
+    15501,
+    4973,
+    11402,
+    7034,
+    12891,
+    13512,
+    8888,
+    13009,
+    4576,
+    19326,
+    5572,
+    12177,
+    13713,
+    16438,
+    13433,
+    10275,
+    13694,
+    11109,
+    12540,
+    13950,
+    8852,
+    10678,
+    14425,
+    19364,
+    8624,
+    17455
+   ],
+   "average": 11893.555555555555,
+   "end": 182
+  }
+ ]
+}
