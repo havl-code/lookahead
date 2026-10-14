@@ -1,12 +1,13 @@
 # The phone app in pwa/: checks and tests on every push and pull request that touches it, and a
-# deploy to GitHub Pages (https://havl-code.github.io/lookahead/) from main once both pass.
+# deploy to GitHub Pages (https://havl-code.github.io/lookahead/) from main once both pass. It
+# bundles speedcube/wca_reference.json for the scores, so the monthly refresh redeploys it too.
 name: PWA
 
 on:
   push:
-    paths: ['pwa/**', '.github/workflows/pwa.yml']
+    paths: ['pwa/**', 'speedcube/wca_reference.json', '.github/workflows/pwa.yml']
   pull_request:
-    paths: ['pwa/**', '.github/workflows/pwa.yml']
+    paths: ['pwa/**', 'speedcube/wca_reference.json', '.github/workflows/pwa.yml']
   workflow_dispatch:
 
 permissions:

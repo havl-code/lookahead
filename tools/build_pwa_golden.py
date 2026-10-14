@@ -2,11 +2,13 @@
 tests can check that its own code gives exactly the same results.
 
 - pwa/src/lib/golden/stats.json: session stats, and singles and averages the WCA way
+- pwa/src/lib/golden/scores.json: the Analytics scores, against a small made-up WCA reference
+  (so the monthly refresh of the real one doesn't change them)
 - pwa/src/features/backup/golden/*.json: backups, and what the desktop app exports after
   restoring each one
 
 Run it from the project folder after changing speedcube/stats.py, db.recompute_session_stats,
-or speedcube/backup.py:
+speedcube/scores.py, or speedcube/backup.py:
     uv run tools/build_pwa_golden.py
 """
 
@@ -19,10 +21,11 @@ from pathlib import Path
 PROJECT_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_DIR))
 
-from speedcube import backup, db  # noqa: E402
+from speedcube import backup, db, scores  # noqa: E402
 from speedcube.stats import AVERAGE_SIZES, average_seconds, best_average, single_seconds  # noqa: E402
 
 OUTPUT = PROJECT_DIR / 'pwa' / 'src' / 'lib' / 'golden' / 'stats.json'
+SCORES_OUTPUT = OUTPUT.with_name('scores.json')
 BACKUP_OUTPUT = PROJECT_DIR / 'pwa' / 'src' / 'features' / 'backup' / 'golden'
 FIXTURES = PROJECT_DIR / 'tests' / 'fixtures'
 STAT_COLUMNS = ('solve_count', 'best_single', 'worst_single', 'session_mean', 'ao5', 'ao12',
@@ -133,6 +136,59 @@ def backup_goldens(rng):
             for name, payload in payloads.items()}
 
 
+def made_up_reference():
+    """A small WCA reference in the real one's format: 101 quantiles rather than 1,001, some of
+    them level (to test ties), and one event of each kind of round."""
+    def quantiles(low, high, ties_at):
+        values = [low + (high - low) * (i / 100) ** 1.6 for i in range(101)]
+        for i in ties_at:
+            values[i + 1] = values[i]
+        return [round(v, 3) for v in values]
+
+    def event(result, size, low_cs, high_cs, dnf_share, consistency=True):
+        ref = {'result': result, 'solves_per_round': size,
+               'speed': {'dnf_share': dnf_share, 'quantiles_cs': quantiles(low_cs, high_cs, (10, 50, 51))}}
+        if consistency:
+            ref['consistency'] = {'quantiles': quantiles(0.02, 0.4, (30,))}
+        return ref
+
+    return {
+        'source': 'made up for the golden tests', 'export_date': '2026-10-11', 'window_start': '2024-10-11',
+        'min_pairs': 20, 'notice': 'Made up.',
+        'events': {
+            '333': event('average', 5, 450, 6000, 0.01),
+            '666': event('average', 3, 6000, 30000, 0.05),
+            '333bf': event('best', 3, 1500, 60000, 0.3),
+            '444bf': event('best', 3, 6000, 120000, 0.5, consistency=False),
+        },
+    }
+
+
+def scores_golden(rng):
+    reference = made_up_reference()
+    original = scores.reference
+    scores.reference = lambda: reference
+    try:
+        cases = []
+        bases = {'333': 14000, '666': 120000, '333bf': 90000, '444bf': 400000, 'pyram': 5000}
+        for event_id, base in bases.items():
+            for count, dnf_rate in ((0, 0), (2, 0), (3, 0), (4, 0), (5, 0), (19, 0), (21, 0.05),
+                                    (25, 0.3), (60, 0.1), (200, 0.05), (12, 1)):
+                solves = random_solves(rng, count, dnf_rate=dnf_rate, base_ms=base, spread_ms=base // 6)
+                results = [None if s['dnf'] else s['time_ms'] + (2000 if s['penalty'] == '+2' else 0)
+                           for s in solves]
+                cases.append({'event': event_id, 'results': results,
+                              'scores': scores.session_scores(event_id, results)})
+        # The very fastest, slowest, and level with a quantile
+        speed = reference['events']['333']['speed']['quantiles_cs']
+        for typical_cs in (100, speed[0], speed[10], speed[50], speed[70], speed[-1], 99999):
+            cases.append({'event': '333', 'results': [typical_cs * 10] * 5,
+                          'scores': scores.session_scores('333', [typical_cs * 10] * 5)})
+        return {'reference': reference, 'cases': cases}
+    finally:
+        scores.reference = original
+
+
 def build():
     """Every golden file's path and contents. tests/test_pwa_golden.py checks they're up to date."""
     rng = random.Random(20261014)
@@ -154,7 +210,8 @@ def build():
         average, end = best_average(values, size)
         best.append({'size': size, 'results': values, 'average': average, 'end': end})
 
-    files = {OUTPUT: {'sessions': sessions, 'rounding': rounding, 'bestAverages': best}}
+    files = {OUTPUT: {'sessions': sessions, 'rounding': rounding, 'bestAverages': best},
+             SCORES_OUTPUT: scores_golden(random.Random(20261015))}
     files.update(backup_goldens(rng))
     return {path: json.dumps(contents, indent=1) + '\n' for path, contents in files.items()}
 

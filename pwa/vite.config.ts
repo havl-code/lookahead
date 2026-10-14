@@ -47,6 +47,9 @@ function contentSecurityPolicyMeta(): Plugin {
 
 export default defineConfig({
   base,
+  // The scores read the desktop app's WCA reference (src/lib/wcaReference.ts), the one file
+  // from outside this folder.
+  server: { fs: { allow: ['.', '../speedcube/wca_reference.json'] } },
   plugins: [
     react(),
     tailwindcss(),
