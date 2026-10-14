@@ -119,7 +119,15 @@ export async function saveTimedSolve(
   );
 }
 
-/** Changes a solve's penalty, and its session's stats with it. */
+/**
+ * Whether a solve can only be a DNF: one with no time, because it never started (an inspection
+ * DNF, Regulation A4d2). As OK or +2 it would be a 0.00 or a 2.00.
+ */
+export function onlyDnf(solve: Pick<Solve, 'time_ms'>): boolean {
+  return solve.time_ms === 0;
+}
+
+/** Changes a solve's penalty, and its session's stats with it. A solve with no time stays a DNF. */
 export async function setPenalty(
   db: LookaheadDb,
   solveId: number,
@@ -128,7 +136,7 @@ export async function setPenalty(
   await withStorageErrors(() =>
     db.transaction('rw', db.sessions, db.solves, async () => {
       const solve = await db.solves.get(solveId);
-      if (!solve) return;
+      if (!solve || (penalty !== 'DNF' && onlyDnf(solve))) return;
       await db.solves.update(solveId, { penalty, dnf: penalty === 'DNF' });
       await recomputeSessionStats(db, solve.session_id);
     }),
@@ -175,4 +183,73 @@ export async function latestSolves(
   limit: number,
 ): Promise<Solve[]> {
   return solvesOf(db, sessionId).reverse().limit(limit).toArray();
+}
+
+/** Changes a solve's notes (already checked). They don't change any stats. */
+export async function setSolveNotes(
+  db: LookaheadDb,
+  solveId: number,
+  notes: string,
+): Promise<void> {
+  await withStorageErrors(() => db.solves.update(solveId, { notes }));
+}
+
+export interface TypedSolve {
+  /** The attempt's own time in ms, without any +2; 0 for a DNF that never started. */
+  readonly timeMs: number;
+  readonly penalty: Penalty;
+  readonly scramble: string;
+  readonly notes: string;
+}
+
+/** Adds a solve typed in by hand to the end of a session. Returns its id. */
+export async function addSolve(
+  db: LookaheadDb,
+  sessionId: number,
+  solve: TypedSolve,
+  now = new Date(),
+): Promise<number> {
+  return withStorageErrors(() =>
+    db.transaction('rw', db.sessions, db.solves, async () => {
+      const last = await solvesOf(db, sessionId).last();
+      const solveId = await db.solves.add({
+        session_id: sessionId,
+        solve_number: (last?.solve_number ?? 0) + 1,
+        time_ms: solve.timeMs,
+        scramble: solve.scramble,
+        penalty: solve.penalty,
+        dnf: solve.penalty === 'DNF',
+        notes: solve.notes,
+        timestamp: now.toISOString(),
+      } as Solve);
+      await recomputeSessionStats(db, sessionId);
+      return solveId;
+    }),
+  );
+}
+
+export type SolveSort = 'number' | 'fastest' | 'slowest';
+
+/** A solve's result for sorting: its time with any +2, and DNFs slower than any time. */
+function sortKey(solve: Solve): number {
+  if (solve.dnf) return Number.POSITIVE_INFINITY;
+  return solve.time_ms + (solve.penalty === '+2' ? 2000 : 0);
+}
+
+/**
+ * One page of a session's solves, in solve order (newest first) or by result, as the desktop
+ * app's solves table sorts them. DNFs come last when fastest first, and first when slowest
+ * first; ties keep solve order.
+ */
+export async function sessionSolves(
+  db: LookaheadDb,
+  sessionId: number,
+  sort: SolveSort,
+  limit: number,
+): Promise<Solve[]> {
+  if (sort === 'number') return latestSolves(db, sessionId, limit);
+  const solves = await solvesOf(db, sessionId).toArray();
+  const sign = sort === 'fastest' ? 1 : -1;
+  solves.sort((a, b) => sign * (sortKey(a) - sortKey(b)) || a.solve_number - b.solve_number);
+  return solves.slice(0, limit);
 }

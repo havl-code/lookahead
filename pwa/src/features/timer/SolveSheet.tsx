@@ -1,19 +1,24 @@
+import { useEffect, useState } from 'react';
+import { Field, fieldStyle, secondaryButton } from '../../app/forms.tsx';
 import { Sheet } from '../../app/Sheet.tsx';
 import type { Solve } from '../../db/schema.ts';
 import { formatMoment } from '../../lib/time.ts';
+import { maxNotes, text } from '../../lib/validation.ts';
 import type { Penalty } from './clock.ts';
 import { PenaltyButtons, resultText } from './TimerScreen.tsx';
 
-/** One of today's solves: its result, scramble, and when, with its penalty and Delete. */
+/** One solve: its result, scramble, and when, with its penalty, notes, and Delete. */
 export function SolveSheet({
   solve,
   onClose,
   onPenalty,
+  onNotes,
   onDelete,
 }: {
   readonly solve: Solve | null;
   readonly onClose: () => void;
   readonly onPenalty: (solve: Solve, penalty: Penalty) => void;
+  readonly onNotes: (solve: Solve, notes: string) => Promise<void>;
   readonly onDelete: (solve: Solve) => void;
 }) {
   return (
@@ -37,8 +42,71 @@ export function SolveSheet({
               Delete
             </button>
           </div>
+          <NotesField key={solve.id} solve={solve} onSave={(notes) => onNotes(solve, notes)} />
         </div>
       )}
     </Sheet>
+  );
+}
+
+function NotesField({
+  solve,
+  onSave,
+}: {
+  readonly solve: Solve;
+  readonly onSave: (notes: string) => Promise<void>;
+}) {
+  const saved = solve.notes ?? '';
+  const [notes, setNotes] = useState(saved);
+  const [error, setError] = useState<string | null>(null);
+  const [status, setStatus] = useState('');
+  useEffect(() => setNotes(saved), [saved]);
+
+  async function save() {
+    const checked = text(notes, 'A note', maxNotes);
+    if (!checked.ok) {
+      setError(checked.error);
+      return;
+    }
+    setError(null);
+    try {
+      await onSave(checked.value);
+      setStatus('Note saved.');
+    } catch {
+      setError("Couldn't save the note. This device may be out of space.");
+    }
+  }
+
+  return (
+    <form
+      onSubmit={(event) => {
+        event.preventDefault();
+        void save();
+      }}
+      className="space-y-2"
+    >
+      <Field label="Note" error={error}>
+        {(ids) => (
+          <textarea
+            {...ids}
+            value={notes}
+            onChange={(event) => {
+              setNotes(event.target.value);
+              setStatus('');
+            }}
+            rows={2}
+            className={`${fieldStyle} py-2`}
+          />
+        )}
+      </Field>
+      <div className="flex items-center gap-3">
+        <button type="submit" disabled={notes.trim() === saved} className={secondaryButton}>
+          Save note
+        </button>
+        <p role="status" className="text-muted text-sm">
+          {status}
+        </p>
+      </div>
+    </form>
   );
 }

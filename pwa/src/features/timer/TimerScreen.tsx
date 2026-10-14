@@ -5,7 +5,14 @@ import { useDb } from '../../db/DbProvider.tsx';
 import { useMeta, useTimerSettings, useTodaysSolves } from '../../db/hooks.ts';
 import { getMeta, setMeta } from '../../db/meta.ts';
 import type { Solve } from '../../db/schema.ts';
-import { deleteSolve, restoreSolve, saveTimedSolve, setPenalty } from '../../db/solves.ts';
+import {
+  deleteSolve,
+  onlyDnf,
+  restoreSolve,
+  saveTimedSolve,
+  setPenalty,
+  setSolveNotes,
+} from '../../db/solves.ts';
 import { defaultTimerSettings } from '../../db/timerSettings.ts';
 import { eventName } from '../../lib/events.ts';
 import { count, formatClock, formatResult } from '../../lib/format.ts';
@@ -328,6 +335,7 @@ export function TimerScreen() {
         solve={solves.find((solve) => solve.id === openSolve) ?? null}
         onClose={() => setOpenSolve(null)}
         onPenalty={(solve, penalty) => void changePenalty(solve, penalty)}
+        onNotes={(solve, notes) => setSolveNotes(db, solve.id, notes)}
         onDelete={(solve) => {
           setOpenSolve(null);
           void remove(solve);
@@ -404,6 +412,8 @@ export function PenaltyButtons({
   readonly onChange: (penalty: Penalty) => void;
 }) {
   const current: Penalty = solve.dnf ? 'DNF' : solve.penalty === '+2' ? '+2' : 'OK';
+  // A solve that never started has no time, so it can only be a DNF.
+  const fixed = onlyDnf(solve);
   return (
     <div className="flex overflow-hidden rounded-lg border border-control">
       {(['OK', '+2', 'DNF'] as const).map((penalty) => (
@@ -411,8 +421,9 @@ export function PenaltyButtons({
           key={penalty}
           type="button"
           aria-pressed={current === penalty}
+          disabled={fixed && penalty !== 'DNF'}
           onClick={() => current !== penalty && onChange(penalty)}
-          className={`min-h-11 min-w-14 px-3 font-semibold ${
+          className={`min-h-11 min-w-14 px-3 font-semibold disabled:text-muted disabled:opacity-60 ${
             current === penalty ? 'bg-accent text-on-accent' : 'bg-raised'
           }`}
         >
