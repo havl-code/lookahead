@@ -355,10 +355,10 @@ def test_buttons_menus_and_windows(app_page, live_app):
     assert page.locator('#sessions-tbody tr').count() == 1
 
     with page.expect_download() as download:
-        page.click('text=Export backup')
-    assert download.value.suggested_filename.startswith('speedcube-backup-')
+        page.click('.footer-links >> text=Export backup')
+    assert download.value.suggested_filename.startswith('lookahead-backup-')
     with page.expect_file_chooser() as chooser:
-        page.click('text=Import backup')
+        page.click('.footer-links >> text=Import backup')
     assert chooser.value is not None
     assert page.errors == []
 
@@ -419,17 +419,33 @@ def test_analytics_draws_every_chart(app_page, live_app):
     assert page.errors == []
 
 
+def test_the_import_tab_exports_too(app_page, live_app):
+    seed_session(live_app, [12, 13], date='2026-09-01')
+    page = app_page
+    open_tab(page, 'import')
+    with page.expect_download() as download:
+        page.click('#export >> text=Export backup')
+    assert download.value.suggested_filename.startswith('lookahead-backup-')
+    with page.expect_download() as download:
+        page.click('#export >> text=Export solves (CSV)')
+    assert download.value.suggested_filename.startswith('lookahead-solves-')
+    with page.expect_file_chooser() as chooser:
+        page.click('#export >> text=Import backup')
+    assert chooser.value is not None
+    assert page.errors == []
+
+
 def test_csv_downloads(app_page, live_app):
     seed_session(live_app, [12, 13], date='2026-09-01')
     page = app_page
     with page.expect_download() as download:
-        page.click('text=Export solves (CSV)')
-    assert download.value.suggested_filename.startswith('speedcube-solves-')
+        page.click('.footer-links >> text=Export solves (CSV)')
+    assert download.value.suggested_filename.startswith('lookahead-solves-')
     open_tab(page, 'sessions')
     page.click('#sessions-tbody button:has-text("View")')
     with page.expect_download() as download:
         page.click('#solve-details-modal >> text=Export CSV')
-    assert download.value.suggested_filename.startswith('speedcube-solves-session-')
+    assert download.value.suggested_filename.startswith('lookahead-solves-session-')
     text = open(download.value.path(), encoding='utf-8-sig').read()
     assert text.splitlines()[0].startswith('session_id,session_date,event_id') and len(text.splitlines()) == 3
     assert page.errors == []

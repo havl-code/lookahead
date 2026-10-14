@@ -24,7 +24,7 @@
                 <button class="tab" data-tab="timer" data-action="switch-tab">Timer</button>
                 <button class="tab" data-tab="sessions" data-action="switch-tab">Sessions</button>
                 <button class="tab" data-tab="cubes" data-action="switch-tab">Cubes</button>
-                <button class="tab" data-tab="import" data-action="switch-tab">Import</button>
+                <button class="tab" data-tab="import" data-action="switch-tab">Import and Export</button>
                 <button class="tab" data-tab="analytics" data-action="switch-tab">Analytics</button>
             </nav>
             <button class="icon-button theme-toggle" data-action="toggle-theme" aria-label="Switch between light and dark mode" title="Switch between light and dark mode">
@@ -503,6 +503,21 @@
                             <button class="btn-primary" data-action="import-selected">Import Selected</button>
                             <button class="btn-secondary" data-action="cancel-import">Cancel</button>
                         </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="export" class="export-section">
+                <h2>Export and Back Up</h2>
+                <div class="import-card">
+                    <p>
+                        A backup is everything in the app as one JSON file. It restores here, or in
+                        Lookahead on your phone. A CSV of your solves is for reading in a spreadsheet.
+                    </p>
+                    <div class="import-actions">
+                        <button class="btn-primary" data-action="export-backup">Export backup</button>
+                        <button class="btn-secondary" data-action="export-csv">Export solves (CSV)</button>
+                        <button class="btn-secondary" data-action="import-backup">Import backup</button>
                     </div>
                 </div>
             </section>

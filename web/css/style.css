@@ -1076,6 +1076,10 @@ kbd {
     border-radius: var(--radius);
 }
 
+.export-section {
+    margin-top: 32px;
+}
+
 .import-card > p {
     margin-bottom: 16px;
     color: var(--text-secondary);
