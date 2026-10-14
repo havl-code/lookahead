@@ -14,5 +14,7 @@ tests/fixtures/** -text
 tests/ export-ignore
 .github/ export-ignore
 tools/ export-ignore
+# The phone app is used from its website, not the download
+pwa/ export-ignore
 .gitattributes export-ignore
 .gitignore export-ignore

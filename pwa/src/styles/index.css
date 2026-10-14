@@ -1,0 +1,129 @@
+@import "tailwindcss";
+
+/*
+ * Space Grotesk, bundled so the app never contacts another website for it (SIL Open Font
+ * License 1.1, see ../assets/fonts/OFL.txt). Each subset loads only when the page uses it.
+ */
+@font-face {
+  font-family: "Space Grotesk";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 300 700;
+  src: url(../assets/fonts/space-grotesk-vietnamese-wght-normal.woff2) format("woff2");
+  unicode-range:
+    U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301,
+    U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+
+@font-face {
+  font-family: "Space Grotesk";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 300 700;
+  src: url(../assets/fonts/space-grotesk-latin-ext-wght-normal.woff2) format("woff2");
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
+    U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+    U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Space Grotesk";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 300 700;
+  src: url(../assets/fonts/space-grotesk-latin-wght-normal.woff2) format("woff2");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/*
+ * Colour tokens, the same as the desktop app's. Components use these names (bg-surface,
+ * text-ink, and so on) rather than raw colours, so light and dark mode stay in step. Text pairs
+ * meet WCAG AA contrast in both modes.
+ */
+@theme inline {
+  --font-sans: "Space Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --color-surface: var(--surface);
+  --color-raised: var(--raised);
+  --color-inset: var(--inset);
+  --color-line: var(--line);
+  --color-control: var(--control);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-warning: var(--warning);
+  --color-on-warning: var(--on-warning);
+  --color-good-ink: var(--good-ink);
+  --color-danger-ink: var(--danger-ink);
+}
+
+/* Dark is the default, as in the desktop app. */
+:root {
+  --surface: #0f0f11;
+  --raised: #17171a;
+  --inset: #212125;
+  --line: #27272c;
+  /* Fields, buttons, and switches: 3:1 on every background (WCAG 2.1 1.4.11). */
+  --control: #6b6b72;
+  --ink: #ededef;
+  --muted: #a1a1a9;
+  --accent: #ff7a1a;
+  --on-accent: #17100a;
+  --accent-ink: #ff9142;
+  --warning: #2b1d05;
+  --on-warning: #fde68a;
+  --good-ink: #4ade80;
+  --danger-ink: #f87171;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --surface: #f6f6f7;
+    --raised: #ffffff;
+    --inset: #f0f0f2;
+    --line: #e4e4e7;
+    --control: #8a8a8e;
+    --ink: #18181b;
+    --muted: #55555e;
+    --accent: #c2410c;
+    --on-accent: #ffffff;
+    --accent-ink: #c2410c;
+    --warning: #fef3c7;
+    --on-warning: #78350f;
+    --good-ink: #147a3b;
+    --danger-ink: #c42424;
+  }
+}
+
+@layer base {
+  html {
+    color-scheme: dark light;
+    /* Follows the iOS text size setting (Dynamic Type). Other browsers ignore it. */
+    /* biome-ignore lint/a11y/useGenericFontNames: the next line sets the family, with sans-serif. */
+    font: -apple-system-body;
+    font-family: var(--font-sans);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-surface text-ink antialiased;
+    /* At the largest text sizes a long word may be wider than the screen. */
+    overflow-wrap: anywhere;
+    /* No grey flash when tapping links and buttons on iOS. */
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Fieldsets are otherwise as wide as their widest line, which overflows at large text sizes. */
+  fieldset {
+    min-inline-size: 0;
+  }
+
+  /* Animations use Tailwind's motion-safe: variant, so reduced motion needs no override here. */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-accent-ink;
+  }
+}
