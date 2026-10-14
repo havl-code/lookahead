@@ -17,13 +17,20 @@ It works offline after the first visit, and updates itself the next time you lea
 
 ## What works so far
 
+- **Timer:** pick an event, then touch the time to inspect, hold until it turns green, and let go
+  to start; touch anywhere to stop. Everything but the time hides while you solve, and the screen
+  stays on. WCA inspection gives a +2 from 15 seconds and a DNF at 17 (Regulations A4d1 and A4d2),
+  with optional sounds at 8 and 12 seconds, and the blindfolded events have none (B1a). Solves go
+  into today's session, with OK, +2, DNF, and Delete (with Undo) after each one. On a computer or
+  an iPad with a keyboard, the space bar works too, and Escape calls an attempt off.
 - **Backups:** on the More tab, **Restore from a backup** takes a backup from the desktop app
   (its **Export backup** link) or from here, and **Make backup** saves one to share or keep.
-  Restoring over what's here can be undone. The same file restores in the desktop app.
+  Restoring over what's here can be undone. The same file restores in the desktop app. The Timer
+  tab reminds you when 100 solves, or a week's worth, aren't backed up yet.
 - **Sessions:** every session, newest first, with its best, Ao5, Ao12, and mean worked out
   exactly as the desktop app does.
 
-The timer, analytics, cubes, and CSTimer import come next.
+Analytics and scores, cubes, CSTimer import, and picking an older session in the timer come next.
 
 ## Development
 

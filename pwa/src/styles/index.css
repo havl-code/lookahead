@@ -56,6 +56,7 @@
   --color-on-accent: var(--on-accent);
   --color-accent-ink: var(--accent-ink);
   --color-warning: var(--warning);
+  --color-warning-ink: var(--warning-ink);
   --color-on-warning: var(--on-warning);
   --color-good-ink: var(--good-ink);
   --color-danger-ink: var(--danger-ink);
@@ -76,6 +77,8 @@
   --accent-ink: #ff9142;
   --warning: #2b1d05;
   --on-warning: #fde68a;
+  /* A +2 during inspection, as on the desktop app's timer. */
+  --warning-ink: #fbbf24;
   --good-ink: #4ade80;
   --danger-ink: #f87171;
 }
@@ -94,6 +97,7 @@
     --accent-ink: #c2410c;
     --warning: #fef3c7;
     --on-warning: #78350f;
+    --warning-ink: #a95005;
     --good-ink: #147a3b;
     --danger-ink: #c42424;
   }
@@ -125,5 +129,31 @@
   /* Animations use Tailwind's motion-safe: variant, so reduced motion needs no override here. */
   :focus-visible {
     @apply outline-2 outline-offset-2 outline-accent-ink;
+  }
+}
+
+@layer components {
+  /*
+   * The timer's touch pad: no scrolling, text selection, or long-press menu, so a hold is only
+   * ever a hold.
+   */
+  .touch-pad {
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+
+  /* Everything but the time fades away when an attempt begins. */
+  @media (prefers-reduced-motion: no-preference) {
+    .focus-in {
+      animation: focus-in 160ms ease-out;
+    }
+  }
+}
+
+@keyframes focus-in {
+  from {
+    opacity: 0;
   }
 }
