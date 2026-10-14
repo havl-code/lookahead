@@ -61,7 +61,13 @@ test('times a solve with inspection, by touch', async ({ page }) => {
     /^9\.[89]\d, saved\.$/,
   );
   const today = page.getByRole('region', { name: 'Today' });
-  await expect(today.getByRole('definition')).toHaveText(['1', /^9\.[89]\d$/, '-', '-', /^9\.[89]\d$/]);
+  await expect(today.getByRole('definition')).toHaveText([
+    '1',
+    /^9\.[89]\d$/,
+    '-',
+    '-',
+    /^9\.[89]\d$/,
+  ]);
   await expect(page.getByRole('button', { name: /^Solve 1: 9\.[89]\d$/ })).toBeVisible();
 
   await page
@@ -139,9 +145,10 @@ test('keeps the event, and gives blindfolded events no inspection (B1a)', async 
   await touch(page, 'pointerdown');
   await wait(page, 300);
   await touch(page, 'pointerup');
-  await wait(page, 60_000);
+  // The hold started the solve straight away: with inspection, it would have started inspecting.
+  await wait(page, 8_000);
   await touch(page, 'pointerdown');
-  await expect(page.getByRole('button', { name: /^Solve 1: 1:00\.[01]\d$/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: /^Solve 1: 8\.[01]\d$/ })).toBeVisible();
 
   await page.reload();
   await expect(page.getByRole('combobox', { name: 'Event' })).toHaveValue('333bf');
