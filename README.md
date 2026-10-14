@@ -5,10 +5,10 @@
 Named after **lookahead**, the speedcubing skill of finding your next pieces while you're still solving the current ones, so you can solve without pauses. It's one of the most useful skills to train, and this app helps you track that training. Formerly Speedcube Training Explorer.
 
 **On your phone:** Lookahead is being rebuilt as an app for your phone's Home Screen that
-works offline, at https://havl-code.github.io/lookahead/. It's an early preview for now: it can
-restore a backup from the desktop app and list your sessions with the same stats, but it has no
-timer yet, so keep using the desktop app below for your training. Once it does everything the
-desktop app does, it replaces it.
+works offline, at https://havl-code.github.io/lookahead/. It's a preview for now: it has the
+timer, with WCA inspection, and lists your sessions with the same stats, and a backup moves your
+solves between it and the desktop app below. Analytics, scores, cubes, and CSTimer import are
+still desktop only. Once the phone app does everything the desktop app does, it replaces it.
 
 ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)
 ![Flask](https://img.shields.io/badge/Flask-000000?logo=flask&logoColor=white)

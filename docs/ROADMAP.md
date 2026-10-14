@@ -127,8 +127,9 @@ Not released yet.
   the old name still restore
 - An early preview of Lookahead for phones, an offline app for the Home Screen, at
   https://havl-code.github.io/lookahead/. It's being rebuilt to do everything the desktop app
-  does, and then replaces it. So far it restores and makes backups (in the same format as the
-  desktop app's, both ways) and lists your sessions with their stats
+  does, and then replaces it. So far it has the timer for every event the desktop app times,
+  restores and makes backups (in the same format as the desktop app's, both ways), and lists
+  your sessions with their stats
 
 ---
 
