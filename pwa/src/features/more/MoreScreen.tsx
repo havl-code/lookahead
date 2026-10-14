@@ -1,4 +1,4 @@
-import { ForwardIcon } from '../../app/icons.tsx';
+import { ExternalIcon, ForwardIcon, GitHubIcon } from '../../app/icons.tsx';
 import { repoUrl } from '../../app/Preview.tsx';
 import { detailHref, useDetail } from '../../app/router.ts';
 import { ScreenHeader } from '../../app/ScreenHeader.tsx';
@@ -58,18 +58,22 @@ function MoreList() {
       </section>
       <section className="mt-6">
         <h2 className="font-semibold">About</h2>
-        <ul className="mt-2 divide-y divide-line rounded-xl border border-line bg-raised">
-          <li>
-            <a
-              href={repoUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex min-h-11 items-center px-4 py-2"
-            >
-              Lookahead on GitHub
-            </a>
-          </li>
-        </ul>
+        <a
+          href={repoUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-2 flex min-h-16 items-center gap-3 rounded-xl border border-line bg-raised px-4 py-3 active:bg-line"
+        >
+          <GitHubIcon className="size-10 shrink-0" />
+          <span className="min-w-0 flex-1">
+            <span className="block font-semibold">Lookahead on GitHub</span>
+            <span className="block text-muted text-sm">
+              The source code, what's new, and the desktop app
+            </span>
+          </span>
+          <ExternalIcon className="size-5 shrink-0 text-muted" />
+          <span className="sr-only">(opens in a new tab)</span>
+        </a>
         <p className="mt-3 text-muted text-sm">
           Your solves stay on this device. There is no account, no server, and no tracking. Only
           looking up your WCA ID goes to the WCA website.
