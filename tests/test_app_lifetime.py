@@ -246,7 +246,7 @@ def test_leave_console_window_carries_on_if_it_cant_restart(windows, monkeypatch
 @pytest.fixture
 def shortcut(windows, monkeypatch, tmp_path):
     runs = []
-    monkeypatch.setattr(app_module, 'SHORTCUT', tmp_path / 'Speedcube Training Explorer.lnk')
+    monkeypatch.setattr(app_module, 'SHORTCUT', tmp_path / 'Lookahead.lnk')
     monkeypatch.setattr(shutil, 'which', lambda name: r'C:\uv\uvw.exe' if name == 'uvw' else None)
     monkeypatch.setattr(subprocess, 'run', lambda args, **kwargs: runs.append((args, kwargs)))
     return runs

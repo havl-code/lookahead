@@ -27,7 +27,7 @@ PERSONS_API = 'https://www.worldcubeassociation.org/api/v0/persons/'
 CACHE_TTL_SECONDS = 24 * 60 * 60
 REQUEST_TIMEOUT_SECONDS = 10
 USER_AGENT = (
-    'speedcube-training-explorer (+https://github.com/havl-code/speedcube-training-explorer)'
+    'lookahead (+https://github.com/havl-code/lookahead)'
 )
 
 # Everything that can go wrong fetching or decoding a JSON URL: network errors and HTTP error

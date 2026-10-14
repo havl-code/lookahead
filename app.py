@@ -1,4 +1,4 @@
-"""Speedcube Training Explorer.
+"""Lookahead.
 
 Start it with:
 
@@ -33,13 +33,13 @@ from werkzeug.serving import make_server
 
 from speedcube import create_app, db
 
-APP_NAME = 'speedcube-training-explorer'
+APP_NAME = 'lookahead'
 HOST = '127.0.0.1'  # only reachable from this computer, since the API has no login (and
                     # speedcube/security.py keeps websites open in the browser out too)
 PORT = 8577
 PROJECT_DIR = Path(__file__).resolve().parent
 DATABASE = PROJECT_DIR / 'data' / 'speedcube.db'
-SHORTCUT = PROJECT_DIR / 'Speedcube Training Explorer.lnk'
+SHORTCUT = PROJECT_DIR / 'Lookahead.lnk'
 SHORTCUT_ICON = PROJECT_DIR / 'web' / 'images' / 'app-icon.ico'
 # "Start on Windows.bat" sets this, so the app knows it's in a console window it can leave.
 LAUNCHER_ENV = 'SPEEDCUBE_LAUNCHER'
@@ -175,7 +175,7 @@ def make_shortcut():
         '$s = (New-Object -ComObject WScript.Shell).CreateShortcut($env:SC_LINK); '
         "$s.TargetPath = $env:SC_UVW; $s.Arguments = 'run app.py'; "
         "$s.WorkingDirectory = $env:SC_DIR; $s.IconLocation = $env:SC_ICON + ',0'; "
-        "$s.Description = 'Start Speedcube Training Explorer'; $s.Save()"
+        "$s.Description = 'Start Lookahead'; $s.Save()"
     )
     env = dict(os.environ, SC_LINK=str(SHORTCUT), SC_UVW=uvw, SC_DIR=str(PROJECT_DIR),
                SC_ICON=str(SHORTCUT_ICON))
@@ -219,7 +219,7 @@ def main():
     url = f'http://{HOST}:{server.server_port}'
 
     # flush: when output is piped (e.g. an IDE's run console) it would otherwise sit in a buffer.
-    print(f'\n  Speedcube Training Explorer is running at {url}\n'
+    print(f'\n  Lookahead is running at {url}\n'
           f'  Your data is saved in {DATABASE}\n'
           f'  The app stops by itself shortly after you close its last browser tab.\n',
           flush=True)

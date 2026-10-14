@@ -1,6 +1,6 @@
 # Roadmap
 
-Where Speedcube Training Explorer stands after version 3.3, what it can't do yet, and what
+Where Lookahead stands after version 3.3, what it can't do yet, and what
 could come next, roughly in order. It's a plan, not a promise: ideas and pull requests are
 welcome (see [Contributing](../README.md#-contributing)).
 
@@ -12,117 +12,119 @@ Sizes are rough: **S** is a few hours, **M** is a day or two, and **L** is a wee
 
 Version 3.2 came from an audit of every feature, a test suite, fixes for everything the audit
 found, and six new features, followed by the work in From This Roadmap below. It was released
-as [v3.2.0](https://github.com/havl-code/speedcube-training-explorer/releases/tag/v3.2.0) on
+as [v3.2.0](https://github.com/havl-code/lookahead/releases/tag/v3.2.0) on
 10 October 2026.
 
 ### Safety and Security
 
-- [`8bacd6f`](https://github.com/havl-code/speedcube-training-explorer/commit/8bacd6f) Other
+- [`8bacd6f`](https://github.com/havl-code/lookahead/commit/8bacd6f) Other
   websites can no longer change or read your data, or keep the app running (cross-site
   requests and DNS rebinding are refused)
-- [`6a64dce`](https://github.com/havl-code/speedcube-training-explorer/commit/6a64dce) Inline
+- [`6a64dce`](https://github.com/havl-code/lookahead/commit/6a64dce) Inline
   event handlers moved into scripts, so the page can forbid inline scripts
-- [`797f982`](https://github.com/havl-code/speedcube-training-explorer/commit/797f982) Input is
+- [`797f982`](https://github.com/havl-code/lookahead/commit/797f982) Input is
   checked before it's stored, and missing records give a clear 404
-- [`dd14068`](https://github.com/havl-code/speedcube-training-explorer/commit/dd14068) A safety
+- [`dd14068`](https://github.com/havl-code/lookahead/commit/dd14068) A safety
   copy of the database before a restore or a data update
 
 ### Fixes to Existing Features
 
-- [`dcd3150`](https://github.com/havl-code/speedcube-training-explorer/commit/dcd3150) CSTimer
+- [`dcd3150`](https://github.com/havl-code/lookahead/commit/dcd3150) CSTimer
   imports keep each solve's date, penalty, and comment, keep session names, and skip solves
   already imported
-- [`7f88fb6`](https://github.com/havl-code/speedcube-training-explorer/commit/7f88fb6) A world
+- [`7f88fb6`](https://github.com/havl-code/lookahead/commit/7f88fb6) A world
   rank only shows when the WCA's rankings support it
-- [`0e6acd5`](https://github.com/havl-code/speedcube-training-explorer/commit/0e6acd5),
-  [`e4ae826`](https://github.com/havl-code/speedcube-training-explorer/commit/e4ae826),
-  [`1b5954d`](https://github.com/havl-code/speedcube-training-explorer/commit/1b5954d), and
-  [`25360c0`](https://github.com/havl-code/speedcube-training-explorer/commit/25360c0) The
+- [`0e6acd5`](https://github.com/havl-code/lookahead/commit/0e6acd5),
+  [`e4ae826`](https://github.com/havl-code/lookahead/commit/e4ae826),
+  [`1b5954d`](https://github.com/havl-code/lookahead/commit/1b5954d), and
+  [`25360c0`](https://github.com/havl-code/lookahead/commit/25360c0) The
   timer: a steady clock, WCA inspection, fairer scrambles, and a clear message when a solve
   can't be saved
-- [`e8250fd`](https://github.com/havl-code/speedcube-training-explorer/commit/e8250fd) and
-  [`75be816`](https://github.com/havl-code/speedcube-training-explorer/commit/75be816) Charts
+- [`e8250fd`](https://github.com/havl-code/lookahead/commit/e8250fd) and
+  [`75be816`](https://github.com/havl-code/lookahead/commit/75be816) Charts
   and averages follow the WCA rules for DNFs and rounding
-- [`5be760c`](https://github.com/havl-code/speedcube-training-explorer/commit/5be760c) and
-  [`d397b01`](https://github.com/havl-code/speedcube-training-explorer/commit/d397b01) The PB
+- [`5be760c`](https://github.com/havl-code/lookahead/commit/5be760c) and
+  [`d397b01`](https://github.com/havl-code/lookahead/commit/d397b01) The PB
   window names the right event, and Average Time is for one event at a time
-- [`47c013a`](https://github.com/havl-code/speedcube-training-explorer/commit/47c013a) Toasts
+- [`47c013a`](https://github.com/havl-code/lookahead/commit/47c013a) Toasts
   and an in-page confirm instead of pop-ups that freeze the page
 
 ### New Features
 
-- [`606456e`](https://github.com/havl-code/speedcube-training-explorer/commit/606456e) Timer
+- [`606456e`](https://github.com/havl-code/lookahead/commit/606456e) Timer
   settings that stick
-- [`fed1d17`](https://github.com/havl-code/speedcube-training-explorer/commit/fed1d17) Solves of
+- [`fed1d17`](https://github.com/havl-code/lookahead/commit/fed1d17) Solves of
   up to 2 hours, with a notice at the WCA's 60 minute limit
-- [`f253039`](https://github.com/havl-code/speedcube-training-explorer/commit/f253039) Edit a
+- [`f253039`](https://github.com/havl-code/lookahead/commit/f253039) Edit a
   session's date, cube, and notes
-- [`7a11348`](https://github.com/havl-code/speedcube-training-explorer/commit/7a11348) Best Ao5,
+- [`7a11348`](https://github.com/havl-code/lookahead/commit/7a11348) Best Ao5,
   Ao12, Ao50, and Ao100 for each event
-- [`8eb96d4`](https://github.com/havl-code/speedcube-training-explorer/commit/8eb96d4) Stats for
+- [`8eb96d4`](https://github.com/havl-code/lookahead/commit/8eb96d4) Stats for
   each cube
-- [`99fd50f`](https://github.com/havl-code/speedcube-training-explorer/commit/99fd50f) CSV
+- [`99fd50f`](https://github.com/havl-code/lookahead/commit/99fd50f) CSV
   export of solves
-- [`ca042b5`](https://github.com/havl-code/speedcube-training-explorer/commit/ca042b5) Solve
+- [`ca042b5`](https://github.com/havl-code/lookahead/commit/ca042b5) Solve
   notes, shortcuts, and Undo
-- [`972ea5c`](https://github.com/havl-code/speedcube-training-explorer/commit/972ea5c) Timers
+- [`972ea5c`](https://github.com/havl-code/lookahead/commit/972ea5c) Timers
   for 2x2x2 and 4x4x4
 
 ### From This Roadmap
 
-- [`8949b92`](https://github.com/havl-code/speedcube-training-explorer/commit/8949b92) Every event menu built from one list (and 4x4x4 and 5x5x5
+- [`8949b92`](https://github.com/havl-code/lookahead/commit/8949b92) Every event menu built from one list (and 4x4x4 and 5x5x5
   Blindfolded added to them)
-- [`9173d8c`](https://github.com/havl-code/speedcube-training-explorer/commit/9173d8c) A copy of the database each day, keeping the newest seven
-- [`cf63d97`](https://github.com/havl-code/speedcube-training-explorer/commit/cf63d97) The Scores explanation inside the app, so it works offline
-- [`0485edb`](https://github.com/havl-code/speedcube-training-explorer/commit/0485edb) Everything works from the keyboard, windows behave alike, and text meets
+- [`9173d8c`](https://github.com/havl-code/lookahead/commit/9173d8c) A copy of the database each day, keeping the newest seven
+- [`cf63d97`](https://github.com/havl-code/lookahead/commit/cf63d97) The Scores explanation inside the app, so it works offline
+- [`0485edb`](https://github.com/havl-code/lookahead/commit/0485edb) Everything works from the keyboard, windows behave alike, and text meets
   WCAG 2.1 AA contrast in both themes
-- [`dba3fa2`](https://github.com/havl-code/speedcube-training-explorer/commit/dba3fa2) Charts without enough data say so without the browser logging an error
-- [`e3d1686`](https://github.com/havl-code/speedcube-training-explorer/commit/e3d1686) Each chart described in words for screen readers
-- [`4e67f3c`](https://github.com/havl-code/speedcube-training-explorer/commit/4e67f3c) Timers for 5x5x5, 6x6x6, and 7x7x7 (60, 80, and 100 moves, as in the 2009
+- [`dba3fa2`](https://github.com/havl-code/lookahead/commit/dba3fa2) Charts without enough data say so without the browser logging an error
+- [`e3d1686`](https://github.com/havl-code/lookahead/commit/e3d1686) Each chart described in words for screen readers
+- [`4e67f3c`](https://github.com/havl-code/lookahead/commit/4e67f3c) Timers for 5x5x5, 6x6x6, and 7x7x7 (60, 80, and 100 moves, as in the 2009
   Regulations, Article 4f)
-- [`730c226`](https://github.com/havl-code/speedcube-training-explorer/commit/730c226) Timing on a touchscreen: hold the time, let go to start, and tap to stop
-- [`cec369f`](https://github.com/havl-code/speedcube-training-explorer/commit/cec369f) Each CSTimer session's event picked from its scramble type, with a menu for
+- [`730c226`](https://github.com/havl-code/lookahead/commit/730c226) Timing on a touchscreen: hold the time, let go to start, and tap to stop
+- [`cec369f`](https://github.com/havl-code/lookahead/commit/cec369f) Each CSTimer session's event picked from its scramble type, with a menu for
   each session in the import
-- [`a86cce2`](https://github.com/havl-code/speedcube-training-explorer/commit/a86cce2) A One-Handed timer
+- [`a86cce2`](https://github.com/havl-code/lookahead/commit/a86cce2) A One-Handed timer
 
 ### Tests, Tooling, and Docs
 
-- [`6593f1e`](https://github.com/havl-code/speedcube-training-explorer/commit/6593f1e) to
-  [`786f93e`](https://github.com/havl-code/speedcube-training-explorer/commit/786f93e) A pytest
+- [`6593f1e`](https://github.com/havl-code/lookahead/commit/6593f1e) to
+  [`786f93e`](https://github.com/havl-code/lookahead/commit/786f93e) A pytest
   suite with coverage, browser tests in Playwright, regression tests for every audit finding,
   and GitHub Actions on Windows, macOS, and Ubuntu with Python 3.11 and 3.14
-- [`4c04814`](https://github.com/havl-code/speedcube-training-explorer/commit/4c04814) Checks
+- [`4c04814`](https://github.com/havl-code/lookahead/commit/4c04814) Checks
   on the docs' links, anchors, and writing style
-- [`f9e9ddb`](https://github.com/havl-code/speedcube-training-explorer/commit/f9e9ddb) Browser tests that hold the page's clock still, so a busy computer can't
+- [`f9e9ddb`](https://github.com/havl-code/lookahead/commit/f9e9ddb) Browser tests that hold the page's clock still, so a busy computer can't
   make a timing test fail
-- [`4088bed`](https://github.com/havl-code/speedcube-training-explorer/commit/4088bed) The ZIP
+- [`4088bed`](https://github.com/havl-code/lookahead/commit/4088bed) The ZIP
   download and `uv run app.py` leave out everything only developers need
-- [`e99ff42`](https://github.com/havl-code/speedcube-training-explorer/commit/e99ff42),
-  [`5f81716`](https://github.com/havl-code/speedcube-training-explorer/commit/5f81716), and
-  [`3fa5ba4`](https://github.com/havl-code/speedcube-training-explorer/commit/3fa5ba4) Docs for
+- [`e99ff42`](https://github.com/havl-code/lookahead/commit/e99ff42),
+  [`5f81716`](https://github.com/havl-code/lookahead/commit/5f81716), and
+  [`3fa5ba4`](https://github.com/havl-code/lookahead/commit/3fa5ba4) Docs for
   3.2, the version number, and a new screenshot
 
 ## Done in 3.3
 
 Version 3.3 added timers for the blindfolded events and Megaminx, and finished AA contrast. It
-was released as [v3.3.0](https://github.com/havl-code/speedcube-training-explorer/releases/tag/v3.3.0)
+was released as [v3.3.0](https://github.com/havl-code/lookahead/releases/tag/v3.3.0)
 on 11 October 2026.
 
-- [`7828f84`](https://github.com/havl-code/speedcube-training-explorer/commit/7828f84) Timers for 3x3x3, 4x4x4, and 5x5x5
+- [`7828f84`](https://github.com/havl-code/lookahead/commit/7828f84) Timers for 3x3x3, 4x4x4, and 5x5x5
   Blindfolded, with no inspection (Regulation B1a) and scrambles that end in a random
   orientation, each of the 24 equally likely (4b3a)
-- [`88f66c4`](https://github.com/havl-code/speedcube-training-explorer/commit/88f66c4) A Megaminx timer, with 70 move
+- [`88f66c4`](https://github.com/havl-code/lookahead/commit/88f66c4) A Megaminx timer, with 70 move
   scrambles (4b3e, and the 2008 Regulations, Article 4f) in seven lines, as TNoodle writes them
-- [`b94e87e`](https://github.com/havl-code/speedcube-training-explorer/commit/b94e87e) Fields, buttons, and switches stand
+- [`b94e87e`](https://github.com/havl-code/lookahead/commit/b94e87e) Fields, buttons, and switches stand
   out at 3:1 (WCAG 2.1 1.4.11), which finishes AA contrast
 
 ## Done Since 3.3
 
 Not released yet.
 
-- [`f205221`](https://github.com/havl-code/speedcube-training-explorer/commit/f205221) The Scores' comparison rebuilt from
+- [`f205221`](https://github.com/havl-code/lookahead/commit/f205221) The Scores' comparison rebuilt from
   the latest WCA results export each month, by a GitHub Actions workflow that opens a pull
   request (the scoring method stays the same)
+- The app is now called Lookahead (it was Speedcube Training Explorer). Backups made under
+  the old name still restore
 
 ---
 

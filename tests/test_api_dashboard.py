@@ -11,7 +11,7 @@ def content_type(client, path):
 
 def test_the_page_and_its_files_are_served(client):
     with client.get('/') as page:
-        assert page.status_code == 200 and b'Speedcube Training Explorer' in page.data
+        assert page.status_code == 200 and b'Lookahead' in page.data
     assert content_type(client, '/js/config.js').startswith('text/javascript')
     assert content_type(client, '/css/style.css').startswith('text/css')
     assert content_type(client, '/vendor/fonts/space-grotesk-latin-wght-normal.woff2') == 'font/woff2'

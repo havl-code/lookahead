@@ -1,4 +1,4 @@
-"""Speedcube Training Explorer backend: a small Flask app that serves the web UI (web/) and
+"""Lookahead backend: a small Flask app that serves the web UI (web/) and
 the JSON API it talks to (/api/...), storing everything in a local SQLite file."""
 
 import mimetypes

@@ -1,6 +1,8 @@
-# Speedcube Training Explorer 🎲
+# Lookahead 🎲
 
 **Track your progress. Analyse your solves. Compare with the world.**
+
+Formerly Speedcube Training Explorer.
 
 A training tracker for speedcubers that runs on your own computer and opens in your web
 browser. Time your solves, analyse your progress with charts, keep track of your cubes, and
@@ -147,7 +149,7 @@ and a double-click (or one command) starts it.
    Linux, and do exactly the same thing:
    - **Double-click the launcher for your system** in the project folder: **Start on
      Windows**, **Start on Mac** or **Start on Linux**. On Windows, the first start also adds
-     a **Speedcube Training Explorer** shortcut with the app's icon, which starts it with no
+     a **Lookahead** shortcut with the app's icon, which starts it with no
      window at all. Put it on your desktop if you like.
    - **Or type one command** in a terminal opened in the project folder:
 
@@ -319,7 +321,7 @@ The **How the scores work** link under the scores opens it in the app, even offl
 ### Importing CSTimer Data
 
 1. **In CSTimer:** open the Export menu and download your data as JSON or TXT.
-2. **In Speedcube Training Explorer:**
+2. **In Lookahead:**
    - Open the **Import** tab
    - Click **Choose File** and pick your export
    - Click **Preview Sessions**
@@ -417,7 +419,7 @@ like.
 ## 📁 Project Structure
 
 ```text
-speedcube-training-explorer/
+lookahead/
 ├── Start on Windows.bat   # Double-click to start on Windows
 ├── Start on Mac.command   # Double-click to start on a Mac
 ├── Start on Linux.sh      # Double-click to start on Linux
@@ -463,7 +465,7 @@ speedcube-training-explorer/
 │   └── e2e/               # Browser tests (Playwright), run on request
 ├── .github/workflows/     # The tests on every push, and the monthly WCA summary refresh
 ├── data/                  # Your database, and its copies in data/backups (never committed)
-├── Speedcube Training Explorer.lnk  # Windows only: made on first start, never committed
+├── Lookahead.lnk          # Windows only: made on first start, never committed
 ├── LICENSE
 └── README.md, INSTALLATION.md
 ```

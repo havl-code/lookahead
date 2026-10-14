@@ -17,7 +17,7 @@ async function loadGreeting() {
             const timeOfDay = getTimeOfDay();
             
             greetingText.textContent = `${timeOfDay}, ${data.wca_name}!`;
-            greetingSubtext.textContent = 'Welcome to Speedcube Training Explorer';
+            greetingSubtext.textContent = 'Welcome to Lookahead';
             
             // Show WCA ID badge
             wcaIdDisplay.textContent = data.wca_id;
@@ -25,7 +25,7 @@ async function loadGreeting() {
             wcaSetupPrompt.style.display = 'none';
         } else {
             // No WCA ID yet: show the generic greeting and a prompt to set one up
-            greetingText.textContent = 'Welcome to Speedcube Training Explorer';
+            greetingText.textContent = 'Welcome to Lookahead';
             greetingSubtext.textContent = 'Track your progress and compare with WCA rankings';
             
             wcaSetupPrompt.style.display = 'flex';
@@ -34,7 +34,7 @@ async function loadGreeting() {
     } catch (error) {
         console.error('Failed to load greeting:', error);
         // Show generic greeting on error
-        document.getElementById('greeting-text').textContent = 'Welcome to Speedcube Training Explorer';
+        document.getElementById('greeting-text').textContent = 'Welcome to Lookahead';
         document.getElementById('greeting-subtext').textContent = 'Track your progress and compare with WCA rankings';
     }
 }

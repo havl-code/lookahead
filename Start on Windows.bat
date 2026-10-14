@@ -1,5 +1,5 @@
 @echo off
-rem Double-click this to start Speedcube Training Explorer on Windows. It checks that uv is
+rem Double-click this to start Lookahead on Windows. It checks that uv is
 rem installed and hands over to app.py, which closes this window once the app is running.
 cd /d "%~dp0"
 

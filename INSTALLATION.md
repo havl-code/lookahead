@@ -2,7 +2,7 @@
 
 **One tool to install. One double-click (or one command) to start.**
 
-Speedcube Training Explorer is a web app that runs on your own computer. A small program (the
+Lookahead is a web app that runs on your own computer. A small program (the
 "server") keeps your data and shows the app in your web browser. On Windows, Mac or Linux, you
 can start it either by double-clicking its launcher or by typing one command, `uv run app.py`.
 Both do the same thing, so use whichever you prefer. Everything else happens in the browser.
@@ -38,7 +38,7 @@ uv fetches one for the app automatically.
 
 ## 📥 2. Download the App
 
-On the [GitHub page](https://github.com/havl-code/speedcube-training-explorer), click the green
+On the [GitHub page](https://github.com/havl-code/lookahead), click the green
 **Code** button, then **Download ZIP**. Unzip it somewhere you'll remember, such as your
 Documents folder.
 
@@ -82,7 +82,7 @@ What happens next depends on your system:
 
 - **Windows:** a window shows for a moment (a few seconds the first time, while uv sets
   things up) and closes once the app is running. After the first start, the folder also has a
-  **Speedcube Training Explorer** shortcut with the app's icon, which starts the app with no
+  **Lookahead** shortcut with the app's icon, which starts the app with no
   window at all, so use it from then on. You can drag it to your desktop, or right-click it
   and pin it to the Start menu.
 - **Mac:** a Terminal window opens and shows the app's messages. Leave it open while you use the
@@ -229,9 +229,9 @@ copies of the app's shortcut you put on your desktop or Start menu.
 
 - **The README:** [README.md](README.md) has an overview of every feature and how to use it
 - **Known problems:** check the
-  [existing issues](https://github.com/havl-code/speedcube-training-explorer/issues) in case
+  [existing issues](https://github.com/havl-code/lookahead/issues) in case
   yours has already been reported
-- **Something else:** [open an issue](https://github.com/havl-code/speedcube-training-explorer/issues/new)
+- **Something else:** [open an issue](https://github.com/havl-code/lookahead/issues/new)
   on GitHub
 
 ---

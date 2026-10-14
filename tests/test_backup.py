@@ -31,7 +31,7 @@ class TestExport:
         seed_cube(app)
         seed_session(app, [10, 'DNF'])
         payload = export(app)
-        assert payload['app'] == 'speedcube-training-explorer' and payload['version'] == 1
+        assert payload['app'] == 'lookahead' and payload['version'] == 1
         assert {len(payload[k]) for k in ('cubes', 'sessions')} == {1}
         assert len(payload['solves']) == 2
         assert payload['cubes'][0]['is_active'] is True
@@ -52,6 +52,15 @@ class TestRestore:
         assert query(app, 'SELECT COUNT(*) AS n FROM solves') == [{'n': 7}]
         assert query(app, 'SELECT wca_id, wca_name FROM settings') == [
             {'wca_id': '2003POCH01', 'wca_name': 'Test Person'}]
+
+    def test_restores_a_backup_under_the_old_name(self, app, backup_v3):
+        assert backup_v3['app'] == 'speedcube-training-explorer'
+        restore(app, backup_v3)
+        assert query(app, 'SELECT COUNT(*) AS n FROM solves') == [{'n': 7}]
+
+    def test_rejects_a_backup_from_another_app(self, app, backup_v3):
+        with pytest.raises(backup.InvalidBackup, match='another app'):
+            restore(app, {**backup_v3, 'app': 'cstimer'})
 
     def test_restores_a_2x_backup_and_recomputes_its_stats(self, app, backup_v2):
         restore(app, backup_v2)

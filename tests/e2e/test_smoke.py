@@ -12,7 +12,7 @@ def test_the_dashboard_loads_cleanly(app_page):
     response = app_page.reload()
     assert "script-src 'self'" in response.headers['content-security-policy']
     app_page.wait_for_function("() => document.getElementById('stat-solves').textContent !== '--'")
-    assert app_page.text_content('#greeting-text') == 'Welcome to Speedcube Training Explorer'
+    assert app_page.text_content('#greeting-text') == 'Welcome to Lookahead'
     assert app_page.text_content('#stat-solves') == '0'
     assert app_page.is_hidden('#update-banner')
     assert app_page.errors == []

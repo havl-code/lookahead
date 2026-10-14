@@ -1,5 +1,5 @@
 [project]
-name = "speedcube-training-explorer"
+name = "lookahead"
 version = "3.3.0"
 description = "A local training tracker for speedcubers: timer, sessions, charts, and WCA rank comparison."
 readme = "README.md"

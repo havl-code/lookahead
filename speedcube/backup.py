@@ -6,7 +6,10 @@ backup taken from that version can be imported here to bring its data across.
 
 from . import db
 
-BACKUP_APP = 'speedcube-training-explorer'
+BACKUP_APP = 'lookahead'
+# The names backups from this app have carried: the app was called Speedcube Training Explorer
+# before it became Lookahead, and its backups still restore.
+KNOWN_BACKUP_APPS = (BACKUP_APP, 'speedcube-training-explorer')
 BACKUP_VERSION = 1
 
 CUBE_COLUMNS = (
@@ -80,8 +83,8 @@ def restore_backup(conn, payload, before_replacing=None):
     ):
         raise InvalidBackup('This file does not look like a valid backup.')
     # Older backups may not say which app made them, but one that names another app isn't ours
-    if payload.get('app', BACKUP_APP) != BACKUP_APP:
-        raise InvalidBackup("This file is a backup from another app, not Speedcube Training Explorer.")
+    if payload.get('app', BACKUP_APP) not in KNOWN_BACKUP_APPS:
+        raise InvalidBackup("This file is a backup from another app, not Lookahead.")
     for table in ('cubes', 'sessions', 'solves'):
         records = payload[table]
         if not all(isinstance(r, dict) and all(r.get(f) is not None for f in REQUIRED[table])

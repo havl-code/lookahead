@@ -11,7 +11,7 @@ def test_export_downloads_a_dated_file(app, client, set_today):
     response = client.get('/api/backup/export')
     assert response.headers['Content-Disposition'] == 'attachment; filename="speedcube-backup-2026-10-08.json"'
     payload = json.loads(response.data)
-    assert len(payload['solves']) == 2 and payload['app'] == 'speedcube-training-explorer'
+    assert len(payload['solves']) == 2 and payload['app'] == 'lookahead'
 
 
 def test_restore_its_own_export(app, client):

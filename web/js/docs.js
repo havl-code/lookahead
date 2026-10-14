@@ -5,7 +5,7 @@
 // add HTML or script of its own.
 
 // Where a doc's links to other files in the project go, since only the docs come with the app
-const PROJECT_ON_GITHUB = 'https://github.com/havl-code/speedcube-training-explorer/blob/main/docs/';
+const PROJECT_ON_GITHUB = 'https://github.com/havl-code/lookahead/blob/main/docs/';
 
 // A link, opened in a new tab. Web links stay as they are, and links to the project's own files
 // go to them on GitHub. Anything else (such as a javascript: link) is shown as plain text.

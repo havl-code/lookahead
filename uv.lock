@@ -655,7 +655,7 @@ wheels = [
 ]
 
 [[package]]
-name = "speedcube-training-explorer"
+name = "lookahead"
 version = "3.3.0"
 source = { virtual = "." }
 dependencies = [

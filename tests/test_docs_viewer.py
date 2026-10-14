@@ -69,7 +69,7 @@ class TestReader:
         assert len(hrefs) == html.count('<a ') and hrefs
         assert all(href.startswith('https://') for href in hrefs)
         # The project's own files are on GitHub, since only the docs come with the app
-        assert ('https://github.com/havl-code/speedcube-training-explorer/blob/main/speedcube/scores.py'
+        assert ('https://github.com/havl-code/lookahead/blob/main/speedcube/scores.py'
                 in hrefs)
 
     def test_nothing_in_a_doc_becomes_html_or_script(self):
