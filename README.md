@@ -9,6 +9,11 @@ browser. Time your solves, analyse your progress with charts, keep track of your
 see how you stack up against the WCA world rankings. Everything is stored on your computer,
 and a double-click (or one command) starts it.
 
+**On your phone:** Lookahead is being rebuilt as an app for your phone's Home Screen that
+works offline, at https://havl-code.github.io/lookahead/. It's an early preview for now, so
+keep using the desktop app below for your training. Once it does everything the desktop app
+does, it replaces it, and a backup brings your solves across.
+
 ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)
 ![Flask](https://img.shields.io/badge/Flask-000000?logo=flask&logoColor=white)
 ![SQLite](https://img.shields.io/badge/SQLite-003B57?logo=sqlite&logoColor=white)
@@ -454,6 +459,7 @@ lookahead/
 │   │   │   app.js, theme.js, theme-init.js   # One file per tab or feature
 │   ├── images/            # Logo, favicon, and the shortcut icon (app-icon.ico)
 │   └── vendor/            # Bundled Plotly.js and Space Grotesk (with their licences)
+├── pwa/                  # The phone app (an early preview), with its own README
 ├── tools/
 │   ├── build_wca_reference.py  # Rebuilds wca_reference.json from a WCA results export
 │   └── sync_wca_reference_docs.py  # Updates the export date the docs quote
@@ -504,6 +510,8 @@ uv run --group e2e pytest -m e2e
 ```
 
 GitHub Actions runs both on Windows, macOS, and Ubuntu for every push and pull request.
+
+The phone app in `pwa/` has its own tools and tests; see [pwa/README.md](pwa/README.md).
 
 ---
 

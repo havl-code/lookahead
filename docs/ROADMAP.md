@@ -125,6 +125,9 @@ Not released yet.
   request (the scoring method stays the same)
 - The app is now called Lookahead (it was Speedcube Training Explorer). Backups made under
   the old name still restore
+- An early preview of Lookahead for phones, an offline app for the Home Screen, at
+  https://havl-code.github.io/lookahead/. It's being rebuilt to do everything the desktop app
+  does, and then replaces it
 
 ---
 
@@ -203,7 +206,7 @@ Larger changes to how the app works, each worth a design discussion first.
 | 6 | Stackmat timer support, through the computer's audio input | The timer cubers already own and use at competitions | L |
 | 7 | Bluetooth smart cubes, through Web Bluetooth | Move-by-move solve data, but only in Chromium-based browsers | L |
 | 8 | Multiple user profiles | Families and clubs sharing one computer | L |
-| 9 | A PWA or a packaged desktop build | A packaged build would remove the uv step; a PWA adds an app window, but still needs the server | L |
+| 9 | A packaged desktop build | Would remove the uv step; less needed once the phone app, which also installs on a computer, replaces the desktop one | L |
 
 ---
 
