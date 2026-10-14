@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import type { LookaheadDb } from '../../db/database.ts';
-import { latestSafetyCopy, storedCounts } from '../../db/stored.ts';
+import { setMeta } from '../../db/meta.ts';
+import { saveTimedSolve } from '../../db/solves.ts';
+import { latestSafetyCopy, storedCounts, unbackedSolves } from '../../db/stored.ts';
 import { createTestDb } from '../../test/db.ts';
 import {
   BackupError,
@@ -129,5 +131,42 @@ describe('undoing a restore', () => {
     }
     expect(await db.safetyCopies.count()).toBe(3);
     expect((await latestSafetyCopy(db))?.made_at).toBe(new Date(2026, 9, 5).toISOString());
+  });
+});
+
+describe('what a backup reminder counts', () => {
+  it('counts restored solves as backed up, and only the ones timed after', async () => {
+    const db = createTestDb();
+    await saveTimedSolve(
+      db,
+      { eventId: '333', timeMs: 9_000, penalty: 'OK', scramble: '' },
+      new Date(2026, 9, 1),
+    );
+    expect((await unbackedSolves(db)).count).toBe(1);
+
+    await restoreBackup(db, readBackup(JSON.stringify(v3.backup)), new Date(2026, 9, 14, 9));
+    expect((await unbackedSolves(db)).count).toBe(0);
+    await saveTimedSolve(
+      db,
+      { eventId: '333', timeMs: 9_500, penalty: 'OK', scramble: '' },
+      new Date(2026, 9, 14, 10),
+    );
+    expect((await unbackedSolves(db)).count).toBe(1);
+
+    // Undo brings back solves that may never have been backed up.
+    await undoLastRestore(db);
+    expect((await unbackedSolves(db)).count).toBe(1);
+  });
+
+  it('counts from the later of the last backup and the last restore', async () => {
+    const db = createTestDb();
+    await restoreBackup(db, readBackup(JSON.stringify(v3.backup)), new Date(2026, 9, 10));
+    await setMeta(db, 'lastBackupAt', new Date(2026, 9, 5).getTime());
+    await saveTimedSolve(
+      db,
+      { eventId: '333', timeMs: 9_000, penalty: 'OK', scramble: '' },
+      new Date(2026, 9, 8),
+    );
+    expect((await unbackedSolves(db)).count).toBe(0);
   });
 });

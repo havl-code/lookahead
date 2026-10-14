@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import type { LookaheadDb } from '../../db/database.ts';
 import { withStorageErrors } from '../../db/errors.ts';
+import { setMeta } from '../../db/meta.ts';
 import type { Cube, Session, SettingRow, Solve } from '../../db/schema.ts';
 import { recomputeAllSessionStats } from '../../db/sessions.ts';
 import { latestSafetyCopy, type StoredCounts, storedCounts } from '../../db/stored.ts';
@@ -243,6 +244,7 @@ const allTables = (db: LookaheadDb) => [
   db.solves,
   db.settings,
   db.safetyCopies,
+  db.meta,
 ];
 
 /**
@@ -266,6 +268,7 @@ export async function restoreBackup(
         await db.safetyCopies.bulkDelete(ids.slice(0, -safetyCopiesKept));
       }
       await replaceEverything(db, backup);
+      await setMeta(db, 'restoredAt', now.getTime());
     }),
   );
   return storedCounts(db);
@@ -279,6 +282,8 @@ export async function undoLastRestore(db: LookaheadDb): Promise<StoredCounts> {
       if (copy?.id === undefined) throw new BackupError('There is no restore to undo.');
       await replaceEverything(db, readBackup(copy.backup));
       await db.safetyCopies.delete(copy.id);
+      // What comes back may never have been backed up.
+      await setMeta(db, 'restoredAt', null);
     }),
   );
   return storedCounts(db);

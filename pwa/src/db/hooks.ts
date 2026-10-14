@@ -6,7 +6,13 @@ import type { LookaheadDb, SafetyCopy } from './database.ts';
 import { getMeta, type Meta } from './meta.ts';
 import type { Cube, Session, Solve } from './schema.ts';
 import { findTodaysSession, latestSolves, type SolveSort, sessionSolves } from './solves.ts';
-import { latestSafetyCopy, type StoredCounts, storedCounts } from './stored.ts';
+import {
+  latestSafetyCopy,
+  type StoredCounts,
+  storedCounts,
+  type UnbackedSolves,
+  unbackedSolves,
+} from './stored.ts';
 import { getTimerSettings, type TimerSettings } from './timerSettings.ts';
 import { getWcaPerson, type WcaPerson } from './user.ts';
 
@@ -148,14 +154,7 @@ export function useTodaysSolves(
 }
 
 /** How many solves were timed since the last backup, and when the first of them was. */
-export function useUnbackedSolves():
-  | { readonly lastBackupAt: number | null; readonly count: number; readonly since: string | null }
-  | undefined {
+export function useUnbackedSolves(): UnbackedSolves | undefined {
   const db = useDb();
-  return useLiveQuery(async () => {
-    const lastBackupAt = await getMeta(db, 'lastBackupAt');
-    const after = db.solves.where('timestamp').above(new Date(lastBackupAt ?? 0).toISOString());
-    const [count, first] = await Promise.all([after.count(), after.first()]);
-    return { lastBackupAt, count, since: first?.timestamp ?? null };
-  }, [db]);
+  return useLiveQuery(() => unbackedSolves(db), [db]);
 }
