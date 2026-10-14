@@ -8,9 +8,11 @@ export interface Meta {
   lastBackupAt: number | null;
   /** What the browser said when asked to keep Lookahead's data. */
   persistResult: PersistResult | null;
+  /** The event the timer was last on. */
+  timerEvent: string;
 }
 
-const defaults: Meta = { lastBackupAt: null, persistResult: null };
+const defaults: Meta = { lastBackupAt: null, persistResult: null, timerEvent: '333' };
 
 export async function getMeta<K extends keyof Meta>(db: LookaheadDb, key: K): Promise<Meta[K]> {
   const row = await db.meta.get(key);
