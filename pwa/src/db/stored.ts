@@ -30,15 +30,17 @@ export interface UnbackedSolves {
 
 /**
  * The solves no backup has yet: those since the last backup made here, or the last restore,
- * whichever was later, since what a restore brought is in that backup already.
+ * whichever was later, since what a restore brought is in that backup already, and those imported
+ * since then.
  */
 export async function unbackedSolves(db: LookaheadDb): Promise<UnbackedSolves> {
-  const [lastBackupAt, restoredAt] = await Promise.all([
+  const [lastBackupAt, restoredAt, imported] = await Promise.all([
     getMeta(db, 'lastBackupAt'),
     getMeta(db, 'restoredAt'),
+    getMeta(db, 'importedSinceBackup'),
   ]);
   const from = Math.max(lastBackupAt ?? 0, restoredAt ?? 0);
   const after = db.solves.where('timestamp').above(new Date(from).toISOString());
   const [count, first] = await Promise.all([after.count(), after.first()]);
-  return { lastBackupAt, count, since: first?.timestamp ?? null };
+  return { lastBackupAt, count: count + imported, since: first?.timestamp ?? null };
 }

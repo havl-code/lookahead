@@ -1,0 +1,3450 @@
+{
+ "now": 1791950400,
+ "exports": {
+  "fixture": {
+   "session1": [
+    [
+     [
+      0,
+      12345
+     ],
+     "R U R' U' F2",
+     "",
+     1788228000
+    ],
+    [
+     [
+      2000,
+      11000
+     ],
+     "F R U' R' U' R U R' F'",
+     "nice one",
+     1788228060
+    ],
+    [
+     [
+      -1,
+      15000
+     ],
+     "L D2 B' R2",
+     "",
+     1788228120
+    ],
+    "not a solve",
+    [
+     [
+      "fast",
+      9000
+     ],
+     "U",
+     "",
+     1788228180
+    ],
+    [
+     [
+      0,
+      13000
+     ],
+     "B U' L2",
+     "",
+     1788314400
+    ],
+    [
+     [
+      0,
+      14000
+     ],
+     "D F2 R'",
+     "",
+     1788400800
+    ]
+   ],
+   "session2": [
+    [
+     [
+      0,
+      20000
+     ],
+     "R U",
+     "",
+     1788487200
+    ],
+    [
+     [
+      0,
+      20500
+     ],
+     "R2 U",
+     "",
+     1788487230
+    ],
+    [
+     [
+      0,
+      21000
+     ],
+     "R2 U",
+     "",
+     1788487260
+    ],
+    [
+     [
+      0,
+      21500
+     ],
+     "R U",
+     "",
+     1788487290
+    ],
+    [
+     [
+      0,
+      22000
+     ],
+     "R2 U",
+     "",
+     1788487320
+    ]
+   ],
+   "session3": [],
+   "properties": {
+    "sessionData": "{\"1\": {\"name\": \"Main 3x3\", \"opt\": {}, \"rank\": 1}, \"2\": {\"name\": 2, \"opt\": {\"scrType\": \"333oh\"}, \"rank\": 2}, \"3\": {\"name\": \"Empty\", \"opt\": {}, \"rank\": 3}}",
+    "useMilli": false
+   }
+  },
+  "messy": {
+   "session1": [
+    [
+     [
+      0,
+      14173
+     ],
+     "R U0",
+     "",
+     1788227873
+    ],
+    [
+     [
+      0,
+      14938
+     ],
+     "R U1",
+     "pop",
+     1788228242
+    ],
+    [
+     [
+      0,
+      16094
+     ],
+     "R U2",
+     "pop",
+     1788228543
+    ],
+    [
+     [
+      0,
+      9888
+     ],
+     "R U3",
+     "  nice one ",
+     1788228741
+    ],
+    [
+     [
+      0,
+      16010
+     ],
+     "R U4",
+     "pop",
+     1788229033
+    ],
+    [
+     [
+      0,
+      12345.5
+     ],
+     "R U5",
+     "",
+     1788229107
+    ],
+    [
+     [
+      0,
+      12160
+     ],
+     "R U6",
+     "  nice one ",
+     1788229220
+    ],
+    [
+     [
+      0,
+      18619
+     ],
+     "R U7",
+     7,
+     1788229539
+    ],
+    [
+     [
+      0,
+      7204
+     ],
+     "R U8",
+     "pop",
+     1788229736
+    ],
+    [
+     [
+      -1,
+      12906
+     ],
+     null,
+     "  nice one ",
+     1788229809
+    ],
+    [
+     [
+      0,
+      12611
+     ],
+     "R U10",
+     "  nice one ",
+     1788230034
+    ],
+    [
+     [
+      -1,
+      9689
+     ],
+     "R U11",
+     "",
+     1788230258
+    ],
+    [
+     [
+      0,
+      12780
+     ],
+     "R U12",
+     "  nice one ",
+     1788230445
+    ],
+    [
+     [
+      0,
+      11953
+     ],
+     "R U13",
+     "  nice one ",
+     1788230639
+    ],
+    [
+     [
+      0,
+      16375
+     ],
+     "R U14",
+     "",
+     1788230705
+    ],
+    [
+     [
+      2000,
+      12773
+     ],
+     "R U15",
+     "  nice one ",
+     1788231025
+    ],
+    [
+     [
+      0,
+      11729
+     ],
+     "R U16",
+     "pop",
+     1788231248
+    ],
+    [
+     [
+      0,
+      9596
+     ],
+     "R U17",
+     "  nice one ",
+     1788231428
+    ],
+    [
+     [
+      -1,
+      18095
+     ],
+     "R U18",
+     "  nice one ",
+     1788231676
+    ],
+    [
+     [
+      0,
+      18291
+     ],
+     "R U19",
+     "  nice one ",
+     1788231747
+    ],
+    [
+     [
+      0,
+      15055
+     ],
+     "R U20",
+     "  nice one ",
+     1788291779
+    ],
+    [
+     [
+      0,
+      8442
+     ],
+     "R U21",
+     "",
+     1788291989
+    ],
+    [
+     [
+      0,
+      12595
+     ],
+     "R U22",
+     "",
+     1788292215
+    ],
+    [
+     [
+      0,
+      9480
+     ],
+     "R U23",
+     "",
+     1788292578
+    ],
+    [
+     [
+      0,
+      15141
+     ],
+     "R U24",
+     "",
+     1788292708
+    ],
+    [
+     [
+      0,
+      8195
+     ],
+     "R U25",
+     "pop",
+     1788292762
+    ],
+    [
+     [
+      0,
+      14409
+     ],
+     "R U26",
+     "pop",
+     1788292830
+    ],
+    [
+     [
+      0,
+      8264
+     ],
+     "R U27",
+     "",
+     1788293063
+    ],
+    [
+     [
+      -1,
+      17041
+     ],
+     "R U28",
+     "  nice one ",
+     1788293207
+    ],
+    [
+     [
+      0,
+      7504
+     ],
+     "R U29",
+     "",
+     1788293493
+    ],
+    [
+     [
+      0,
+      10468
+     ],
+     "R U30",
+     "",
+     1788293843
+    ],
+    [
+     [
+      0,
+      9003
+     ],
+     "R U31",
+     "pop",
+     1788293878
+    ],
+    [
+     [
+      0,
+      12097
+     ],
+     "R U32",
+     "",
+     1788294135
+    ],
+    [
+     [
+      0,
+      15158
+     ],
+     "R U33",
+     "  nice one ",
+     1788294426
+    ],
+    [
+     [
+      0,
+      14197
+     ],
+     "R U34",
+     "pop",
+     1788294658
+    ],
+    [
+     [
+      0,
+      13739
+     ],
+     "R U35",
+     "pop",
+     1788294930
+    ],
+    [
+     [
+      2000,
+      8913
+     ],
+     "R U36",
+     "",
+     1788295113
+    ],
+    [
+     [
+      0,
+      18359
+     ],
+     "R U37",
+     "",
+     1788295420
+    ],
+    [
+     [
+      0,
+      16506
+     ],
+     "R U38",
+     "pop",
+     1788295524
+    ],
+    [
+     [
+      0,
+      17653
+     ],
+     "R U39",
+     "  nice one ",
+     1788295657
+    ],
+    [
+     [
+      0,
+      7803
+     ],
+     "R U40",
+     "",
+     1788295696
+    ],
+    [
+     [
+      0,
+      15987
+     ],
+     "R U41",
+     "pop",
+     1788356080
+    ],
+    [
+     [
+      0,
+      11797
+     ],
+     "R U42",
+     "pop",
+     1788356334
+    ],
+    [
+     [
+      0,
+      7413
+     ],
+     "R U43",
+     "",
+     1788356595
+    ],
+    [
+     [
+      0,
+      17291
+     ],
+     "R U44",
+     "pop",
+     1788356655
+    ],
+    [
+     [
+      0,
+      10808
+     ],
+     "R U45",
+     "pop",
+     1788356868
+    ],
+    [
+     [
+      0,
+      15545
+     ],
+     "R U46",
+     "",
+     1788356998
+    ],
+    [
+     [
+      -1,
+      15536
+     ],
+     "R U47",
+     "  nice one ",
+     1788357209
+    ],
+    [
+     [
+      0,
+      16454
+     ],
+     "R U48",
+     "  nice one ",
+     1788357453
+    ],
+    [
+     [
+      0,
+      14936
+     ],
+     "R U49",
+     "pop",
+     1788357669
+    ],
+    [
+     [
+      0,
+      16881
+     ],
+     "R U50",
+     "",
+     1788357939
+    ],
+    [
+     [
+      0,
+      15609
+     ],
+     "R U51",
+     "pop",
+     1788358228
+    ],
+    [
+     [
+      0,
+      7149
+     ],
+     "R U52",
+     "  nice one ",
+     1788358488
+    ],
+    [
+     [
+      0,
+      17533
+     ],
+     "R U53",
+     "",
+     1788358780
+    ],
+    [
+     [
+      0,
+      15517
+     ],
+     "R U54",
+     "  nice one ",
+     1788358820
+    ],
+    [
+     [
+      0,
+      12885
+     ],
+     "R U55",
+     "pop",
+     1788359031
+    ],
+    [
+     [
+      -1,
+      14224
+     ],
+     "R U56",
+     "pop",
+     1788359248
+    ],
+    [
+     [
+      0,
+      13181
+     ],
+     "R U57",
+     "pop",
+     1788359477
+    ],
+    [
+     [
+      0,
+      8964
+     ],
+     "R U58",
+     "",
+     1788359754
+    ],
+    [
+     [
+      0,
+      15373
+     ],
+     "R U59",
+     "",
+     1788359882
+    ],
+    "not a solve",
+    [],
+    [
+     [
+      0
+     ]
+    ],
+    [
+     [
+      3000,
+      12000
+     ],
+     "R",
+     "",
+     1788359882
+    ],
+    [
+     [
+      "fast",
+      9000
+     ],
+     "U",
+     "",
+     1788359882
+    ],
+    [
+     [
+      0,
+      -5
+     ],
+     "R",
+     "",
+     1788359882
+    ],
+    [
+     [
+      0,
+      7200001
+     ],
+     "R",
+     "",
+     1788359882
+    ],
+    [
+     [
+      0,
+      7200000
+     ],
+     "R",
+     "",
+     1788359883
+    ],
+    [
+     [
+      0,
+      0
+     ],
+     "R",
+     "",
+     1788359882
+    ],
+    [
+     [
+      -1,
+      0
+     ],
+     "R",
+     "",
+     1788359884
+    ],
+    [
+     [
+      true,
+      1000
+     ],
+     "R",
+     "",
+     1788359882
+    ],
+    [
+     [
+      0,
+      9000
+     ],
+     "R"
+    ],
+    [
+     [
+      0,
+      9100
+     ],
+     "R",
+     "old",
+     100
+    ],
+    [
+     [
+      0,
+      9200
+     ],
+     "R",
+     "future",
+     1792123200
+    ],
+    [
+     [
+      0,
+      9300
+     ],
+     "R",
+     "",
+     "1788359882"
+    ],
+    [
+     [
+      0,
+      9400
+     ],
+     "R",
+     "",
+     1788359892.5
+    ],
+    [
+     [
+      0,
+      9500
+     ],
+     "R",
+     "",
+     1788359892.5
+    ],
+    [
+     [
+      2000,
+      9600,
+      "extra"
+     ],
+     "R",
+     "",
+     1788359902,
+     "more"
+    ]
+   ],
+   "session2": [
+    [
+     [
+      0,
+      4000
+     ],
+     "F R"
+    ],
+    [
+     [
+      0,
+      3000
+     ],
+     "F",
+     "",
+     1788487200
+    ],
+    [
+     [
+      0,
+      3037
+     ],
+     "F",
+     "",
+     1788487250
+    ],
+    [
+     [
+      0,
+      3074
+     ],
+     "F",
+     "",
+     1788487300
+    ],
+    [
+     [
+      0,
+      3111
+     ],
+     "F",
+     "",
+     1788487350
+    ],
+    [
+     [
+      0,
+      3148
+     ],
+     "F",
+     "",
+     1788487400
+    ],
+    [
+     [
+      0,
+      3185
+     ],
+     "F",
+     "",
+     1788487450
+    ],
+    [
+     [
+      0,
+      3222
+     ],
+     "F",
+     "",
+     1788487500
+    ],
+    [
+     [
+      0,
+      3259
+     ],
+     "F",
+     "",
+     1788487550
+    ]
+   ],
+   "session3": [],
+   "session4": "not a session",
+   "session7": [
+    [
+     [
+      0,
+      51000
+     ],
+     "L",
+     "",
+     1788231600
+    ]
+   ],
+   "other": [
+    [
+     [
+      -1,
+      21000
+     ],
+     "B",
+     "",
+     1788235200
+    ],
+    [
+     [
+      0,
+      22000
+     ],
+     "B",
+     "",
+     1788235300
+    ]
+   ],
+   "properties": {
+    "sessionData": {
+     "1": {
+      "name": " Main 3x3 ",
+      "opt": {
+       "scrType": "333"
+      }
+     },
+     "2": {
+      "name": "",
+      "opt": {
+       "scrType": "222so"
+      }
+     },
+     "3": "not details",
+     "4": {
+      "name": "Four",
+      "opt": "not options"
+     },
+     "7": {
+      "name": "FTO",
+      "opt": {
+       "scrType": "ftoso"
+      }
+     }
+    }
+   }
+  }
+ },
+ "previews": {
+  "fixture": [
+   {
+    "key": "session1",
+    "name": "Main 3x3",
+    "suggested_event": null,
+    "solve_count": 5,
+    "unreadable": 2,
+    "first_date": "2026-09-01",
+    "last_date": "2026-09-03",
+    "days": 3,
+    "already_imported": 0,
+    "best": 12.34,
+    "worst": 14.0,
+    "mean": 13.09
+   },
+   {
+    "key": "session2",
+    "name": "2",
+    "suggested_event": "333oh",
+    "solve_count": 5,
+    "unreadable": 0,
+    "first_date": "2026-09-04",
+    "last_date": "2026-09-04",
+    "days": 1,
+    "already_imported": 0,
+    "best": 20.0,
+    "worst": 22.0,
+    "mean": 21.0
+   },
+   {
+    "key": "session3",
+    "name": "Empty",
+    "suggested_event": null,
+    "solve_count": 0,
+    "unreadable": 0,
+    "first_date": null,
+    "last_date": null,
+    "days": 0,
+    "already_imported": 0,
+    "best": null,
+    "worst": null,
+    "mean": null
+   }
+  ],
+  "messy": [
+   {
+    "key": "session1",
+    "name": "Main 3x3",
+    "suggested_event": "333",
+    "solve_count": 69,
+    "unreadable": 9,
+    "first_date": "2026-09-01",
+    "last_date": "2026-09-02",
+    "days": 2,
+    "already_imported": 0,
+    "best": 7.14,
+    "worst": 7200.0,
+    "mean": 128.62
+   },
+   {
+    "key": "session2",
+    "name": "Session 2",
+    "suggested_event": "222",
+    "solve_count": 9,
+    "unreadable": 0,
+    "first_date": "2026-09-04",
+    "last_date": "2026-10-14",
+    "days": 2,
+    "already_imported": 0,
+    "best": 3.0,
+    "worst": 4.0,
+    "mean": 3.22
+   },
+   {
+    "key": "session3",
+    "name": "Session 3",
+    "suggested_event": null,
+    "solve_count": 0,
+    "unreadable": 0,
+    "first_date": null,
+    "last_date": null,
+    "days": 0,
+    "already_imported": 0,
+    "best": null,
+    "worst": null,
+    "mean": null
+   },
+   {
+    "key": "session7",
+    "name": "FTO",
+    "suggested_event": null,
+    "solve_count": 1,
+    "unreadable": 0,
+    "first_date": "2026-09-01",
+    "last_date": "2026-09-01",
+    "days": 1,
+    "already_imported": 0,
+    "best": 51.0,
+    "worst": 51.0,
+    "mean": 51.0
+   },
+   {
+    "key": "other",
+    "name": "other",
+    "suggested_event": null,
+    "solve_count": 2,
+    "unreadable": 0,
+    "first_date": "2026-09-01",
+    "last_date": "2026-09-01",
+    "days": 1,
+    "already_imported": 0,
+    "best": 22.0,
+    "worst": 22.0,
+    "mean": 22.0
+   }
+  ]
+ },
+ "scenarios": [
+  {
+   "name": "the test fixture, split by day",
+   "start": null,
+   "imports": [
+    {
+     "export": "fixture",
+     "keys": [
+      "session1",
+      "session2",
+      "session3"
+     ],
+     "eventId": "333",
+     "splitByDay": true,
+     "events": {
+      "session2": "333oh"
+     },
+     "result": {
+      "sessions_imported": 4,
+      "total_solves": 10,
+      "duplicates_skipped": 0,
+      "unreadable_skipped": 2,
+      "sessions_found": 3
+     },
+     "message": "Imported 10 solves into 4 sessions (skipped 2 that couldn't be read)"
+    }
+   ],
+   "exported": {
+    "app": "lookahead",
+    "version": 1,
+    "cubes": [],
+    "sessions": [
+     {
+      "id": 1,
+      "date": "2026-09-01",
+      "event_id": "333",
+      "cube_id": null,
+      "solve_count": 3,
+      "best_single": 12345,
+      "worst_single": 13000,
+      "session_mean": 12670,
+      "ao5": null,
+      "ao12": null,
+      "notes": "Imported from CSTimer: Main 3x3",
+      "created_at": "2026-10-14T04:00:00.000Z"
+     },
+     {
+      "id": 2,
+      "date": "2026-09-02",
+      "event_id": "333",
+      "cube_id": null,
+      "solve_count": 1,
+      "best_single": 13000,
+      "worst_single": 13000,
+      "session_mean": 13000,
+      "ao5": null,
+      "ao12": null,
+      "notes": "Imported from CSTimer: Main 3x3",
+      "created_at": "2026-10-14T04:00:00.000Z"
+     },
+     {
+      "id": 3,
+      "date": "2026-09-03",
+      "event_id": "333",
+      "cube_id": null,
+      "solve_count": 1,
+      "best_single": 14000,
+      "worst_single": 14000,
+      "session_mean": 14000,
+      "ao5": null,
+      "ao12": null,
+      "notes": "Imported from CSTimer: Main 3x3",
+      "created_at": "2026-10-14T04:00:00.000Z"
+     },
+     {
+      "id": 4,
+      "date": "2026-09-04",
+      "event_id": "333oh",
+      "cube_id": null,
+      "solve_count": 5,
+      "best_single": 20000,
+      "worst_single": 22000,
+      "session_mean": 21000,
+      "ao5": 21000,
+      "ao12": null,
+      "notes": "Imported from CSTimer: 2",
+      "created_at": "2026-10-14T04:00:00.000Z"
+     }
+    ],
+    "solves": [
+     {
+      "id": 1,
+      "session_id": 1,
+      "solve_number": 1,
+      "time_ms": 12345,
+      "scramble": "R U R' U' F2",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-01T02:00:00.000Z"
+     },
+     {
+      "id": 2,
+      "session_id": 1,
+      "solve_number": 2,
+      "time_ms": 11000,
+      "scramble": "F R U' R' U' R U R' F'",
+      "penalty": "+2",
+      "dnf": false,
+      "notes": "nice one",
+      "timestamp": "2026-09-01T02:01:00.000Z"
+     },
+     {
+      "id": 3,
+      "session_id": 1,
+      "solve_number": 3,
+      "time_ms": 15000,
+      "scramble": "L D2 B' R2",
+      "penalty": "DNF",
+      "dnf": true,
+      "notes": "",
+      "timestamp": "2026-09-01T02:02:00.000Z"
+     },
+     {
+      "id": 4,
+      "session_id": 2,
+      "solve_number": 1,
+      "time_ms": 13000,
+      "scramble": "B U' L2",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-02T02:00:00.000Z"
+     },
+     {
+      "id": 5,
+      "session_id": 3,
+      "solve_number": 1,
+      "time_ms": 14000,
+      "scramble": "D F2 R'",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-03T02:00:00.000Z"
+     },
+     {
+      "id": 6,
+      "session_id": 4,
+      "solve_number": 1,
+      "time_ms": 20000,
+      "scramble": "R U",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-04T02:00:00.000Z"
+     },
+     {
+      "id": 7,
+      "session_id": 4,
+      "solve_number": 2,
+      "time_ms": 20500,
+      "scramble": "R2 U",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-04T02:00:30.000Z"
+     },
+     {
+      "id": 8,
+      "session_id": 4,
+      "solve_number": 3,
+      "time_ms": 21000,
+      "scramble": "R2 U",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-04T02:01:00.000Z"
+     },
+     {
+      "id": 9,
+      "session_id": 4,
+      "solve_number": 4,
+      "time_ms": 21500,
+      "scramble": "R U",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-04T02:01:30.000Z"
+     },
+     {
+      "id": 10,
+      "session_id": 4,
+      "solve_number": 5,
+      "time_ms": 22000,
+      "scramble": "R2 U",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-04T02:02:00.000Z"
+     }
+    ],
+    "settings": []
+   },
+   "stats": {
+    "1": {
+     "solve_count": 3,
+     "best_single": 12345,
+     "worst_single": 13000,
+     "session_mean": 12670,
+     "ao5": null,
+     "ao12": null,
+     "best_ao5": null,
+     "best_ao12": null,
+     "best_ao50": null,
+     "best_ao100": null
+    },
+    "2": {
+     "solve_count": 1,
+     "best_single": 13000,
+     "worst_single": 13000,
+     "session_mean": 13000,
+     "ao5": null,
+     "ao12": null,
+     "best_ao5": null,
+     "best_ao12": null,
+     "best_ao50": null,
+     "best_ao100": null
+    },
+    "3": {
+     "solve_count": 1,
+     "best_single": 14000,
+     "worst_single": 14000,
+     "session_mean": 14000,
+     "ao5": null,
+     "ao12": null,
+     "best_ao5": null,
+     "best_ao12": null,
+     "best_ao50": null,
+     "best_ao100": null
+    },
+    "4": {
+     "solve_count": 5,
+     "best_single": 20000,
+     "worst_single": 22000,
+     "session_mean": 21000,
+     "ao5": 21000,
+     "ao12": null,
+     "best_ao5": 21000,
+     "best_ao12": null,
+     "best_ao50": null,
+     "best_ao100": null
+    }
+   }
+  },
+  {
+   "name": "a messy export, twice, into a solve already here",
+   "start": {
+    "app": "lookahead",
+    "version": 1,
+    "exported_at": "2026-10-13T00:00:00.000Z",
+    "cubes": [],
+    "sessions": [
+     {
+      "id": 1,
+      "date": "2026-09-01",
+      "event_id": "333",
+      "cube_id": null,
+      "notes": "",
+      "created_at": "2026-09-01T00:00:00.000Z"
+     }
+    ],
+    "solves": [
+     {
+      "id": 1,
+      "session_id": 1,
+      "solve_number": 1,
+      "time_ms": 9888,
+      "scramble": "",
+      "penalty": null,
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-01T02:12:21.000Z"
+     }
+    ],
+    "settings": []
+   },
+   "imports": [
+    {
+     "export": "messy",
+     "keys": [
+      "session1",
+      "session2",
+      "other",
+      "session3",
+      "session4"
+     ],
+     "eventId": "skewb",
+     "splitByDay": true,
+     "events": {
+      "session2": "222"
+     },
+     "result": {
+      "sessions_imported": 5,
+      "total_solves": 79,
+      "duplicates_skipped": 1,
+      "unreadable_skipped": 9,
+      "sessions_found": 4
+     },
+     "message": "Imported 79 solves into 5 sessions (skipped 1 already in the app and 9 that couldn't be read)"
+    },
+    {
+     "export": "messy",
+     "keys": [
+      "session1",
+      "session2",
+      "other"
+     ],
+     "eventId": "skewb",
+     "splitByDay": true,
+     "events": {},
+     "result": {
+      "sessions_imported": 0,
+      "total_solves": 0,
+      "duplicates_skipped": 80,
+      "unreadable_skipped": 9,
+      "sessions_found": 3
+     },
+     "message": "Imported 0 solves into 0 sessions (skipped 80 already in the app and 9 that couldn't be read)"
+    }
+   ],
+   "previews": {
+    "fixture": [
+     {
+      "key": "session1",
+      "name": "Main 3x3",
+      "suggested_event": null,
+      "solve_count": 5,
+      "unreadable": 2,
+      "first_date": "2026-09-01",
+      "last_date": "2026-09-03",
+      "days": 3,
+      "already_imported": 0,
+      "best": 12.34,
+      "worst": 14.0,
+      "mean": 13.09
+     },
+     {
+      "key": "session2",
+      "name": "2",
+      "suggested_event": "333oh",
+      "solve_count": 5,
+      "unreadable": 0,
+      "first_date": "2026-09-04",
+      "last_date": "2026-09-04",
+      "days": 1,
+      "already_imported": 0,
+      "best": 20.0,
+      "worst": 22.0,
+      "mean": 21.0
+     },
+     {
+      "key": "session3",
+      "name": "Empty",
+      "suggested_event": null,
+      "solve_count": 0,
+      "unreadable": 0,
+      "first_date": null,
+      "last_date": null,
+      "days": 0,
+      "already_imported": 0,
+      "best": null,
+      "worst": null,
+      "mean": null
+     }
+    ],
+    "messy": [
+     {
+      "key": "session1",
+      "name": "Main 3x3",
+      "suggested_event": "333",
+      "solve_count": 69,
+      "unreadable": 9,
+      "first_date": "2026-09-01",
+      "last_date": "2026-09-02",
+      "days": 2,
+      "already_imported": 1,
+      "best": 7.14,
+      "worst": 7200.0,
+      "mean": 128.62
+     },
+     {
+      "key": "session2",
+      "name": "Session 2",
+      "suggested_event": "222",
+      "solve_count": 9,
+      "unreadable": 0,
+      "first_date": "2026-09-04",
+      "last_date": "2026-10-14",
+      "days": 2,
+      "already_imported": 0,
+      "best": 3.0,
+      "worst": 4.0,
+      "mean": 3.22
+     },
+     {
+      "key": "session3",
+      "name": "Session 3",
+      "suggested_event": null,
+      "solve_count": 0,
+      "unreadable": 0,
+      "first_date": null,
+      "last_date": null,
+      "days": 0,
+      "already_imported": 0,
+      "best": null,
+      "worst": null,
+      "mean": null
+     },
+     {
+      "key": "session7",
+      "name": "FTO",
+      "suggested_event": null,
+      "solve_count": 1,
+      "unreadable": 0,
+      "first_date": "2026-09-01",
+      "last_date": "2026-09-01",
+      "days": 1,
+      "already_imported": 0,
+      "best": 51.0,
+      "worst": 51.0,
+      "mean": 51.0
+     },
+     {
+      "key": "other",
+      "name": "other",
+      "suggested_event": null,
+      "solve_count": 2,
+      "unreadable": 0,
+      "first_date": "2026-09-01",
+      "last_date": "2026-09-01",
+      "days": 1,
+      "already_imported": 0,
+      "best": 22.0,
+      "worst": 22.0,
+      "mean": 22.0
+     }
+    ]
+   },
+   "exported": {
+    "app": "lookahead",
+    "version": 1,
+    "cubes": [],
+    "sessions": [
+     {
+      "id": 1,
+      "date": "2026-09-01",
+      "event_id": "333",
+      "cube_id": null,
+      "solve_count": 1,
+      "best_single": 9888,
+      "worst_single": 9888,
+      "session_mean": 9880,
+      "ao5": null,
+      "ao12": null,
+      "notes": "",
+      "created_at": "2026-09-01T00:00:00.000Z"
+     },
+     {
+      "id": 2,
+      "date": "2026-09-01",
+      "event_id": "skewb",
+      "cube_id": null,
+      "solve_count": 40,
+      "best_single": 7204,
+      "worst_single": 18619,
+      "session_mean": 12901.944444444445,
+      "ao5": 15020,
+      "ao12": 12748,
+      "notes": "Imported from CSTimer: Main 3x3",
+      "created_at": "2026-10-14T04:00:00.000Z"
+     },
+     {
+      "id": 3,
+      "date": "2026-09-02",
+      "event_id": "skewb",
+      "cube_id": null,
+      "solve_count": 28,
+      "best_single": 7149,
+      "worst_single": 7200000,
+      "session_mean": 300013.6,
+      "ao5": 9400,
+      "ao12": 729565,
+      "notes": "Imported from CSTimer: Main 3x3",
+      "created_at": "2026-10-14T04:00:00.000Z"
+     },
+     {
+      "id": 4,
+      "date": "2026-10-14",
+      "event_id": "222",
+      "cube_id": null,
+      "solve_count": 1,
+      "best_single": 4000,
+      "worst_single": 4000,
+      "session_mean": 4000,
+      "ao5": null,
+      "ao12": null,
+      "notes": "Imported from CSTimer: Session 2",
+      "created_at": "2026-10-14T04:00:00.000Z"
+     },
+     {
+      "id": 5,
+      "date": "2026-09-04",
+      "event_id": "222",
+      "cube_id": null,
+      "solve_count": 8,
+      "best_single": 3000,
+      "worst_single": 3259,
+      "session_mean": 3125,
+      "ao5": 3180,
+      "ao12": null,
+      "notes": "Imported from CSTimer: Session 2",
+      "created_at": "2026-10-14T04:00:00.000Z"
+     },
+     {
+      "id": 6,
+      "date": "2026-09-01",
+      "event_id": "skewb",
+      "cube_id": null,
+      "solve_count": 2,
+      "best_single": 22000,
+      "worst_single": 22000,
+      "session_mean": 22000,
+      "ao5": null,
+      "ao12": null,
+      "notes": "Imported from CSTimer: other",
+      "created_at": "2026-10-14T04:00:00.000Z"
+     }
+    ],
+    "solves": [
+     {
+      "id": 1,
+      "session_id": 1,
+      "solve_number": 1,
+      "time_ms": 9888,
+      "scramble": "",
+      "penalty": null,
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-01T02:12:21.000Z"
+     },
+     {
+      "id": 2,
+      "session_id": 2,
+      "solve_number": 1,
+      "time_ms": 14173,
+      "scramble": "R U0",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-01T01:57:53.000Z"
+     },
+     {
+      "id": 3,
+      "session_id": 2,
+      "solve_number": 2,
+      "time_ms": 14938,
+      "scramble": "R U1",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "pop",
+      "timestamp": "2026-09-01T02:04:02.000Z"
+     },
+     {
+      "id": 4,
+      "session_id": 2,
+      "solve_number": 3,
+      "time_ms": 16094,
+      "scramble": "R U2",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "pop",
+      "timestamp": "2026-09-01T02:09:03.000Z"
+     },
+     {
+      "id": 5,
+      "session_id": 2,
+      "solve_number": 4,
+      "time_ms": 16010,
+      "scramble": "R U4",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "pop",
+      "timestamp": "2026-09-01T02:17:13.000Z"
+     },
+     {
+      "id": 6,
+      "session_id": 2,
+      "solve_number": 5,
+      "time_ms": 12346,
+      "scramble": "R U5",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-01T02:18:27.000Z"
+     },
+     {
+      "id": 7,
+      "session_id": 2,
+      "solve_number": 6,
+      "time_ms": 12160,
+      "scramble": "R U6",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "nice one",
+      "timestamp": "2026-09-01T02:20:20.000Z"
+     },
+     {
+      "id": 8,
+      "session_id": 2,
+      "solve_number": 7,
+      "time_ms": 18619,
+      "scramble": "R U7",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-01T02:25:39.000Z"
+     },
+     {
+      "id": 9,
+      "session_id": 2,
+      "solve_number": 8,
+      "time_ms": 7204,
+      "scramble": "R U8",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "pop",
+      "timestamp": "2026-09-01T02:28:56.000Z"
+     },
+     {
+      "id": 10,
+      "session_id": 2,
+      "solve_number": 9,
+      "time_ms": 12906,
+      "scramble": "",
+      "penalty": "DNF",
+      "dnf": true,
+      "notes": "nice one",
+      "timestamp": "2026-09-01T02:30:09.000Z"
+     },
+     {
+      "id": 11,
+      "session_id": 2,
+      "solve_number": 10,
+      "time_ms": 12611,
+      "scramble": "R U10",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "nice one",
+      "timestamp": "2026-09-01T02:33:54.000Z"
+     },
+     {
+      "id": 12,
+      "session_id": 2,
+      "solve_number": 11,
+      "time_ms": 9689,
+      "scramble": "R U11",
+      "penalty": "DNF",
+      "dnf": true,
+      "notes": "",
+      "timestamp": "2026-09-01T02:37:38.000Z"
+     },
+     {
+      "id": 13,
+      "session_id": 2,
+      "solve_number": 12,
+      "time_ms": 12780,
+      "scramble": "R U12",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "nice one",
+      "timestamp": "2026-09-01T02:40:45.000Z"
+     },
+     {
+      "id": 14,
+      "session_id": 2,
+      "solve_number": 13,
+      "time_ms": 11953,
+      "scramble": "R U13",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "nice one",
+      "timestamp": "2026-09-01T02:43:59.000Z"
+     },
+     {
+      "id": 15,
+      "session_id": 2,
+      "solve_number": 14,
+      "time_ms": 16375,
+      "scramble": "R U14",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-01T02:45:05.000Z"
+     },
+     {
+      "id": 16,
+      "session_id": 2,
+      "solve_number": 15,
+      "time_ms": 12773,
+      "scramble": "R U15",
+      "penalty": "+2",
+      "dnf": false,
+      "notes": "nice one",
+      "timestamp": "2026-09-01T02:50:25.000Z"
+     },
+     {
+      "id": 17,
+      "session_id": 2,
+      "solve_number": 16,
+      "time_ms": 11729,
+      "scramble": "R U16",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "pop",
+      "timestamp": "2026-09-01T02:54:08.000Z"
+     },
+     {
+      "id": 18,
+      "session_id": 2,
+      "solve_number": 17,
+      "time_ms": 9596,
+      "scramble": "R U17",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "nice one",
+      "timestamp": "2026-09-01T02:57:08.000Z"
+     },
+     {
+      "id": 19,
+      "session_id": 2,
+      "solve_number": 18,
+      "time_ms": 18095,
+      "scramble": "R U18",
+      "penalty": "DNF",
+      "dnf": true,
+      "notes": "nice one",
+      "timestamp": "2026-09-01T03:01:16.000Z"
+     },
+     {
+      "id": 20,
+      "session_id": 2,
+      "solve_number": 19,
+      "time_ms": 18291,
+      "scramble": "R U19",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "nice one",
+      "timestamp": "2026-09-01T03:02:27.000Z"
+     },
+     {
+      "id": 21,
+      "session_id": 2,
+      "solve_number": 20,
+      "time_ms": 15055,
+      "scramble": "R U20",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "nice one",
+      "timestamp": "2026-09-01T19:42:59.000Z"
+     },
+     {
+      "id": 22,
+      "session_id": 2,
+      "solve_number": 21,
+      "time_ms": 8442,
+      "scramble": "R U21",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-01T19:46:29.000Z"
+     },
+     {
+      "id": 23,
+      "session_id": 2,
+      "solve_number": 22,
+      "time_ms": 12595,
+      "scramble": "R U22",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-01T19:50:15.000Z"
+     },
+     {
+      "id": 24,
+      "session_id": 2,
+      "solve_number": 23,
+      "time_ms": 9480,
+      "scramble": "R U23",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-01T19:56:18.000Z"
+     },
+     {
+      "id": 25,
+      "session_id": 2,
+      "solve_number": 24,
+      "time_ms": 15141,
+      "scramble": "R U24",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-01T19:58:28.000Z"
+     },
+     {
+      "id": 26,
+      "session_id": 2,
+      "solve_number": 25,
+      "time_ms": 8195,
+      "scramble": "R U25",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "pop",
+      "timestamp": "2026-09-01T19:59:22.000Z"
+     },
+     {
+      "id": 27,
+      "session_id": 2,
+      "solve_number": 26,
+      "time_ms": 14409,
+      "scramble": "R U26",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "pop",
+      "timestamp": "2026-09-01T20:00:30.000Z"
+     },
+     {
+      "id": 28,
+      "session_id": 2,
+      "solve_number": 27,
+      "time_ms": 8264,
+      "scramble": "R U27",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-01T20:04:23.000Z"
+     },
+     {
+      "id": 29,
+      "session_id": 2,
+      "solve_number": 28,
+      "time_ms": 17041,
+      "scramble": "R U28",
+      "penalty": "DNF",
+      "dnf": true,
+      "notes": "nice one",
+      "timestamp": "2026-09-01T20:06:47.000Z"
+     },
+     {
+      "id": 30,
+      "session_id": 2,
+      "solve_number": 29,
+      "time_ms": 7504,
+      "scramble": "R U29",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-01T20:11:33.000Z"
+     },
+     {
+      "id": 31,
+      "session_id": 2,
+      "solve_number": 30,
+      "time_ms": 10468,
+      "scramble": "R U30",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-01T20:17:23.000Z"
+     },
+     {
+      "id": 32,
+      "session_id": 2,
+      "solve_number": 31,
+      "time_ms": 9003,
+      "scramble": "R U31",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "pop",
+      "timestamp": "2026-09-01T20:17:58.000Z"
+     },
+     {
+      "id": 33,
+      "session_id": 2,
+      "solve_number": 32,
+      "time_ms": 12097,
+      "scramble": "R U32",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-01T20:22:15.000Z"
+     },
+     {
+      "id": 34,
+      "session_id": 2,
+      "solve_number": 33,
+      "time_ms": 15158,
+      "scramble": "R U33",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "nice one",
+      "timestamp": "2026-09-01T20:27:06.000Z"
+     },
+     {
+      "id": 35,
+      "session_id": 2,
+      "solve_number": 34,
+      "time_ms": 14197,
+      "scramble": "R U34",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "pop",
+      "timestamp": "2026-09-01T20:30:58.000Z"
+     },
+     {
+      "id": 36,
+      "session_id": 2,
+      "solve_number": 35,
+      "time_ms": 13739,
+      "scramble": "R U35",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "pop",
+      "timestamp": "2026-09-01T20:35:30.000Z"
+     },
+     {
+      "id": 37,
+      "session_id": 2,
+      "solve_number": 36,
+      "time_ms": 8913,
+      "scramble": "R U36",
+      "penalty": "+2",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-01T20:38:33.000Z"
+     },
+     {
+      "id": 38,
+      "session_id": 2,
+      "solve_number": 37,
+      "time_ms": 18359,
+      "scramble": "R U37",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-01T20:43:40.000Z"
+     },
+     {
+      "id": 39,
+      "session_id": 2,
+      "solve_number": 38,
+      "time_ms": 16506,
+      "scramble": "R U38",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "pop",
+      "timestamp": "2026-09-01T20:45:24.000Z"
+     },
+     {
+      "id": 40,
+      "session_id": 2,
+      "solve_number": 39,
+      "time_ms": 17653,
+      "scramble": "R U39",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "nice one",
+      "timestamp": "2026-09-01T20:47:37.000Z"
+     },
+     {
+      "id": 41,
+      "session_id": 2,
+      "solve_number": 40,
+      "time_ms": 7803,
+      "scramble": "R U40",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-01T20:48:16.000Z"
+     },
+     {
+      "id": 42,
+      "session_id": 3,
+      "solve_number": 1,
+      "time_ms": 15987,
+      "scramble": "R U41",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "pop",
+      "timestamp": "2026-09-02T13:34:40.000Z"
+     },
+     {
+      "id": 43,
+      "session_id": 3,
+      "solve_number": 2,
+      "time_ms": 11797,
+      "scramble": "R U42",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "pop",
+      "timestamp": "2026-09-02T13:38:54.000Z"
+     },
+     {
+      "id": 44,
+      "session_id": 3,
+      "solve_number": 3,
+      "time_ms": 7413,
+      "scramble": "R U43",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-02T13:43:15.000Z"
+     },
+     {
+      "id": 45,
+      "session_id": 3,
+      "solve_number": 4,
+      "time_ms": 17291,
+      "scramble": "R U44",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "pop",
+      "timestamp": "2026-09-02T13:44:15.000Z"
+     },
+     {
+      "id": 46,
+      "session_id": 3,
+      "solve_number": 5,
+      "time_ms": 10808,
+      "scramble": "R U45",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "pop",
+      "timestamp": "2026-09-02T13:47:48.000Z"
+     },
+     {
+      "id": 47,
+      "session_id": 3,
+      "solve_number": 6,
+      "time_ms": 15545,
+      "scramble": "R U46",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-02T13:49:58.000Z"
+     },
+     {
+      "id": 48,
+      "session_id": 3,
+      "solve_number": 7,
+      "time_ms": 15536,
+      "scramble": "R U47",
+      "penalty": "DNF",
+      "dnf": true,
+      "notes": "nice one",
+      "timestamp": "2026-09-02T13:53:29.000Z"
+     },
+     {
+      "id": 49,
+      "session_id": 3,
+      "solve_number": 8,
+      "time_ms": 16454,
+      "scramble": "R U48",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "nice one",
+      "timestamp": "2026-09-02T13:57:33.000Z"
+     },
+     {
+      "id": 50,
+      "session_id": 3,
+      "solve_number": 9,
+      "time_ms": 14936,
+      "scramble": "R U49",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "pop",
+      "timestamp": "2026-09-02T14:01:09.000Z"
+     },
+     {
+      "id": 51,
+      "session_id": 3,
+      "solve_number": 10,
+      "time_ms": 16881,
+      "scramble": "R U50",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-02T14:05:39.000Z"
+     },
+     {
+      "id": 52,
+      "session_id": 3,
+      "solve_number": 11,
+      "time_ms": 15609,
+      "scramble": "R U51",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "pop",
+      "timestamp": "2026-09-02T14:10:28.000Z"
+     },
+     {
+      "id": 53,
+      "session_id": 3,
+      "solve_number": 12,
+      "time_ms": 7149,
+      "scramble": "R U52",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "nice one",
+      "timestamp": "2026-09-02T14:14:48.000Z"
+     },
+     {
+      "id": 54,
+      "session_id": 3,
+      "solve_number": 13,
+      "time_ms": 17533,
+      "scramble": "R U53",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-02T14:19:40.000Z"
+     },
+     {
+      "id": 55,
+      "session_id": 3,
+      "solve_number": 14,
+      "time_ms": 15517,
+      "scramble": "R U54",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "nice one",
+      "timestamp": "2026-09-02T14:20:20.000Z"
+     },
+     {
+      "id": 56,
+      "session_id": 3,
+      "solve_number": 15,
+      "time_ms": 12885,
+      "scramble": "R U55",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "pop",
+      "timestamp": "2026-09-02T14:23:51.000Z"
+     },
+     {
+      "id": 57,
+      "session_id": 3,
+      "solve_number": 16,
+      "time_ms": 14224,
+      "scramble": "R U56",
+      "penalty": "DNF",
+      "dnf": true,
+      "notes": "pop",
+      "timestamp": "2026-09-02T14:27:28.000Z"
+     },
+     {
+      "id": 58,
+      "session_id": 3,
+      "solve_number": 17,
+      "time_ms": 13181,
+      "scramble": "R U57",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "pop",
+      "timestamp": "2026-09-02T14:31:17.000Z"
+     },
+     {
+      "id": 59,
+      "session_id": 3,
+      "solve_number": 18,
+      "time_ms": 8964,
+      "scramble": "R U58",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-02T14:35:54.000Z"
+     },
+     {
+      "id": 60,
+      "session_id": 3,
+      "solve_number": 19,
+      "time_ms": 15373,
+      "scramble": "R U59",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-02T14:38:02.000Z"
+     },
+     {
+      "id": 61,
+      "session_id": 3,
+      "solve_number": 20,
+      "time_ms": 7200000,
+      "scramble": "R",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-02T14:38:03.000Z"
+     },
+     {
+      "id": 62,
+      "session_id": 3,
+      "solve_number": 21,
+      "time_ms": 0,
+      "scramble": "R",
+      "penalty": "DNF",
+      "dnf": true,
+      "notes": "",
+      "timestamp": "2026-09-02T14:38:04.000Z"
+     },
+     {
+      "id": 63,
+      "session_id": 3,
+      "solve_number": 22,
+      "time_ms": 9000,
+      "scramble": "R",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-02T14:38:04.000Z"
+     },
+     {
+      "id": 64,
+      "session_id": 3,
+      "solve_number": 23,
+      "time_ms": 9100,
+      "scramble": "R",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "old",
+      "timestamp": "2026-09-02T14:38:04.000Z"
+     },
+     {
+      "id": 65,
+      "session_id": 3,
+      "solve_number": 24,
+      "time_ms": 9200,
+      "scramble": "R",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "future",
+      "timestamp": "2026-09-02T14:38:04.000Z"
+     },
+     {
+      "id": 66,
+      "session_id": 3,
+      "solve_number": 25,
+      "time_ms": 9300,
+      "scramble": "R",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-02T14:38:04.000Z"
+     },
+     {
+      "id": 67,
+      "session_id": 3,
+      "solve_number": 26,
+      "time_ms": 9400,
+      "scramble": "R",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-02T14:38:12.500Z"
+     },
+     {
+      "id": 68,
+      "session_id": 3,
+      "solve_number": 27,
+      "time_ms": 9500,
+      "scramble": "R",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-02T14:38:12.500Z"
+     },
+     {
+      "id": 69,
+      "session_id": 3,
+      "solve_number": 28,
+      "time_ms": 9600,
+      "scramble": "R",
+      "penalty": "+2",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-02T14:38:22.000Z"
+     },
+     {
+      "id": 70,
+      "session_id": 4,
+      "solve_number": 1,
+      "time_ms": 4000,
+      "scramble": "F R",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-10-14T04:00:00.000Z"
+     },
+     {
+      "id": 71,
+      "session_id": 5,
+      "solve_number": 1,
+      "time_ms": 3000,
+      "scramble": "F",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-04T02:00:00.000Z"
+     },
+     {
+      "id": 72,
+      "session_id": 5,
+      "solve_number": 2,
+      "time_ms": 3037,
+      "scramble": "F",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-04T02:00:50.000Z"
+     },
+     {
+      "id": 73,
+      "session_id": 5,
+      "solve_number": 3,
+      "time_ms": 3074,
+      "scramble": "F",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-04T02:01:40.000Z"
+     },
+     {
+      "id": 74,
+      "session_id": 5,
+      "solve_number": 4,
+      "time_ms": 3111,
+      "scramble": "F",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-04T02:02:30.000Z"
+     },
+     {
+      "id": 75,
+      "session_id": 5,
+      "solve_number": 5,
+      "time_ms": 3148,
+      "scramble": "F",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-04T02:03:20.000Z"
+     },
+     {
+      "id": 76,
+      "session_id": 5,
+      "solve_number": 6,
+      "time_ms": 3185,
+      "scramble": "F",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-04T02:04:10.000Z"
+     },
+     {
+      "id": 77,
+      "session_id": 5,
+      "solve_number": 7,
+      "time_ms": 3222,
+      "scramble": "F",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-04T02:05:00.000Z"
+     },
+     {
+      "id": 78,
+      "session_id": 5,
+      "solve_number": 8,
+      "time_ms": 3259,
+      "scramble": "F",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-04T02:05:50.000Z"
+     },
+     {
+      "id": 79,
+      "session_id": 6,
+      "solve_number": 1,
+      "time_ms": 21000,
+      "scramble": "B",
+      "penalty": "DNF",
+      "dnf": true,
+      "notes": "",
+      "timestamp": "2026-09-01T04:00:00.000Z"
+     },
+     {
+      "id": 80,
+      "session_id": 6,
+      "solve_number": 2,
+      "time_ms": 22000,
+      "scramble": "B",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-01T04:01:40.000Z"
+     }
+    ],
+    "settings": []
+   },
+   "stats": {
+    "1": {
+     "solve_count": 1,
+     "best_single": 9888,
+     "worst_single": 9888,
+     "session_mean": 9880,
+     "ao5": null,
+     "ao12": null,
+     "best_ao5": null,
+     "best_ao12": null,
+     "best_ao50": null,
+     "best_ao100": null
+    },
+    "2": {
+     "solve_count": 40,
+     "best_single": 7204,
+     "worst_single": 18619,
+     "session_mean": 12901.944444444445,
+     "ao5": 15020,
+     "ao12": 12748,
+     "best_ao5": 9240,
+     "best_ao12": 10805,
+     "best_ao50": null,
+     "best_ao100": null
+    },
+    "3": {
+     "solve_count": 28,
+     "best_single": 7149,
+     "worst_single": 7200000,
+     "session_mean": 300013.6,
+     "ao5": 9400,
+     "ao12": 729565,
+     "best_ao5": 9200,
+     "best_ao12": 14267,
+     "best_ao50": null,
+     "best_ao100": null
+    },
+    "4": {
+     "solve_count": 1,
+     "best_single": 4000,
+     "worst_single": 4000,
+     "session_mean": 4000,
+     "ao5": null,
+     "ao12": null,
+     "best_ao5": null,
+     "best_ao12": null,
+     "best_ao50": null,
+     "best_ao100": null
+    },
+    "5": {
+     "solve_count": 8,
+     "best_single": 3000,
+     "worst_single": 3259,
+     "session_mean": 3125,
+     "ao5": 3180,
+     "ao12": null,
+     "best_ao5": 3070,
+     "best_ao12": null,
+     "best_ao50": null,
+     "best_ao100": null
+    },
+    "6": {
+     "solve_count": 2,
+     "best_single": 22000,
+     "worst_single": 22000,
+     "session_mean": 22000,
+     "ao5": null,
+     "ao12": null,
+     "best_ao5": null,
+     "best_ao12": null,
+     "best_ao50": null,
+     "best_ao100": null
+    }
+   }
+  },
+  {
+   "name": "a messy export, one session each",
+   "start": null,
+   "imports": [
+    {
+     "export": "messy",
+     "keys": [
+      "session1",
+      "session7",
+      "nothing"
+     ],
+     "eventId": "444",
+     "splitByDay": false,
+     "events": {},
+     "result": {
+      "sessions_imported": 2,
+      "total_solves": 70,
+      "duplicates_skipped": 0,
+      "unreadable_skipped": 9,
+      "sessions_found": 2
+     },
+     "message": "Imported 70 solves into 2 sessions (skipped 9 that couldn't be read)"
+    }
+   ],
+   "exported": {
+    "app": "lookahead",
+    "version": 1,
+    "cubes": [],
+    "sessions": [
+     {
+      "id": 1,
+      "date": "2026-09-01",
+      "event_id": "444",
+      "cube_id": null,
+      "solve_count": 69,
+      "best_single": 7149,
+      "worst_single": 7200000,
+      "session_mean": 128624.03225806452,
+      "ao5": 9400,
+      "ao12": 729565,
+      "notes": "Imported from CSTimer: Main 3x3",
+      "created_at": "2026-10-14T04:00:00.000Z"
+     },
+     {
+      "id": 2,
+      "date": "2026-09-01",
+      "event_id": "444",
+      "cube_id": null,
+      "solve_count": 1,
+      "best_single": 51000,
+      "worst_single": 51000,
+      "session_mean": 51000,
+      "ao5": null,
+      "ao12": null,
+      "notes": "Imported from CSTimer: FTO",
+      "created_at": "2026-10-14T04:00:00.000Z"
+     }
+    ],
+    "solves": [
+     {
+      "id": 1,
+      "session_id": 1,
+      "solve_number": 1,
+      "time_ms": 14173,
+      "scramble": "R U0",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-01T01:57:53.000Z"
+     },
+     {
+      "id": 2,
+      "session_id": 1,
+      "solve_number": 2,
+      "time_ms": 14938,
+      "scramble": "R U1",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "pop",
+      "timestamp": "2026-09-01T02:04:02.000Z"
+     },
+     {
+      "id": 3,
+      "session_id": 1,
+      "solve_number": 3,
+      "time_ms": 16094,
+      "scramble": "R U2",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "pop",
+      "timestamp": "2026-09-01T02:09:03.000Z"
+     },
+     {
+      "id": 4,
+      "session_id": 1,
+      "solve_number": 4,
+      "time_ms": 9888,
+      "scramble": "R U3",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "nice one",
+      "timestamp": "2026-09-01T02:12:21.000Z"
+     },
+     {
+      "id": 5,
+      "session_id": 1,
+      "solve_number": 5,
+      "time_ms": 16010,
+      "scramble": "R U4",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "pop",
+      "timestamp": "2026-09-01T02:17:13.000Z"
+     },
+     {
+      "id": 6,
+      "session_id": 1,
+      "solve_number": 6,
+      "time_ms": 12346,
+      "scramble": "R U5",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-01T02:18:27.000Z"
+     },
+     {
+      "id": 7,
+      "session_id": 1,
+      "solve_number": 7,
+      "time_ms": 12160,
+      "scramble": "R U6",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "nice one",
+      "timestamp": "2026-09-01T02:20:20.000Z"
+     },
+     {
+      "id": 8,
+      "session_id": 1,
+      "solve_number": 8,
+      "time_ms": 18619,
+      "scramble": "R U7",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-01T02:25:39.000Z"
+     },
+     {
+      "id": 9,
+      "session_id": 1,
+      "solve_number": 9,
+      "time_ms": 7204,
+      "scramble": "R U8",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "pop",
+      "timestamp": "2026-09-01T02:28:56.000Z"
+     },
+     {
+      "id": 10,
+      "session_id": 1,
+      "solve_number": 10,
+      "time_ms": 12906,
+      "scramble": "",
+      "penalty": "DNF",
+      "dnf": true,
+      "notes": "nice one",
+      "timestamp": "2026-09-01T02:30:09.000Z"
+     },
+     {
+      "id": 11,
+      "session_id": 1,
+      "solve_number": 11,
+      "time_ms": 12611,
+      "scramble": "R U10",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "nice one",
+      "timestamp": "2026-09-01T02:33:54.000Z"
+     },
+     {
+      "id": 12,
+      "session_id": 1,
+      "solve_number": 12,
+      "time_ms": 9689,
+      "scramble": "R U11",
+      "penalty": "DNF",
+      "dnf": true,
+      "notes": "",
+      "timestamp": "2026-09-01T02:37:38.000Z"
+     },
+     {
+      "id": 13,
+      "session_id": 1,
+      "solve_number": 13,
+      "time_ms": 12780,
+      "scramble": "R U12",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "nice one",
+      "timestamp": "2026-09-01T02:40:45.000Z"
+     },
+     {
+      "id": 14,
+      "session_id": 1,
+      "solve_number": 14,
+      "time_ms": 11953,
+      "scramble": "R U13",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "nice one",
+      "timestamp": "2026-09-01T02:43:59.000Z"
+     },
+     {
+      "id": 15,
+      "session_id": 1,
+      "solve_number": 15,
+      "time_ms": 16375,
+      "scramble": "R U14",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-01T02:45:05.000Z"
+     },
+     {
+      "id": 16,
+      "session_id": 1,
+      "solve_number": 16,
+      "time_ms": 12773,
+      "scramble": "R U15",
+      "penalty": "+2",
+      "dnf": false,
+      "notes": "nice one",
+      "timestamp": "2026-09-01T02:50:25.000Z"
+     },
+     {
+      "id": 17,
+      "session_id": 1,
+      "solve_number": 17,
+      "time_ms": 11729,
+      "scramble": "R U16",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "pop",
+      "timestamp": "2026-09-01T02:54:08.000Z"
+     },
+     {
+      "id": 18,
+      "session_id": 1,
+      "solve_number": 18,
+      "time_ms": 9596,
+      "scramble": "R U17",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "nice one",
+      "timestamp": "2026-09-01T02:57:08.000Z"
+     },
+     {
+      "id": 19,
+      "session_id": 1,
+      "solve_number": 19,
+      "time_ms": 18095,
+      "scramble": "R U18",
+      "penalty": "DNF",
+      "dnf": true,
+      "notes": "nice one",
+      "timestamp": "2026-09-01T03:01:16.000Z"
+     },
+     {
+      "id": 20,
+      "session_id": 1,
+      "solve_number": 20,
+      "time_ms": 18291,
+      "scramble": "R U19",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "nice one",
+      "timestamp": "2026-09-01T03:02:27.000Z"
+     },
+     {
+      "id": 21,
+      "session_id": 1,
+      "solve_number": 21,
+      "time_ms": 15055,
+      "scramble": "R U20",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "nice one",
+      "timestamp": "2026-09-01T19:42:59.000Z"
+     },
+     {
+      "id": 22,
+      "session_id": 1,
+      "solve_number": 22,
+      "time_ms": 8442,
+      "scramble": "R U21",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-01T19:46:29.000Z"
+     },
+     {
+      "id": 23,
+      "session_id": 1,
+      "solve_number": 23,
+      "time_ms": 12595,
+      "scramble": "R U22",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-01T19:50:15.000Z"
+     },
+     {
+      "id": 24,
+      "session_id": 1,
+      "solve_number": 24,
+      "time_ms": 9480,
+      "scramble": "R U23",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-01T19:56:18.000Z"
+     },
+     {
+      "id": 25,
+      "session_id": 1,
+      "solve_number": 25,
+      "time_ms": 15141,
+      "scramble": "R U24",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-01T19:58:28.000Z"
+     },
+     {
+      "id": 26,
+      "session_id": 1,
+      "solve_number": 26,
+      "time_ms": 8195,
+      "scramble": "R U25",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "pop",
+      "timestamp": "2026-09-01T19:59:22.000Z"
+     },
+     {
+      "id": 27,
+      "session_id": 1,
+      "solve_number": 27,
+      "time_ms": 14409,
+      "scramble": "R U26",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "pop",
+      "timestamp": "2026-09-01T20:00:30.000Z"
+     },
+     {
+      "id": 28,
+      "session_id": 1,
+      "solve_number": 28,
+      "time_ms": 8264,
+      "scramble": "R U27",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-01T20:04:23.000Z"
+     },
+     {
+      "id": 29,
+      "session_id": 1,
+      "solve_number": 29,
+      "time_ms": 17041,
+      "scramble": "R U28",
+      "penalty": "DNF",
+      "dnf": true,
+      "notes": "nice one",
+      "timestamp": "2026-09-01T20:06:47.000Z"
+     },
+     {
+      "id": 30,
+      "session_id": 1,
+      "solve_number": 30,
+      "time_ms": 7504,
+      "scramble": "R U29",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-01T20:11:33.000Z"
+     },
+     {
+      "id": 31,
+      "session_id": 1,
+      "solve_number": 31,
+      "time_ms": 10468,
+      "scramble": "R U30",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-01T20:17:23.000Z"
+     },
+     {
+      "id": 32,
+      "session_id": 1,
+      "solve_number": 32,
+      "time_ms": 9003,
+      "scramble": "R U31",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "pop",
+      "timestamp": "2026-09-01T20:17:58.000Z"
+     },
+     {
+      "id": 33,
+      "session_id": 1,
+      "solve_number": 33,
+      "time_ms": 12097,
+      "scramble": "R U32",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-01T20:22:15.000Z"
+     },
+     {
+      "id": 34,
+      "session_id": 1,
+      "solve_number": 34,
+      "time_ms": 15158,
+      "scramble": "R U33",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "nice one",
+      "timestamp": "2026-09-01T20:27:06.000Z"
+     },
+     {
+      "id": 35,
+      "session_id": 1,
+      "solve_number": 35,
+      "time_ms": 14197,
+      "scramble": "R U34",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "pop",
+      "timestamp": "2026-09-01T20:30:58.000Z"
+     },
+     {
+      "id": 36,
+      "session_id": 1,
+      "solve_number": 36,
+      "time_ms": 13739,
+      "scramble": "R U35",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "pop",
+      "timestamp": "2026-09-01T20:35:30.000Z"
+     },
+     {
+      "id": 37,
+      "session_id": 1,
+      "solve_number": 37,
+      "time_ms": 8913,
+      "scramble": "R U36",
+      "penalty": "+2",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-01T20:38:33.000Z"
+     },
+     {
+      "id": 38,
+      "session_id": 1,
+      "solve_number": 38,
+      "time_ms": 18359,
+      "scramble": "R U37",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-01T20:43:40.000Z"
+     },
+     {
+      "id": 39,
+      "session_id": 1,
+      "solve_number": 39,
+      "time_ms": 16506,
+      "scramble": "R U38",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "pop",
+      "timestamp": "2026-09-01T20:45:24.000Z"
+     },
+     {
+      "id": 40,
+      "session_id": 1,
+      "solve_number": 40,
+      "time_ms": 17653,
+      "scramble": "R U39",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "nice one",
+      "timestamp": "2026-09-01T20:47:37.000Z"
+     },
+     {
+      "id": 41,
+      "session_id": 1,
+      "solve_number": 41,
+      "time_ms": 7803,
+      "scramble": "R U40",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-01T20:48:16.000Z"
+     },
+     {
+      "id": 42,
+      "session_id": 1,
+      "solve_number": 42,
+      "time_ms": 15987,
+      "scramble": "R U41",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "pop",
+      "timestamp": "2026-09-02T13:34:40.000Z"
+     },
+     {
+      "id": 43,
+      "session_id": 1,
+      "solve_number": 43,
+      "time_ms": 11797,
+      "scramble": "R U42",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "pop",
+      "timestamp": "2026-09-02T13:38:54.000Z"
+     },
+     {
+      "id": 44,
+      "session_id": 1,
+      "solve_number": 44,
+      "time_ms": 7413,
+      "scramble": "R U43",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-02T13:43:15.000Z"
+     },
+     {
+      "id": 45,
+      "session_id": 1,
+      "solve_number": 45,
+      "time_ms": 17291,
+      "scramble": "R U44",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "pop",
+      "timestamp": "2026-09-02T13:44:15.000Z"
+     },
+     {
+      "id": 46,
+      "session_id": 1,
+      "solve_number": 46,
+      "time_ms": 10808,
+      "scramble": "R U45",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "pop",
+      "timestamp": "2026-09-02T13:47:48.000Z"
+     },
+     {
+      "id": 47,
+      "session_id": 1,
+      "solve_number": 47,
+      "time_ms": 15545,
+      "scramble": "R U46",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-02T13:49:58.000Z"
+     },
+     {
+      "id": 48,
+      "session_id": 1,
+      "solve_number": 48,
+      "time_ms": 15536,
+      "scramble": "R U47",
+      "penalty": "DNF",
+      "dnf": true,
+      "notes": "nice one",
+      "timestamp": "2026-09-02T13:53:29.000Z"
+     },
+     {
+      "id": 49,
+      "session_id": 1,
+      "solve_number": 49,
+      "time_ms": 16454,
+      "scramble": "R U48",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "nice one",
+      "timestamp": "2026-09-02T13:57:33.000Z"
+     },
+     {
+      "id": 50,
+      "session_id": 1,
+      "solve_number": 50,
+      "time_ms": 14936,
+      "scramble": "R U49",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "pop",
+      "timestamp": "2026-09-02T14:01:09.000Z"
+     },
+     {
+      "id": 51,
+      "session_id": 1,
+      "solve_number": 51,
+      "time_ms": 16881,
+      "scramble": "R U50",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-02T14:05:39.000Z"
+     },
+     {
+      "id": 52,
+      "session_id": 1,
+      "solve_number": 52,
+      "time_ms": 15609,
+      "scramble": "R U51",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "pop",
+      "timestamp": "2026-09-02T14:10:28.000Z"
+     },
+     {
+      "id": 53,
+      "session_id": 1,
+      "solve_number": 53,
+      "time_ms": 7149,
+      "scramble": "R U52",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "nice one",
+      "timestamp": "2026-09-02T14:14:48.000Z"
+     },
+     {
+      "id": 54,
+      "session_id": 1,
+      "solve_number": 54,
+      "time_ms": 17533,
+      "scramble": "R U53",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-02T14:19:40.000Z"
+     },
+     {
+      "id": 55,
+      "session_id": 1,
+      "solve_number": 55,
+      "time_ms": 15517,
+      "scramble": "R U54",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "nice one",
+      "timestamp": "2026-09-02T14:20:20.000Z"
+     },
+     {
+      "id": 56,
+      "session_id": 1,
+      "solve_number": 56,
+      "time_ms": 12885,
+      "scramble": "R U55",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "pop",
+      "timestamp": "2026-09-02T14:23:51.000Z"
+     },
+     {
+      "id": 57,
+      "session_id": 1,
+      "solve_number": 57,
+      "time_ms": 14224,
+      "scramble": "R U56",
+      "penalty": "DNF",
+      "dnf": true,
+      "notes": "pop",
+      "timestamp": "2026-09-02T14:27:28.000Z"
+     },
+     {
+      "id": 58,
+      "session_id": 1,
+      "solve_number": 58,
+      "time_ms": 13181,
+      "scramble": "R U57",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "pop",
+      "timestamp": "2026-09-02T14:31:17.000Z"
+     },
+     {
+      "id": 59,
+      "session_id": 1,
+      "solve_number": 59,
+      "time_ms": 8964,
+      "scramble": "R U58",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-02T14:35:54.000Z"
+     },
+     {
+      "id": 60,
+      "session_id": 1,
+      "solve_number": 60,
+      "time_ms": 15373,
+      "scramble": "R U59",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-02T14:38:02.000Z"
+     },
+     {
+      "id": 61,
+      "session_id": 1,
+      "solve_number": 61,
+      "time_ms": 7200000,
+      "scramble": "R",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-02T14:38:03.000Z"
+     },
+     {
+      "id": 62,
+      "session_id": 1,
+      "solve_number": 62,
+      "time_ms": 0,
+      "scramble": "R",
+      "penalty": "DNF",
+      "dnf": true,
+      "notes": "",
+      "timestamp": "2026-09-02T14:38:04.000Z"
+     },
+     {
+      "id": 63,
+      "session_id": 1,
+      "solve_number": 63,
+      "time_ms": 9000,
+      "scramble": "R",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-02T14:38:04.000Z"
+     },
+     {
+      "id": 64,
+      "session_id": 1,
+      "solve_number": 64,
+      "time_ms": 9100,
+      "scramble": "R",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "old",
+      "timestamp": "2026-09-02T14:38:04.000Z"
+     },
+     {
+      "id": 65,
+      "session_id": 1,
+      "solve_number": 65,
+      "time_ms": 9200,
+      "scramble": "R",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "future",
+      "timestamp": "2026-09-02T14:38:04.000Z"
+     },
+     {
+      "id": 66,
+      "session_id": 1,
+      "solve_number": 66,
+      "time_ms": 9300,
+      "scramble": "R",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-02T14:38:04.000Z"
+     },
+     {
+      "id": 67,
+      "session_id": 1,
+      "solve_number": 67,
+      "time_ms": 9400,
+      "scramble": "R",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-02T14:38:12.500Z"
+     },
+     {
+      "id": 68,
+      "session_id": 1,
+      "solve_number": 68,
+      "time_ms": 9500,
+      "scramble": "R",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-02T14:38:12.500Z"
+     },
+     {
+      "id": 69,
+      "session_id": 1,
+      "solve_number": 69,
+      "time_ms": 9600,
+      "scramble": "R",
+      "penalty": "+2",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-02T14:38:22.000Z"
+     },
+     {
+      "id": 70,
+      "session_id": 2,
+      "solve_number": 1,
+      "time_ms": 51000,
+      "scramble": "L",
+      "penalty": "OK",
+      "dnf": false,
+      "notes": "",
+      "timestamp": "2026-09-01T03:00:00.000Z"
+     }
+    ],
+    "settings": []
+   },
+   "stats": {
+    "1": {
+     "solve_count": 69,
+     "best_single": 7149,
+     "worst_single": 7200000,
+     "session_mean": 128624.03225806452,
+     "ao5": 9400,
+     "ao12": 729565,
+     "best_ao5": 9200,
+     "best_ao12": 10805,
+     "best_ao50": null,
+     "best_ao100": null
+    },
+    "2": {
+     "solve_count": 1,
+     "best_single": 51000,
+     "worst_single": 51000,
+     "session_mean": 51000,
+     "ao5": null,
+     "ao12": null,
+     "best_ao5": null,
+     "best_ao12": null,
+     "best_ao50": null,
+     "best_ao100": null
+    }
+   }
+  },
+  {
+   "name": "sessions that are not in the file",
+   "start": null,
+   "imports": [
+    {
+     "export": "fixture",
+     "keys": [
+      "session9"
+     ],
+     "eventId": "333",
+     "splitByDay": true,
+     "events": {},
+     "result": {
+      "sessions_imported": 0,
+      "total_solves": 0,
+      "duplicates_skipped": 0,
+      "unreadable_skipped": 0,
+      "sessions_found": 0
+     },
+     "message": "Imported 0 solves into 0 sessions"
+    }
+   ],
+   "exported": {
+    "app": "lookahead",
+    "version": 1,
+    "cubes": [],
+    "sessions": [],
+    "solves": [],
+    "settings": []
+   },
+   "stats": {}
+  }
+ ]
+}

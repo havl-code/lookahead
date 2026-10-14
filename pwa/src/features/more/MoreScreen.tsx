@@ -1,11 +1,13 @@
 import { ForwardIcon } from '../../app/icons.tsx';
-import { Preview, repoUrl } from '../../app/Preview.tsx';
+import { repoUrl } from '../../app/Preview.tsx';
 import { detailHref, useDetail } from '../../app/router.ts';
 import { ScreenHeader } from '../../app/ScreenHeader.tsx';
 import { useCubes } from '../../db/hooks.ts';
 import { count } from '../../lib/format.ts';
 import { BackupSection } from '../backup/BackupSection.tsx';
+import { CsvExportButton } from '../backup/CsvExportButton.tsx';
 import { CubesScreen } from '../cubes/CubesScreen.tsx';
+import { CsTimerImport } from '../import/CsTimerImport.tsx';
 import { WcaSection } from './WcaSection.tsx';
 
 /** The More tab, or its Cubes page (#/more/cubes). */
@@ -43,7 +45,17 @@ function MoreList() {
       </nav>
       <WcaSection />
       <BackupSection />
-      <Preview>CSTimer import and more settings.</Preview>
+      <section aria-labelledby="import-export-heading" className="mt-6 space-y-3">
+        <h2 id="import-export-heading" className="font-semibold text-lg">
+          Import and export
+        </h2>
+        <p className="text-muted text-sm">
+          Bring in your solves from a CSTimer export file, or export every solve as a CSV file to
+          read in a spreadsheet.
+        </p>
+        <CsTimerImport />
+        <CsvExportButton />
+      </section>
       <section className="mt-6">
         <h2 className="font-semibold">About</h2>
         <ul className="mt-2 divide-y divide-line rounded-xl border border-line bg-raised">

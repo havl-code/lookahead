@@ -58,6 +58,7 @@ export function BackupSection() {
       const result = await saveFile(backup.file);
       if (result === 'cancelled') return;
       await setMeta(db, 'lastBackupAt', Date.now());
+      await setMeta(db, 'importedSinceBackup', 0);
       setMake({ step: 'saved' });
     } catch {
       setError("Couldn't share the backup. Try again.");

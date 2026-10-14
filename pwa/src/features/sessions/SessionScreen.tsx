@@ -20,6 +20,7 @@ import { eventName } from '../../lib/events.ts';
 import { count, formatResult } from '../../lib/format.ts';
 import { averageSeconds, singleSeconds } from '../../lib/stats.ts';
 import { formatDate } from '../../lib/time.ts';
+import { CsvExportButton } from '../backup/CsvExportButton.tsx';
 import { SolveSheet } from '../timer/SolveSheet.tsx';
 import { resultText } from '../timer/TimerScreen.tsx';
 import { AddSolveSheet } from './AddSolveSheet.tsx';
@@ -168,6 +169,8 @@ export function SessionScreen({ sessionId }: { readonly sessionId: number }) {
           </>
         )}
       </section>
+
+      {session.solve_count > 0 && <CsvExportButton sessionId={session.id} className="mt-8" />}
 
       <button
         type="button"

@@ -269,6 +269,7 @@ export async function restoreBackup(
       }
       await replaceEverything(db, backup);
       await setMeta(db, 'restoredAt', now.getTime());
+      await setMeta(db, 'importedSinceBackup', 0);
     }),
   );
   return storedCounts(db);

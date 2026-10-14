@@ -8,6 +8,11 @@ export interface Meta {
   lastBackupAt: number | null;
   /** When a backup was last restored here: what it brought is in that backup already. */
   restoredAt: number | null;
+  /**
+   * Solves imported since the last backup or restore. They keep their own, older, timestamps, so
+   * counting by timestamp alone would miss them.
+   */
+  importedSinceBackup: number;
   /** What the browser said when asked to keep Lookahead's data. */
   persistResult: PersistResult | null;
   /** The event the timer was last on. */
@@ -17,6 +22,7 @@ export interface Meta {
 const defaults: Meta = {
   lastBackupAt: null,
   restoredAt: null,
+  importedSinceBackup: 0,
   persistResult: null,
   timerEvent: '333',
 };

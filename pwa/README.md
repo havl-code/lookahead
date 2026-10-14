@@ -39,15 +39,20 @@ It works offline after the first visit, and updates itself the next time you lea
   for. A cube you stop using is retired, so its sessions keep it.
 - **WCA ID:** on the More tab, type your WCA ID and Lookahead looks up your name on the WCA
   website (the only thing that needs the internet). It travels with your backups.
-
 - **Analytics:** for each event, your best single (tap it for its session), the average of every
   solve, your best Ao5 to Ao100, and the Speed, Consistency, and Overall scores against WCA
   competitors, with the same insights as the desktop app. Four charts (progress, how your times
   spread out, rolling Ao5 and Ao12, and consistency across sessions) cover the whole event or a
   single session, each with a sentence saying what it shows. The scores use the same summary of
   WCA results as the desktop app, bundled so they work offline.
+- **Import and export:** on the More tab, **Import from CSTimer** reads a CSTimer export (TXT or
+  JSON) and shows its sessions to pick from, each with its event (CSTimer's scramble type picks
+  it where it can). Every solve keeps its date, penalty, and comment, each session can be split
+  into one a day, and solves already here are skipped, so importing the same file again only
+  adds new ones. **Export solves (CSV)** saves every solve, or one session's (from the session's
+  page), for a spreadsheet, in the same columns as the desktop app's.
 
-CSTimer import, CSV export, your world rank, and picking an older session in the timer come next.
+Your world rank and picking an older session in the timer come next.
 
 ## Development
 
@@ -69,10 +74,11 @@ distributions, run `pnpm test:e2e:chromium` locally instead; CI always runs the 
 `.github/workflows/pwa.yml` runs all of these on every push and pull request that touches this
 folder, and deploys `main` to GitHub Pages once they pass.
 
-The stats and backup code is checked against the desktop app's: `tools/build_pwa_golden.py`
-writes the answers the Python code gives to `src/lib/golden/` and `src/features/backup/golden/`,
-and the tests compare. Run `uv run tools/build_pwa_golden.py` from the project folder after
-changing the desktop app's stats or backups.
+The stats, scores, backup, CSTimer import, and CSV export code is checked against the desktop
+app's: `tools/build_pwa_golden.py` writes the answers the Python code gives to `src/lib/golden/`,
+`src/features/backup/golden/`, and `src/features/import/golden/`, and the tests compare. Run
+`uv run tools/build_pwa_golden.py` from the project folder after changing any of those in the
+desktop app.
 
 The app icons are made from `public/favicon.svg`; see `pwa-assets.config.js` to remake them.
 The Space Grotesk font in `src/assets/fonts/` is under the SIL Open Font License 1.1
