@@ -5,8 +5,11 @@
 name: Tests
 
 on:
+  # The phone app in pwa/ has its own workflow (pwa.yml).
   push:
+    paths-ignore: ['pwa/**', '.github/workflows/pwa.yml']
   pull_request:
+    paths-ignore: ['pwa/**', '.github/workflows/pwa.yml']
   workflow_dispatch:
 
 permissions:
