@@ -6,9 +6,9 @@ Named after **lookahead**, the speedcubing skill of finding your next pieces whi
 
 **On your phone:** Lookahead is being rebuilt as an app for your phone's Home Screen that
 works offline, at https://havl-code.github.io/lookahead/. It's a preview for now: it has the
-timer, with WCA inspection, and lists your sessions with the same stats, and a backup moves your
-solves between it and the desktop app below. Analytics, scores, cubes, and CSTimer import are
-still desktop only. Once the phone app does everything the desktop app does, it replaces it.
+timer, with WCA inspection, your sessions and solves (to look through, edit, and add to), your
+cubes, and your WCA ID, and a backup moves your solves between it and the desktop app below.
+Analytics, scores, and CSTimer import are still desktop only. Once the phone app does everything the desktop app does, it replaces it.
 
 To try it, open the link on your phone, then add it to your Home Screen (in Safari, tap Share,
 then **Add to Home Screen**; in Chrome, tap **Install app**). It works offline from then on.

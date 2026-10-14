@@ -27,10 +27,19 @@ It works offline after the first visit, and updates itself the next time you lea
   (its **Export backup** link) or from here, and **Make backup** saves one to share or keep.
   Restoring over what's here can be undone. The same file restores in the desktop app. The Timer
   tab reminds you when 100 solves, or a week's worth, aren't backed up yet.
-- **Sessions:** every session, newest first, with its best, Ao5, Ao12, and mean worked out
-  exactly as the desktop app does.
+- **Sessions:** every session, for one event or all of them, newest or oldest first, or by best
+  single or best Ao5, with its stats worked out exactly as the desktop app does. Tap a session to
+  see its best averages up to Ao100 and every solve (newest, fastest, or slowest first), change a
+  solve's penalty or note, delete it (with Undo), and type in solves timed somewhere else, such as
+  12.34 or 1:23.45. **Add session** makes one for today or an earlier day, and **Edit session**
+  changes its date, cube, and notes. A solve that never started stays a DNF (Regulation A4d2).
+- **Cubes:** on the More tab, add your cubes (brand, model, and when you bought them), pick one
+  for each session, and see each cube's solves, best, and best Ao5 in the event it's used most
+  for. A cube you stop using is retired, so its sessions keep it.
+- **WCA ID:** on the More tab, type your WCA ID and Lookahead looks up your name on the WCA
+  website (the only thing that needs the internet). It travels with your backups.
 
-Analytics and scores, cubes, CSTimer import, and picking an older session in the timer come next.
+Analytics and scores, CSTimer import, and picking an older session in the timer come next.
 
 ## Development
 
