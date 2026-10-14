@@ -7,7 +7,7 @@ const desktop = JSON.parse(
   readFileSync(new URL('../../src/features/backup/golden/backup-v3.json', import.meta.url), 'utf8'),
 ).backup;
 const desktopFile = {
-  name: 'speedcube-backup-2026-10-01.json',
+  name: 'lookahead-backup-2026-10-01.json',
   mimeType: 'application/json',
   buffer: Buffer.from(JSON.stringify(desktop)),
 };

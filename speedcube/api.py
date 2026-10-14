@@ -1043,7 +1043,7 @@ def delete_user_settings():
 @api.get('/backup/export')
 def export_backup():
     payload = backup.export_backup(db.get_db())
-    filename = f'speedcube-backup-{db.today()}.json'
+    filename = f'lookahead-backup-{db.today()}.json'
     return Response(
         json.dumps(payload, indent=2),
         mimetype='application/json',
@@ -1122,7 +1122,7 @@ def export_solves_csv():
     return Response(
         lines(),
         mimetype='text/csv',
-        headers={'Content-Disposition': f'attachment; filename="speedcube-solves-{which}{db.today()}.csv"'},
+        headers={'Content-Disposition': f'attachment; filename="lookahead-solves-{which}{db.today()}.csv"'},
     )
 
 

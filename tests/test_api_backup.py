@@ -9,7 +9,7 @@ def test_export_downloads_a_dated_file(app, client, set_today):
     set_today('2026-10-08')
     seed_session(app, [10, 11])
     response = client.get('/api/backup/export')
-    assert response.headers['Content-Disposition'] == 'attachment; filename="speedcube-backup-2026-10-08.json"'
+    assert response.headers['Content-Disposition'] == 'attachment; filename="lookahead-backup-2026-10-08.json"'
     payload = json.loads(response.data)
     assert len(payload['solves']) == 2 and payload['app'] == 'lookahead'
 
@@ -21,7 +21,7 @@ def test_restore_its_own_export(app, client):
     response = client.post('/api/backup/import', data=upload(exported, 'backup.json'))
     reply = response.get_json()
     assert (reply['success'], reply['solves_left_out']) == (True, 0)
-    assert reply['safety_copy'].startswith('speedcube-') and reply['safety_copy'].endswith('-before-restore.db')
+    assert reply['safety_copy'].startswith('lookahead-') and reply['safety_copy'].endswith('-before-restore.db')
     assert query(app, 'SELECT COUNT(*) AS n FROM solves') == [{'n': 3}]
 
 

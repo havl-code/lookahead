@@ -32,7 +32,7 @@ def database(app, set_today):
 
 def test_the_first_start_of_the_day_keeps_a_copy(database, tmp_path):
     copy = db.keep_daily_copy(database)
-    assert copy.name.startswith('speedcube-2026-10-08-') and copy.name.endswith('-daily.db')
+    assert copy.name.startswith('lookahead-2026-10-08-') and copy.name.endswith('-daily.db')
     with closing(sqlite3.connect(copy)) as conn:
         assert conn.execute('SELECT COUNT(*) FROM solves').fetchone()[0] == 2
 
@@ -81,6 +81,42 @@ def test_daily_and_safety_copies_dont_push_each_other_out(database, tmp_path, se
         db.keep_daily_copy(database)
     assert len(daily(tmp_path)) == 7
     assert len(list((tmp_path / 'backups').glob('*-before-restore.db'))) == 5
+
+
+def old_copy(folder, name, seconds):
+    """A copy named the way the app named them before it was called Lookahead."""
+    copy = folder / 'backups' / name
+    copy.parent.mkdir(exist_ok=True)
+    copy.write_bytes(b'')
+    touch_later(copy, seconds)
+    return copy
+
+
+def test_a_copy_from_before_the_rename_counts_as_todays(database, tmp_path):
+    old_copy(tmp_path, 'speedcube-2026-10-08-090000-daily.db', seconds=-60)
+    touch_later(database)
+    assert db.keep_daily_copy(database) is None
+
+
+def test_copies_from_before_the_rename_are_dropped_oldest_first(database, tmp_path, set_today):
+    for day in range(1, 7):
+        old_copy(tmp_path, f'speedcube-2026-10-{day:02}-090000-daily.db', seconds=day - 100)
+    set_today('2026-10-08')
+    db.keep_daily_copy(database)
+    set_today('2026-10-09')
+    touch_later(database, seconds=50)
+    db.keep_daily_copy(database)
+    days = sorted(name[10:20] for name in daily(tmp_path))
+    assert days == [f'2026-10-{day:02}' for day in (2, 3, 4, 5, 6, 8, 9)]
+
+
+def test_safety_copies_from_before_the_rename_are_dropped_first(database, tmp_path):
+    old = old_copy(tmp_path, 'speedcube-2026-10-01-090000-before-restore.db', seconds=-100)
+    with closing(db.connect(database)) as conn:
+        for _ in range(5):
+            db.keep_safety_copy(conn, database, 'restore')
+    assert not old.exists()
+    assert len(list((tmp_path / 'backups').glob('lookahead-*-before-restore.db'))) == 5
 
 
 def test_nothing_to_copy_in_an_empty_database(tmp_path):

@@ -27,7 +27,7 @@ def test_every_solve_in_order_with_its_session_and_cube(app, client, set_today):
     seed_session(app, [3.21], event='222', date='2026-09-01')
     response, text = export(client)
     assert response.mimetype == 'text/csv'
-    assert response.headers['Content-Disposition'] == 'attachment; filename="speedcube-solves-2026-10-08.csv"'
+    assert response.headers['Content-Disposition'] == 'attachment; filename="lookahead-solves-2026-10-08.csv"'
     assert text.startswith('﻿session_id,session_date,event_id,event,cube,solve_number,time_seconds,')
     rows = rows_of(text)
     assert [(r['session_date'], r['event'], r['solve_number']) for r in rows] == [
@@ -46,7 +46,7 @@ def test_one_session(app, client, set_today):
     sid = seed_session(app, [12, 13, 14])
     response, text = export(client, f'?session_id={sid}')
     assert response.headers['Content-Disposition'] == (
-        f'attachment; filename="speedcube-solves-session-{sid}-2026-10-08.csv"')
+        f'attachment; filename="lookahead-solves-session-{sid}-2026-10-08.csv"')
     assert [r['time_seconds'] for r in rows_of(text)] == ['12.000', '13.000', '14.000']
 
 

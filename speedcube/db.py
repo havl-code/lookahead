@@ -131,26 +131,36 @@ def _copy_database(conn, target):
         conn.backup(copy)
 
 
+# Copies were named speedcube-... before the app was renamed, and are still kept and counted
+COPY_PREFIXES = ('lookahead', 'speedcube')
+
+
+def _copies(folder, pattern):
+    """The copies in folder matching pattern after the prefix, by name without it (so by date)."""
+    found = [copy for prefix in COPY_PREFIXES for copy in folder.glob(f'{prefix}-{pattern}')]
+    return sorted(found, key=lambda copy: copy.name.split('-', 1)[1])
+
+
 def keep_safety_copy(conn, database_path, reason):
-    """Copy the database to backups/speedcube-<date>-<time>-before-<reason>.db next to it, and
+    """Copy the database to backups/lookahead-<date>-<time>-before-<reason>.db next to it, and
     keep only the newest SAFETY_COPIES_KEPT. Returns the copy's path."""
     folder = Path(database_path).parent / 'backups'
     folder.mkdir(exist_ok=True)
     stamp = datetime.now().strftime('%Y-%m-%d-%H%M%S')
-    target = folder / f'speedcube-{stamp}-before-{reason}.db'
+    target = folder / f'lookahead-{stamp}-before-{reason}.db'
     count = 2
     while target.exists():  # two in the same second
-        target = folder / f'speedcube-{stamp}-{count}-before-{reason}.db'
+        target = folder / f'lookahead-{stamp}-{count}-before-{reason}.db'
         count += 1
     _copy_database(conn, target)
-    copies = sorted(folder.glob('speedcube-*-before-*.db'), key=lambda p: (p.stat().st_mtime, p.name))
+    copies = sorted(_copies(folder, '*-before-*.db'), key=lambda p: p.stat().st_mtime)  # stable, so by name on ties
     for old in copies[:-SAFETY_COPIES_KEPT]:
         old.unlink()
     return target
 
 
 def keep_daily_copy(database_path):
-    """The day's copy of the database, as backups/speedcube-<date>-<time>-daily.db next to it,
+    """The day's copy of the database, as backups/lookahead-<date>-<time>-daily.db next to it,
     keeping only the newest DAILY_COPIES_KEPT. It's made the first time the app starts each day,
     but not for a database with nothing in it yet, nor when nothing has changed since the last
     one, so the copies kept go back as far as they can. Returns the copy's path, or None."""
@@ -158,8 +168,8 @@ def keep_daily_copy(database_path):
     folder = path.parent / 'backups'
     if not path.exists():
         return None
-    earlier = sorted(folder.glob('speedcube-*-daily.db'))  # by name, so oldest first
-    if any(copy.name.startswith(f'speedcube-{today()}-') for copy in earlier):
+    earlier = _copies(folder, '*-daily.db')  # oldest first
+    if any(copy.name.split('-', 1)[1].startswith(f'{today()}-') for copy in earlier):
         return None
     if earlier:
         # Changes land in the -wal file first, and reach the database file itself later
@@ -170,9 +180,9 @@ def keep_daily_copy(database_path):
         if not conn.execute('SELECT EXISTS (SELECT 1 FROM sessions) OR EXISTS (SELECT 1 FROM cubes)').fetchone()[0]:
             return None
         folder.mkdir(exist_ok=True)
-        target = folder / f'speedcube-{today()}-{datetime.now():%H%M%S}-daily.db'
+        target = folder / f'lookahead-{today()}-{datetime.now():%H%M%S}-daily.db'
         _copy_database(conn, target)
-    for old in sorted(folder.glob('speedcube-*-daily.db'))[:-DAILY_COPIES_KEPT]:
+    for old in _copies(folder, '*-daily.db')[:-DAILY_COPIES_KEPT]:
         old.unlink()
     return target
 
