@@ -40,7 +40,14 @@ It works offline after the first visit, and updates itself the next time you lea
 - **WCA ID:** on the More tab, type your WCA ID and Lookahead looks up your name on the WCA
   website (the only thing that needs the internet). It travels with your backups.
 
-Analytics and scores, CSTimer import, and picking an older session in the timer come next.
+- **Analytics:** for each event, your best single (tap it for its session), the average of every
+  solve, your best Ao5 to Ao100, and the Speed, Consistency, and Overall scores against WCA
+  competitors, with the same insights as the desktop app. Four charts (progress, how your times
+  spread out, rolling Ao5 and Ao12, and consistency across sessions) cover the whole event or a
+  single session, each with a sentence saying what it shows. The scores use the same summary of
+  WCA results as the desktop app, bundled so they work offline.
+
+CSTimer import, CSV export, your world rank, and picking an older session in the timer come next.
 
 ## Development
 
