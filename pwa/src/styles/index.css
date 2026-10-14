@@ -81,6 +81,13 @@
   --warning-ink: #fbbf24;
   --good-ink: #4ade80;
   --danger-ink: #f87171;
+  /* Chart lines and marks: each at 3:1 or more on the raised background (WCAG 2.1 1.4.11). */
+  --chart-1: #ff7a1a;
+  --chart-2: #60a5fa;
+  --chart-3: #2dd4bf;
+  --chart-4: #c084fc;
+  --chart-dots: #8b8b94;
+  --chart-grid: #2c2c32;
 }
 
 @media (prefers-color-scheme: light) {
@@ -100,6 +107,12 @@
     --warning-ink: #a95005;
     --good-ink: #147a3b;
     --danger-ink: #c42424;
+    --chart-1: #c2410c;
+    --chart-2: #2563eb;
+    --chart-3: #0f766e;
+    --chart-4: #9333ea;
+    --chart-dots: #71717a;
+    --chart-grid: #e4e4e7;
   }
 }
 

@@ -1,7 +1,8 @@
 """Writes the phone app's golden files: answers worked out by the Python code, so the phone app's
 tests can check that its own code gives exactly the same results.
 
-- pwa/src/lib/golden/stats.json: session stats, and singles and averages the WCA way
+- pwa/src/lib/golden/stats.json: session stats, singles and averages the WCA way, and the
+  charts' maths
 - pwa/src/lib/golden/scores.json: the Analytics scores, against a small made-up WCA reference
   (so the monthly refresh of the real one doesn't change them)
 - pwa/src/features/backup/golden/*.json: backups, and what the desktop app exports after
@@ -22,7 +23,10 @@ PROJECT_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_DIR))
 
 from speedcube import backup, db, scores  # noqa: E402
-from speedcube.stats import AVERAGE_SIZES, average_seconds, best_average, single_seconds  # noqa: E402
+from speedcube.stats import (  # noqa: E402
+    AVERAGE_SIZES, average_seconds, best_average, box_stats, dropped_in_window,
+    filter_distribution_outliers, rolling_wca_averages, single_seconds,
+)
 
 OUTPUT = PROJECT_DIR / 'pwa' / 'src' / 'lib' / 'golden' / 'stats.json'
 SCORES_OUTPUT = OUTPUT.with_name('scores.json')
@@ -189,6 +193,13 @@ def scores_golden(rng):
         scores.reference = original
 
 
+def rounded_box(times):
+    """box_stats, with its mean and standard deviation to 9 places: Python 3.12 and later add up
+    floats more precisely than 3.11 (and JavaScript), so the last digit can differ."""
+    box = box_stats(times)
+    return {**box, 'mean': round(box['mean'], 9), 'sd': round(box['sd'], 9)}
+
+
 def build():
     """Every golden file's path and contents. tests/test_pwa_golden.py checks they're up to date."""
     rng = random.Random(20261014)
@@ -210,7 +221,28 @@ def build():
         average, end = best_average(values, size)
         best.append({'size': size, 'results': values, 'average': average, 'end': end})
 
-    files = {OUTPUT: {'sessions': sessions, 'rounding': rounding, 'bestAverages': best},
+    chart_rng = random.Random(20261016)
+    charts = []
+    for count, dnf_rate in ((4, 0), (12, 0.1), (40, 0.25), (300, 0.05)):
+        values = [None if s['dnf'] else s['time_ms'] + (2000 if s['penalty'] == '+2' else 0)
+                  for s in random_solves(chart_rng, count, dnf_rate=dnf_rate)]
+        times = sorted(v / 1000 for v in values if v is not None)
+        # A few far-off times, so the outlier filter has something to do
+        spiky = times + [times[0] * 40, times[-1] * 25] if times else []
+        charts.append({
+            'results': values,
+            'rolling5': rolling_wca_averages(values, 5),
+            'rolling12': rolling_wca_averages(values, 12),
+            'dropped5': sorted(dropped_in_window(values[:5], 5)) if len(values) >= 5 else [],
+            'box': rounded_box(times) if times else None,
+            'times': spiky,
+            'filtered': filter_distribution_outliers(spiky) if spiky else [],
+        })
+    flat = [12.0] * 30 + [99.0, 98.0, 97.0, 96.0, 95.0]
+    charts.append({'results': [], 'rolling5': [], 'rolling12': [], 'dropped5': [], 'box': None,
+                   'times': flat, 'filtered': filter_distribution_outliers(flat)})
+
+    files = {OUTPUT: {'sessions': sessions, 'rounding': rounding, 'bestAverages': best, 'charts': charts},
              SCORES_OUTPUT: scores_golden(random.Random(20261015))}
     files.update(backup_goldens(rng))
     return {path: json.dumps(contents, indent=1) + '\n' for path, contents in files.items()}

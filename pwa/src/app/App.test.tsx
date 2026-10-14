@@ -1,4 +1,4 @@
-import { act, render, screen } from '@testing-library/react';
+import { act, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { DbProvider } from '../db/DbProvider.tsx';
 import { createTestDb } from '../test/db.ts';
@@ -38,9 +38,8 @@ describe('App', () => {
       window.dispatchEvent(new HashChangeEvent('hashchange'));
     });
     expect(await screen.findByRole('heading', { level: 1, name: 'Analytics' })).toBeDefined();
-    expect(screen.getByRole('link', { name: 'Analytics' }).getAttribute('aria-current')).toBe(
-      'page',
-    );
-    expect(screen.getByRole('link', { name: 'Timer' }).getAttribute('aria-current')).toBeNull();
+    const tabs = within(screen.getByRole('navigation', { name: 'Main' }));
+    expect(tabs.getByRole('link', { name: 'Analytics' }).getAttribute('aria-current')).toBe('page');
+    expect(tabs.getByRole('link', { name: 'Timer' }).getAttribute('aria-current')).toBeNull();
   });
 });

@@ -179,3 +179,109 @@ export function sessionStats(attempts: readonly Attempt[]): SessionStats {
     best_ao100: best(100),
   };
 }
+
+// ---- Chart maths, the same as stats.py's ----
+
+/**
+ * The WCA-style average of each run of `size` results in a row, in order, for the charts' rolling
+ * Ao5 and Ao12. Null until a window fills, and null for a window that's a DNF; DNFs count the WCA
+ * way rather than being skipped.
+ */
+export function rollingWcaAverages(results: readonly Result[], size: number): Result[] {
+  return results.map((_, i) =>
+    i >= size - 1 ? trimmedAverage(results.slice(i - size + 1, i + 1)) : null,
+  );
+}
+
+/**
+ * Which positions of an average's window are dropped: the best trimFor(size) and the worst as
+ * many, with DNFs as the worst (ties go to the earlier solve).
+ */
+export function droppedInWindow(window: readonly Result[], size: number): Set<number> {
+  const trim = trimFor(size);
+  const order = window
+    .map((_, i) => i)
+    .sort((a, b) => {
+      const x = window[a] ?? null;
+      const y = window[b] ?? null;
+      if ((x === null) !== (y === null)) return x === null ? 1 : -1;
+      return (x ?? 0) - (y ?? 0) || a - b;
+    });
+  return new Set([...order.slice(0, trim), ...order.slice(order.length - trim)]);
+}
+
+export function sampleStdDev(values: readonly number[]): number {
+  const n = values.length;
+  if (n < 2) return 0;
+  const mean = sum(values) / n;
+  return Math.sqrt(sum(values.map((x) => (x - mean) ** 2)) / (n - 1));
+}
+
+export function populationStdDev(values: readonly number[]): number {
+  const n = values.length;
+  if (n === 0) return 0;
+  const mean = sum(values) / n;
+  return Math.sqrt(sum(values.map((x) => (x - mean) ** 2)) / n);
+}
+
+/** Linear-interpolated quantile of an already sorted list. */
+export function quantile(sorted: readonly number[], q: number): number | null {
+  const n = sorted.length;
+  if (n === 0) return null;
+  const index = q * (n - 1);
+  const lower = Math.floor(index);
+  const upper = Math.ceil(index);
+  const low = sorted[lower] as number;
+  if (lower === upper) return low;
+  return low + ((sorted[upper] as number) - low) * (index - lower);
+}
+
+export interface BoxStats {
+  readonly count: number;
+  readonly q1: number;
+  readonly median: number;
+  readonly q3: number;
+  readonly lowerfence: number;
+  readonly upperfence: number;
+  readonly mean: number;
+  readonly sd: number;
+}
+
+/**
+ * Box plot summary of an already sorted, non-empty list: quartiles, whiskers (the furthest times
+ * within 1.5 times the box height of the box), mean, and standard deviation.
+ */
+export function boxStats(sorted: readonly number[]): BoxStats {
+  const q1 = quantile(sorted, 0.25) as number;
+  const median = quantile(sorted, 0.5) as number;
+  const q3 = quantile(sorted, 0.75) as number;
+  const reach = 1.5 * (q3 - q1);
+  return {
+    count: sorted.length,
+    q1,
+    median,
+    q3,
+    lowerfence: sorted.find((t) => t >= q1 - reach) as number,
+    upperfence: sorted.findLast((t) => t <= q3 + reach) as number,
+    mean: sum(sorted) / sorted.length,
+    sd: populationStdDev(sorted),
+  };
+}
+
+/**
+ * Drops times more than 3 standard deviations from the mean. If that would throw away more than
+ * 10% of them, keeps the 1st to 99th percentile instead.
+ */
+export function filterDistributionOutliers(times: readonly number[]): number[] {
+  const sd = sampleStdDev(times);
+  if (sd <= 0) return [...times];
+  const mean = sum(times) / times.length;
+  let kept = times.filter((t) => mean - 3 * sd <= t && t <= mean + 3 * sd);
+  if (kept.length < times.length * 0.9) {
+    const ordered = [...times].sort(byNumber);
+    const p1 = quantile(ordered, 0.01) as number;
+    const p99 = quantile(ordered, 0.99) as number;
+    kept = times.filter((t) => p1 <= t && t <= p99);
+  }
+  return kept;
+}

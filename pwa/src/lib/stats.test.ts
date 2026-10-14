@@ -4,7 +4,11 @@ import {
   type Attempt,
   averageSeconds,
   bestAverage,
+  boxStats,
+  droppedInWindow,
+  filterDistributionOutliers,
   type Result,
+  rollingWcaAverages,
   sessionStats,
   singleSeconds,
   trimFor,
@@ -57,4 +61,31 @@ describe('bestAverage', () => {
   it('drops 5% from each end, rounded up', () => {
     expect([5, 12, 50, 100].map(trimFor)).toEqual([1, 1, 3, 5]);
   });
+});
+
+describe('chart maths', () => {
+  it.each(golden.charts.map((c, i) => [i, c] as const))(
+    'matches the desktop app (case %s)',
+    (_, c) => {
+      const results = c.results as Result[];
+      expect(rollingWcaAverages(results, 5)).toEqual(c.rolling5);
+      expect(rollingWcaAverages(results, 12)).toEqual(c.rolling12);
+      if (results.length >= 5)
+        expect([...droppedInWindow(results.slice(0, 5), 5)].sort((a, b) => a - b)).toEqual(
+          c.dropped5,
+        );
+      const times = results
+        .filter((r): r is number => r !== null)
+        .map((r) => r / 1000)
+        .sort((a, b) => a - b);
+      if (c.box) {
+        // The golden mean and SD are to 9 places (see rounded_box in build_pwa_golden.py).
+        const { mean, sd, ...rest } = boxStats(times);
+        expect({ ...rest, mean: c.box.mean, sd: c.box.sd }).toEqual(c.box);
+        expect(mean).toBeCloseTo(c.box.mean, 9);
+        expect(sd).toBeCloseTo(c.box.sd, 9);
+      }
+      expect(filterDistributionOutliers(c.times)).toEqual(c.filtered);
+    },
+  );
 });
