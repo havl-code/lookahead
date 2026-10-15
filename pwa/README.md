@@ -51,6 +51,9 @@ It works offline after the first visit, and updates itself the next time you lea
   into one a day, and solves already here are skipped, so importing the same file again only
   adds new ones. **Export solves (CSV)** saves every solve, or one session's (from the session's
   page), for a spreadsheet, in the same columns as the desktop app's.
+- **Light or dark:** dark by default, as in the desktop app, unless your phone is set to light.
+  **Appearance** on the More tab keeps it light or dark whatever the phone does, or **System**
+  follows the phone again. The choice stays on this phone, apart from your backups.
 
 Your world rank and picking an older session in the timer come next.
 

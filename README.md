@@ -127,7 +127,8 @@ then **Add to Home Screen**; in Chrome, tap **Install app**). It works offline f
 ### 🎨 Look and Feel
 
 - **Clean and Simple:** a calm layout with an orange accent and the Space Grotesk font
-- **Dark Mode by Default:** switch to light mode with one click; the app remembers your choice
+- **Dark Mode by Default:** switch to light mode with one click; the app remembers your choice.
+  On your phone, **Appearance** on the More tab picks Light, Dark, or System (following the phone)
 - **Personalised Greeting:** add your WCA ID and the app greets you by name
 - **Fast with Big Histories:** long lists load a page at a time, so even tens of thousands of
   solves stay quick

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import uPlot, { type AlignedData, type Options } from 'uplot';
 import 'uplot/dist/uPlot.min.css';
 import { formatClock } from '../../lib/format.ts';
+import { onThemeChange } from '../../lib/theme.ts';
 
 /** The app's chart colours (index.css), read when a chart is drawn, so they follow the theme. */
 export interface ChartColours {
@@ -24,15 +25,10 @@ function readColours(): ChartColours {
   };
 }
 
-/** Redraws when the system switches between light and dark. */
+/** Redraws when the app switches between light and dark, by choice or with the phone. */
 function useColours(): ChartColours {
   const [colours, setColours] = useState(readColours);
-  useEffect(() => {
-    const query = window.matchMedia('(prefers-color-scheme: light)');
-    const change = () => setColours(readColours());
-    query.addEventListener('change', change);
-    return () => query.removeEventListener('change', change);
-  }, []);
+  useEffect(() => onThemeChange(() => setColours(readColours())), []);
   return colours;
 }
 

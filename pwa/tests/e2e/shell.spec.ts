@@ -107,6 +107,39 @@ for (const colorScheme of ['dark', 'light'] as const) {
   });
 }
 
+test('lets you choose light or dark mode, and keeps the choice', async ({ page }) => {
+  const errors = collectErrors(page);
+  const html = page.locator('html');
+  const statusBar = page.locator('meta[name="theme-color"]');
+  const appearance = page.getByRole('group', { name: 'Appearance' });
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await page.goto('./#/more');
+  await expect(html).toHaveAttribute('data-theme', 'dark');
+
+  await appearance.getByRole('button', { name: 'Light' }).click();
+  await expect(html).toHaveAttribute('data-theme', 'light');
+  await expect(statusBar).toHaveAttribute('content', '#f6f6f7');
+  expect(await page.evaluate(() => getComputedStyle(document.body).backgroundColor)).toBe(
+    'rgb(246, 246, 247)',
+  );
+
+  // Kept after a reload, and in place before the app's own code runs, so it never flashes dark.
+  await page.reload({ waitUntil: 'commit' });
+  await page.waitForFunction(() => document.documentElement.dataset.theme !== undefined);
+  await expect(html).toHaveAttribute('data-theme', 'light');
+  await expect(appearance.getByRole('button', { name: 'Light' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+
+  // System follows the phone again, including when it switches.
+  await appearance.getByRole('button', { name: 'System' }).click();
+  await expect(html).toHaveAttribute('data-theme', 'dark');
+  await page.emulateMedia({ colorScheme: 'light' });
+  await expect(html).toHaveAttribute('data-theme', 'light');
+  expect(errors).toEqual([]);
+});
+
 test('links to the source code on GitHub from the More tab', async ({ page }) => {
   await page.goto('./#/more');
   const link = page.getByRole('link', { name: 'Lookahead on GitHub' });

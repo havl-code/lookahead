@@ -88,37 +88,37 @@
   --chart-4: #c084fc;
   --chart-dots: #8b8b94;
   --chart-grid: #2c2c32;
+  color-scheme: dark;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    --surface: #f6f6f7;
-    --raised: #ffffff;
-    --inset: #f0f0f2;
-    --line: #e4e4e7;
-    --control: #8a8a8e;
-    --ink: #18181b;
-    --muted: #55555e;
-    --accent: #c2410c;
-    --on-accent: #ffffff;
-    --accent-ink: #c2410c;
-    --warning: #fef3c7;
-    --on-warning: #78350f;
-    --warning-ink: #a95005;
-    --good-ink: #147a3b;
-    --danger-ink: #c42424;
-    --chart-1: #c2410c;
-    --chart-2: #2563eb;
-    --chart-3: #0f766e;
-    --chart-4: #9333ea;
-    --chart-dots: #71717a;
-    --chart-grid: #e4e4e7;
-  }
+/* Light mode, chosen in Appearance or following the phone. public/theme-init.js sets data-theme. */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --surface: #f6f6f7;
+  --raised: #ffffff;
+  --inset: #f0f0f2;
+  --line: #e4e4e7;
+  --control: #8a8a8e;
+  --ink: #18181b;
+  --muted: #55555e;
+  --accent: #c2410c;
+  --on-accent: #ffffff;
+  --accent-ink: #c2410c;
+  --warning: #fef3c7;
+  --on-warning: #78350f;
+  --warning-ink: #a95005;
+  --good-ink: #147a3b;
+  --danger-ink: #c42424;
+  --chart-1: #c2410c;
+  --chart-2: #2563eb;
+  --chart-3: #0f766e;
+  --chart-4: #9333ea;
+  --chart-dots: #71717a;
+  --chart-grid: #e4e4e7;
 }
 
 @layer base {
   html {
-    color-scheme: dark light;
     /* Follows the iOS text size setting (Dynamic Type). Other browsers ignore it. */
     /* biome-ignore lint/a11y/useGenericFontNames: the next line sets the family, with sans-serif. */
     font: -apple-system-body;
