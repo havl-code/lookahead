@@ -133,8 +133,8 @@ Not released yet.
   https://havl-code.github.io/lookahead/. It's being rebuilt to do everything the desktop app
   does, and then replaces it. So far it has the timer for every event the desktop app times,
   sessions and solves to look through, edit, and add to, cubes, the WCA ID, the Analytics tab
-  (the same scores, insights, and charts), CSTimer import, CSV export, and backups in the same
-  format as the desktop app's, both ways
+  (the same scores, insights, charts, and world rank), CSTimer import, CSV export, and backups
+  in the same format as the desktop app's, both ways
 
 ---
 

@@ -38,24 +38,31 @@ It works offline after the first visit, and updates itself the next time you lea
   for each session, and see each cube's solves, best, and best Ao5 in the event it's used most
   for. A cube you stop using is retired, so its sessions keep it.
 - **WCA ID:** on the More tab, type your WCA ID and Lookahead looks up your name on the WCA
-  website (the only thing that needs the internet). It travels with your backups.
-- **Analytics:** for each event, your best single (tap it for its session), the average of every
-  solve, your best Ao5 to Ao100, and the Speed, Consistency, and Overall scores against WCA
-  competitors, with the same insights as the desktop app. Four charts (progress, how your times
-  spread out, rolling Ao5 and Ao12, and consistency across sessions) cover the whole event or a
-  single session, each with a sentence saying what it shows. The scores use the same summary of
-  WCA results as the desktop app, bundled so they work offline.
+  website. It travels with your backups.
+- **Analytics:** for each event, your best single (tap it for its session) and where it would
+  rank in the world, the average of every solve, your best Ao5 to Ao100, and the Speed,
+  Consistency, and Overall scores against WCA competitors, with the same insights as the desktop
+  app. Four charts (progress, how your times spread out, rolling Ao5 and Ao12, and consistency
+  across sessions) cover the whole event or a single session, each with a sentence saying what
+  it shows. The scores use the same summary of WCA results as the desktop app, bundled so they
+  work offline.
 - **Import and export:** on the More tab, **Import from CSTimer** reads a CSTimer export (TXT or
   JSON) and shows its sessions to pick from, each with its event (CSTimer's scramble type picks
   it where it can). Every solve keeps its date, penalty, and comment, each session can be split
   into one a day, and solves already here are skipped, so importing the same file again only
   adds new ones. **Export solves (CSV)** saves every solve, or one session's (from the session's
   page), for a spreadsheet, in the same columns as the desktop app's.
+- **World rank:** worked out the same way as the desktop app's, from the WCA rankings the
+  [Unofficial WCA Public API](https://wca-rest-api.robiningelbrecht.be/) publishes. They list
+  the fastest 1,000 people in each event, so a slower single shows as outside the top 1,000
+  rather than a guess. The phone keeps the rankings it fetches, gets new ones once a day when
+  it's online, and uses the ones it has when it isn't, so only the first look at each event, and
+  the WCA ID lookup, need the internet.
 - **Light or dark:** dark by default, as in the desktop app, unless your phone is set to light.
   **Appearance** on the More tab keeps it light or dark whatever the phone does, or **System**
   follows the phone again. The choice stays on this phone, apart from your backups.
 
-Your world rank and picking an older session in the timer come next.
+Picking an older session in the timer comes next.
 
 ## Development
 
