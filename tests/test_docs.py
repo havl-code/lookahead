@@ -35,9 +35,11 @@ def anchors_in(path):
 
 
 def prose(text):
-    """The text without code blocks, inline code, or link targets, where code spellings belong."""
+    """The text without code blocks, inline code, link targets, or HTML attributes (such as
+    prefers-color-scheme), where code spellings belong. Image alt text is kept, since it's prose."""
     text = re.sub(r'```.*?```', '', text, flags=re.S)
     text = re.sub(r'`[^`]*`', '', text)
+    text = re.sub(r'<[^>]+>', lambda tag: ' '.join(re.findall(r'alt="([^"]*)"', tag.group())), text)
     return re.sub(r'\]\([^)]*\)', ']', text)
 
 

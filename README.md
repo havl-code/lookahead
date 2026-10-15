@@ -1,4 +1,4 @@
-# Lookahead 🎲
+# <picture><source media="(prefers-color-scheme: dark)" srcset="web/images/favicon_w.png"><img src="web/images/favicon_b.png" width="40" height="40" alt=""></picture> Lookahead 🎲
 
 **Track your progress. Analyse your solves. Compare with the world.**
 
