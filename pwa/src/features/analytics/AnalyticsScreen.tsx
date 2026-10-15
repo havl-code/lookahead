@@ -9,10 +9,12 @@ import { eventName } from '../../lib/events.ts';
 import { count, formatResult } from '../../lib/format.ts';
 import { averageSeconds, singleSeconds } from '../../lib/stats.ts';
 import { formatDate } from '../../lib/time.ts';
+import { rankedEvents } from '../../lib/wcaRank.ts';
 import { wcaReference } from '../../lib/wcaReference.ts';
 import { Charts } from './Charts.tsx';
 import { chartData, eventOverview, eventSessions, type Overview, scoredSessions } from './data.ts';
 import { ScoresSection } from './ScoresSection.tsx';
+import { WorldRank } from './WorldRank.tsx';
 
 /** The greeting the desktop app gives, by the time of day. */
 export function timeOfDay(hour = new Date().getHours()): string {
@@ -93,7 +95,7 @@ function EventAnalytics({ eventId }: { readonly eventId: string }) {
 
   return (
     <>
-      {overview && <OverviewCard overview={overview} />}
+      {overview && <OverviewCard eventId={eventId} overview={overview} />}
       {scored && <ScoresSection eventId={eventId} sessions={scored} reference={wcaReference} />}
       <section aria-labelledby="charts-heading" className="mt-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -130,7 +132,13 @@ function EventAnalytics({ eventId }: { readonly eventId: string }) {
   );
 }
 
-function OverviewCard({ overview }: { readonly overview: Overview }) {
+function OverviewCard({
+  eventId,
+  overview,
+}: {
+  readonly eventId: string;
+  readonly overview: Overview;
+}) {
   const sizes = [5, 12, 50, 100] as const;
   return (
     <section
@@ -163,6 +171,9 @@ function OverviewCard({ overview }: { readonly overview: Overview }) {
           <p className="text-muted text-sm">of every solve</p>
         </div>
       </div>
+      {overview.best && rankedEvents.has(eventId) && (
+        <WorldRank eventId={eventId} bestMs={overview.best.ms} />
+      )}
       <dl className="mt-3 grid grid-cols-4 gap-2 border-line border-t pt-3">
         {sizes.map((size) => {
           const best = overview.bestAverages[size];

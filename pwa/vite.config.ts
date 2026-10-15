@@ -23,8 +23,9 @@ const contentSecurityPolicy = [
   "style-src-attr 'unsafe-inline'",
   "font-src 'self'",
   "img-src 'self' data: blob:",
-  // The WCA website, for looking up a name from a WCA ID.
-  "connect-src 'self' https://www.worldcubeassociation.org",
+  // The WCA website, for looking up a name from a WCA ID, and the WCA rankings on GitHub
+  // (src/lib/wcaRank.ts).
+  "connect-src 'self' https://www.worldcubeassociation.org https://raw.githubusercontent.com",
   "object-src 'none'",
   "base-uri 'none'",
   "form-action 'none'",
