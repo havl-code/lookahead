@@ -13,7 +13,8 @@ export function roundHalfUp(value: number): number {
   return Math.floor(value + 0.5);
 }
 
-function round2(value: number): number {
+/** Rounds to 2 places, with halves going up, as stats.py's round2. */
+export function round2(value: number): number {
   return roundHalfUp(value * 100) / 100;
 }
 

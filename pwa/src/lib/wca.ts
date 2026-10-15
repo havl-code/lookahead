@@ -1,7 +1,7 @@
 /**
  * Looking up a competitor on the WCA website. Its persons API allows any website to ask
- * (Access-Control-Allow-Origin: *), so this works straight from the phone. It's the only thing
- * here so far that needs the internet.
+ * (Access-Control-Allow-Origin: *), so this works straight from the phone. It and the world
+ * rank (wcaRank.ts) are the only things here that need the internet.
  */
 
 const personsApi = 'https://www.worldcubeassociation.org/api/v0/persons/';

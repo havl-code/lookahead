@@ -62,6 +62,22 @@ function practice() {
   };
 }
 
+const rankings = 'https://raw.githubusercontent.com/robiningelbrecht/wca-rest-api/**';
+
+/** The WCA's 3x3x3 rankings, faked: 1,000 people listed from 3.00 up, 200,000 ranked. */
+test.beforeEach(async ({ page }) => {
+  await page.route(rankings, (route) =>
+    route.request().url().endsWith('/rank/world/single/333.json')
+      ? route.fulfill({
+          json: {
+            items: Array.from({ length: 1000 }, (_, i) => ({ best: 300 + i })),
+            total: 200_000,
+          },
+        })
+      : route.abort('internetdisconnected'),
+  );
+});
+
 async function restore(page: Page) {
   await page.goto('./#/more');
   const chooser = page.waitForEvent('filechooser');
@@ -95,6 +111,9 @@ test('shows bests, scores, insights, and charts for an event', async ({ page }) 
   ).toBeVisible();
   await expect(page.getByLabel('Event')).toHaveValue('333');
   await expect(page.getByText('300 solves in 12 sessions')).toBeVisible();
+  // The best single, 12.60, is 961st of the 1,000 listed (3.00 to 12.99).
+  await expect(page.getByText('~961')).toBeVisible();
+  await expect(page.getByText('Top 0.48% worldwide, by best single')).toBeVisible();
   await expect(page.getByRole('link', { name: /^Best Ao5 / })).toBeVisible();
 
   const scores = page.getByRole('region', { name: 'Scores' });
@@ -135,6 +154,21 @@ test('shows bests, scores, insights, and charts for an event', async ({ page }) 
   await expect(scores.getByText('Needs a full Ao5 of solves')).toBeVisible();
   await expect(page.getByText('Needs 12 solves or more.')).toBeVisible();
   expect(errors).toEqual([]);
+});
+
+test('keeps the rankings for offline use, and says when it has none', async ({ page }) => {
+  await restore(page);
+  await page.goto('./#/analytics');
+  await expect(page.getByText('~961')).toBeVisible();
+
+  await page.context().setOffline(true);
+  await page.reload();
+  await expect(page.getByText('~961')).toBeVisible();
+  // 2x2x2's rankings were never fetched.
+  await page.getByLabel('Event').selectOption({ label: '2x2x2' });
+  await expect(
+    page.getByText("Needs the internet once, to fetch the WCA's rankings"),
+  ).toBeVisible();
 });
 
 test('has no detectable WCAG 2.2 AA violations', async ({ page }) => {
