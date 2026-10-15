@@ -8,6 +8,7 @@ import { BackupSection } from '../backup/BackupSection.tsx';
 import { CsvExportButton } from '../backup/CsvExportButton.tsx';
 import { CubesScreen } from '../cubes/CubesScreen.tsx';
 import { CsTimerImport } from '../import/CsTimerImport.tsx';
+import { AppearanceSection } from './AppearanceSection.tsx';
 import { WcaSection } from './WcaSection.tsx';
 
 /** The More tab, or its Cubes page (#/more/cubes). */
@@ -56,6 +57,7 @@ function MoreList() {
         <CsTimerImport />
         <CsvExportButton />
       </section>
+      <AppearanceSection />
       <section className="mt-6">
         <h2 className="font-semibold">About</h2>
         <a
