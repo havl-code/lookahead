@@ -19,8 +19,8 @@
     "typecheck": "tsc -b",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test --project=iphone-webkit",
-    "test:e2e:chromium": "playwright test --project=iphone-chromium"
+    "test:e2e": "playwright test --project=iphone-webkit --project=desktop-chromium",
+    "test:e2e:chromium": "playwright test --project=iphone-chromium --project=desktop-chromium"
   },
   "dependencies": {
     "dexie": "4.4.6",
