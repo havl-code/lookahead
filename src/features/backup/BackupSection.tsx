@@ -74,8 +74,8 @@ export function BackupSection() {
       </h2>
       <p className="text-muted text-sm">
         Lookahead keeps everything on this device only, and removing the app removes it all. Save a
-        backup somewhere safe, such as iCloud Drive or Google Drive, now and then. Backups work in
-        the desktop app too, both ways.
+        backup somewhere safe, such as iCloud Drive or Google Drive, now and then. A backup from
+        Lookahead 3.x (the desktop app) restores here too.
       </p>
       {here && (
         <p className="text-sm">

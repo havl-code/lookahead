@@ -126,7 +126,7 @@ export function WcaSection() {
         </form>
       )}
       <p className="text-muted text-sm">
-        Your WCA ID travels with your backups, so the desktop app has it too.
+        Your WCA ID travels with your backups, so your other devices have it too.
       </p>
     </section>
   );

@@ -1,5 +1,5 @@
 import { ExternalIcon, ForwardIcon, GitHubIcon } from '../../app/icons.tsx';
-import { repoUrl } from '../../app/Preview.tsx';
+import { repoUrl } from '../../app/links.ts';
 import { detailHref, useDetail } from '../../app/router.ts';
 import { ScreenHeader } from '../../app/ScreenHeader.tsx';
 import { useCubes } from '../../db/hooks.ts';
@@ -69,9 +69,7 @@ function MoreList() {
           <GitHubIcon className="size-10 shrink-0" />
           <span className="min-w-0 flex-1">
             <span className="block font-semibold">Lookahead on GitHub</span>
-            <span className="block text-muted text-sm">
-              The source code, what's new, and the desktop app
-            </span>
+            <span className="block text-muted text-sm">The source code, and what's new</span>
           </span>
           <ExternalIcon className="size-5 shrink-0 text-muted" />
           <span className="sr-only">(opens in a new tab)</span>

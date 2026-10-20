@@ -1,6 +1,6 @@
 # Roadmap
 
-Where Lookahead stands after version 3.3, what it can't do yet, and what
+Where Lookahead stands after version 4.0, what it can't do yet, and what
 could come next, roughly in order. It's a plan, not a promise: ideas and pull requests are
 welcome (see [Contributing](../README.md#-contributing)).
 
@@ -116,25 +116,35 @@ on 11 October 2026.
 - [`b94e87e`](https://github.com/havl-code/lookahead/commit/b94e87e) Fields, buttons, and switches stand
   out at 3:1 (WCAG 2.1 1.4.11), which finishes AA contrast
 
-## Done Since 3.3
+## Done in 4.0
 
-Not released yet.
+Not released yet. Version 4.0 rebuilds Lookahead as an offline web app for the Home Screen (or
+a computer), at https://havl-code.github.io/lookahead/, and retires the desktop app, which
+needed Python and `uv run app.py`. A backup from 3.x restores into it.
 
-- [`f205221`](https://github.com/havl-code/lookahead/commit/f205221) The Scores' comparison rebuilt from
-  the latest WCA results export each month, by a GitHub Actions workflow that opens a pull
-  request (the scoring method stays the same)
-- [`467d9ed`](https://github.com/havl-code/lookahead/commit/467d9ed) The app is now called
-  Lookahead (it was Speedcube Training Explorer). Backups made under the old name still restore
-- [`e2aa888`](https://github.com/havl-code/lookahead/commit/e2aa888) and
-  [`944b82f`](https://github.com/havl-code/lookahead/commit/944b82f) Backups, CSV files, and
-  the copies in `data/backups` are named `lookahead-...`, and the Import tab is now Import and
-  Export, with the backup and CSV buttons
-- An early preview of Lookahead for phones, an offline app for the Home Screen, at
-  https://havl-code.github.io/lookahead/. It's being rebuilt to do everything the desktop app
-  does, and then replaces it. So far it has the timer for every event the desktop app times,
-  sessions and solves to look through, edit, and add to, cubes, the WCA ID, the Analytics tab
-  (the same scores, insights, charts, and world rank), CSTimer import, CSV export, and backups
-  in the same format as the desktop app's, both ways
+- [`467d9ed`](https://github.com/havl-code/lookahead/commit/467d9ed) The app is now called Lookahead (it was Speedcube Training Explorer). Backups
+  made under the old name still restore
+- [`f205221`](https://github.com/havl-code/lookahead/commit/f205221) The Scores' comparison rebuilt from the latest WCA results export each month,
+  by a GitHub Actions workflow that opens a pull request (the scoring method stays the same)
+- [`6e65d97`](https://github.com/havl-code/lookahead/commit/6e65d97) and [`6be89ec`](https://github.com/havl-code/lookahead/commit/6be89ec) The offline app, deployed to GitHub Pages, with a request to
+  keep its data for good and backup reminders
+- [`10775da`](https://github.com/havl-code/lookahead/commit/10775da) and [`0a6eece`](https://github.com/havl-code/lookahead/commit/0a6eece) Solves on the device (IndexedDB), with 3.x's stats, and
+  backups in the same format both ways
+- [`c71add7`](https://github.com/havl-code/lookahead/commit/c71add7) and [`099955d`](https://github.com/havl-code/lookahead/commit/099955d) The timer, phone first, with WCA inspection
+- [`ce7a115`](https://github.com/havl-code/lookahead/commit/ce7a115) Sessions, solves, and cubes, and the WCA ID
+- [`d0c2148`](https://github.com/havl-code/lookahead/commit/d0c2148) and [`7f21117`](https://github.com/havl-code/lookahead/commit/7f21117) The Analytics tab: bests, the same scores to the last digit,
+  insights, and charts (uPlot instead of Plotly)
+- [`d49b134`](https://github.com/havl-code/lookahead/commit/d49b134) CSTimer import and CSV export
+- [`6399f6f`](https://github.com/havl-code/lookahead/commit/6399f6f) Light, dark, or the device's own setting
+- [`9f43b32`](https://github.com/havl-code/lookahead/commit/9f43b32) World rank, kept for offline use
+- [`ce0f7e2`](https://github.com/havl-code/lookahead/commit/ce0f7e2) Bests that show their scramble, or their solves with the dropped ones in
+  brackets
+- [`e818344`](https://github.com/havl-code/lookahead/commit/e818344) Alt or Ctrl+1 to 3, and Ctrl+Z, for the latest solve
+- [`fdf8888`](https://github.com/havl-code/lookahead/commit/fdf8888) A session menu on the timer, with + New session
+- [`70cc02b`](https://github.com/havl-code/lookahead/commit/70cc02b) How the scores work, in the app and offline
+- [`64a9bd2`](https://github.com/havl-code/lookahead/commit/64a9bd2) Fullscreen, with only the scramble and a larger time
+- The desktop app (Flask, SQLite, and plain JavaScript) is gone; the WCA reference builder
+  stays, as a maintainer tool with its own test
 
 ---
 
@@ -150,40 +160,37 @@ Not released yet.
 - **The timer takes the space bar or a touchscreen,** but not a Stackmat timer or a Bluetooth
   smart cube. On the Timer tab the space bar always belongs to the timer, even with a button
   focused, so buttons there are pressed with Enter.
-- **Ctrl+1 to Ctrl+3 are often taken by the browser** for switching tabs, so the hint shows
-  Alt+1 to Alt+3, which always work.
+- **Ctrl+1 to Ctrl+3 are often taken by the browser** for switching tabs; Alt+1 to Alt+3
+  always work.
 - **World rank stops at the top 1,000.** The rankings come from a community-run copy of the
-  WCA's results export, which lists the fastest 1,000 people in each event. If it stops
-  loading, the Dashboard shows No data.
+  WCA's results export, which lists the fastest 1,000 people in each event. Each event's rankings
+  need the internet once; after that the app uses the copy it keeps.
 - **The Analytics scores move on once a month.** The summary of WCA results they compare with
-  is rebuilt each month, but only reaches the app once its pull request is merged and the app
-  is updated, so scores can shift a little from one version to the next.
-- **Undo lasts 8 seconds** and is lost if the page reloads. Deleting a whole session can't be
-  undone (the app asks first, and backups and safety copies are the way back).
+  is rebuilt each month, and reaches the app once its pull request is merged, so scores can
+  shift a little from one month to the next.
+- **Undo lasts 8 seconds** and is lost if the app reloads. Deleting a whole session can't be
+  undone (the app asks first, and backups are the way back).
 - **Averages never span two sessions,** and Ao50 and Ao100 follow the community's convention,
   since the WCA only defines Ao5 and Mo3 (Regulation 9f).
-- **One person on one computer.** There are no profiles and no syncing; moving to another
-  computer means copying the database or a backup.
+- **One person per device, with no syncing.** Each device and browser keeps its own solves; a
+  backup moves them between devices.
+- **Browser storage can be cleared.** Clearing the site's data, or deleting the Home Screen app,
+  deletes the solves too. The app asks the browser to keep its data and reminds you to back up,
+  and on iPhone a Safari tab keeps its own data, separate from the Home Screen app.
 - **CSV is export only.**
 - **CSTimer only says a session's event when that session has its own scramble type** (set in
   the session's options). Sessions that use the overall one start as the import menu's event.
 
 ### Tech Debt
 
-- The events are listed twice, as `EVENT_NAMES` in `config.js` and in `speedcube/events.py`
-  (a test keeps them in step).
-- `solves.penalty` stores OK as either `NULL` or `'OK'`, so every reader has to handle both.
-- The timer sends a +2 solve's time with the 2 seconds already added, and the server takes them
-  off again (documented and tested, but easy to trip over).
-- SQLite's `user_version` doubles as `STATS_VERSION`, so schema changes need their own column
-  checks (`db.ADDED_COLUMNS`).
-- `db.add_solve` numbers solves with `MAX() + 1`, which is fine for one person but racy in
-  theory.
-- The schema has no foreign keys; they're checked in code instead, since adding them means
-  rebuilding the tables of existing databases.
-- The add and edit cube forms duplicate their markup (`cubes.js`).
-- The timer's own `/api/timer/solve/<id>` routes are kept beside the shared `/api/solves/<id>`
-  ones, for pages opened before 3.2, and could go in a later version.
+- `solves.penalty` stores OK as either `null` or `'OK'` (3.x backups have both), so every
+  reader has to handle both.
+- A session's stats are worked out again in full after every change, rather than added to;
+  fine into the tens of thousands of solves.
+- When two sessions share an event's best single exactly, Analytics picks the earlier session,
+  where 3.x picked the solve saved first.
+- The doc reader (`src/lib/markdown.ts`) reads bold, links, and code in one pass, so bold that
+  runs across a code span closes early; the docs never do this.
 
 ---
 
@@ -210,10 +217,9 @@ Larger changes to how the app works, each worth a design discussion first.
 | --- | --- | --- | --- |
 | 4 | Timers for every WCA event | Pyraminx, Skewb, Square-1, and Clock need scramblers of their own (3 is a start), and Fewest Moves and Multi-Blind need new flows | L |
 | 5 | Per-event training plans | Turns the insights into a weekly plan you can follow | L |
-| 6 | Stackmat timer support, through the computer's audio input | The timer cubers already own and use at competitions | L |
+| 6 | Stackmat timer support, through the device's audio input | The timer cubers already own and use at competitions | L |
 | 7 | Bluetooth smart cubes, through Web Bluetooth | Move-by-move solve data, but only in Chromium-based browsers | L |
-| 8 | Multiple user profiles | Families and clubs sharing one computer | L |
-| 9 | A packaged desktop build | Would remove the uv step; less needed once the phone app, which also installs on a computer, replaces the desktop one | L |
+| 8 | Multiple user profiles | Families and clubs sharing one device | L |
 
 ---
 
@@ -223,7 +229,4 @@ Larger changes to how the app works, each worth a design discussion first.
    are acceptable alongside the MIT Licence?
 2. **Profiles:** one database file per person (simplest, and backups stay separate), or one
    database with profiles inside it?
-3. **Packaging:** is removing the uv step worth a much bigger download for each system?
-4. **Deleting sessions:** should they get Undo as well, so the app never needs to ask first?
-5. **Old timer routes:** remove the timer's own solve routes in a later version, or keep them
-   for good?
+3. **Deleting sessions:** should they get Undo as well, so the app never needs to ask first?

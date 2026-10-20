@@ -205,11 +205,13 @@ The tips under the scores come from the same numbers:
 
 ## 🔧 For Developers
 
-- The scores are worked out in [`speedcube/scores.py`](../speedcube/scores.py).
-- The WCA summary is [`speedcube/wca_reference.json`](../speedcube/wca_reference.json), built by
+- The scores are worked out in [`src/lib/scores.ts`](../src/lib/scores.ts).
+- The WCA summary is [`src/lib/wca_reference.json`](../src/lib/wca_reference.json), built by
   [`tools/build_wca_reference.py`](../tools/build_wca_reference.py) from the TSV results export.
-  The build uses the same measuring code as the app, so competitors and sessions are always
-  measured alike.
+  The build measures competitors the same way the app measures a session (the median, with a
+  DNF slower than any time, and the median moving range), so the two are always measured
+  alike; [`test_build_wca_reference.py`](../tools/tests/test_build_wca_reference.py) holds what
+  it builds from a small made-up export.
 - A GitHub Actions workflow ([`wca-reference.yml`](../.github/workflows/wca-reference.yml))
   rebuilds it on the 3rd of each month and opens a pull request when it changes. To rebuild it
   by hand, download the latest export and run

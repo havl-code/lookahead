@@ -61,7 +61,7 @@ export function TimerSettingsSheet({
           onChange={(hideStats) => change({ hideStats })}
         />
         <p className="text-muted text-sm">
-          These settings travel with your backups, so they're the same in the desktop app.
+          These settings travel with your backups, so they're the same on your other devices.
         </p>
       </div>
     </Sheet>

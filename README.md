@@ -1,15 +1,7 @@
-# <picture><source media="(prefers-color-scheme: dark)" srcset="web/images/favicon_w.png"><img src="web/images/favicon_b.png" width="40" height="40" alt=""></picture> Lookahead 🎲
+# <img src="public/favicon.svg" width="40" height="40" alt=""> Lookahead 🎲
 
 **Track your progress. Analyse your solves. Compare with the world.**
 
-![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)
-![Flask](https://img.shields.io/badge/Flask-000000?logo=flask&logoColor=white)
-![SQLite](https://img.shields.io/badge/SQLite-003B57?logo=sqlite&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)
-![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)
-![CSS](https://img.shields.io/badge/CSS-1572B6?logo=css&logoColor=white)
-![Plotly](https://img.shields.io/badge/Plotly-3F4F75?logo=plotly&logoColor=white)
-![uv](https://img.shields.io/badge/uv-DE5FE9?logo=uv&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
 ![React](https://img.shields.io/badge/React-087EA4?logo=react&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)
@@ -18,126 +10,108 @@
 ![GitHub Pages](https://img.shields.io/badge/GitHub_Pages-222222?logo=githubpages&logoColor=white)
 ![Licence: MIT](https://img.shields.io/badge/licence-MIT-FF7A1A)
 
-Named after **lookahead**, the speedcubing skill of finding your next pieces while you're still solving the current ones, so you can solve without pauses. It's one of the most useful skills to train, and this app helps you track that training. Formerly Speedcube Training Explorer. It runs on your computer, and a version for your phone is on the way (see [On Your Phone](#-on-your-phone)).
+Named after **lookahead**, the speedcubing skill of finding your next pieces while you're still
+solving the current ones, so you can solve without pauses. It's one of the most useful skills to
+train, and this app helps you track that training. Formerly Speedcube Training Explorer.
 
-![The dashboard in dark mode, greeting the user by name with their personal best, world rank, average time, best averages, and recent sessions](docs/screenshots/dashboard-dark.png)
-
-## 📱 On Your Phone
-
-Lookahead is being rebuilt as an app for your phone's Home Screen that
-works offline, at https://havl-code.github.io/lookahead/. It's a preview for now: it has the
-timer, with WCA inspection, your sessions and solves (to look through, edit, and add to), your
-cubes, your WCA ID, the Analytics tab, with the same scores, insights, charts, and world
-rank, CSTimer import, and CSV export, and a backup moves your solves between it and the desktop
-app. Once the phone app does everything the desktop app does, it replaces it.
-
-To try it, open the link on your phone, then add it to your Home Screen (in Safari, tap Share,
-then **Add to Home Screen**; in Chrome, tap **Install app**). It works offline from then on.
+Lookahead is a speedcubing timer and training tracker that you add to your phone's Home Screen
+(or install on a computer), at **https://havl-code.github.io/lookahead/**. It works offline,
+keeps your solves on your own device, and needs no account.
 
 <img src="docs/screenshots/phone-app.png" width="840" alt="Lookahead on a phone: the timer with a scramble and today's solves and averages, the sessions list with each day's best, Ao5, Ao12, and mean, and the Analytics tab with the best single, world rank, best averages, and the Speed score">
 
 ---
 
+## 🚀 Get Started
+
+1. Open https://havl-code.github.io/lookahead/ on your phone or computer.
+2. Add it to your Home Screen: in Safari on iPhone, tap **Share**, then **Add to Home Screen**;
+   in Chrome, choose **Install app**.
+3. Time a solve. That's all.
+
+Coming from the desktop app (3.x), the 2.x browser version, or CSTimer?
+[INSTALLATION.md](INSTALLATION.md#-2-bring-your-solves-across) shows how to bring your solves
+across.
+
+---
+
 ## ✨ Features
 
-### 📊 Dashboard
+### ⏱️ Timer
 
-- **Personal Bests:** your best single for every event you've logged, with its date and scramble
-- **Best Averages:** your best Ao5, Ao12, Ao50, and Ao100 for each event, with the solves behind
-  each one (the dropped ones in brackets)
-- **World Rank:** where your best single would rank in the WCA world rankings, with its
-  percentile, for every ranked timed event (One-Handed and the blindfolded events included). The
-  rankings list the fastest 1,000 people in each event, so a slower single shows as outside the
-  top 1,000 rather than a guess
-- **At a Glance:** your average time for the chosen event, and your total solves, sessions, and
-  cubes
-- **Recent Sessions:** your latest sessions, sortable by any column
-- **Quick Actions:** jump straight into the timer, or add a session or cube
-
-### ⏱️ Live Timer
-
-- **Competition-Style Timing:** hold the space bar (or, on a touchscreen, your finger on the
-  time) until it turns green, let go to start, and press again (or tap) to stop
-- **WCA Inspection:** an optional 15 second inspection that follows the WCA rules: starting
-  after 15 seconds is a +2, and after 17 a DNF. The 8 and 12 second calls show on screen, and
-  can also beep or be spoken. The blindfolded events have none, as in competition, so
-  memorisation is part of the time
-- **Eleven Events:** the timer works for every cube from 2x2x2 to 7x7x7, 3x3x3 One-Handed, the
-  three blindfolded events (3x3x3, 4x4x4, and 5x5x5), and Megaminx, so far
-- **Scrambles:** a new scramble for every solve: 25 moves for 2x2x2 and 3x3x3, 40 for 4x4x4, 60
-  for 5x5x5, 80 for 6x6x6, and 100 for 7x7x7 (with wide turns such as Rw and 3Rw). They're
+- **Competition-style timing:** touch the time to inspect, hold until it turns green, let go to
+  start, and touch anywhere to stop. On a computer or an iPad with a keyboard, the space bar
+  does the same. Everything but the time hides while you solve, and the screen stays on.
+- **WCA inspection:** an optional 15 seconds, with a +2 from 15 seconds and a DNF at 17
+  (Regulations A4d1 and A4d2), and calls at 8 and 12 seconds that can beep or be spoken. The
+  blindfolded events have none, as in competition (B1a).
+- **Eleven events:** every cube from 2x2x2 to 7x7x7, 3x3x3 One-Handed, 3x3x3, 4x4x4, and 5x5x5
+  Blindfolded, and Megaminx.
+- **Scrambles:** a new one for every solve: 25 moves for 2x2x2 and 3x3x3, 40 for 4x4x4, 60 for
+  5x5x5, 80 for 6x6x6, and 100 for 7x7x7 (with wide turns such as Rw and 3Rw). They're
   random-move, the lengths the WCA itself used. Official scrambles for 2x2x2 to 4x4x4 are
-  random-state today, so those mix the cube well for practice but aren't exactly like
+  random-state today, so these mix the cube well for practice but aren't exactly like
   competition ones; the WCA still scrambles 5x5x5 to 7x7x7 with random moves. Blindfolded
   scrambles end by turning the cube to a random orientation, as the WCA's do, and Megaminx
-  scrambles are 70 moves in seven lines, written the way the WCA writes them
-- **Live Statistics:** solve count, best, mean and Ao5 for the whole session as you solve
-- **A Session a Day:** your first solve each day starts a new session automatically
-- **Penalties and Notes:** mark any solve as +2 or DNF afterwards, or add a note about how it
-  went, here or in the Sessions tab
-- **Shortcuts:** Alt+1, Alt+2, and Alt+3 make your last solve OK, +2, or DNF, and Ctrl+Z
-  deletes it (Ctrl+1 to Ctrl+3 work too, as in csTimer, if your browser lets them through)
-- **Undo:** deleting a solve doesn't ask first; an Undo button shows for a few seconds instead
-  and puts it back exactly as it was
-- **Cancel Any Time:** press Esc to call off inspection or a solve without saving it
-- **Long Solves:** a solve can run for up to 2 hours. Past 60 minutes (the WCA's longest time
-  limit) a notice says so, and at 2 hours the timer stops and saves a DNF, as a judge does
-  when a solve reaches its time limit
-- **Fullscreen Mode:** hides everything except the scramble and the time
-- **Settings That Stick:** inspection, its sound, and hiding the timer or stats are saved with
-  your data, so they're the same next time, in any browser, and in your backups
+  scrambles are 70 moves in seven lines, written the way the WCA writes them.
+- **A session a day:** your first solve each day starts a new session. The menu beside the
+  event picks an older session to add to, and **+ New session** starts another for today.
+- **Penalties, notes, and Undo:** mark a solve OK, +2, or DNF, add a note, or delete it, and
+  **Undo** puts it back.
+- **Shortcuts:** Alt+1, Alt+2, and Alt+3 (or Ctrl) make your last solve OK, +2, or DNF, Ctrl+Z
+  (Cmd+Z on a Mac) deletes it, and Escape calls off an attempt.
+- **Fullscreen:** shows only the scramble and a larger time, until Escape or Exit fullscreen.
+- **Long solves:** a solve can run for up to 2 hours. Past 60 minutes (the WCA's longest time
+  limit) a notice says so, and at 2 hours the timer stops and saves a DNF, as a judge does when
+  a solve reaches its time limit.
 
 ### 🗂️ Sessions and Cubes
 
-- **Sortable Tables:** click any column heading (date, time, solves and so on) to sort by it,
-  and click again to reverse the order
-- **Every Solve:** open a session to see all its solves, sorted however you like, even if it
-  holds tens of thousands
-- **Add by Hand:** create sessions (for today or an earlier day) and add solves yourself
-- **Edit Sessions:** change a session's date, cube, and notes afterwards; the table shows each
-  session's cube
-- **Cube Inventory:** record each cube's type, brand, model, and when you got it, and link cubes
-  to sessions. Each cube shows its sessions, solves, PB single, and best Ao5 (in the event it's
-  used for most)
+- **Every session,** for one event or all of them, newest or oldest first, or by best single or
+  best Ao5, with each session's best averages up to Ao100.
+- **Every solve,** newest, fastest, or slowest first, even in a session of tens of thousands.
+- **Add by hand:** add a session for today or an earlier day, and type in solves timed
+  somewhere else, such as 12.34 or 1:23.45.
+- **Edit sessions:** change a session's date, cube, and notes afterwards.
+- **Cubes:** record each cube's type, brand, model, and when you got it, pick one for each
+  session, and see each cube's sessions, solves, best single, and best Ao5. A cube you stop
+  using is retired, so its sessions keep it.
 
 ### 📈 Analytics
 
-- **Scores:** Speed, Consistency and Overall, each the percentage of WCA competitors in the
-  same event that your session beats (using official results from the last two years, bundled
-  with the app so it works offline). Colour-coded from red (needs work) to green (excellent),
-  with how they've changed recently. [How the scores are worked out](docs/SCORES.md), which
-  you can also read in the app, offline
-- **Insights:** plain-English tips on what to work on next
-- **Charts:** progress over time, time distribution, rolling Ao5 and Ao12, and consistency across
-  sessions, for a whole event or a single session. Averages count DNFs the WCA way, and a DNF
-  shows as a gap
+- **Bests:** your best single, average of every solve, and best Ao5 to Ao100 for each event.
+  Tap one to see the single's scramble, or the average's solves with the dropped ones in
+  brackets.
+- **World rank:** where your best single would rank in the WCA world rankings, for every ranked
+  timed event. The rankings list the fastest 1,000 people in each event, so a slower single
+  shows as outside the top 1,000 rather than a guess.
+- **Scores:** Speed, Consistency, and Overall, each the percentage of WCA competitors in the
+  same event that your sessions beat (using official results from the last two years, bundled
+  so it works offline), with how they've changed recently.
+  [How the scores work](docs/SCORES.md) explains them, and opens in the app too.
+- **Insights:** plain-English tips on what to work on next.
+- **Charts:** progress over time, how your times spread out, rolling Ao5 and Ao12, and
+  consistency across sessions, for a whole event or a single session, each with a sentence
+  saying what it shows.
 
 ### 📥 Import and Backup
 
-- **CSTimer Import:** bring in your existing CSTimer sessions (JSON or TXT export), choosing
-  which ones to import and the event for each (CSTimer's scramble type picks it where it can).
-  Every solve keeps its own date, penalty, and comment, sessions keep their CSTimer names, and
-  each one can be split into a session per day. Importing the same file again only adds solves
-  that aren't already there.
-- **Backup and Restore:** export all your data to one JSON file, or restore from one, on the
-  **Import and Export** tab. The same file works in the phone app, both ways
-- **CSV Export:** download every solve, or one session's, as a spreadsheet (CSV), with its date,
-  event, cube, time, penalty, result, scramble, and notes
+- **CSTimer import:** bring in your CSTimer sessions (JSON or TXT export), choosing which ones
+  to import and the event for each. Every solve keeps its date, penalty, and comment, and
+  importing the same file again only adds solves that aren't already there.
+- **Backup and restore:** save everything to one JSON file, and restore it on any device.
+  Backups from 3.x and 2.x restore too. The Timer tab reminds you when solves aren't backed up.
+- **CSV export:** every solve, or one session's, as a spreadsheet.
 
 ### 🎨 Look and Feel
 
-- **Clean and Simple:** a calm layout with an orange accent and the Space Grotesk font
-- **Dark Mode by Default:** switch to light mode with one click; the app remembers your choice.
-  On your phone, **Appearance** on the More tab picks Light, Dark, or System (following the phone)
-- **Personalised Greeting:** add your WCA ID and the app greets you by name
-- **Fast with Big Histories:** long lists load a page at a time, so even tens of thousands of
-  solves stay quick
-- **Keyboard and Screen Reader Friendly:** every button, menu, and window works from the
-  keyboard (windows take focus, keep Tab inside, and close with Esc), each chart is described in
-  words for screen readers, and text, fields, buttons, and switches meet WCAG 2.1 AA contrast
-  in both themes
-- **Works Offline:** everything except the WCA rank and name lookup works without internet
-- **No Accounts:** nothing to sign up for, and your data never leaves your computer
+- **Light or dark:** dark by default unless your device is set to light; **Appearance** on the
+  More tab keeps it light or dark, or follows the device.
+- **Personalised greeting:** add your WCA ID and the app greets you by name.
+- **Accessible:** everything works with a keyboard and a screen reader, each chart is described
+  in words, and text and controls meet WCAG 2.2 AA contrast in both themes.
+- **Offline and private:** after the first visit it works with no internet, apart from the
+  world rank and the name lookup. Your solves never leave your device.
 
 ### 📏 Statistics the WCA Way
 
@@ -145,10 +119,9 @@ then **Add to Home Screen**; in Chrome, tap **Install app**). It works offline f
   9f8 and 9f9). A DNF counts as your worst result, so one DNF is dropped, but two or more make
   the average a DNF. The WCA only defines the Ao5; longer averages follow the community's
   convention of dropping 5% from each end, rounded up: one for an Ao12, three for an Ao50, and
-  five for an Ao100, with a DNF if there are more DNFs than that. In the Sessions table, Last
-  Ao5 and Last Ao12 are a session's latest averages; the Dashboard shows your best ones.
-- **Penalties:** a +2 is added to the solve's time everywhere it counts: PBs, means,
-  averages, charts, and the world rank comparison.
+  five for an Ao100, with a DNF if there are more DNFs than that.
+- **Penalties:** a +2 is added to the solve's time everywhere it counts: bests, means,
+  averages, charts, and the world rank.
 - **Rounding:** as the WCA records results (Regulations 9f1 and 9f2), a single is cut off (not
   rounded) at the hundredth of a second, and averages and means are worked out from those
   singles and rounded to the nearest hundredth. From 10 minutes up, both go to whole seconds.
@@ -156,134 +129,36 @@ then **Add to Home Screen**; in Chrome, tap **Install app**). It works offline f
 
 ---
 
-## 🚀 Quick Start
-
-1. **Install uv**, a small free tool that sets up Python and everything the app needs. You
-   only do this once; see [INSTALLATION.md](INSTALLATION.md#-1-install-uv) for the one-line
-   installer.
-2. **Download this project:** on GitHub, click **Code**, then **Download ZIP**, and unzip it.
-3. **Start the app** in whichever of these two ways you prefer. Both work on Windows, Mac and
-   Linux, and do exactly the same thing:
-   - **Double-click the launcher for your system** in the project folder: **Start on
-     Windows**, **Start on Mac** or **Start on Linux**. On Windows, the first start also adds
-     a **Lookahead** shortcut with the app's icon, which starts it with no
-     window at all. Put it on your desktop if you like.
-   - **Or type one command** in a terminal opened in the project folder:
-
-     ```bash
-     uv run app.py
-     ```
-
-The app opens in your browser. 🎉 The first start takes a few seconds while uv gets everything
-ready; after that it's quick. When you're done, close the app's browser tab and it stops by
-itself. The first time you open a downloaded launcher, your system may ask you to confirm it;
-[INSTALLATION.md](INSTALLATION.md#-3-start-the-app) walks through each system step by step.
-
----
-
 ## 🆕 What's New
 
-### Since 3.3 (not released yet)
+### 4.0
 
-- **A new name.** The app is now called Lookahead. Backups made under the old name still
-  restore, and your data stays in `data/speedcube.db`.
-- **Import and Export.** The Import tab is now **Import and Export**, with Export backup,
-  Export solves (CSV), and Import backup beside the CSTimer import. Backups, CSV files, and the
-  copies in `data/backups` are named `lookahead-...`.
-- **Lookahead on your phone,** an early preview (see [On Your Phone](#-on-your-phone)).
+- **An app for your phone, and your computer.** Lookahead is now a web app you add to your
+  Home Screen or install from the browser, and it works offline. There's nothing to download
+  or start, and `uv run app.py` is gone. A backup from 3.x restores into it (see
+  [INSTALLATION.md](INSTALLATION.md#from-the-desktop-app-3x)).
+- **Everything 3.3 did,** rebuilt: the timer, sessions, cubes, Analytics, CSTimer import,
+  backups, and CSV export, with the same statistics and scores to the last digit.
+- **New since 3.3:** a session menu on the timer, Fullscreen with a larger time, and bests on
+  Analytics that show their scramble or solves.
+- **A new name.** Speedcube Training Explorer is now Lookahead. Backups made under the old name
+  still restore.
 - **Scores kept current.** The WCA results the scores compare with are rebuilt each month.
 
 ### 3.3
 
 - **Blindfolded timers.** 3x3x3, 4x4x4, and 5x5x5 Blindfolded have a timer, with no inspection
-  (memorisation is part of the time) and scrambles that end by turning the cube to a random
-  orientation, as in competition.
+  and scrambles that end by turning the cube to a random orientation, as in competition.
 - **A Megaminx timer,** with 70 move scrambles in seven lines, as the WCA writes them.
-- **Clearer fields and buttons.** Their edges, and the switches in the timer settings, now meet
-  WCAG 2.1 AA contrast in both themes, as text already did.
+- **Clearer fields and buttons,** meeting WCAG 2.1 AA contrast in both themes.
 
-### 3.2
+### 3.2 and Earlier
 
-- **Safe from other websites.** A page open in your browser can no longer change your data,
-  read it, or keep the app running. See [Security](#-security).
-- **CSTimer imports keep their history.** Every solve keeps the date and time you did it, its
-  penalty, and its comment. Sessions keep their CSTimer names, take their event from CSTimer's
-  scramble type, and can be split into one a day, and importing the same file again only adds
-  the new solves.
-- **WCA inspection.** Starting after 15 seconds is a +2, and after 17 a DNF, with calls at 8
-  and 12 seconds that can also beep or be spoken.
-- **Timers for 2x2x2, 4x4x4, 5x5x5, 6x6x6, 7x7x7, and One-Handed,** each with scrambles of the
-  length the WCA set for it.
-- **Notes, shortcuts, and Undo.** Add a note to any solve, make your last solve OK, +2, or DNF
-  with Alt+1, Alt+2, or Alt+3, delete it with Ctrl+Z, and bring back a deleted solve with Undo.
-- **Best averages.** The Dashboard shows your best Ao5, Ao12, Ao50, and Ao100 for each event,
-  with the solves behind each one.
-- **Edit sessions and solves.** Change a session's date, cube, and notes, add a session for an
-  earlier day, and change any solve's penalty or note from the Sessions tab.
-- **Cube stats.** Each cube shows its sessions, solves, PB single, and best Ao5.
-- **CSV export.** Download every solve, or one session's, to open in a spreadsheet.
-- **Settings that stick.** The timer settings are saved with your data and your backups.
-- **No more pop-ups.** Messages appear in a corner without stopping you, and "are you sure?"
-  questions appear in the page.
-- **Copies of your data, by themselves.** A copy each day you use the app, and a safety copy
-  before restoring a backup or updating your data for a new version.
-- **Statistics fixed up.** Singles are cut off and averages rounded as the WCA records them,
-  the rolling and single-session charts count DNFs the WCA way, the progress chart shows your
-  latest 500 sessions, and a world rank only shows when the WCA's rankings support it.
-  Scrambles can now have moves like R L, as a fair scramble should, and the timer can't jump
-  if the computer's clock changes mid-solve.
-- **Long solves.** A practice solve can run for up to 2 hours.
-- **Keyboard and screen reader friendly.** Every button, menu, and window works from the
-  keyboard, each chart is described in words, and text meets WCAG 2.1 AA contrast in both
-  themes.
-- **Touchscreens.** Hold the time to get ready, let go to start, and tap to stop.
-- **The Scores explanation, offline.** How the scores work opens in the app, internet or not.
-- **4x4x4 and 5x5x5 Blindfolded** are in every event menu.
-- **Tested.** Automated tests, including browser tests, run on Windows, macOS, and Linux.
-
-The first start of 3.2 updates your data once (see
-[Updating the App](INSTALLATION.md#-updating-the-app)).
-
-### 3.1
-
-- **Start with a double-click.** Every system has its own launcher (**Start on Windows**,
-  **Start on Mac**, **Start on Linux**), and on Windows the app adds a shortcut with its icon
-  that opens it with no window at all. Typing `uv run app.py` still works too.
-- **Stops by itself.** Close the app's last browser tab and it shuts down a few seconds later,
-  so there's no terminal to keep open.
-- **Scores that mean something.** Speed and Consistency now show the percentage of WCA
-  competitors in the same event that your session beats, based on official results from the
-  last two years. Speed is measured the way the WCA ranks each event, and Consistency is
-  measured in a way that doesn't mistake improvement for inconsistency. The old Accuracy score
-  is gone. See [How the Analytics Scores Work](docs/SCORES.md).
-- **A session a day.** The timer starts a new session with your first solve of each day.
-- **Cancel with Esc.** Changed your mind during inspection, or even mid-solve? Press Esc and
-  nothing is saved.
-
-### 3.0
-
-- **Runs on your computer, not just in the browser.** The older browser-only version (2.x)
-  kept your data inside the browser, so clearing your browsing data (or switching browsers)
-  could lose it. Now a small server on your computer saves everything to one file,
-  `data/speedcube.db`. It's easy to back up, and it doesn't matter which browser you use.
-- **Quick with huge histories.** Importing tens of thousands of solves no longer slows the app
-  down: long lists load a page at a time, and stats are worked out by the database.
-- **Sortable tables.** Every table of sessions, solves, and cubes sorts by any column.
-- **Charts are part of Analytics.** One tab now has your scores, insights, and charts, all
-  driven by the same event menu.
-- **A fresh look.** Dark mode by default, an orange accent, the Space Grotesk font, and a
-  simpler layout.
-- **More accurate statistics.** Ao5 and Ao12 follow the WCA rules for DNFs, and +2 penalties
-  are counted in your PBs, means, and charts. Stats for your existing sessions are recalculated
-  automatically.
-- **Fully offline.** The fonts and the charting library are bundled with the app, so only the
-  WCA rank and name lookup need the internet.
-
-### Bringing Your Data Across from the Browser-Only Version
-
-1. Open your old copy of the app (the 2.x `index.html`) and click **Export backup** in the footer
-2. Start this version (see [Quick Start](#-quick-start))
-3. Click **Import backup** on the **Import and Export** tab and choose the file from step 1
+3.2 added WCA inspection, timers for every cube from 2x2x2 to 7x7x7 and One-Handed, notes,
+shortcuts, Undo, best averages, cube stats, CSV export, and CSTimer imports that keep each
+solve's date. 3.1 brought scores against WCA competitors and a session a day, and 3.0 moved the
+app from browser storage to a small program on your computer. The
+[roadmap](docs/ROADMAP.md) has the details.
 
 ---
 
@@ -291,165 +166,81 @@ The first start of 3.2 updates your data once (see
 
 ### First Time
 
-1. Start the app (see [Quick Start](#-quick-start)). It opens in your browser.
-2. **Optional:** click **Set up WCA ID** on the dashboard to get a personalised greeting.
-3. Start tracking: use the timer, add sessions by hand, or import your CSTimer data.
+1. Install the app (see [Get Started](#-get-started)).
+2. **Optional:** on the **More** tab, type your WCA ID for a greeting by name.
+3. Start tracking: time some solves, add sessions by hand, or import your CSTimer data.
 
 ### Using the Timer
 
-1. Open the **Timer** tab and pick your event. (Every cube from 2x2x2 to 7x7x7, 3x3x3
-   One-Handed, the blindfolded events, and Megaminx have a timer so far. For the blindfolded
-   events, holding and letting go starts the solve straight away, with no inspection.)
-2. Just start solving. The timer keeps one session per day: your first solve of the day
-   starts a new session automatically (with the same cube as your last one), and the rest of
-   the day's solves go into it. To add solves to an older session instead, pick it from the
-   menu; choose **+ Create New Session** to split a day into more than one session.
-3. Press the **space bar** to start inspection (if it's turned on). The countdown shows the
-   seconds left, with calls at 8 and 12 seconds. From 15 seconds it shows +2, and at 17 the
+1. Open the **Timer** tab and pick your event.
+2. Touch the time to start inspection (if it's turned on in **Settings**). The countdown shows
+   the seconds left, with calls at 8 and 12 seconds. From 15 seconds it shows +2, and at 17 the
    attempt is a DNF, as in a WCA competition.
-4. Hold the **space bar** until the time turns green.
-5. Let go to start solving.
-6. Press the **space bar** again to stop.
+3. Hold the time until it turns green, then let go to start solving.
+4. Touch anywhere to stop. With a keyboard, the space bar does steps 2 to 4.
 
-On a touchscreen, your finger on the time does the same: touch it to start inspection, hold it
-until it turns green, let go to start, and tap it to stop.
+Changed your mind? Press **Escape** during inspection (or even mid-solve) to call it off.
+Nothing is saved, and you keep the same scramble for your next try.
 
-Changed your mind? Press **Esc** during inspection (or even mid-solve) to cancel. Nothing is
-saved, and you keep the same scramble for your next try.
-
-Every solve is saved automatically. The list shows your latest 50 solves: use the menu next to
-a solve to mark it +2 or DNF, **Note** to add a note, and **Delete** to remove it (click
-**Undo** straight afterwards if you didn't mean to). The gear icon opens the timer settings.
-
-Shortcuts for your last solve, whenever the timer isn't running:
-
-| Keys | What they do |
-| --- | --- |
-| **Alt+1**, **Alt+2**, **Alt+3** | Make it OK, +2, or DNF |
-| **Ctrl+Z** | Delete it (with Undo) |
-
-Ctrl+1 to Ctrl+3 do the same as Alt, as in csTimer, but many browsers keep Ctrl and a number
-for switching tabs. On a Mac, use Option or Ctrl with the numbers, and Cmd+Z or Ctrl+Z. A
-solve that never started (a DNF from running out of inspection) has no time, so it stays a DNF.
+Every solve is saved straight away. Under the time, mark it +2 or DNF, or **Delete** it (tap
+**Undo** straight afterwards if you didn't mean to). Tap a recent solve to add a note.
 
 ### Reading Your Analytics
 
 1. Open the **Analytics** tab and pick an event.
-2. The three cards show your **Speed**, **Consistency** and **Overall** scores: the percentage
-   of WCA competitors in that event your recent sessions beat. Under each score is the figure
-   behind it from your latest session, such as your typical Ao5.
+2. The three cards show your **Speed**, **Consistency**, and **Overall** scores: the percentage
+   of WCA competitors in that event your recent sessions beat.
 3. The arrows show whether your last 10 sessions are better or worse than the 10 before them,
    and the insights suggest what to work on.
 4. Use the **Charts for** menu to narrow the charts down to a single session.
 
-[How the Analytics Scores Work](docs/SCORES.md) explains exactly how each score is worked out.
-The **How the scores work** link under the scores opens it in the app, even offline.
-
 ### Importing CSTimer Data
 
 1. **In CSTimer:** open the Export menu and download your data as JSON or TXT.
-2. **In Lookahead:**
-   - Open the **Import and Export** tab
-   - Click **Choose File** and pick your export
-   - Click **Preview Sessions**
-   - Tick the sessions you want, and check each one's event. Where CSTimer says which
-     scramble type a session uses, its event is already picked; **Set every session's event
-     to** changes them all at once
-   - Leave **Split each CSTimer session into one session per day** ticked to match the
-     timer's session a day, or untick it to keep each CSTimer session whole
-   - Click **Import Selected**
+2. **In Lookahead:** on the **More** tab, tap **Import from CSTimer** and choose the file.
+3. Tick the sessions you want, check each one's event, and choose whether to split each
+   CSTimer session into one a day, to match the timer's session a day.
 
-The picker shows each session's CSTimer name, its solves, and the days they span. Every solve
-keeps the date and time you did it, its penalty, and its comment (as a note), so your charts and
-history line up with the solves you time here. Solves already in the app are skipped, so you can
-safely import a newer export of the same sessions: only the new solves are added.
-
-### Managing Sessions
-
-- **See all sessions:** the Sessions tab lists your training; pick an event to narrow it down
-- **Sort:** click a column heading to sort by it, and click again to reverse
-- **See every solve:** click **View** on a session, then **Show more** to load further solves
-- **Add solves by hand:** click **Add Session** (it's for today unless you pick an earlier
-  date), then **View** to add individual solves
-- **Edit a session:** click **Edit** to change its date, its cube, or its notes
-- **Change a solve:** in a session's solves, use the penalty menu to make it OK, +2, or DNF,
-  and **Note** to add or change its note
-- **Delete:** remove sessions or single solves you don't want. A deleted solve can be brought
-  back with **Undo** for a few seconds afterwards; a deleted session can't, so the app checks
-  with you first
+Solves already in the app are skipped, so you can safely import a newer export of the same
+sessions: only the new solves are added.
 
 ### Backing Up Your Data
 
-Everything lives in one file, `data/speedcube.db`. Copying that file somewhere safe (while the
-app isn't running) is a complete backup. You can also use **Export backup** on the **Import
-and Export** tab (or in the footer) to download everything as one JSON file, named
-`lookahead-backup-<date>.json`, and **Import backup** to restore it. To look at your solves in a
-spreadsheet, use **Export solves (CSV)** there, or **Export CSV** in a session's solves; that's
-for reading, not restoring.
-
-The same JSON backup restores in [Lookahead on your phone](https://havl-code.github.io/lookahead/)
-(on its **More** tab), and a backup made there restores here, so it's also how you move your
-solves between the two.
-
-The app also keeps copies of the database by itself, in `data/backups`:
-
-- **A copy a day,** the first time you start the app each day (unless nothing has changed since
-  the last one). It keeps the newest seven.
-- **A safety copy** just before anything that rewrites a lot of it: restoring a backup, or
-  updating your data for a new version of the app. It keeps the newest five.
-
-See [INSTALLATION.md](INSTALLATION.md#-where-your-data-lives) for how to go back to one.
+Your solves live on this device only. **Make backup** on the **More** tab saves everything to
+one JSON file; keep it somewhere else, such as a cloud drive. **Restore from a backup** brings
+it back, on this device or another one. [INSTALLATION.md](INSTALLATION.md#-where-your-data-lives)
+has more on where your data lives.
 
 ---
 
-## 🔒 Security
+## 🔒 Privacy and Security
 
-The app has no accounts or passwords. Instead, it relies on only being reachable from your own
-computer: the server only listens on `127.0.0.1`, so nothing else on your network can connect to
-it.
+Lookahead has no server of its own: GitHub Pages serves the app's files, and everything you
+enter stays in your browser's storage on your device. Nothing is sent anywhere, apart from two
+look-ups you can choose not to use:
 
-That still leaves one way in: the websites you visit. Any page open in your browser can try to
-send requests to `127.0.0.1`. A hidden form could post a "backup" that replaces all your data
-(this is called cross-site request forgery), and a website could even point its own address at
-your computer so its page can read the app's replies (DNS rebinding). So the app checks every
-request:
+- your WCA ID, to the official WCA website, to find your name, and
+- an event's world rankings, fetched from the
+  [Unofficial WCA Public API](https://wca-rest-api.robiningelbrecht.be/)'s files on GitHub.
 
-- **The address** must be `127.0.0.1` or `localhost` on the app's own port, which rules out
-  DNS rebinding.
-- **Requests from other websites** to the app's data are refused. Browsers say where each
-  request comes from.
-- **Anything that changes your data** must come from the app's own page, and carry a header
-  that a form or script on another website can't send.
-- **The page itself** only runs the app's own scripts (a strict Content-Security-Policy), so
-  text from an imported file could never run as code, even if a bug let it through.
-
-None of this needs any setup, and you can still open the app in as many tabs or browsers as you
-like.
+The app only runs its own code (a strict Content Security Policy), so nothing in an imported
+file could ever run as code, and it can only connect to those two places.
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **Backend:** Python with [Flask](https://flask.palletsprojects.com/), started by
-  [uv](https://docs.astral.sh/uv/). It's a small server that only accepts connections from
-  your own computer, and refuses requests from other websites (see [Security](#-security)).
-- **Storage:** SQLite (`data/speedcube.db`). Nothing leaves your machine.
-- **Frontend:** plain JavaScript, HTML and CSS, with no build step, framework or bundler.
-- **Charts:** [Plotly.js](https://plotly.com/javascript/), bundled with the app.
+- **App:** TypeScript and [React](https://react.dev/), built with [Vite](https://vite.dev/) and
+  styled with [Tailwind CSS](https://tailwindcss.com/).
+- **Storage:** IndexedDB in the browser, through [Dexie](https://dexie.org/).
+- **Offline:** a service worker ([Workbox](https://developer.chrome.com/docs/workbox), through
+  vite-plugin-pwa) keeps the whole app on the device.
+- **Charts:** [uPlot](https://github.com/leeoniya/uPlot).
 - **Font:** [Space Grotesk](https://github.com/floriankarsten/space-grotesk), bundled with the app.
-- **External APIs (optional):** the official WCA API to look up your name from your WCA ID,
-  and the [Unofficial WCA Public API](https://wca-rest-api.robiningelbrecht.be/) for world
-  rankings. The WCA has no official rankings API; this community project is built from the
-  WCA's own results export, and the WCA's developer documentation points people to it. These
-  are only used for the world rank and the name lookup. Everything else works offline.
-- **WCA results summary:** the Analytics scores compare with a summary of official results
-  from the [WCA results export](https://www.worldcubeassociation.org/export/results), which is
-  bundled with the app (see [docs/SCORES.md](docs/SCORES.md)).
-- **Phone app (`pwa/`):** TypeScript and [React](https://react.dev/), built with
-  [Vite](https://vite.dev/) and styled with [Tailwind CSS](https://tailwindcss.com/). Data stays
-  on the phone in IndexedDB (through [Dexie](https://dexie.org/)), and a service worker
-  ([Workbox](https://developer.chrome.com/docs/workbox)) makes it work offline. It's served by
-  GitHub Pages, with no server of its own. See [pwa/README.md](pwa/README.md).
+- **Hosting:** GitHub Pages, deployed by GitHub Actions from `main`.
+- **WCA results summary:** the scores compare with a summary of official results from the
+  [WCA results export](https://www.worldcubeassociation.org/export/results), rebuilt each month
+  by a small Python tool (see [docs/SCORES.md](docs/SCORES.md)).
 
 ---
 
@@ -457,53 +248,24 @@ like.
 
 ```text
 lookahead/
-├── Start on Windows.bat   # Double-click to start on Windows
-├── Start on Mac.command   # Double-click to start on a Mac
-├── Start on Linux.sh      # Double-click to start on Linux
-├── app.py                 # The app itself; `uv run app.py` starts it on any system
-├── pyproject.toml         # Python version and dependencies (uv.lock pins exact versions)
-├── speedcube/             # The Python backend
-│   ├── __init__.py        # Creates the Flask app and serves web/
-│   ├── api.py             # The JSON API the web page talks to (/api/...)
-│   ├── db.py              # SQLite tables, connections, and core data operations
-│   ├── stats.py           # Averages (Ao5 to Ao100), WCA rounding, and chart maths
-│   ├── scores.py          # The Analytics scores (see docs/SCORES.md)
-│   ├── wca_reference.json # Summary of WCA results the scores compare against
-│   ├── wca.py             # WCA rank and percentile, and WCA ID lookup
-│   ├── security.py        # Keeps other websites out (see Security)
-│   ├── validation.py      # Checks what the page sends before it's stored
-│   ├── events.py          # The events the app knows about
-│   ├── cstimer.py         # Reading CSTimer exports
-│   └── backup.py          # JSON backup export and restore
-├── web/                   # The web page, served by the backend
-│   ├── index.html
-│   ├── css/               # Stylesheets
-│   ├── js/
-│   │   ├── config.js      # API address, event names, and shared helpers
-│   │   ├── ui.js          # Toasts, the "are you sure?" window, and the note window
-│   │   ├── solves.js      # Changing and deleting one solve, with Undo
-│   │   ├── scramble.js    # Random-move scrambles
-│   │   ├── tables.js      # Sortable table headings
-│   │   ├── backup.js      # Backup export and import, and the CSV export
-│   │   ├── docs.js        # Shows the app's own docs (such as SCORES.md) in the app
-│   │   ├── dashboard.js, sessions.js, cubes.js, timer.js,
-│   │   │   import.js, analytics.js, charts.js, greeting.js,
-│   │   │   app.js, theme.js, theme-init.js   # One file per tab or feature
-│   ├── images/            # Logo, favicon, and the shortcut icon (app-icon.ico)
-│   └── vendor/            # Bundled Plotly.js and Space Grotesk (with their licences)
-├── pwa/                   # The phone app (an early preview), with its own README
-├── tools/
-│   ├── build_wca_reference.py  # Rebuilds wca_reference.json from a WCA results export
-│   └── sync_wca_reference_docs.py  # Updates the export date the docs quote
+├── src/
+│   ├── app/               # The app's frame: tabs, sheets, routing, updates, fullscreen
+│   ├── db/                # IndexedDB tables (Dexie) and the queries the screens use
+│   ├── features/          # One folder per tab or feature: timer, sessions, analytics,
+│   │                      #   backup, import, cubes, and more
+│   └── lib/               # Stats, scores, events, validation, the WCA rank, and
+│                          #   wca_reference.json, the WCA summary the scores compare with
+├── public/                # Icons
+├── tests/e2e/             # Browser tests (Playwright), on an iPhone screen
+├── scripts/               # The bundle size check
+├── tools/                 # Python: rebuilds wca_reference.json each month, and its tests
 ├── docs/
 │   ├── SCORES.md          # How the Analytics scores are worked out
 │   ├── ROADMAP.md         # What's done, known limitations, and what could come next
 │   └── screenshots/       # Images used in this README
-├── tests/                 # Automated tests (pytest), with small synthetic fixtures
-│   └── e2e/               # Browser tests (Playwright), run on request
-├── .github/workflows/     # Tests for both apps, the phone app's deploy, and the monthly WCA refresh
-├── data/                  # Your database, and its copies in data/backups (never committed)
-├── Lookahead.lnk          # Windows only: made on first start, never committed
+├── .github/workflows/     # The app's checks and deploy, the tools' tests, the monthly refresh
+├── package.json           # The app's scripts and dependencies (pnpm)
+├── pyproject.toml         # The Python tools' dependencies (uv)
 ├── LICENSE
 └── README.md, INSTALLATION.md
 ```
@@ -521,29 +283,27 @@ the known limitations and the ideas planned so far.
 
 ### Running the Tests
 
-The tests use [pytest](https://docs.pytest.org/) and run on temporary databases, so they never
-touch your own data or need the internet. They're only for working on the app, so the ZIP
-download leaves them out (along with `.github/` and `tools/`): clone the repository with git to
-get them. Then, from the project folder:
+You need Node 22.12 or later and [pnpm](https://pnpm.io/). From the project folder:
 
 ```bash
-uv run --dev pytest
+pnpm install
+pnpm dev                # local dev server
+pnpm check              # Biome lint and format check
+pnpm typecheck          # TypeScript
+pnpm test               # unit tests (Vitest)
+pnpm build && pnpm size # production build and bundle size budget
+pnpm test:e2e           # browser tests in WebKit, on an iPhone screen
 ```
 
-`--dev` adds pytest, which `uv run app.py` doesn't install, since using the app never needs
-it. Browser tests also click through every tab in Chromium, using
-[Playwright](https://playwright.dev/python/). They're left out of the everyday run because
-they're slower and need a browser download. To run it, download the browser once, then run the tests
-marked `e2e`:
+Playwright's WebKit needs Ubuntu or Debian system libraries; elsewhere, run
+`pnpm test:e2e:chromium` instead. GitHub Actions runs the WebKit tests on every push.
 
-```bash
-uv run --group e2e playwright install chromium
-uv run --group e2e pytest -m e2e
-```
+The Python tools in `tools/` (the WCA summary rebuild) and the docs checks use
+[uv](https://docs.astral.sh/uv/): `uv run --dev pytest`.
 
-GitHub Actions runs both on Windows, macOS, and Ubuntu for every push and pull request.
-
-The phone app in `pwa/` has its own tools and tests; see [pwa/README.md](pwa/README.md).
+The stats, scores, backups, CSTimer import, and CSV export were checked against 3.3's Python
+code, and the golden files in `src/**/golden/` hold its answers, so the app still gives exactly
+the same numbers.
 
 ---
 
@@ -557,7 +317,7 @@ The phone app in `pwa/` has its own tools and tests; see [pwa/README.md](pwa/REA
   results owned and maintained by the World Cube Association, published at
   <https://worldcubeassociation.org/results> as of October 11, 2026.
 - **CSTimer:** for the inspiration and the export format
-- **Plotly.js:** for the interactive charts
+- **uPlot:** for the fast charts
 - **Space Grotesk:** by Florian Karsten, the font the app uses
 - **Claude Code:** occasional help along the way
 
@@ -566,8 +326,8 @@ The phone app in `pwa/` has its own tools and tests; see [pwa/README.md](pwa/REA
 ## 📝 Licence
 
 This project is released under the MIT License. See the [LICENSE](LICENSE) file for details.
-The bundled Plotly.js (MIT) and Space Grotesk (SIL Open Font License) keep their own licences,
-included in `web/vendor/`.
+The bundled Space Grotesk font keeps its own licence, the SIL Open Font License
+(`src/assets/fonts/OFL.txt`).
 
 ---
 

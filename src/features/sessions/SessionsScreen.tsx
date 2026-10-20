@@ -58,7 +58,7 @@ function SessionList() {
       {found === undefined || counts === undefined ? null : counts.sessions === 0 ? (
         <p className="mt-6 text-muted">
           No sessions yet. The timer starts one each day you time a solve. To bring your solves
-          across from the desktop app, make a backup there, then restore it on the{' '}
+          across from Lookahead 3.x (the desktop app), make a backup there, then restore it on the{' '}
           <a
             href={tabHref('more')}
             className="font-medium text-accent-ink underline underline-offset-2"
