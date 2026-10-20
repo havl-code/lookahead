@@ -21,7 +21,7 @@ const pageWidths: Record<PageWidth, string> = {
 // first time they open; the service worker has already stored them, so that works offline too.
 // Each tab says how wide it may grow, and is readable unless it says otherwise.
 const screens: Record<Tab, { readonly Screen: ComponentType; readonly width?: PageWidth }> = {
-  timer: { Screen: TimerScreen },
+  timer: { Screen: TimerScreen, width: 'wide' },
   sessions: {
     Screen: lazy(() =>
       import('../features/sessions/SessionsScreen.tsx').then((m) => ({

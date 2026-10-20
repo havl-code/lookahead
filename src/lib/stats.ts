@@ -61,6 +61,21 @@ export function resultMs(attempt: Attempt): Result {
   return attempt.penalty === '+2' ? attempt.time_ms + 2000 : attempt.time_ms;
 }
 
+/**
+ * Whether a solve is its session's best or worst single, from the session's own stats. A DNF is
+ * neither, and nothing is marked while the best and the worst are the same single.
+ */
+export function singleMark(
+  attempt: Attempt,
+  session: Pick<SessionStats, 'best_single' | 'worst_single'>,
+): 'best' | 'worst' | null {
+  const result = resultMs(attempt);
+  if (result === null || session.best_single === session.worst_single) return null;
+  if (result === session.best_single) return 'best';
+  if (result === session.worst_single) return 'worst';
+  return null;
+}
+
 const byNumber = (a: number, b: number) => a - b;
 
 function sum(values: readonly number[]): number {

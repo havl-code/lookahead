@@ -10,6 +10,7 @@ import {
   type Result,
   rollingWcaAverages,
   sessionStats,
+  singleMark,
   singleSeconds,
   trimFor,
 } from './stats.ts';
@@ -45,6 +46,28 @@ describe('singles and averages the WCA way', () => {
       expect(averageSeconds(r.ms)).toBe(r.average);
     },
   );
+});
+
+describe('singleMark', () => {
+  // A session of 12.34, 10.50 (+2, so 12.50), 9.87, and a DNF: best 9.87, worst 12.50.
+  const session = { best_single: 9870, worst_single: 12_500 };
+
+  it('marks the solves that are the best and the worst single', () => {
+    expect(singleMark({ time_ms: 9870, penalty: 'OK', dnf: false }, session)).toBe('best');
+    expect(singleMark({ time_ms: 10_500, penalty: '+2', dnf: false }, session)).toBe('worst');
+    expect(singleMark({ time_ms: 12_340, penalty: null, dnf: false }, session)).toBeNull();
+  });
+
+  it('never marks a DNF, even in a session of nothing but DNFs', () => {
+    const dnf = { time_ms: 0, penalty: 'DNF', dnf: true };
+    expect(singleMark(dnf, session)).toBeNull();
+    expect(singleMark(dnf, { best_single: null, worst_single: null })).toBeNull();
+  });
+
+  it('marks nothing while the best and the worst are the same single', () => {
+    const only = { time_ms: 9870, penalty: null, dnf: false };
+    expect(singleMark(only, { best_single: 9870, worst_single: 9870 })).toBeNull();
+  });
 });
 
 describe('bestAverage', () => {

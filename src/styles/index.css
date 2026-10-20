@@ -157,6 +157,26 @@
     -webkit-touch-callout: none;
   }
 
+  /*
+   * The timer's two columns in the wide layout: the event menu, the scramble, the time, and the
+   * latest solve's buttons on the left, and a panel of about 360 px on the right headed by the
+   * session menu. The same elements as the phone's column, placed by name (ADR 0001). The empty
+   * third column doubles the gap before the panel. The element turns into a grid with lg:grid,
+   * since a utility's display wins over this layer.
+   */
+  @media (width >= 64rem) {
+    .timer-columns {
+      grid-template-columns: minmax(0, 1fr) auto 0 22.5rem;
+      grid-template-rows: auto auto auto 1fr auto;
+      grid-template-areas:
+        "event settings . session"
+        "notice notice . panel"
+        "scramble scramble . panel"
+        "pad pad . panel"
+        "solve solve . panel";
+    }
+  }
+
   /* Everything but the time fades away when an attempt begins. */
   @media (prefers-reduced-motion: no-preference) {
     .focus-in {

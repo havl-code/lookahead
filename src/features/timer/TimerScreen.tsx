@@ -19,7 +19,7 @@ import {
 import { defaultTimerSettings } from '../../db/timerSettings.ts';
 import { eventName } from '../../lib/events.ts';
 import { count, formatClock, formatResult } from '../../lib/format.ts';
-import { averageSeconds, singleSeconds } from '../../lib/stats.ts';
+import { averageSeconds, singleMark, singleSeconds } from '../../lib/stats.ts';
 import { requestPersistence } from '../../lib/storage.ts';
 import { localDate } from '../../lib/time.ts';
 import { BackupReminder } from '../backup/BackupReminder.tsx';
@@ -295,13 +295,25 @@ export function TimerScreen() {
       void changePenalty(latest, action);
   };
 
+  // The wide layout's panel holds the stats and solves, so without them the column centres.
+  const showPanel = !settings.hideStats && !fullscreen;
+
   return (
     <>
       <h1 className="sr-only">Timer</h1>
-      <div className="flex flex-1 flex-col gap-4">
+      <div
+        className={`flex flex-1 flex-col gap-4 ${
+          showPanel
+            ? 'timer-columns lg:grid'
+            : fullscreen
+              ? ''
+              : 'lg:mx-auto lg:w-full lg:max-w-3xl'
+        }`}
+      >
         {!fullscreen && (
-          <div className="flex items-center gap-3">
-            <label className="min-w-0 flex-[2]">
+          // In the wide layout the menus and the gear take their places in the columns.
+          <div className={`flex items-center gap-3 ${showPanel ? 'lg:contents' : ''}`}>
+            <label className="min-w-0 flex-[2] lg:[grid-area:event]">
               <span className="sr-only">Event</span>
               <select
                 value={eventId}
@@ -327,16 +339,16 @@ export function TimerScreen() {
               type="button"
               onClick={() => setSettingsOpen(true)}
               aria-label="Settings"
-              className="flex size-11 shrink-0 items-center justify-center rounded-lg border border-control bg-raised"
+              className="flex size-11 shrink-0 lg:[grid-area:settings] items-center justify-center rounded-lg border border-control bg-raised"
             >
               <SettingsIcon className="size-5" />
             </button>
           </div>
         )}
 
-        {!fullscreen && <BackupReminder />}
+        {!fullscreen && <BackupReminder className="lg:[grid-area:notice]" />}
 
-        <section aria-label="Scramble">
+        <section aria-label="Scramble" className="lg:[grid-area:scramble]">
           <p
             className={`whitespace-pre-line break-words font-medium leading-relaxed tracking-wide ${
               isLongScramble(eventId) ? 'text-base' : 'text-lg'
@@ -373,7 +385,7 @@ export function TimerScreen() {
         <div
           {...pointer}
           role="presentation"
-          className="touch-pad flex min-h-40 flex-1 flex-col items-center justify-center rounded-2xl"
+          className="touch-pad flex min-h-40 flex-1 flex-col items-center justify-center rounded-2xl lg:@container lg:[grid-area:pad]"
         >
           <Readout
             state={clock.state}
@@ -393,7 +405,7 @@ export function TimerScreen() {
         </div>
 
         {shownSolve && !fullscreen && (
-          <fieldset className="flex flex-wrap items-center justify-center gap-2">
+          <fieldset className="flex flex-wrap items-center justify-center gap-2 lg:[grid-area:solve]">
             <legend className="sr-only">Solve {shownSolve.solve_number}</legend>
             <PenaltyButtons
               solve={shownSolve}
@@ -409,9 +421,7 @@ export function TimerScreen() {
           </fieldset>
         )}
 
-        {!settings.hideStats && !fullscreen && (
-          <SessionStats timing={timing} today={today} onOpen={setOpenSolve} />
-        )}
+        {showPanel && <SessionStats timing={timing} today={today} onOpen={setOpenSolve} />}
       </div>
 
       {active && (
@@ -504,7 +514,10 @@ function Readout({
   return (
     <p
       className={`font-semibold tabular-nums leading-none tracking-tight ${colour} ${
-        large ? 'text-[clamp(5rem,26vw,13rem)]' : 'text-[clamp(4rem,20vw,8rem)]'
+        large
+          ? 'text-[clamp(5rem,26vw,13rem)]'
+          : // In the wide layout, as large as 1:23.45 fits the touch pad's width, up to 14 rem.
+            'text-[clamp(4rem,20vw,8rem)] lg:text-[min(14rem,24cqi)]'
       }`}
     >
       {text}
@@ -567,7 +580,12 @@ function SessionStats({
   ];
 
   return (
-    <section aria-labelledby={headingId} className="space-y-3">
+    // In the wide layout the panel takes the height the left column leaves it (no height of its
+    // own, then all of its grid area), and the list scrolls inside it rather than the page.
+    <section
+      aria-labelledby={headingId}
+      className="space-y-3 lg:flex lg:h-0 lg:min-h-full lg:flex-col lg:[grid-area:panel]"
+    >
       <h2 id={headingId} className="font-semibold">
         {session ? sessionDay(session, today) : 'Today'}
       </h2>
@@ -580,19 +598,38 @@ function SessionStats({
         ))}
       </dl>
       {timing && timing.solves.length > 0 ? (
-        <ol aria-label="Latest solves" className="flex flex-wrap gap-2">
-          {timing.solves.map((solve) => (
-            <li key={solve.id}>
-              <button
-                type="button"
-                onClick={() => onOpen(solve.id)}
-                aria-label={`Solve ${solve.solve_number}: ${resultText(solve)}`}
-                className="min-h-11 rounded-lg border border-line bg-raised px-3 tabular-nums"
-              >
-                {resultText(solve)}
-              </button>
-            </li>
-          ))}
+        <ol
+          aria-label="Latest solves"
+          className="flex flex-wrap gap-2 lg:min-h-0 lg:flex-col lg:flex-nowrap lg:overflow-y-auto"
+        >
+          {timing.solves.map((solve) => {
+            const mark = singleMark(solve, timing.session);
+            return (
+              <li key={solve.id}>
+                {/* A wrapped row of results on the phone; in the wide layout, one row each with
+                    the solve's number, and the best and worst marked after the result, in the
+                    same order as the name (WCAG 2.5.3). */}
+                <button
+                  type="button"
+                  onClick={() => onOpen(solve.id)}
+                  aria-label={`Solve ${solve.solve_number}: ${resultText(solve)}${mark ? `, ${mark}` : ''}`}
+                  className="min-h-11 rounded-lg border border-line bg-raised px-3 tabular-nums lg:flex lg:w-full lg:items-center lg:gap-3"
+                >
+                  <span className="hidden text-muted lg:inline">{solve.solve_number}</span>
+                  <span className="lg:ml-auto lg:font-semibold">{resultText(solve)}</span>
+                  {mark && (
+                    <span
+                      className={`hidden text-sm lg:inline ${
+                        mark === 'best' ? 'text-good-ink' : 'text-danger-ink'
+                      }`}
+                    >
+                      {mark}
+                    </span>
+                  )}
+                </button>
+              </li>
+            );
+          })}
         </ol>
       ) : (
         <p className="text-muted text-sm">

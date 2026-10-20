@@ -179,7 +179,8 @@ test('times into a session picked from the menu, or a new one', async ({ page })
   await nav.getByRole('link', { name: 'Timer' }).click();
   await expect(session.locator('option:checked')).toHaveText('Today (1 solve)');
   await timeASolve(page, 3_000, 12_000);
-  await expect(page.getByRole('button', { name: /^Solve 2: 12\.[01]\d$/ })).toBeVisible();
+  // The slower of the two is the session's worst, and its name says so.
+  await expect(page.getByRole('button', { name: /^Solve 2: 12\.[01]\d, worst$/ })).toBeVisible();
   await expect(session.locator('option:checked')).toHaveText('Today (2 solves)');
 });
 

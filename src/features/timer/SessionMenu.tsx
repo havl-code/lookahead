@@ -31,7 +31,7 @@ export function SessionMenu({
 }) {
   const sessions = useSessions(Number.POSITIVE_INFINITY, eventId)?.sessions ?? [];
   return (
-    <label className="min-w-0 flex-[3]">
+    <label className="min-w-0 flex-[3] lg:[grid-area:session]">
       <span className="sr-only">Session</span>
       <select
         value={current?.id ?? ''}
