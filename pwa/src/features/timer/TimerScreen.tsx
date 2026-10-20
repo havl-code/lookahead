@@ -37,6 +37,7 @@ import {
   isLongScramble,
   timerEvents,
 } from './scramble.ts';
+import { type TimerShortcut, timerShortcut } from './shortcuts.ts';
 import { beep, speak, unlockSound } from './sounds.ts';
 import { TimerSettingsSheet } from './TimerSettingsSheet.tsx';
 import { useClock } from './useClock.ts';
@@ -50,6 +51,11 @@ export function resultText(solve: Pick<Solve, 'time_ms' | 'penalty' | 'dnf'>): s
   if (solve.penalty === '+2')
     return `${formatClock(singleSeconds(solve.time_ms + 2000) ?? 0)} (+2)`;
   return formatClock(singleSeconds(solve.time_ms) ?? 0);
+}
+
+/** A solve's penalty, as its buttons show it: a DNF however it's stored, then +2, then OK. */
+function penaltyOf(solve: Pick<Solve, 'penalty' | 'dnf'>): Penalty {
+  return solve.dnf ? 'DNF' : solve.penalty === '+2' ? '+2' : 'OK';
 }
 
 export function TimerScreen() {
@@ -69,14 +75,19 @@ export function TimerScreen() {
   } | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [openSolve, setOpenSolve] = useState<number | null>(null);
+  // A solve being saved ('saving'), or the id of one saved but not yet in the list.
+  const pending = useRef<'saving' | number | null>(null);
+  const runShortcut = useRef<(action: TimerShortcut) => void>(() => {});
   const scrambleFor = useRef({ eventId, scramble });
   scrambleFor.current = { eventId, scramble };
   useWakeLock();
 
   const save = useCallback(
     async (finished: Finished, attempt: { eventId: string; scramble: string }) => {
+      pending.current = 'saving';
       try {
         const { solveId } = await saveTimedSolve(db, { ...attempt, ...finished });
+        pending.current = solveId;
         setShown(solveId);
         setAnnouncement(
           `${resultText({ time_ms: finished.timeMs, penalty: finished.penalty, dnf: finished.penalty === 'DNF' })}, saved.`,
@@ -85,6 +96,7 @@ export function TimerScreen() {
         if ((await getMeta(db, 'persistResult')) === null)
           await setMeta(db, 'persistResult', await requestPersistence());
       } catch {
+        if (pending.current === 'saving') pending.current = null;
         setToast({
           message: "Couldn't save that solve. This device may be out of space.",
           action: { label: 'Retry', onClick: () => void save(finished, attempt) },
@@ -115,7 +127,8 @@ export function TimerScreen() {
   useHoldUpdates(active);
 
   // The space bar works as the touch pad does, even with a button focused (Enter still presses
-  // it), and Escape calls off an attempt in progress. Both leave typing and open sheets alone.
+  // it), and Escape calls off an attempt in progress. The shortcuts (shortcuts.ts) change or
+  // delete the latest solve. All of them leave typing and open sheets alone.
   const { press, release, cancel } = clock;
   useEffect(() => {
     const ownsKeys = (event: KeyboardEvent) => {
@@ -127,7 +140,11 @@ export function TimerScreen() {
       );
     };
     const down = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && clock.state.phase !== 'idle') {
+      const action = timerShortcut(event);
+      if (action && ownsKeys(event)) {
+        event.preventDefault();
+        runShortcut.current(action);
+      } else if (event.key === 'Escape' && clock.state.phase !== 'idle') {
         event.preventDefault();
         cancel();
         setCall(null);
@@ -181,6 +198,7 @@ export function TimerScreen() {
   };
 
   function chooseEvent(next: string) {
+    if (typeof pending.current === 'number') pending.current = null;
     void setMeta(db, 'timerEvent', next);
     setScramble(generateScramble(next));
     setShown(null);
@@ -209,6 +227,17 @@ export function TimerScreen() {
       });
     }
   }
+
+  // The shortcuts wait while a solve is being timed or saved, and until it shows in the list, so
+  // they can't change the wrong one.
+  const latest = solves[0];
+  if (typeof pending.current === 'number' && latest?.id === pending.current) pending.current = null;
+  runShortcut.current = (action) => {
+    if (active || pending.current !== null || !latest) return;
+    if (action === 'delete') void remove(latest);
+    else if (penaltyOf(latest) !== action && !(onlyDnf(latest) && action !== 'DNF'))
+      void changePenalty(latest, action);
+  };
 
   return (
     <>
@@ -411,7 +440,7 @@ export function PenaltyButtons({
   readonly solve: Solve;
   readonly onChange: (penalty: Penalty) => void;
 }) {
-  const current: Penalty = solve.dnf ? 'DNF' : solve.penalty === '+2' ? '+2' : 'OK';
+  const current = penaltyOf(solve);
   // A solve that never started has no time, so it can only be a DNF.
   const fixed = onlyDnf(solve);
   return (

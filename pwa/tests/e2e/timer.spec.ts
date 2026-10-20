@@ -139,6 +139,25 @@ test('changes a penalty, and deletes with undo', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Solve 1: DNF' })).toBeVisible();
 });
 
+test('changes and deletes the latest solve from the keyboard, as the desktop does', async ({
+  page,
+}) => {
+  await timeASolve(page, 3_000, 10_000);
+  await expect(page.getByRole('button', { name: /^Solve 1: 10\.[01]\d$/ })).toBeVisible();
+
+  await page.keyboard.press('Alt+2');
+  await expect(page.getByRole('button', { name: /^Solve 1: 12\.[01]\d \(\+2\)$/ })).toBeVisible();
+  await page.keyboard.press('Control+3');
+  await expect(page.getByRole('button', { name: 'Solve 1: DNF' })).toBeVisible();
+  await page.keyboard.press('Alt+1');
+  await expect(page.getByRole('button', { name: /^Solve 1: 10\.[01]\d$/ })).toBeVisible();
+
+  await page.keyboard.press('Control+z');
+  await expect(page.getByText('No solves yet today.')).toBeVisible();
+  await page.getByRole('button', { name: 'Undo' }).click();
+  await expect(page.getByRole('button', { name: /^Solve 1: 10\.[01]\d$/ })).toBeVisible();
+});
+
 test('keeps the event, and gives blindfolded events no inspection (B1a)', async ({ page }) => {
   await page.getByRole('combobox', { name: 'Event' }).selectOption('333bf');
   await expect(page.getByText('Hold the time until it turns green')).toBeVisible();
