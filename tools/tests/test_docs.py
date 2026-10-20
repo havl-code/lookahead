@@ -10,7 +10,8 @@ import pytest
 
 PROJECT_DIR = Path(__file__).resolve().parents[2]
 DOCS = [PROJECT_DIR / 'README.md', PROJECT_DIR / 'INSTALLATION.md',
-        PROJECT_DIR / 'CODING_STANDARDS.md', *sorted((PROJECT_DIR / 'docs').glob('*.md'))]
+        PROJECT_DIR / 'CODING_STANDARDS.md', PROJECT_DIR / 'CONTEXT.md',
+        *sorted((PROJECT_DIR / 'docs').glob('*.md')), *sorted((PROJECT_DIR / 'docs' / 'adr').glob('*.md'))]
 # Everything the project writes itself (not the golden files, the lock files, or the fonts)
 OWN_TEXT = [*DOCS, PROJECT_DIR / 'pyproject.toml', PROJECT_DIR / 'package.json',
             PROJECT_DIR / 'index.html', *sorted((PROJECT_DIR / 'tools').rglob('*.py')),
