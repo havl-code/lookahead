@@ -5,7 +5,7 @@ import { useDb } from './DbProvider.tsx';
 import type { LookaheadDb, SafetyCopy } from './database.ts';
 import { getMeta, type Meta } from './meta.ts';
 import type { Cube, Session, Solve } from './schema.ts';
-import { findTodaysSession, latestSolves, type SolveSort, sessionSolves } from './solves.ts';
+import { latestSolves, type SolveSort, sessionSolves, timerSession } from './solves.ts';
 import {
   latestSafetyCopy,
   type StoredCounts,
@@ -138,19 +138,21 @@ export function useTimerSettings(): TimerSettings | undefined {
 }
 
 /**
- * The event's session for today with its latest `limit` solves, newest first, or null when
- * today's first solve hasn't been timed yet. Undefined while loading.
+ * The session the timer times into, with its latest `limit` solves, newest first: the one picked
+ * on the timer while it still exists, or else the event's session for today. Null when today's
+ * first solve hasn't been timed yet. Undefined while loading.
  */
-export function useTodaysSolves(
+export function useTimerSession(
   eventId: string,
   today: string,
+  pickedId: number | null,
   limit: number,
 ): { readonly session: Session; readonly solves: Solve[] } | null | undefined {
   const db = useDb();
   return useLiveQuery(async () => {
-    const session = await findTodaysSession(db, eventId, today);
+    const session = await timerSession(db, eventId, pickedId, today);
     return session ? { session, solves: await latestSolves(db, session.id, limit) } : null;
-  }, [db, eventId, today, limit]);
+  }, [db, eventId, today, pickedId, limit]);
 }
 
 /** How many solves were timed since the last backup, and when the first of them was. */

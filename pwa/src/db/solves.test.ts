@@ -1,7 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { createTestDb } from '../test/db.ts';
 import type { LookaheadDb } from './database.ts';
-import { deleteSolve, latestSolves, restoreSolve, saveTimedSolve, setPenalty } from './solves.ts';
+import {
+  deleteSolve,
+  latestSolves,
+  restoreSolve,
+  saveTimedSolve,
+  setPenalty,
+  startTimerSession,
+} from './solves.ts';
 import { getTimerSettings, parseTimerSettings, updateTimerSettings } from './timerSettings.ts';
 
 const morning = new Date(2026, 9, 14, 9);
@@ -64,6 +71,46 @@ describe('saving timed solves', () => {
       dnf: false,
     });
     expect((await db.sessions.get(sessionId))?.best_single).toBe(12_000);
+  });
+});
+
+describe('timing into a chosen session', () => {
+  it("saves into the session picked on the timer, or today's if it's gone", async () => {
+    const db = createTestDb();
+    const { sessionId: earlier } = await time(db, 10_000, morning);
+    const { sessionId: today } = await time(db, 11_000, tomorrow);
+    const picked = await saveTimedSolve(
+      db,
+      { eventId: '333', timeMs: 12_000, penalty: 'OK', scramble: '', sessionId: earlier },
+      tomorrow,
+    );
+    expect(picked).toMatchObject({ sessionId: earlier });
+    expect((await db.sessions.get(earlier))?.solve_count).toBe(2);
+
+    await db.sessions.delete(earlier);
+    await db.solves.where('session_id').equals(earlier).delete();
+    const fallback = await saveTimedSolve(
+      db,
+      { eventId: '333', timeMs: 13_000, penalty: 'OK', scramble: '', sessionId: earlier },
+      tomorrow,
+    );
+    expect(fallback.sessionId).toBe(today);
+  });
+});
+
+describe('starting a new session on the timer', () => {
+  it('adds another session for today with the latest cube, and times into it', async () => {
+    const db = createTestDb();
+    const { sessionId: first } = await time(db, 10_000, morning);
+    await db.sessions.update(first, { cube_id: 7 });
+    const second = await startTimerSession(db, '333', evening);
+    expect(second).not.toBe(first);
+    expect(await db.sessions.get(second)).toMatchObject({
+      date: '2026-10-14',
+      cube_id: 7,
+      solve_count: 0,
+    });
+    expect((await time(db, 11_000, evening)).sessionId).toBe(second);
   });
 });
 

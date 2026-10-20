@@ -158,6 +158,31 @@ test('changes and deletes the latest solve from the keyboard, as the desktop doe
   await expect(page.getByRole('button', { name: /^Solve 1: 10\.[01]\d$/ })).toBeVisible();
 });
 
+test('times into a session picked from the menu, or a new one', async ({ page }) => {
+  await timeASolve(page, 3_000, 10_000);
+  await expect(page.getByRole('button', { name: /^Solve 1: 10\.[01]\d$/ })).toBeVisible();
+  const session = page.getByLabel('Session');
+  await expect(session.locator('option:checked')).toHaveText('Today (1 solve)');
+
+  // A new session for today starts empty, and the timer times into it.
+  await session.selectOption({ label: '+ New session' });
+  await expect(page.getByText('No solves yet today.')).toBeVisible();
+  await expect(session.locator('option:checked')).toHaveText('Today (0 solves)');
+  await timeASolve(page, 3_000, 11_000);
+  await expect(page.getByRole('button', { name: /^Solve 1: 11\.[01]\d$/ })).toBeVisible();
+
+  // Picking the earlier one times into it, and it stays picked after visiting another tab.
+  await session.selectOption({ index: 2 });
+  await expect(page.getByRole('button', { name: /^Solve 1: 10\.[01]\d$/ })).toBeVisible();
+  const nav = page.getByRole('navigation', { name: 'Main' });
+  await nav.getByRole('link', { name: 'Sessions' }).click();
+  await nav.getByRole('link', { name: 'Timer' }).click();
+  await expect(session.locator('option:checked')).toHaveText('Today (1 solve)');
+  await timeASolve(page, 3_000, 12_000);
+  await expect(page.getByRole('button', { name: /^Solve 2: 12\.[01]\d$/ })).toBeVisible();
+  await expect(session.locator('option:checked')).toHaveText('Today (2 solves)');
+});
+
 test('keeps the event, and gives blindfolded events no inspection (B1a)', async ({ page }) => {
   await page.getByRole('combobox', { name: 'Event' }).selectOption('333bf');
   await expect(page.getByText('Hold the time until it turns green')).toBeVisible();

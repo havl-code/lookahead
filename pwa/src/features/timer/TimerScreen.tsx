@@ -2,7 +2,7 @@ import { type PointerEvent, useCallback, useEffect, useId, useRef, useState } fr
 import { Toast } from '../../app/Toast.tsx';
 import { useHoldUpdates } from '../../app/updates.ts';
 import { useDb } from '../../db/DbProvider.tsx';
-import { useMeta, useTimerSettings, useTodaysSolves } from '../../db/hooks.ts';
+import { useMeta, useTimerSession, useTimerSettings } from '../../db/hooks.ts';
 import { getMeta, setMeta } from '../../db/meta.ts';
 import type { Solve } from '../../db/schema.ts';
 import {
@@ -12,6 +12,7 @@ import {
   saveTimedSolve,
   setPenalty,
   setSolveNotes,
+  startTimerSession,
 } from '../../db/solves.ts';
 import { defaultTimerSettings } from '../../db/timerSettings.ts';
 import { eventName } from '../../lib/events.ts';
@@ -29,6 +30,7 @@ import {
   longestLimitMs,
   type Penalty,
 } from './clock.ts';
+import { SessionMenu, sessionDay } from './SessionMenu.tsx';
 import { SolveSheet } from './SolveSheet.tsx';
 import {
   generateScramble,
@@ -58,13 +60,20 @@ function penaltyOf(solve: Pick<Solve, 'penalty' | 'dnf'>): Penalty {
   return solve.dnf ? 'DNF' : solve.penalty === '+2' ? '+2' : 'OK';
 }
 
+/**
+ * The session picked on the timer's menu, kept outside the screen so it lasts while the app is
+ * open (as on the desktop, until a reload), even when another tab is showing. Null follows today.
+ */
+let pickedSession: number | null = null;
+
 export function TimerScreen() {
   const db = useDb();
   const storedEvent = useMeta('timerEvent');
   const eventId = storedEvent && hasTimer(storedEvent) ? storedEvent : '333';
   const settings = useTimerSettings() ?? defaultTimerSettings;
   const [today, setToday] = useState(localDate);
-  const todays = useTodaysSolves(eventId, today, recentCount);
+  const [picked, setPicked] = useState(pickedSession);
+  const timing = useTimerSession(eventId, today, picked, recentCount);
   const [scramble, setScramble] = useState(() => generateScramble(eventId));
   const [call, setCall] = useState<string | null>(null);
   const [shown, setShown] = useState<number | null>(null);
@@ -78,16 +87,38 @@ export function TimerScreen() {
   // A solve being saved ('saving'), or the id of one saved but not yet in the list.
   const pending = useRef<'saving' | number | null>(null);
   const runShortcut = useRef<(action: TimerShortcut) => void>(() => {});
-  const scrambleFor = useRef({ eventId, scramble });
-  scrambleFor.current = { eventId, scramble };
+  const scrambleFor = useRef({ eventId, scramble, sessionId: picked });
+  scrambleFor.current = { eventId, scramble, sessionId: picked };
   useWakeLock();
 
+  // Picking a session (or following today again) also lets go of any solve still being saved
+  // into the old one, so the shortcuts work on the new session straight away.
+  function pick(sessionId: number | null) {
+    pickedSession = sessionId;
+    setPicked(sessionId);
+    setShown(null);
+    pending.current = null;
+  }
+
+  async function startSession() {
+    setToday(localDate());
+    try {
+      await startTimerSession(db, eventId);
+      pick(null);
+    } catch {
+      setToast({ message: "Couldn't start a session. This device may be out of space." });
+    }
+  }
+
   const save = useCallback(
-    async (finished: Finished, attempt: { eventId: string; scramble: string }) => {
+    async (
+      finished: Finished,
+      attempt: { eventId: string; scramble: string; sessionId: number | null },
+    ) => {
       pending.current = 'saving';
       try {
         const { solveId } = await saveTimedSolve(db, { ...attempt, ...finished });
-        pending.current = solveId;
+        if (pending.current === 'saving') pending.current = solveId;
         setShown(solveId);
         setAnnouncement(
           `${resultText({ time_ms: finished.timeMs, penalty: finished.penalty, dnf: finished.penalty === 'DNF' })}, saved.`,
@@ -198,13 +229,13 @@ export function TimerScreen() {
   };
 
   function chooseEvent(next: string) {
-    if (typeof pending.current === 'number') pending.current = null;
+    pick(null);
     void setMeta(db, 'timerEvent', next);
     setScramble(generateScramble(next));
     setShown(null);
   }
 
-  const solves = todays?.solves ?? [];
+  const solves = timing?.solves ?? [];
   const shownSolve = solves.find((solve) => solve.id === shown);
 
   async function changePenalty(solve: Solve, penalty: Penalty) {
@@ -258,6 +289,13 @@ export function TimerScreen() {
               ))}
             </select>
           </label>
+          <SessionMenu
+            eventId={eventId}
+            today={today}
+            current={timing?.session}
+            onPick={pick}
+            onNew={() => void startSession()}
+          />
           <button
             type="button"
             onClick={() => setSettingsOpen(true)}
@@ -307,7 +345,7 @@ export function TimerScreen() {
             shown={shownSolve}
           />
           {/* How to start, until today's first solve. */}
-          {todays === null && !shownSolve && (
+          {(timing === null || timing?.session.solve_count === 0) && !shownSolve && (
             <p className="mt-3 text-center text-muted text-sm">
               {isBlindfolded(eventId) || !settings.inspectionEnabled
                 ? 'Hold the time until it turns green, then let go to start.'
@@ -333,7 +371,9 @@ export function TimerScreen() {
           </fieldset>
         )}
 
-        {!settings.hideStats && <SessionStats todays={todays} onOpen={setOpenSolve} />}
+        {!settings.hideStats && (
+          <SessionStats timing={timing} today={today} onOpen={setOpenSolve} />
+        )}
       </div>
 
       {active && (
@@ -464,15 +504,17 @@ export function PenaltyButtons({
 }
 
 function SessionStats({
-  todays,
+  timing,
+  today,
   onOpen,
 }: {
-  readonly todays: ReturnType<typeof useTodaysSolves>;
+  readonly timing: ReturnType<typeof useTimerSession>;
+  readonly today: string;
   readonly onOpen: (solveId: number) => void;
 }) {
   const headingId = useId();
-  if (todays === undefined) return null;
-  const session = todays?.session;
+  if (timing === undefined) return null;
+  const session = timing?.session;
   const solveCount = session?.solve_count ?? 0;
   const average = (value: number | null | undefined, size: number) =>
     value == null && solveCount >= size ? 'DNF' : formatResult(averageSeconds(value ?? null));
@@ -487,7 +529,7 @@ function SessionStats({
   return (
     <section aria-labelledby={headingId} className="space-y-3">
       <h2 id={headingId} className="font-semibold">
-        Today
+        {session ? sessionDay(session, today) : 'Today'}
       </h2>
       <dl className="grid grid-cols-5 gap-2 text-sm">
         {stats.map(([label, value]) => (
@@ -497,9 +539,9 @@ function SessionStats({
           </div>
         ))}
       </dl>
-      {todays && todays.solves.length > 0 ? (
+      {timing && timing.solves.length > 0 ? (
         <ol aria-label="Latest solves" className="flex flex-wrap gap-2">
-          {todays.solves.map((solve) => (
+          {timing.solves.map((solve) => (
             <li key={solve.id}>
               <button
                 type="button"
@@ -514,12 +556,16 @@ function SessionStats({
         </ol>
       ) : (
         <p className="text-muted text-sm">
-          No solves yet today. Your first one starts today's session.
+          {!timing
+            ? "No solves yet today. Your first one starts today's session."
+            : timing.session.date === today
+              ? 'No solves yet today.'
+              : 'No solves yet in this session.'}
         </p>
       )}
-      {todays && solveCount > todays.solves.length && (
+      {timing && solveCount > timing.solves.length && (
         <p className="text-muted text-sm">
-          Showing your latest {todays.solves.length} of {count(solveCount, 'solve', 'solves')}. The
+          Showing your latest {timing.solves.length} of {count(solveCount, 'solve', 'solves')}. The
           Sessions tab has them all.
         </p>
       )}

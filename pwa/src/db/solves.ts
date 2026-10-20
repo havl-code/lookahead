@@ -60,13 +60,15 @@ export async function findTodaysSession(
 }
 
 /**
- * The event's newest session dated today, starting one if there isn't one yet. A new one keeps
- * the cube from the event's latest session, since people usually stick with the same cube.
+ * Starts a session for today, as the timer's "+ New session" does (the desktop app's
+ * start_timer_session). It keeps the cube from the event's latest session, since people usually
+ * stick with the same cube.
  */
-async function todaysSession(db: LookaheadDb, eventId: string, now: Date): Promise<number> {
-  const today = localDate(now);
-  const existing = await findTodaysSession(db, eventId, today);
-  if (existing) return existing.id;
+export async function startTimerSession(
+  db: LookaheadDb,
+  eventId: string,
+  now = new Date(),
+): Promise<number> {
   const latest = (
     await db.sessions
       .where('[event_id+date]')
@@ -75,14 +77,30 @@ async function todaysSession(db: LookaheadDb, eventId: string, now: Date): Promi
   )
     .sort((a, b) => (a.date ?? '').localeCompare(b.date ?? '') || a.id - b.id)
     .at(-1);
-  return db.sessions.add({
-    date: today,
-    event_id: eventId,
-    cube_id: latest?.cube_id ?? null,
-    notes: 'Live timer session',
-    created_at: now.toISOString(),
-    ...noStats,
-  } as Session);
+  return withStorageErrors(() =>
+    db.sessions.add({
+      date: localDate(now),
+      event_id: eventId,
+      cube_id: latest?.cube_id ?? null,
+      notes: 'Live timer session',
+      created_at: now.toISOString(),
+      ...noStats,
+    } as Session),
+  );
+}
+
+/**
+ * The session the timer times into: the one picked on the timer while it still exists for the
+ * event, or else the event's newest session dated today, if there is one.
+ */
+export async function timerSession(
+  db: LookaheadDb,
+  eventId: string,
+  pickedId: number | null,
+  today: string,
+): Promise<Session | undefined> {
+  const picked = pickedId === null ? undefined : await db.sessions.get(pickedId);
+  return picked?.event_id === eventId ? picked : findTodaysSession(db, eventId, today);
 }
 
 export interface TimedSolve {
@@ -91,9 +109,14 @@ export interface TimedSolve {
   readonly timeMs: number;
   readonly penalty: Penalty;
   readonly scramble: string;
+  /** The session picked on the timer, if any; otherwise (or if it's gone) today's. */
+  readonly sessionId?: number | null;
 }
 
-/** Saves a solve from the timer into today's session for its event. Returns both ids. */
+/**
+ * Saves a solve from the timer into its session (see timerSession), starting today's if there
+ * isn't one yet. Returns both ids.
+ */
 export async function saveTimedSolve(
   db: LookaheadDb,
   solve: TimedSolve,
@@ -101,7 +124,9 @@ export async function saveTimedSolve(
 ): Promise<{ readonly solveId: number; readonly sessionId: number }> {
   return withStorageErrors(() =>
     db.transaction('rw', db.sessions, db.solves, async () => {
-      const sessionId = await todaysSession(db, solve.eventId, now);
+      const sessionId =
+        (await timerSession(db, solve.eventId, solve.sessionId ?? null, localDate(now)))?.id ??
+        (await startTimerSession(db, solve.eventId, now));
       const last = await solvesOf(db, sessionId).last();
       const solveId = await db.solves.add({
         session_id: sessionId,
