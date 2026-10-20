@@ -1,4 +1,5 @@
 import { type PointerEvent, useCallback, useEffect, useId, useRef, useState } from 'react';
+import { enterFullscreen, leaveFullscreen, useFullscreen } from '../../app/fullscreen.ts';
 import { Toast } from '../../app/Toast.tsx';
 import { useHoldUpdates } from '../../app/updates.ts';
 import { useDb } from '../../db/DbProvider.tsx';
@@ -157,6 +158,27 @@ export function TimerScreen() {
   const active = clock.state.phase !== 'idle';
   useHoldUpdates(active);
 
+  // Fullscreen (app/fullscreen.ts) lasts until Escape, Exit fullscreen, or leaving the tab. In
+  // the browser's own full screen, the browser takes Escape for itself, so leaving it does what
+  // Escape does here: call off an attempt in progress first, as on the desktop, or else leave.
+  const fullscreen = useFullscreen();
+  const attempt = useRef({ active, cancel: clock.cancel });
+  attempt.current = { active, cancel: clock.cancel };
+  useEffect(() => {
+    const changed = () => {
+      if (document.fullscreenElement) return;
+      if (attempt.current.active) {
+        attempt.current.cancel();
+        setCall(null);
+      } else leaveFullscreen();
+    };
+    document.addEventListener('fullscreenchange', changed);
+    return () => {
+      document.removeEventListener('fullscreenchange', changed);
+      leaveFullscreen();
+    };
+  }, []);
+
   // The space bar works as the touch pad does, even with a button focused (Enter still presses
   // it), and Escape calls off an attempt in progress. The shortcuts (shortcuts.ts) change or
   // delete the latest solve. All of them leave typing and open sheets alone.
@@ -179,6 +201,8 @@ export function TimerScreen() {
         event.preventDefault();
         cancel();
         setCall(null);
+      } else if (event.key === 'Escape' && ownsKeys(event)) {
+        leaveFullscreen();
       } else if (event.key === ' ' && (ownsKeys(event) || clock.state.phase !== 'idle')) {
         event.preventDefault();
         if (!event.repeat) {
@@ -274,38 +298,40 @@ export function TimerScreen() {
     <>
       <h1 className="sr-only">Timer</h1>
       <div className="flex flex-1 flex-col gap-4">
-        <div className="flex items-center gap-3">
-          <label className="min-w-0 flex-1">
-            <span className="sr-only">Event</span>
-            <select
-              value={eventId}
-              onChange={(event) => chooseEvent(event.target.value)}
-              className="min-h-11 w-full rounded-lg border border-control bg-raised px-3 font-semibold text-lg"
+        {!fullscreen && (
+          <div className="flex items-center gap-3">
+            <label className="min-w-0 flex-1">
+              <span className="sr-only">Event</span>
+              <select
+                value={eventId}
+                onChange={(event) => chooseEvent(event.target.value)}
+                className="min-h-11 w-full rounded-lg border border-control bg-raised px-3 font-semibold text-lg"
+              >
+                {timerEvents.map((id) => (
+                  <option key={id} value={id}>
+                    {eventName(id)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <SessionMenu
+              eventId={eventId}
+              today={today}
+              current={timing?.session}
+              onPick={pick}
+              onNew={() => void startSession()}
+            />
+            <button
+              type="button"
+              onClick={() => setSettingsOpen(true)}
+              className="min-h-11 rounded-lg border border-control bg-raised px-4 font-medium"
             >
-              {timerEvents.map((id) => (
-                <option key={id} value={id}>
-                  {eventName(id)}
-                </option>
-              ))}
-            </select>
-          </label>
-          <SessionMenu
-            eventId={eventId}
-            today={today}
-            current={timing?.session}
-            onPick={pick}
-            onNew={() => void startSession()}
-          />
-          <button
-            type="button"
-            onClick={() => setSettingsOpen(true)}
-            className="min-h-11 rounded-lg border border-control bg-raised px-4 font-medium"
-          >
-            Settings
-          </button>
-        </div>
+              Settings
+            </button>
+          </div>
+        )}
 
-        <BackupReminder />
+        {!fullscreen && <BackupReminder />}
 
         <section aria-label="Scramble">
           <p
@@ -330,6 +356,14 @@ export function TimerScreen() {
             >
               Copy
             </button>
+            <button
+              type="button"
+              onClick={fullscreen ? leaveFullscreen : enterFullscreen}
+              aria-keyshortcuts={fullscreen ? 'Escape' : undefined}
+              className="min-h-11 rounded-lg px-3 font-medium text-accent-ink"
+            >
+              {fullscreen ? 'Exit fullscreen' : 'Fullscreen'}
+            </button>
           </div>
         </section>
 
@@ -343,9 +377,10 @@ export function TimerScreen() {
             now={clock.now}
             hideTimer={settings.hideTimer}
             shown={shownSolve}
+            large={fullscreen}
           />
           {/* How to start, until today's first solve. */}
-          {(timing === null || timing?.session.solve_count === 0) && !shownSolve && (
+          {(timing === null || timing?.session.solve_count === 0) && !shownSolve && !fullscreen && (
             <p className="mt-3 text-center text-muted text-sm">
               {isBlindfolded(eventId) || !settings.inspectionEnabled
                 ? 'Hold the time until it turns green, then let go to start.'
@@ -354,7 +389,7 @@ export function TimerScreen() {
           )}
         </div>
 
-        {shownSolve && (
+        {shownSolve && !fullscreen && (
           <fieldset className="flex flex-wrap items-center justify-center gap-2">
             <legend className="sr-only">Solve {shownSolve.solve_number}</legend>
             <PenaltyButtons
@@ -371,7 +406,7 @@ export function TimerScreen() {
           </fieldset>
         )}
 
-        {!settings.hideStats && (
+        {!settings.hideStats && !fullscreen && (
           <SessionStats timing={timing} today={today} onOpen={setOpenSolve} />
         )}
       </div>

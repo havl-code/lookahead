@@ -183,6 +183,36 @@ test('times into a session picked from the menu, or a new one', async ({ page })
   await expect(session.locator('option:checked')).toHaveText('Today (2 solves)');
 });
 
+test('hides all but the scramble and time in fullscreen, as the desktop does', async ({ page }) => {
+  await page.getByRole('button', { name: 'Fullscreen' }).click();
+  await expect(page.getByRole('navigation', { name: 'Main' })).toBeHidden();
+  await expect(page.getByLabel('Event')).toBeHidden();
+  await expect(page.getByRole('region', { name: 'Today' })).toBeHidden();
+  await expect(page.getByRole('region', { name: 'Scramble' })).toBeVisible();
+
+  await timeASolve(page, 3_000, 10_000);
+  await expect(page.locator('.touch-pad').first()).toContainText(/10\.[01]\d/);
+  await expect(page.getByRole('navigation', { name: 'Main' })).toBeHidden();
+
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('navigation', { name: 'Main' })).toBeVisible();
+  await expect(page.getByRole('button', { name: /^Solve 1: 10\.[01]\d$/ })).toBeVisible();
+
+  // Escape calls off an attempt first, and only then leaves fullscreen, as on the desktop.
+  await page.getByRole('button', { name: 'Fullscreen' }).click();
+  await touch(page, 'pointerdown');
+  await touch(page, 'pointerup');
+  await page.keyboard.press('Escape');
+  await expect(page.getByLabel('Event')).toBeHidden();
+  await page.getByRole('button', { name: 'Exit fullscreen' }).click();
+  await expect(page.getByLabel('Event')).toBeVisible();
+
+  // Leaving the tab (here, through the browser's history) leaves fullscreen too.
+  await page.getByRole('button', { name: 'Fullscreen' }).click();
+  await page.goto('./#/sessions');
+  await expect(page.getByRole('navigation', { name: 'Main' })).toBeVisible();
+});
+
 test('keeps the event, and gives blindfolded events no inspection (B1a)', async ({ page }) => {
   await page.getByRole('combobox', { name: 'Event' }).selectOption('333bf');
   await expect(page.getByText('Hold the time until it turns green')).toBeVisible();
