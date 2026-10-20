@@ -1,5 +1,6 @@
 import { type PointerEvent, useCallback, useEffect, useId, useRef, useState } from 'react';
 import { enterFullscreen, leaveFullscreen, useFullscreen } from '../../app/fullscreen.ts';
+import { SettingsIcon } from '../../app/icons.tsx';
 import { Toast } from '../../app/Toast.tsx';
 import { useHoldUpdates } from '../../app/updates.ts';
 import { useDb } from '../../db/DbProvider.tsx';
@@ -300,7 +301,7 @@ export function TimerScreen() {
       <div className="flex flex-1 flex-col gap-4">
         {!fullscreen && (
           <div className="flex items-center gap-3">
-            <label className="min-w-0 flex-1">
+            <label className="min-w-0 flex-[2]">
               <span className="sr-only">Event</span>
               <select
                 value={eventId}
@@ -321,12 +322,14 @@ export function TimerScreen() {
               onPick={pick}
               onNew={() => void startSession()}
             />
+            {/* A gear rather than the word, so both menus have room on a phone. */}
             <button
               type="button"
               onClick={() => setSettingsOpen(true)}
-              className="min-h-11 rounded-lg border border-control bg-raised px-4 font-medium"
+              aria-label="Settings"
+              className="flex size-11 shrink-0 items-center justify-center rounded-lg border border-control bg-raised"
             >
-              Settings
+              <SettingsIcon className="size-5" />
             </button>
           </div>
         )}

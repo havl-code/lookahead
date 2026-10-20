@@ -31,14 +31,14 @@ export function SessionMenu({
 }) {
   const sessions = useSessions(Number.POSITIVE_INFINITY, eventId)?.sessions ?? [];
   return (
-    <label className="min-w-0 flex-1">
+    <label className="min-w-0 flex-[3]">
       <span className="sr-only">Session</span>
       <select
         value={current?.id ?? ''}
         onChange={(event) =>
           event.target.value === newSession ? onNew() : onPick(Number(event.target.value))
         }
-        className="min-h-11 w-full rounded-lg border border-control bg-raised px-3 text-lg"
+        className="min-h-11 w-full rounded-lg border border-control bg-raised px-3"
       >
         <option value={newSession}>+ New session</option>
         {!current && (
