@@ -188,6 +188,15 @@ test('keeps the rankings for offline use, and says when it has none', async ({ p
   await expect(
     page.getByText("Needs the internet once, to fetch the WCA's rankings"),
   ).toBeVisible();
+
+  // How the scores work comes with the app, as on the desktop.
+  await page.getByRole('link', { name: 'How the scores work' }).click();
+  await expect(
+    page.getByRole('heading', { level: 1, name: /How the Analytics Scores Work/ }),
+  ).toBeVisible();
+  await expect(page.getByRole('heading', { level: 2, name: /Speed/ })).toBeVisible();
+  await page.getByRole('main').getByRole('link', { name: 'Analytics' }).click();
+  await expect(page.getByLabel('Event')).toBeVisible();
 });
 
 test('has no detectable WCAG 2.2 AA violations', async ({ page }) => {

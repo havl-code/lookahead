@@ -1,7 +1,7 @@
 import { useState } from 'react';
+import { BackLink } from '../../app/BackLink.tsx';
 import { Field, fieldStyle, primaryButton, secondaryButton } from '../../app/forms.tsx';
-import { BackIcon, PlusIcon } from '../../app/icons.tsx';
-import { tabHref } from '../../app/router.ts';
+import { PlusIcon } from '../../app/icons.tsx';
 import { Sheet } from '../../app/Sheet.tsx';
 import { addCube, type CubeUsage, cubeName, updateCube } from '../../db/cubes.ts';
 import { useDb } from '../../db/DbProvider.tsx';
@@ -31,13 +31,7 @@ export function CubesScreen() {
 
   return (
     <>
-      <a
-        href={tabHref('more')}
-        className="-ml-2 inline-flex min-h-11 items-center gap-1 pr-3 font-medium text-accent-ink"
-      >
-        <BackIcon className="size-5" />
-        More
-      </a>
+      <BackLink tab="more" label="More" />
       <header className="mt-2 flex flex-wrap items-center justify-between gap-3">
         <h1 id="screen-title" className="font-bold text-3xl tracking-tight">
           Cubes

@@ -1,4 +1,4 @@
-import { repoUrl } from '../../app/Preview.tsx';
+import { detailHref } from '../../app/router.ts';
 import { eventName } from '../../lib/events.ts';
 import { count, formatResult } from '../../lib/format.ts';
 import type { WcaReference } from '../../lib/scores.ts';
@@ -23,8 +23,6 @@ const toneColour = {
   negative: 'bg-danger-ink',
   neutral: 'bg-muted',
 } as const;
-
-const scoresGuide = `${repoUrl}/blob/main/docs/SCORES.md`;
 
 function longDate(iso: string): string {
   return new Date(`${iso}T00:00:00`).toLocaleDateString('en-NZ', {
@@ -139,9 +137,7 @@ export function ScoresSection({
             ? `Each score is the percentage of WCA competitors in ${eventName(eventId)} a session beats, using official results from ${longDate(reference.window_start)} to ${longDate(reference.export_date)}, averaged over your 10 latest sessions. `
             : `There isn't enough WCA data to score ${eventName(eventId)}. `}
           <a
-            href={scoresGuide}
-            target="_blank"
-            rel="noopener noreferrer"
+            href={detailHref('analytics', 'scores')}
             className="font-medium text-accent-ink underline underline-offset-2"
           >
             How the scores work

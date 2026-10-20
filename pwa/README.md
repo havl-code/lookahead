@@ -44,10 +44,10 @@ It works offline after the first visit, and updates itself the next time you lea
 - **Analytics:** for each event, your best single and where it would rank in the world, the
   average of every solve, your best Ao5 to Ao100 (tap a best for its scramble or solves, and its
   session), and the Speed, Consistency, and Overall scores against WCA competitors, with the same
-  insights as the desktop app. Four charts (progress, how your times spread out, rolling Ao5 and Ao12, and consistency
-  across sessions) cover the whole event or a single session, each with a sentence saying what
-  it shows. The scores use the same summary of WCA results as the desktop app, bundled so they
-  work offline.
+  insights as the desktop app. Four charts (progress, how your times spread out, rolling Ao5 and
+  Ao12, and consistency across sessions) cover the whole event or a single session, each with a
+  sentence saying what it shows. The scores use the same summary of WCA results as the desktop
+  app, and **How the scores work** explains them, both bundled so they work offline.
 - **Import and export:** on the More tab, **Import from CSTimer** reads a CSTimer export (TXT or
   JSON) and shows its sessions to pick from, each with its event (CSTimer's scramble type picks
   it where it can). Every solve keeps its date, penalty, and comment, each session can be split

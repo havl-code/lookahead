@@ -1,7 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks';
-import { useId, useState } from 'react';
+import { lazy, useId, useState } from 'react';
 import { fieldStyle } from '../../app/forms.tsx';
-import { tabHref } from '../../app/router.ts';
+import { tabHref, useDetail } from '../../app/router.ts';
 import { ScreenHeader } from '../../app/ScreenHeader.tsx';
 import { useDb } from '../../db/DbProvider.tsx';
 import { useMeta, useSessionEvents, useWcaPerson } from '../../db/hooks.ts';
@@ -25,7 +25,19 @@ export function timeOfDay(hour = new Date().getHours()): string {
   return 'Good night';
 }
 
+// The doc is about 10 KB, so it loads the first time it's opened (the Suspense around each tab
+// waits for it), and the service worker keeps it for offline use.
+const ScoresGuide = lazy(() =>
+  import('./ScoresGuide.tsx').then((m) => ({ default: m.ScoresGuide })),
+);
+
+/** The Analytics tab, or How the scores work (#/analytics/scores). */
 export function AnalyticsScreen() {
+  if (useDetail() === 'scores') return <ScoresGuide />;
+  return <EventsAnalytics />;
+}
+
+function EventsAnalytics() {
   const events = useSessionEvents();
   const timerEvent = useMeta('timerEvent');
   const person = useWcaPerson();

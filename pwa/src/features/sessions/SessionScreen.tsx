@@ -1,6 +1,7 @@
 import { useId, useState } from 'react';
+import { BackLink } from '../../app/BackLink.tsx';
 import { dangerButton, fieldStyle, primaryButton, secondaryButton } from '../../app/forms.tsx';
-import { BackIcon, PlusIcon } from '../../app/icons.tsx';
+import { PlusIcon } from '../../app/icons.tsx';
 import { tabHref } from '../../app/router.ts';
 import { Sheet } from '../../app/Sheet.tsx';
 import { Toast } from '../../app/Toast.tsx';
@@ -52,7 +53,7 @@ export function SessionScreen({ sessionId }: { readonly sessionId: number }) {
   if (session === null) {
     return (
       <>
-        <BackLink />
+        <BackLink tab="sessions" label="Sessions" />
         <p className="mt-6">This session isn't here any more. It may have been deleted.</p>
       </>
     );
@@ -78,7 +79,7 @@ export function SessionScreen({ sessionId }: { readonly sessionId: number }) {
 
   return (
     <>
-      <BackLink />
+      <BackLink tab="sessions" label="Sessions" />
       <header className="mt-2">
         <h1 id="screen-title" className="font-bold text-2xl tracking-tight">
           {sessionTitle(session)}
@@ -215,18 +216,6 @@ export function SessionScreen({ sessionId }: { readonly sessionId: number }) {
         <Toast message={toast.message} action={toast.action} onDismiss={() => setToast(null)} />
       )}
     </>
-  );
-}
-
-function BackLink() {
-  return (
-    <a
-      href={tabHref('sessions')}
-      className="-ml-2 inline-flex min-h-11 items-center gap-1 pr-3 font-medium text-accent-ink"
-    >
-      <BackIcon className="size-5" />
-      Sessions
-    </a>
   );
 }
 

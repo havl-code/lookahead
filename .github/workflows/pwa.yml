@@ -5,9 +5,9 @@ name: PWA
 
 on:
   push:
-    paths: ['pwa/**', 'speedcube/wca_reference.json', 'tests/fixtures/cstimer_export.txt', '.github/workflows/pwa.yml']
+    paths: ['pwa/**', 'speedcube/wca_reference.json', 'docs/SCORES.md', 'tests/fixtures/cstimer_export.txt', '.github/workflows/pwa.yml']
   pull_request:
-    paths: ['pwa/**', 'speedcube/wca_reference.json', 'tests/fixtures/cstimer_export.txt', '.github/workflows/pwa.yml']
+    paths: ['pwa/**', 'speedcube/wca_reference.json', 'docs/SCORES.md', 'tests/fixtures/cstimer_export.txt', '.github/workflows/pwa.yml']
   workflow_dispatch:
 
 permissions:
