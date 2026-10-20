@@ -12,7 +12,10 @@ const changeEvent = 'lookahead:themechange';
 /** The page background in each mode, the same as --surface in index.css, for the status bar. */
 const surface: Record<Theme, string> = { light: '#f6f6f7', dark: '#0f0f11' };
 
-/** Dark is the default, as in the desktop app, so System is dark unless the phone asks for light. */
+/**
+ * Dark is the default, as in the 3.x desktop app, so System is dark unless the phone asks for
+ * light.
+ */
 function systemLight(): MediaQueryList {
   return window.matchMedia('(prefers-color-scheme: light)');
 }

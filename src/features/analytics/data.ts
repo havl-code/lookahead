@@ -284,7 +284,9 @@ export interface Rolling {
   readonly ao12: Result[];
 }
 
-/** The latest 1,000 results, oldest first, with rolling Ao5 and Ao12, or null with fewer than 12. */
+/**
+ * The latest 1,000 results, oldest first, with rolling Ao5 and Ao12, or null with fewer than 12.
+ */
 export function rolling(results: readonly Result[]): Rolling | null {
   const latest = results.slice(-maxChartSolves);
   if (latest.length < 12) return null;

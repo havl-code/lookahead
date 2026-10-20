@@ -173,9 +173,9 @@ app from browser storage to a small program on your computer. The
 ### Using the Timer
 
 1. Open the **Timer** tab and pick your event.
-2. Touch the time to start inspection (if it's turned on in **Settings**, the gear beside the event). The countdown shows
-   the seconds left, with calls at 8 and 12 seconds. From 15 seconds it shows +2, and at 17 the
-   attempt is a DNF, as in a WCA competition.
+2. Touch the time to start inspection (if it's turned on in **Settings**, the gear beside the
+   event). The countdown shows the seconds left, with calls at 8 and 12 seconds. From 15 seconds
+   it shows +2, and at 17 the attempt is a DNF, as in a WCA competition.
 3. Hold the time until it turns green, then let go to start solving.
 4. Touch anywhere to stop. With a keyboard, the space bar does steps 2 to 4.
 

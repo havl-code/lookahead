@@ -10,7 +10,7 @@ import pytest
 
 PROJECT_DIR = Path(__file__).resolve().parents[2]
 DOCS = [PROJECT_DIR / 'README.md', PROJECT_DIR / 'INSTALLATION.md',
-        *sorted((PROJECT_DIR / 'docs').glob('*.md'))]
+        PROJECT_DIR / 'CODING_STANDARDS.md', *sorted((PROJECT_DIR / 'docs').glob('*.md'))]
 # Everything the project writes itself (not the golden files, the lock files, or the fonts)
 OWN_TEXT = [*DOCS, PROJECT_DIR / 'pyproject.toml', PROJECT_DIR / 'package.json',
             PROJECT_DIR / 'index.html', *sorted((PROJECT_DIR / 'tools').rglob('*.py')),
@@ -60,6 +60,33 @@ def test_no_em_or_en_dashes(path):
     lines = [f'{n}: {line.strip()}' for n, line in enumerate(path.read_text(encoding='utf-8').splitlines(), 1)
              if EM_DASH in line or EN_DASH in line]
     assert lines == []
+
+
+WRAP = 100
+COMMENT_START = {'.py': ('#',), '.yml': ('#',), '.toml': ('#',)}  # the rest use // and /* */
+
+
+def wrapped_text(path):
+    """The lines a person wraps by hand: Markdown prose (not code blocks, tables, HTML, or
+    lines holding a URL, which can't break), and comments elsewhere. Code is Biome's job."""
+    lines, in_code = [], False
+    for n, line in enumerate(path.read_text(encoding='utf-8').splitlines(), 1):
+        start = line.lstrip()
+        if path.suffix == '.md':
+            if start.startswith('```'):
+                in_code = not in_code
+            elif not in_code and not start.startswith(('|', '<', '![')):
+                lines.append((n, line))
+        elif start.startswith(COMMENT_START.get(path.suffix, ('//', '/*', '* ', '*/'))) or start == '*':
+            lines.append((n, line))
+    return lines
+
+
+@pytest.mark.parametrize('path', OWN_TEXT, ids=lambda p: str(p.relative_to(PROJECT_DIR)))
+def test_prose_and_comments_are_wrapped_at_100(path):
+    long = [f'{n}: {line.strip()[:60]}' for n, line in wrapped_text(path)
+            if len(line) > WRAP and '://' not in line and 'biome-ignore' not in line]
+    assert long == []
 
 
 @pytest.mark.parametrize('doc', DOCS, ids=lambda p: p.name)

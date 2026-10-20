@@ -25,7 +25,10 @@ export function round2(value: number): number {
 // singles, as they are from the times recorded in a competition.
 export const tenMinutesMs = 10 * 60 * 1000;
 
-/** A single as the WCA records it, in ms: truncated to the hundredth, or the second from 10 minutes up. */
+/**
+ * A single as the WCA records it, in ms: truncated to the hundredth, or the second from 10 minutes
+ * up.
+ */
 export function wcaSingleMs(ms: number): number;
 export function wcaSingleMs(ms: Result): Result;
 export function wcaSingleMs(ms: Result): Result {

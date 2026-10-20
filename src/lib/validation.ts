@@ -57,7 +57,9 @@ export function text(
   return ok(trimmed);
 }
 
-/** A YYYY-MM-DD date, or null when blank and not required. With `today`, a later date is refused. */
+/**
+ * A YYYY-MM-DD date, or null when blank and not required. With `today`, a later date is refused.
+ */
 export function isoDate(
   value: string,
   field: string,

@@ -455,7 +455,9 @@ export function TimerScreen() {
   );
 }
 
-/** The time itself: orange while inspecting, red while holding, green when ready, as on a Stackmat. */
+/**
+ * The time itself: orange while inspecting, red while holding, green when ready, as on a Stackmat.
+ */
 function Readout({
   state,
   now,
