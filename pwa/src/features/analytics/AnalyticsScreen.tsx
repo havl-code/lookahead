@@ -1,18 +1,19 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useId, useState } from 'react';
 import { fieldStyle } from '../../app/forms.tsx';
-import { detailHref, tabHref } from '../../app/router.ts';
+import { tabHref } from '../../app/router.ts';
 import { ScreenHeader } from '../../app/ScreenHeader.tsx';
 import { useDb } from '../../db/DbProvider.tsx';
 import { useMeta, useSessionEvents, useWcaPerson } from '../../db/hooks.ts';
 import { eventName } from '../../lib/events.ts';
 import { count, formatResult } from '../../lib/format.ts';
-import { averageSeconds, singleSeconds } from '../../lib/stats.ts';
+import { averageSeconds, averageSizes, singleSeconds } from '../../lib/stats.ts';
 import { formatDate } from '../../lib/time.ts';
 import { rankedEvents } from '../../lib/wcaRank.ts';
 import { wcaReference } from '../../lib/wcaReference.ts';
 import { Charts } from './Charts.tsx';
 import { chartData, eventOverview, eventSessions, type Overview, scoredSessions } from './data.ts';
+import { type Pb, PbSheet } from './PbSheet.tsx';
 import { ScoresSection } from './ScoresSection.tsx';
 import { WorldRank } from './WorldRank.tsx';
 
@@ -139,7 +140,13 @@ function OverviewCard({
   readonly eventId: string;
   readonly overview: Overview;
 }) {
-  const sizes = [5, 12, 50, 100] as const;
+  const [pb, setPb] = useState<Pb | null>(null);
+  const bestSingle = overview.best && {
+    kind: 'single' as const,
+    text: formatResult(singleSeconds(overview.best.ms)),
+    sessionId: overview.best.sessionId,
+    date: overview.best.date,
+  };
   return (
     <section
       aria-labelledby="overview-heading"
@@ -151,16 +158,22 @@ function OverviewCard({
       <div className="grid grid-cols-2 gap-4">
         <div>
           <p className="text-muted text-sm">Best single</p>
-          <p className="font-semibold text-5xl tabular-nums tracking-tight">
-            {formatResult(singleSeconds(overview.best?.ms ?? null))}
-          </p>
-          {overview.best && (
-            <a
-              href={detailHref('sessions', String(overview.best.sessionId))}
-              className="inline-flex min-h-11 items-center text-accent-ink text-sm underline underline-offset-2"
-            >
-              {overview.best.date ? formatDate(overview.best.date) : 'Its session'}
-            </a>
+          {bestSingle ? (
+            <>
+              <button
+                type="button"
+                onClick={() => setPb(bestSingle)}
+                aria-label={`Best single ${bestSingle.text}, details`}
+                className="font-semibold text-5xl tabular-nums tracking-tight underline decoration-line underline-offset-8"
+              >
+                {bestSingle.text}
+              </button>
+              <p className="text-muted text-sm">
+                {bestSingle.date ? formatDate(bestSingle.date) : 'No date'}
+              </p>
+            </>
+          ) : (
+            <p className="font-semibold text-5xl tabular-nums tracking-tight">-</p>
           )}
         </div>
         <div>
@@ -175,20 +188,24 @@ function OverviewCard({
         <WorldRank eventId={eventId} bestMs={overview.best.ms} />
       )}
       <dl className="mt-3 grid grid-cols-4 gap-2 border-line border-t pt-3">
-        {sizes.map((size) => {
+        {averageSizes.map((size) => {
           const best = overview.bestAverages[size];
+          const text = best && formatResult(averageSeconds(best.value));
           return (
             <div key={size}>
               <dt className="text-muted text-sm">Best Ao{size}</dt>
               <dd className="font-semibold tabular-nums">
-                {best ? (
-                  <a
-                    href={detailHref('sessions', String(best.sessionId))}
-                    aria-label={`Best Ao${size} ${formatResult(averageSeconds(best.value))}${best.date ? `, ${formatDate(best.date)}` : ''}`}
+                {best && text ? (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setPb({ kind: size, text, sessionId: best.sessionId, date: best.date })
+                    }
+                    aria-label={`Best Ao${size} ${text}${best.date ? `, ${formatDate(best.date)}` : ''}, details`}
                     className="inline-flex min-h-11 items-center underline decoration-line underline-offset-4"
                   >
-                    {formatResult(averageSeconds(best.value))}
-                  </a>
+                    {text}
+                  </button>
                 ) : (
                   <span className="inline-flex min-h-11 items-center">-</span>
                 )}
@@ -201,6 +218,7 @@ function OverviewCard({
         {count(overview.solves, 'solve', 'solves')} in{' '}
         {count(overview.sessions, 'session', 'sessions')}
       </p>
+      <PbSheet pb={pb} onClose={() => setPb(null)} />
     </section>
   );
 }

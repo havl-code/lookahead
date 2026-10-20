@@ -6,7 +6,14 @@ import golden from '../../lib/golden/scores.json' with { type: 'json' };
 import type { WcaReference } from '../../lib/scores.ts';
 import { createTestDb } from '../../test/db.ts';
 import { timeOfDay } from './AnalyticsScreen.tsx';
-import { chartData, distribution, eventOverview, rolling, scoredSessions } from './data.ts';
+import {
+  chartData,
+  distribution,
+  eventOverview,
+  pbDetails,
+  rolling,
+  scoredSessions,
+} from './data.ts';
 import { insights, metricCards, scoreBand, trendOf } from './insights.ts';
 
 const reference = golden.reference as WcaReference;
@@ -69,6 +76,50 @@ describe('eventOverview', () => {
       solves: 0,
       best: null,
       average: null,
+    });
+  });
+});
+
+describe('pbDetails', () => {
+  it("gives the best single's scramble, counting a +2, and the earlier solve on a tie", async () => {
+    const db = createTestDb();
+    const id = await addSession(db, {
+      eventId: '333',
+      date: '2026-10-01',
+      cubeId: null,
+      notes: '',
+    });
+    const solves = [
+      [12_000, 'OK', 'R U'],
+      [9_000, '+2', 'L D'],
+      [10_000, 'OK', 'F2'],
+      [10_000, 'OK', 'B'],
+    ] as const;
+    for (const [timeMs, penalty, scramble] of solves)
+      await addSolve(db, id, { timeMs, penalty, scramble, notes: '' });
+    expect(await pbDetails(db, id, 'single')).toEqual({ kind: 'single', scramble: 'F2' });
+  });
+
+  it("lists a best average's solves, marking the dropped ones, as the desktop does", async () => {
+    const db = createTestDb();
+    const id = await session(db, '2026-10-01', [
+      12_000,
+      15_000,
+      'DNF',
+      11_000,
+      13_000,
+      12_000,
+      14_000,
+    ]);
+    expect(await pbDetails(db, id, 5)).toEqual({
+      kind: 5,
+      solves: [
+        { solveNumber: 3, ms: null, counted: false },
+        { solveNumber: 4, ms: 11_000, counted: false },
+        { solveNumber: 5, ms: 13_000, counted: true },
+        { solveNumber: 6, ms: 12_000, counted: true },
+        { solveNumber: 7, ms: 14_000, counted: true },
+      ],
     });
   });
 });

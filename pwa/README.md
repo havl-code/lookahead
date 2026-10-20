@@ -39,10 +39,10 @@ It works offline after the first visit, and updates itself the next time you lea
   for. A cube you stop using is retired, so its sessions keep it.
 - **WCA ID:** on the More tab, type your WCA ID and Lookahead looks up your name on the WCA
   website. It travels with your backups.
-- **Analytics:** for each event, your best single (tap it for its session) and where it would
-  rank in the world, the average of every solve, your best Ao5 to Ao100, and the Speed,
-  Consistency, and Overall scores against WCA competitors, with the same insights as the desktop
-  app. Four charts (progress, how your times spread out, rolling Ao5 and Ao12, and consistency
+- **Analytics:** for each event, your best single and where it would rank in the world, the
+  average of every solve, your best Ao5 to Ao100 (tap a best for its scramble or solves, and its
+  session), and the Speed, Consistency, and Overall scores against WCA competitors, with the same
+  insights as the desktop app. Four charts (progress, how your times spread out, rolling Ao5 and Ao12, and consistency
   across sessions) cover the whole event or a single session, each with a sentence saying what
   it shows. The scores use the same summary of WCA results as the desktop app, bundled so they
   work offline.

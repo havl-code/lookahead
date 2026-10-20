@@ -24,7 +24,7 @@ function practice() {
         session_id: day,
         solve_number: n,
         time_ms: Math.round((15_000 - day * 200) * (1 + ((n * 37) % 9) * 0.02)),
-        scramble: '',
+        scramble: `R U2 F' ${solveId}`,
         penalty: dnf ? 'DNF' : null,
         dnf,
         notes: '',
@@ -102,7 +102,14 @@ test('says what to do before there are any sessions', async ({ page }) => {
 test('shows bests, scores, insights, and charts for an event', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
-  page.on('console', (message) => message.type() === 'error' && errors.push(message.text()));
+  // The faked rankings answer other events as if offline (see beforeEach), which the browser logs.
+  page.on(
+    'console',
+    (message) =>
+      message.type() === 'error' &&
+      !message.text().includes('ERR_INTERNET_DISCONNECTED') &&
+      errors.push(message.text()),
+  );
   await restore(page);
   await page.goto('./#/analytics');
 
@@ -114,7 +121,19 @@ test('shows bests, scores, insights, and charts for an event', async ({ page }) 
   // The best single, 12.60, is 961st of the 1,000 listed (3.00 to 12.99).
   await expect(page.getByText('~961')).toBeVisible();
   await expect(page.getByText('Top 0.48% worldwide, by best single')).toBeVisible();
-  await expect(page.getByRole('link', { name: /^Best Ao5 / })).toBeVisible();
+
+  // Each PB opens its details, as the desktop dashboard does: the single's scramble (solve 9 of
+  // 12 Oct), and an average's solves with the dropped ones in brackets.
+  await page.getByRole('button', { name: /^Best single 12\.60/ }).click();
+  const details = page.getByRole('dialog', { name: 'Best single' });
+  await expect(details.getByText("R U2 F' 284")).toBeVisible();
+  await expect(details.getByRole('link', { name: 'Open its session' })).toBeVisible();
+  await details.getByRole('button', { name: 'Close' }).click();
+  await page.getByRole('button', { name: /^Best Ao5 / }).click();
+  const average = page.getByRole('dialog', { name: 'Best Ao5' });
+  await expect(average.getByText('The dropped ones are in brackets.')).toBeVisible();
+  await expect(average.getByText(/^(\(?\d+\.\d\d\)? ){4}\(?\d+\.\d\d\)?$/)).toBeVisible();
+  await average.getByRole('button', { name: 'Close' }).click();
 
   const scores = page.getByRole('region', { name: 'Scores' });
   await expect(scores.getByRole('listitem')).toHaveCount(3);

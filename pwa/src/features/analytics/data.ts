@@ -3,8 +3,11 @@ import type { LookaheadDb } from '../../db/database.ts';
 import type { Session, Solve } from '../../db/schema.ts';
 import { type SessionScores, sessionScores, type WcaReference } from '../../lib/scores.ts';
 import {
+  type AverageSize,
   type BoxStats,
+  bestAverage,
   boxStats,
+  droppedInWindow,
   filterDistributionOutliers,
   populationStdDev,
   type Result,
@@ -132,6 +135,60 @@ export async function eventOverview(db: LookaheadDb, eventId: string): Promise<O
       50: bestAverage(50),
       100: bestAverage(100),
     },
+  };
+}
+
+export type PbKind = 'single' | AverageSize;
+
+export interface SingleDetails {
+  readonly kind: 'single';
+  readonly scramble: string | null;
+}
+
+export interface AverageDetails {
+  readonly kind: AverageSize;
+  /** The solves of the best average, in order, with the dropped ones not counted. */
+  readonly solves: readonly {
+    readonly solveNumber: number;
+    readonly ms: Result;
+    readonly counted: boolean;
+  }[];
+}
+
+/**
+ * Where a PB in a session came from, as the desktop app's /api/pb-details gives it: the best
+ * single's scramble (the earlier solve on a tie), or a best average's solves, with the dropped
+ * ones marked. Null if the session has no such PB.
+ */
+export async function pbDetails(
+  db: LookaheadDb,
+  sessionId: number,
+  kind: PbKind,
+): Promise<SingleDetails | AverageDetails | null> {
+  const solves = await solvesOf(db, sessionId);
+  const results = solves.map(resultMs);
+  if (kind === 'single') {
+    let best: { readonly solve: Solve; readonly ms: number } | null = null;
+    for (const [i, solve] of solves.entries()) {
+      const ms = results[i] ?? null;
+      if (ms === null) continue;
+      if (best === null || ms < best.ms || (ms === best.ms && solve.id < best.solve.id))
+        best = { solve, ms };
+    }
+    return best && { kind, scramble: best.solve.scramble || null };
+  }
+  const { end } = bestAverage(results, kind);
+  if (end === null) return null;
+  const start = end - kind + 1;
+  const window = results.slice(start, end + 1);
+  const dropped = droppedInWindow(window, kind);
+  return {
+    kind,
+    solves: window.map((ms, i) => ({
+      solveNumber: (solves[start + i] as Solve).solve_number,
+      ms,
+      counted: !dropped.has(i),
+    })),
   };
 }
 
