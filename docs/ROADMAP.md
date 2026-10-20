@@ -196,8 +196,10 @@ needed Python and `uv run app.py`. A backup from 3.x restores into it.
 
 ## Now
 
-Nothing small is left: the borders and the blindfolded and Megaminx timers are done (see
-[Done in 3.3](#done-in-33)). Each item below needs a decision or some design first.
+**A layout for computers.** 4.0 is built phone first: every tab is one column, at most 576 px
+wide, with the tab bar along the bottom. On a computer it works but leaves most of the window
+empty. The 3.x desktop app used the room for a larger timer and a dashboard of charts side by
+side. Which screens change, and how, is being worked out first.
 
 ## Next
 
