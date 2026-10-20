@@ -35,9 +35,23 @@ from datetime import date
 from pathlib import Path
 
 PROJECT_DIR = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(PROJECT_DIR))
-# The same rules the app uses on a session, so competitors and sessions are measured alike
-from speedcube.scores import DNF, MEDIAN_RANGE_TO_SD, median_with_dnf  # noqa: E402
+
+# The same rules the app uses on a session (src/lib/scores.ts), so competitors and sessions are
+# measured alike.
+DNF = float('inf')  # a DNF counts as slower than any time
+# For normally distributed times, the median gap between two independent solves is
+# 0.9539 standard deviations (the square root of 2, times 0.6745), so dividing a median gap by
+# this estimates the standard deviation. It's the median moving range estimate used in
+# statistical process control.
+MEDIAN_RANGE_TO_SD = 0.9539
+
+
+def median_with_dnf(values):
+    """The median, where a DNF counts as slower than any time, so it can be a DNF."""
+    values = sorted(values)
+    n = len(values)
+    return values[n // 2] if n % 2 else (values[n // 2 - 1] + values[n // 2]) / 2
+
 
 OUTPUT = PROJECT_DIR / 'speedcube' / 'wca_reference.json'
 WINDOW_YEARS = 2
