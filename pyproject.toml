@@ -1,44 +1,24 @@
+# The app itself is in package.json. This is for the maintainer tools in tools/ (the monthly
+# WCA reference rebuild) and the docs checks, run with: uv run --dev pytest
 [project]
 name = "lookahead"
-version = "3.3.0"
-description = "A local training tracker for speedcubers: timer, sessions, charts, and WCA rank comparison."
+version = "4.0.0"
+description = "Maintainer tools for Lookahead, a speedcubing timer and training tracker that works offline."
 readme = "README.md"
 license = "MIT"
 authors = [{ name = "Viet Ha Ly" }]
 requires-python = ">=3.11"
-dependencies = [
-    "flask>=3.0",
-]
+dependencies = []
 
-# Tools for developing the app, never needed to use it, so `uv run app.py` doesn't install
-# them (default-groups below). Ask for them when running the tests:
-#   uv run --dev pytest                  the tests, with pytest and coverage
-#   uv run --group e2e pytest -m e2e     the browser tests, which also need Playwright
 [dependency-groups]
 dev = [
     "pytest>=9.1.1",
-    "pytest-cov>=7.1.0",
-]
-e2e = [
-    { include-group = "dev" },
-    "pytest-playwright>=0.9.0",
 ]
 
 [tool.uv]
 default-groups = []
+package = false
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
-# app.py lives at the top of the project rather than in a package, and tests/helpers.py is
-# shared by the tests in subfolders
-pythonpath = [".", "tests"]
-# The browser test is left out unless asked for with `-m e2e` (a later -m replaces this one).
-# The summary lists failures, errors, and skips; expected failures are only counted.
-addopts = "-rfEs --strict-markers -m 'not e2e' --cov --cov-report=term-missing:skip-covered"
-markers = [
-    "e2e: browser smoke tests, run with: uv run --group e2e pytest -m e2e",
-]
-
-[tool.coverage.run]
-source = ["speedcube", "app"]
-branch = true
+testpaths = ["tools/tests"]
+addopts = "-rfEs --strict-markers"

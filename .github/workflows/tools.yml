@@ -1,0 +1,32 @@
+# The maintainer tools in tools/ (the WCA reference builder) and the docs checks, on every push
+# and pull request that touches them. The WCA reference workflow starts it by hand
+# (workflow_dispatch) on the pull requests it opens, since its pushes can't start it.
+name: Tools and docs
+
+on:
+  push:
+    paths: ['tools/**', 'docs/**', '*.md', 'src/lib/wca_reference.json', 'pyproject.toml', 'uv.lock', '.github/workflows/tools.yml']
+  pull_request:
+    paths: ['tools/**', 'docs/**', '*.md', 'src/lib/wca_reference.json', 'pyproject.toml', 'uv.lock', '.github/workflows/tools.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: Python ${{ matrix.python }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # The oldest Python that still gets security fixes, and the newest stable one
+        python: ['3.11', '3.14']
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: astral-sh/setup-uv@v10.3.0
+        with:
+          python-version: ${{ matrix.python }}
+          enable-cache: true
+      # --locked fails the run if uv.lock is out of step with pyproject.toml
+      - run: uv run --locked --dev pytest

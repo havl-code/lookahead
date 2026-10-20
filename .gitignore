@@ -1,3 +1,13 @@
+# The app's build and test output
+node_modules/
+dist/
+dev-dist/
+coverage/
+test-results/
+playwright-report/
+blob-report/
+*.local
+
 # IDE
 .vscode/
 .idea/
@@ -12,23 +22,17 @@ Thumbs.db
 # Logs
 *.log
 
-# Python / uv
+# Python / uv (the maintainer tools in tools/)
 .venv/
 __pycache__/
 *.pyc
-
-# Test runs (coverage data and reports)
-.coverage
-.coverage.*
-htmlcov/
 .pytest_cache/
 
-# Windows shortcuts to the app (they hold paths on one particular computer)
-*.lnk
-
-# The app's SQLite database (contains personal training data)
+# The 3.x desktop app's SQLite database (contains personal training data)
 data/
 
-# Backups and CSV exports from the app (contain personal training data)
+# Backups and CSV exports (contain personal training data)
+lookahead-backup-*.json
+lookahead-solves-*.csv
 speedcube-backup-*.json
 speedcube-solves-*.csv

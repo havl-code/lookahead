@@ -1,4 +1,4 @@
-# Rebuilds speedcube/wca_reference.json from the latest WCA results export once a month and, when
+# Rebuilds src/lib/wca_reference.json from the latest WCA results export once a month and, when
 # it changes, opens a pull request (or updates the one already open) for the owner to review.
 # The scoring method stays the same; only the two years of competitors it compares with move on.
 # It can also be run by hand from the Actions tab.
@@ -12,7 +12,7 @@ on:
 permissions:
   contents: write       # push the refresh branch
   pull-requests: write  # open or update its pull request
-  actions: write        # start the Tests workflow on it
+  actions: write        # start the App and Tools workflows on it
 
 concurrency:
   group: wca-reference
@@ -62,8 +62,8 @@ jobs:
       - name: Open or update the pull request
         if: steps.changes.outputs.changed == 'true'
         run: |
-          start=$(jq -r .window_start speedcube/wca_reference.json)
-          end=$(jq -r .export_date speedcube/wca_reference.json)
+          start=$(jq -r .window_start src/lib/wca_reference.json)
+          end=$(jq -r .export_date src/lib/wca_reference.json)
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git switch --create "$BRANCH"
@@ -74,7 +74,7 @@ jobs:
           git push --force --quiet origin "$BRANCH"
 
           {
-            echo "The monthly rebuild of \`speedcube/wca_reference.json\` from the WCA results export. The scores now compare with competitors from **$start** to **$end**; the scoring method is unchanged, so scores shift a little as the two-year window moves."
+            echo "The monthly rebuild of \`src/lib/wca_reference.json\` from the WCA results export. The scores now compare with competitors from **$start** to **$end**; the scoring method is unchanged, so scores shift a little as the two-year window moves."
             echo
             echo "The README and \`docs/SCORES.md\` quote the new export date, and the tests passed before this was opened."
             echo
@@ -94,5 +94,6 @@ jobs:
             gh pr create --base main --head "$BRANCH" --title "$title" --body-file "$RUNNER_TEMP/body.md"
           fi
           # Pushes made with this workflow's token don't start other workflows, but a dispatch
-          # does, so the pull request gets its usual checks on every system
-          gh workflow run tests.yml --ref "$BRANCH"
+          # does, so the pull request gets its usual checks
+          gh workflow run tools.yml --ref "$BRANCH"
+          gh workflow run app.yml --ref "$BRANCH"

@@ -1,4 +1,4 @@
-"""Bring the docs in step with speedcube/wca_reference.json after it's rebuilt.
+"""Bring the docs in step with src/lib/wca_reference.json after it's rebuilt.
 
 The README and docs/SCORES.md quote the WCA's notice, with the date of the export the scores
 compare against, and SCORES.md gives the number of 3x3x3 competitors. Run this after
@@ -6,7 +6,7 @@ tools/build_wca_reference.py (the monthly GitHub Actions workflow runs both):
 
     uv run tools/sync_wca_reference_docs.py
 
-It only rewrites those quotes; tests/test_docs.py checks that they match the table.
+It only rewrites those quotes; tools/tests/test_docs.py checks that they match the table.
 """
 
 import json
@@ -16,7 +16,7 @@ from datetime import date
 from pathlib import Path
 
 PROJECT_DIR = Path(__file__).resolve().parent.parent
-REFERENCE = PROJECT_DIR / 'speedcube' / 'wca_reference.json'
+REFERENCE = PROJECT_DIR / 'src' / 'lib' / 'wca_reference.json'
 NOTICE_DATE = re.compile(r'(<https://worldcubeassociation\.org/results>\s+as of )[A-Z][a-z]+ \d{1,2}, \d{4}\.')
 COMPETITORS_333 = re.compile(r'about [\d,]+ for 3x3x3')
 

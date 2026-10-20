@@ -1,4 +1,4 @@
-"""Build speedcube/wca_reference.json, the table the Analytics scores compare against.
+"""Build src/lib/wca_reference.json, the table the Analytics scores compare against.
 
 This is a maintainer tool, not part of normal use: the app ships with the table it builds, so
 it works offline. Rebuild it now and then from a fresh WCA results export:
@@ -6,7 +6,7 @@ it works offline. Rebuild it now and then from a fresh WCA results export:
     uv run tools/build_wca_reference.py path/to/WCA_export_v2_..._tsv.zip
 
 Download the TSV export from https://www.worldcubeassociation.org/export/results. The method
-is explained for users in docs/SCORES.md, and speedcube/scores.py measures a session the same
+is explained for users in docs/SCORES.md, and src/lib/scores.ts measures a session the same
 way; keep all three in step.
 
 For each timed event, it looks at official results from the WINDOW_YEARS before the export
@@ -53,7 +53,7 @@ def median_with_dnf(values):
     return values[n // 2] if n % 2 else (values[n // 2 - 1] + values[n // 2]) / 2
 
 
-OUTPUT = PROJECT_DIR / 'speedcube' / 'wca_reference.json'
+OUTPUT = PROJECT_DIR / 'src' / 'lib' / 'wca_reference.json'
 WINDOW_YEARS = 2
 QUANTILE_STEPS = 1000        # one point per 0.1% of competitors
 MIN_PAIRS = 20               # back-to-back completed attempts needed to measure someone's spread
