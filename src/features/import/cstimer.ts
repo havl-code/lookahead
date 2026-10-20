@@ -14,8 +14,8 @@ import { localDate } from '../../lib/time.ts';
 import { maxSolveMs } from '../../lib/validation.ts';
 
 /*
- * CSTimer import, the same as the 3.x desktop app's speedcube/cstimer.py. A CSTimer export is a JSON
- * object mapping session keys to lists of solves, plus a "properties" key with CSTimer's
+ * CSTimer import, the same as the 3.x desktop app's speedcube/cstimer.py. A CSTimer export is a
+ * JSON object mapping session keys to lists of solves, plus a "properties" key with CSTimer's
  * settings:
  *
  *   {"session1": [[[penalty, time_ms], "scramble", "comment", timestamp], ...], ...,

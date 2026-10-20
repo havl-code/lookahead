@@ -1,13 +1,12 @@
 # The maintainer tools in tools/ (the WCA reference builder) and the docs checks, on every push
-# and pull request that touches them. The WCA reference workflow starts it by hand
-# (workflow_dispatch) on the pull requests it opens, since its pushes can't start it.
+# and pull request. The style checks read the app's code too, so it runs whatever changed. The
+# WCA reference workflow starts it by hand (workflow_dispatch) on the pull requests it opens,
+# since its pushes can't start it.
 name: Tools and docs
 
 on:
   push:
-    paths: ['tools/**', 'docs/**', '*.md', 'src/lib/wca_reference.json', 'pyproject.toml', 'uv.lock', '.github/workflows/tools.yml']
   pull_request:
-    paths: ['tools/**', 'docs/**', '*.md', 'src/lib/wca_reference.json', 'pyproject.toml', 'uv.lock', '.github/workflows/tools.yml']
   workflow_dispatch:
 
 permissions:

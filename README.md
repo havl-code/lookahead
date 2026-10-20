@@ -173,7 +173,7 @@ app from browser storage to a small program on your computer. The
 ### Using the Timer
 
 1. Open the **Timer** tab and pick your event.
-2. Touch the time to start inspection (if it's turned on in **Settings**). The countdown shows
+2. Touch the time to start inspection (if it's turned on in **Settings**, the gear beside the event). The countdown shows
    the seconds left, with calls at 8 and 12 seconds. From 15 seconds it shows +2, and at 17 the
    attempt is a DNF, as in a WCA competition.
 3. Hold the time until it turns green, then let go to start solving.
@@ -257,7 +257,7 @@ lookahead/
 │                          #   wca_reference.json, the WCA summary the scores compare with
 ├── public/                # Icons
 ├── tests/e2e/             # Browser tests (Playwright), on an iPhone screen
-├── scripts/               # The bundle size check
+├── scripts/               # The bundle size check, and screenshots.ts for the README's picture
 ├── tools/                 # Python: rebuilds wca_reference.json each month, and its tests
 ├── docs/
 │   ├── SCORES.md          # How the Analytics scores are worked out

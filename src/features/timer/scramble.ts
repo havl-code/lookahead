@@ -1,5 +1,5 @@
 /*
- * Random-move scrambles, the same as the desktop app's web/js/scramble.js.
+ * Random-move scrambles, the same as the 3.x desktop app's web/js/scramble.js.
  *
  * Official WCA scrambles for 2x2x2, 3x3x3, and 4x4x4 are random-state (Regulation 4b3): the WCA's
  * program, TNoodle, picks a random position and works out moves that reach it. These are

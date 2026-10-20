@@ -1,6 +1,6 @@
 /**
- * Checks for what people type in, the same as the 3.x desktop app's speedcube/validation.py, so a bad
- * value gets a clear message rather than quietly bad data. The limits are there to catch
+ * Checks for what people type in, the same as the 3.x desktop app's speedcube/validation.py, so a
+ * bad value gets a clear message rather than quietly bad data. The limits are there to catch
  * mistakes, not to get in anyone's way.
  */
 

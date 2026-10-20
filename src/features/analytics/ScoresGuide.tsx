@@ -10,8 +10,7 @@ import {
 } from '../../lib/markdown.ts';
 
 /*
- * How the scores work (#/analytics/scores): the desktop app's docs/SCORES.md, bundled so it can
- * be read offline, as the desktop app shows it.
+ * How the scores work (#/analytics/scores): docs/SCORES.md, bundled so it can be read offline.
  */
 
 const { title, body } = splitTitle(scoresDoc);

@@ -10,10 +10,11 @@
  * The solves are made up (the same every time), and the rankings are faked so the best single
  * shows outside the top 1,000, as the real ones do for it. Nothing is fetched from the internet.
  */
+import { fileURLToPath } from 'node:url';
 import { chromium, type Page } from '@playwright/test';
 
 const url = process.argv[2] ?? 'http://localhost:4199/lookahead/';
-const output = new URL('../docs/screenshots/phone-app.png', import.meta.url);
+const output = fileURLToPath(new URL('../docs/screenshots/phone-app.png', import.meta.url));
 // Each pane is 603 by 1022 pixels (a 402 by 681 screen at 1.5 times), 32 pixels apart.
 const viewport = { width: 402, height: 681 };
 const scale = 1.5;
@@ -173,6 +174,6 @@ await sheet.setContent(
     .join('')}</body>`,
 );
 await sheet.evaluate(() => Promise.all([...document.images].map((img) => img.decode())));
-await sheet.screenshot({ path: output.pathname });
+await sheet.screenshot({ path: output });
 await browser.close();
-console.log(`Wrote ${output.pathname}`);
+console.log(`Wrote ${output}`);

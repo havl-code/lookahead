@@ -5,7 +5,7 @@ import { Chart, plainAxis, timeAxis } from './Chart.tsx';
 import type { ChartData, ProgressPoint, Rolling, SessionBox, SolvePoint } from './data.ts';
 
 /*
- * The four charts, as on the desktop's Analytics tab: progress, how times spread out, rolling
+ * The four charts, as on the 3.x desktop app's Analytics tab: progress, how times spread out, rolling
  * averages, and consistency across sessions. Each says in words what it shows (web/js/charts.js).
  */
 

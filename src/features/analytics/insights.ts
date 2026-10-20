@@ -2,7 +2,7 @@ import { count } from '../../lib/format.ts';
 import type { ScoredSession } from './data.ts';
 
 /*
- * The score cards and insights, the same as the desktop app's web/js/analytics.js: each card is
+ * The score cards and insights, the same as the 3.x desktop app's web/js/analytics.js: each card is
  * the average over the 10 latest sessions, compared with the 10 before them.
  */
 

@@ -8,6 +8,7 @@ scoring method changes on purpose, and docs/SCORES.md with it.
 import importlib.util
 import json
 import random
+import re
 import zipfile
 from pathlib import Path
 
@@ -78,3 +79,11 @@ def test_builds_the_same_table_as_before(tmp_path, monkeypatch, capsys):
     built = json.loads(output.read_text(encoding='utf-8'))
     assert set(built['events']) == {'333', '333bf'}
     assert built == json.loads(FIXTURE.read_text(encoding='utf-8'))
+
+
+def test_measures_spread_as_the_app_does():
+    """The tool and the app (src/lib/scores.ts) each keep a copy of the constant that turns a
+    median gap into a standard deviation, so a change to one must be made to both."""
+    scores = (PROJECT_DIR / 'src' / 'lib' / 'scores.ts').read_text(encoding='utf-8')
+    app_value = float(re.search(r'const medianRangeToSd = ([\d.]+);', scores).group(1))
+    assert load_tool().MEDIAN_RANGE_TO_SD == app_value

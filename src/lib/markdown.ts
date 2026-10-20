@@ -1,6 +1,6 @@
 /*
  * A small Markdown reader for the app's own docs (such as docs/SCORES.md), so they can be read
- * offline. A port of the desktop app's web/js/docs.js: it only understands what those docs use
+ * offline. A port of the 3.x desktop app's web/js/docs.js: it only understands what those docs use
  * (headings, paragraphs, bold, inline code, links, lists, quotes, code blocks, tables, and rules).
  * It gives plain data rather than HTML, so React escapes every word and nothing in a doc can add
  * HTML or script of its own.

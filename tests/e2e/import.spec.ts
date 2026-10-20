@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import AxeBuilder from '@axe-core/playwright';
 import { expect, type Page, test } from '@playwright/test';
 
-// The desktop app's test fixture: "Main 3x3" (5 readable solves on 3 days, 2 unreadable rows),
+// The CSTimer test fixture: "Main 3x3" (5 readable solves on 3 days, 2 unreadable rows),
 // "2" (5 solves, a One-Handed session in CSTimer), and "Empty".
 const fixture = readFileSync(new URL('../fixtures/cstimer_export.txt', import.meta.url));
 
