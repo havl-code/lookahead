@@ -2,7 +2,7 @@
 # WCA reference rebuild) and the docs checks, run with: uv run --dev pytest
 [project]
 name = "lookahead"
-version = "4.1.0"
+version = "4.2.0"
 description = "Maintainer tools for Lookahead, a speedcubing timer and training tracker that works offline."
 readme = "README.md"
 license = "MIT"

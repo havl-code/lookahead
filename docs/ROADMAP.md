@@ -1,6 +1,6 @@
 # Roadmap
 
-Where Lookahead stands after version 4.1, what it can't do yet, and what
+Where Lookahead stands after version 4.1, with 4.2 on the way, what it can't do yet, and what
 could come next, roughly in order. It's a plan, not a promise: ideas and pull requests are
 welcome (see [Contributing](../README.md#-contributing)).
 
@@ -168,6 +168,17 @@ was in 4.0. It was released as
 - Browser tests on a computer's screen (1440 by 900, with a mouse), and a picture of the
   Dashboard in the README
 
+## Done in 4.2
+
+Not released yet. Version 4.2 shows how your Ao5 and Ao12 moved solve by solve, as CSTimer's
+list does.
+
+- [`9406ab3`](https://github.com/havl-code/lookahead/commit/9406ab3) The Ao5 and Ao12 at each
+  solve in the timer's list in the wide layout, and in a solve's sheet in both layouts (also
+  from the Sessions tab); `-` until there are enough solves, and DNF for an average that is one
+- [`2273455`](https://github.com/havl-code/lookahead/commit/2273455) The glossary names the Ao5
+  and Ao12 at a solve, the rolling Ao5 and Ao12, and the running mean
+
 ---
 
 ## Known Limitations
@@ -218,8 +229,7 @@ was in 4.0. It was released as
 
 ## Now
 
-Next #1, the Ao5 and Ao12 at each solve in the timer's list and in a solve's sheet, is built
-and waits for a release. The next piece of work after it is picked from the table below.
+Nothing is in progress. The next piece of work is picked from the table below.
 
 ## Next
 
@@ -227,12 +237,11 @@ Bigger features, roughly in order.
 
 | # | What | Why | Size |
 | --- | --- | --- | --- |
-| 1 | The Ao5 and Ao12 ending at each solve, in the timer's list of solves | Shows how an average moved solve by solve, as CSTimer's list does | S |
-| 2 | The Ao5 and Ao12 at each solve in the Sessions tab's list of a session's solves | The timer's list shows them for its latest 12 only; the session screen lists every solve | S |
-| 3 | A wide layout for Sessions: a grid of cards, or the list beside the open session | In the wide layout Sessions is still a single column of cards, 768 px wide | M |
-| 4 | Goals and streaks: a daily solve target, days in a row, and a target average | Builds on a session a day, and gives a reason to come back | M |
-| 5 | Random-state scrambles, bundled so they work offline | Matches competition scrambles (Regulation 4b3); needs a scrambler whose licence fits the app's MIT Licence | L |
-| 6 | A world rank model for the whole field, beyond the top 1,000 | Most people are outside the top 1,000, so they see no rank at all today | M |
+| 1 | The Ao5 and Ao12 at each solve in the Sessions tab's list of a session's solves | The timer's list shows them for its latest 12 only; the session screen lists every solve | S |
+| 2 | A wide layout for Sessions: a grid of cards, or the list beside the open session | In the wide layout Sessions is still a single column of cards, 768 px wide | M |
+| 3 | Goals and streaks: a daily solve target, days in a row, and a target average | Builds on a session a day, and gives a reason to come back | M |
+| 4 | Random-state scrambles, bundled so they work offline | Matches competition scrambles (Regulation 4b3); needs a scrambler whose licence fits the app's MIT Licence | L |
+| 5 | A world rank model for the whole field, beyond the top 1,000 | Most people are outside the top 1,000, so they see no rank at all today | M |
 
 ## Later
 
@@ -240,11 +249,11 @@ Larger changes to how the app works, each worth a design discussion first.
 
 | # | What | Why | Size |
 | --- | --- | --- | --- |
-| 7 | Timers for every WCA event | Pyraminx, Skewb, Square-1, and Clock need scramblers of their own (4 is a start), and Fewest Moves and Multi-Blind need new flows | L |
-| 8 | Per-event training plans | Turns the insights into a weekly plan you can follow | L |
-| 9 | Stackmat timer support, through the device's audio input | The timer cubers already own and use at competitions | L |
-| 10 | Bluetooth smart cubes, through Web Bluetooth | Move-by-move solve data, but only in Chromium-based browsers | L |
-| 11 | Multiple user profiles | Families and clubs sharing one device | L |
+| 6 | Timers for every WCA event | Pyraminx, Skewb, Square-1, and Clock need scramblers of their own (4 is a start), and Fewest Moves and Multi-Blind need new flows | L |
+| 7 | Per-event training plans | Turns the insights into a weekly plan you can follow | L |
+| 8 | Stackmat timer support, through the device's audio input | The timer cubers already own and use at competitions | L |
+| 9 | Bluetooth smart cubes, through Web Bluetooth | Move-by-move solve data, but only in Chromium-based browsers | L |
+| 10 | Multiple user profiles | Families and clubs sharing one device | L |
 
 ---
 

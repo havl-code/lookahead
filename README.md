@@ -140,6 +140,12 @@ across.
 
 ## 🆕 What's New
 
+### 4.2
+
+- **The Ao5 and Ao12 at each solve.** In the wide layout, the timer's list of your latest solves
+  shows the Ao5 and Ao12 at each one, so you can see how an average moved solve by solve. On a
+  phone, tap a solve: its sheet shows them, in the Sessions tab too.
+
 ### 4.1
 
 - **A layout for computers and wide tablets.** In the wide layout, from 1024 px wide, the tabs
