@@ -1,5 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, type Page, test } from '@playwright/test';
+import { fakeRankings, restore } from './practice.ts';
 
 // The wide layout, from 1024 px wide (CONTEXT.md). Runs only in the desktop-chromium project,
 // at 1440 by 900 with a mouse; the iPhone projects check the phone layout.
@@ -43,6 +44,14 @@ async function openTimer(page: Page) {
   await page.clock.install({ time: new Date(2026, 9, 14, 9) });
   await page.goto('./');
   await skipInspection(page);
+}
+
+/** Restores the practice backup and opens the Dashboard, with the WCA's rankings faked. */
+async function openDashboard(page: Page) {
+  await fakeRankings(page);
+  await restore(page);
+  await page.goto('./#/analytics');
+  await expect(page.locator('figure canvas')).toHaveCount(4);
 }
 
 test('shows the Main navigation as a top bar, above the main content', async ({ page }) => {
@@ -91,8 +100,8 @@ test('moves between the tabs, and back with the browser, without errors', async 
   expect(errors).toEqual([]);
 });
 
-test('centres each tab in a readable column, no wider than 768 px', async ({ page }) => {
-  for (const name of tabs.filter((tab) => tab !== 'Timer')) {
+test('centres Sessions and More in a readable column, no wider than 768 px', async ({ page }) => {
+  for (const name of ['Sessions', 'More']) {
     await page.goto(`./#/${name.toLowerCase()}`);
     await expect(page.getByRole('heading', { level: 1, name })).toBeVisible();
     const main = await page.getByRole('main').boundingBox();
@@ -109,6 +118,139 @@ test('centres the Timer, no wider than 1,280 px', async ({ page }) => {
   const main = await page.getByRole('main').boundingBox();
   expect(main?.width).toBe(1280);
   expect(Math.abs((main?.x ?? 0) + (main?.width ?? 0) / 2 - 720)).toBeLessThanOrEqual(8);
+});
+
+test('centres the Dashboard at up to 1,280 px, and How the scores work at 768 px', async ({
+  page,
+}) => {
+  for (const [hash, heading, width] of [
+    ['analytics', 'Analytics', 1280],
+    ['analytics/scores', /How the Analytics Scores Work/, 768],
+  ] as const) {
+    await page.goto(`./#/${hash}`);
+    await expect(page.getByRole('heading', { level: 1, name: heading })).toBeVisible();
+    const main = await page.getByRole('main').boundingBox();
+    expect(main?.width, hash).toBe(width);
+    expect(Math.abs((main?.x ?? 0) + (main?.width ?? 0) / 2 - 720), hash).toBeLessThanOrEqual(8);
+  }
+});
+
+test('shows the bests as two rows of cards, five then four, linking as on the phone', async ({
+  page,
+}) => {
+  await openDashboard(page);
+  const bests = page.getByRole('region', { name: 'Your bests' });
+  await expect(bests.getByText('~961')).toBeVisible();
+
+  /** Where each card sits, found from its label. */
+  const cards = (labels: readonly string[]) =>
+    Promise.all(
+      labels.map(async (label) => {
+        const box = await bests.getByText(label, { exact: true }).locator('..').boundingBox();
+        return { label, x: box?.x ?? 0, y: box?.y ?? 0, width: box?.width ?? 0 };
+      }),
+    );
+  const first = await cards(['Best single', 'World rank', 'Average', 'Solves', 'Sessions']);
+  const second = await cards(['Best Ao5', 'Best Ao12', 'Best Ao50', 'Best Ao100']);
+  for (const row of [first, second]) {
+    for (const [i, card] of row.entries()) {
+      expect(card.y, card.label).toBe(row[0]?.y);
+      if (i > 0) expect(card.x, card.label).toBeGreaterThan(row[i - 1]?.x ?? 0);
+    }
+    // The cards share the row: each about the same width, the row as wide as the page's content.
+    const right = (row.at(-1)?.x ?? 0) + (row.at(-1)?.width ?? 0);
+    expect(right - (row[0]?.x ?? 0)).toBeCloseTo(1248, -1);
+  }
+  expect(second[0]?.y ?? 0).toBeGreaterThan(first[0]?.y ?? 0);
+
+  // The same figures as the phone, with the solves and sessions counted in cards of their own.
+  await expect(bests.getByText('Top 0.48% worldwide, by best single')).toBeVisible();
+  await expect(bests.getByText('300', { exact: true })).toBeVisible();
+  await expect(bests.getByText('12', { exact: true })).toBeVisible();
+  await expect(bests.getByText('300 solves in 12 sessions')).toBeHidden();
+
+  // And the same links: each PB opens its details.
+  await bests.getByRole('button', { name: /^Best single 12\.60/ }).click();
+  const single = page.getByRole('dialog', { name: 'Best single' });
+  await expect(single.getByRole('link', { name: 'Open its session' })).toBeVisible();
+  await single.getByRole('button', { name: 'Close' }).click();
+  await bests.getByRole('button', { name: /^Best Ao12 / }).click();
+  const average = page.getByRole('dialog', { name: 'Best Ao12' });
+  await expect(average.getByRole('link', { name: 'Open its session' })).toBeVisible();
+});
+
+test('puts Scores and Insights side by side', async ({ page }) => {
+  await openDashboard(page);
+  const scores = await page.getByRole('region', { name: 'Scores' }).boundingBox();
+  const insights = await page.getByRole('region', { name: 'Insights' }).boundingBox();
+  expect(insights?.y).toBe(scores?.y);
+  expect(insights?.x ?? 0).toBeGreaterThan((scores?.x ?? 0) + (scores?.width ?? 0));
+});
+
+test('lays the charts out in a grid, 300 px tall, and 220 px again in a narrow window', async ({
+  page,
+}) => {
+  await openDashboard(page);
+  const charts = page.getByRole('figure');
+  const box = async (title: string) =>
+    (await charts.filter({ hasText: title }).boundingBox()) ?? { x: 0, y: 0, width: 0, height: 0 };
+
+  // Progress and Consistency across the grid, Distribution and Rolling averages sharing a row.
+  const progress = await box('Progress');
+  const spread = await box('How your times spread out');
+  const rolling = await box('Rolling averages');
+  const consistency = await box('Consistency across sessions');
+  expect(progress.width).toBe(1248);
+  expect(consistency.width).toBe(1248);
+  expect(rolling.y).toBe(spread.y);
+  expect(rolling.x).toBeGreaterThan(spread.x + spread.width);
+  expect(spread.y).toBeGreaterThan(progress.y + progress.height);
+  expect(consistency.y).toBeGreaterThan(spread.y + spread.height);
+  // Each keeps its describing sentence.
+  await expect(charts.filter({ hasText: 'Progress' })).toContainText(
+    '12 sessions, from 1 Oct to 12 Oct.',
+  );
+
+  const heights = () =>
+    page
+      .locator('figure canvas')
+      .evaluateAll((canvases) => canvases.map((canvas) => canvas.getBoundingClientRect().height));
+  expect(await heights()).toEqual([300, 300, 300, 300]);
+
+  // The charts' menu still switches to one session, without the comparison across sessions.
+  await page.getByLabel('Charts for').selectOption({ index: 1 });
+  await expect(charts).toHaveCount(3);
+  await expect(charts.filter({ hasText: 'Progress' })).toContainText(
+    'Solves 1 to 25 of this session',
+  );
+  expect(await heights()).toEqual([300, 300, 300]);
+
+  // The height comes from the layout, so crossing 1024 px redraws the charts at the phone's.
+  await page.setViewportSize({ width: 800, height: 900 });
+  await expect.poll(heights).toEqual([220, 220, 220]);
+
+  // An event with too few solves says so in the grid's place.
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.getByLabel('Event').selectOption({ label: '2x2x2' });
+  await expect(page.getByText('Needs 12 solves or more.')).toBeVisible();
+});
+
+test('shows the kept rankings in the world rank card offline, or says it has none', async ({
+  page,
+}) => {
+  await openDashboard(page);
+  const bests = page.getByRole('region', { name: 'Your bests' });
+  await expect(bests.getByText('~961')).toBeVisible();
+
+  await page.context().setOffline(true);
+  await page.reload();
+  const card = bests.getByText('World rank', { exact: true }).locator('..');
+  await expect(card).toContainText('~961');
+  // 2x2x2's rankings were never fetched.
+  await page.getByLabel('Event').selectOption({ label: '2x2x2' });
+  await expect(card).toContainText("Needs the internet once, to fetch the WCA's rankings");
+  const single = await bests.getByText('Best single', { exact: true }).locator('..').boundingBox();
+  expect((await card.boundingBox())?.y).toBe(single?.y);
 });
 
 test('lists the latest solves in a panel to the right of the time, newest first', async ({
@@ -274,6 +416,21 @@ for (const colorScheme of ['dark', 'light'] as const) {
     await openTimer(page);
     await timeASolve(page, 10_000, 1);
     await timeASolve(page, 12_000, 2);
+    const results = await new AxeBuilder({ page })
+      .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
+      .analyze();
+    expect(results.violations).toEqual([]);
+  });
+
+  test(`has no detectable WCAG 2.2 AA violations on the Dashboard, in ${colorScheme} mode`, async ({
+    page,
+  }) => {
+    await fakeRankings(page);
+    await restore(page);
+    await page.emulateMedia({ colorScheme });
+    await page.goto('./#/analytics');
+    await expect(page.locator('figure canvas')).toHaveCount(4);
+    await expect(page.getByText('~961')).toBeVisible();
     const results = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
       .analyze();

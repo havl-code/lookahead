@@ -63,7 +63,8 @@ export interface LegendItem {
 
 /**
  * A chart drawn by uPlot. The drawing is hidden from screen readers; `summary`, shown beneath it,
- * says in words what it shows, worked out from the same numbers.
+ * says in words what it shows, worked out from the same numbers. Its size is its container's,
+ * set with CSS: 220 px tall on the phone and 300 px in the wide layout (ADR 0001).
  */
 export function Chart({
   title,
@@ -71,14 +72,14 @@ export function Chart({
   data,
   options,
   legend,
-  height = 220,
+  className = '',
 }: {
   readonly title: string;
   readonly summary: string;
   readonly data: AlignedData;
   readonly options: (colours: ChartColours) => Omit<Options, 'width' | 'height'>;
   readonly legend: (colours: ChartColours) => readonly LegendItem[];
-  readonly height?: number;
+  readonly className?: string;
 }) {
   const container = useRef<HTMLDivElement>(null);
   const colours = useColours();
@@ -97,23 +98,25 @@ export function Chart({
       {
         ...build.current(colours),
         width: element.clientWidth,
-        height,
+        height: element.clientHeight,
         legend: { show: false },
         cursor: { show: false },
       },
       latest.current,
       element,
     );
-    const resize = new ResizeObserver(() => plot.setSize({ width: element.clientWidth, height }));
+    const resize = new ResizeObserver(() =>
+      plot.setSize({ width: element.clientWidth, height: element.clientHeight }),
+    );
     resize.observe(element);
     return () => {
       resize.disconnect();
       plot.destroy();
     };
-  }, [fingerprint, colours, height]);
+  }, [fingerprint, colours]);
 
   return (
-    <figure className="rounded-xl border border-line bg-raised p-4">
+    <figure className={`rounded-xl border border-line bg-raised p-4 ${className}`}>
       <figcaption className="font-semibold">{title}</figcaption>
       <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-muted text-sm">
         {legend(colours).map((item) => (
@@ -131,7 +134,7 @@ export function Chart({
           </li>
         ))}
       </ul>
-      <div ref={container} aria-hidden="true" className="mt-2 w-full" />
+      <div ref={container} aria-hidden="true" className="mt-2 h-55 w-full lg:h-75" />
       <p className="mt-2 text-muted text-sm">{summary}</p>
     </figure>
   );

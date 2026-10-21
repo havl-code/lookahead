@@ -88,7 +88,8 @@ export function ScoresSection({
       : 'No earlier sessions with this score to compare with';
 
   return (
-    <>
+    // One after the other on the phone, and side by side in the wide layout.
+    <div className="lg:grid lg:grid-cols-2 lg:gap-x-8">
       <section aria-labelledby="scores-heading" className="mt-8">
         <h2 id="scores-heading" className="font-semibold text-lg">
           Scores
@@ -164,6 +165,6 @@ export function ScoresSection({
           ))}
         </ul>
       </section>
-    </>
+    </div>
   );
 }

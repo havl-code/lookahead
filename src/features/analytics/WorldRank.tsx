@@ -59,9 +59,11 @@ export function describeRank(estimate: RankEstimate | null): {
 export function WorldRank({
   eventId,
   bestMs,
+  className = '',
 }: {
   readonly eventId: string;
   readonly bestMs: number;
+  readonly className?: string;
 }) {
   const rankings = useWorldRankings(eventId);
   const { value, note } =
@@ -75,7 +77,7 @@ export function WorldRank({
       : '';
 
   return (
-    <div className="mt-3 border-line border-t pt-3">
+    <div className={`mt-3 border-line border-t pt-3 ${className}`}>
       <p className="text-muted text-sm">World rank</p>
       <p className="font-semibold text-3xl tabular-nums">{value}</p>
       <p className="text-muted text-sm">

@@ -39,6 +39,9 @@ function linePoints(colour: string): uPlot.Series {
   };
 }
 
+/** Progress and Consistency span the wide layout's grid of charts, as on the 3.x desktop app's. */
+const fullRow = 'lg:col-span-2';
+
 const numbered = (n: number) => Array.from({ length: n }, (_, i) => i + 1);
 
 /** Whole numbers only on an axis of sessions or solves, as there's no session 1.5. */
@@ -57,9 +60,10 @@ export function Charts({
   readonly wholeEvent: boolean;
 }) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
       {data.progress.length === 0 ? (
         <Empty
+          className={fullRow}
           title="Progress"
           text={
             wholeEvent ? 'Needs a session with 5 solves or more.' : 'No solves in this session yet.'
@@ -83,6 +87,7 @@ export function Charts({
       {wholeEvent &&
         (data.consistency === null ? (
           <Empty
+            className={fullRow}
             title="Consistency across sessions"
             text="Needs 2 sessions with 5 solves or more."
           />
@@ -93,9 +98,17 @@ export function Charts({
   );
 }
 
-function Empty({ title, text }: { readonly title: string; readonly text: string }) {
+function Empty({
+  title,
+  text,
+  className = '',
+}: {
+  readonly title: string;
+  readonly text: string;
+  readonly className?: string;
+}) {
   return (
-    <section className="rounded-xl border border-line bg-raised p-4">
+    <section className={`rounded-xl border border-line bg-raised p-4 ${className}`}>
       <h3 className="font-semibold">{title}</h3>
       <p className="mt-1 text-muted text-sm">{text}</p>
     </section>
@@ -120,6 +133,7 @@ function EventProgress({ points }: { readonly points: ProgressPoint[] }) {
   const data: AlignedData = [numbered(points.length), best, mean, ao5];
   return (
     <Chart
+      className={fullRow}
       title="Progress"
       summary={summary}
       data={data}
@@ -161,6 +175,7 @@ function SessionProgress({ points }: { readonly points: SolvePoint[] }) {
   if (dnfs) parts.push(count(dnfs, 'DNF', 'DNFs'));
   return (
     <Chart
+      className={fullRow}
       title="Progress"
       summary={`${parts.join(', ')}.`}
       data={[points.map((p) => p.solveNumber), times, mean, ao5]}
@@ -297,6 +312,7 @@ function Consistency({ boxes }: { readonly boxes: SessionBox[] }) {
   const pad = (high - low) * 0.08 || 1;
   return (
     <Chart
+      className={fullRow}
       title="Consistency across sessions"
       summary={summary}
       data={[numbered(boxes.length), medians]}

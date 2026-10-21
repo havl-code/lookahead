@@ -2,7 +2,7 @@ import { type ComponentType, lazy, Suspense } from 'react';
 import { TimerScreen } from '../features/timer/TimerScreen.tsx';
 import { useFullscreen } from './fullscreen.ts';
 import { InstallBanner } from './InstallBanner.tsx';
-import { type Tab, useTab } from './router.ts';
+import { type Tab, useDetail, useTab } from './router.ts';
 import { TabBar } from './TabBar.tsx';
 import { Updater } from './Updater.tsx';
 
@@ -19,9 +19,13 @@ const pageWidths: Record<PageWidth, string> = {
 
 // The timer opens first and must be instant, so it is in the main bundle. The other tabs load the
 // first time they open; the service worker has already stored them, so that works offline too.
-// Each tab says how wide it may grow, and is readable unless it says otherwise.
-const screens: Record<Tab, { readonly Screen: ComponentType; readonly width?: PageWidth }> = {
-  timer: { Screen: TimerScreen, width: 'wide' },
+// Each tab says how wide it may grow, by the page it shows (the detail after the tab in the
+// hash), and is readable unless it says otherwise.
+const screens: Record<
+  Tab,
+  { readonly Screen: ComponentType; readonly width?: (detail: string | null) => PageWidth }
+> = {
+  timer: { Screen: TimerScreen, width: () => 'wide' },
   sessions: {
     Screen: lazy(() =>
       import('../features/sessions/SessionsScreen.tsx').then((m) => ({
@@ -35,6 +39,8 @@ const screens: Record<Tab, { readonly Screen: ComponentType; readonly width?: Pa
         default: m.AnalyticsScreen,
       })),
     ),
+    // The Dashboard, and How the scores work as a readable page.
+    width: (detail) => (detail === 'scores' ? 'readable' : 'wide'),
   },
   more: {
     Screen: lazy(() =>
@@ -45,7 +51,8 @@ const screens: Record<Tab, { readonly Screen: ComponentType; readonly width?: Pa
 
 export function App() {
   const tab = useTab();
-  const { Screen, width = 'readable' } = screens[tab];
+  const { Screen, width = () => 'readable' } = screens[tab];
+  const detail = useDetail();
   const fullscreen = useFullscreen();
 
   return (
@@ -55,7 +62,7 @@ export function App() {
       {!fullscreen && <InstallBanner />}
       <div className="flex flex-1 flex-col overflow-y-auto overscroll-contain">
         <main
-          className={`mx-auto flex w-full max-w-xl flex-1 flex-col px-4 pt-[max(1rem,env(safe-area-inset-top))] pb-6 lg:pt-6 ${pageWidths[width]}`}
+          className={`mx-auto flex w-full max-w-xl flex-1 flex-col px-4 pt-[max(1rem,env(safe-area-inset-top))] pb-6 lg:pt-6 ${pageWidths[width(detail)]}`}
         >
           <Suspense fallback={null}>
             <Screen />

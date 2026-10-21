@@ -145,6 +145,9 @@ function EventAnalytics({ eventId }: { readonly eventId: string }) {
   );
 }
 
+/** A part of the overview, as a card of its own in the wide layout. */
+const wideCard = 'lg:rounded-xl lg:border lg:border-line lg:bg-raised lg:p-4';
+
 function OverviewCard({
   eventId,
   overview,
@@ -159,16 +162,21 @@ function OverviewCard({
     sessionId: overview.best.sessionId,
     date: overview.best.date,
   };
+  const rankedBest = overview.best && rankedEvents.has(eventId) ? overview.best : null;
   return (
+    // One card on the phone. In the wide layout its parts become two rows of cards, as on the
+    // 3.x desktop app's dashboard: Best single, World rank, Average, Solves, and Sessions; then
+    // the best averages. Average, Solves, and Sessions move after the world rank with `order`;
+    // none of them can be focused, so the focus order is the same in both layouts.
     <section
       aria-labelledby="overview-heading"
-      className="mt-4 rounded-xl border border-line bg-raised p-4"
+      className={`mt-4 rounded-xl border border-line bg-raised p-4 lg:grid lg:gap-4 lg:border-0 lg:bg-transparent lg:p-0 ${rankedBest ? 'lg:grid-cols-5' : 'lg:grid-cols-4'}`}
     >
       <h2 id="overview-heading" className="sr-only">
         Your bests
       </h2>
-      <div className="grid grid-cols-2 gap-4">
-        <div>
+      <div className="grid grid-cols-2 gap-4 lg:contents">
+        <div className={wideCard}>
           <p className="text-muted text-sm">Best single</p>
           {bestSingle ? (
             <>
@@ -176,7 +184,7 @@ function OverviewCard({
                 type="button"
                 onClick={() => setPb(bestSingle)}
                 aria-label={`Best single ${bestSingle.text}, details`}
-                className="font-semibold text-5xl tabular-nums tracking-tight underline decoration-line underline-offset-8"
+                className="font-semibold text-5xl tabular-nums tracking-tight underline decoration-line underline-offset-8 lg:text-3xl lg:underline-offset-4"
               >
                 {bestSingle.text}
               </button>
@@ -185,10 +193,10 @@ function OverviewCard({
               </p>
             </>
           ) : (
-            <p className="font-semibold text-5xl tabular-nums tracking-tight">-</p>
+            <p className="font-semibold text-5xl tabular-nums tracking-tight lg:text-3xl">-</p>
           )}
         </div>
-        <div>
+        <div className={`${wideCard} lg:order-1`}>
           <p className="text-muted text-sm">Average</p>
           <p className="font-semibold text-3xl tabular-nums">
             {formatResult(averageSeconds(overview.average))}
@@ -196,17 +204,17 @@ function OverviewCard({
           <p className="text-muted text-sm">of every solve</p>
         </div>
       </div>
-      {overview.best && rankedEvents.has(eventId) && (
-        <WorldRank eventId={eventId} bestMs={overview.best.ms} />
+      {rankedBest && (
+        <WorldRank eventId={eventId} bestMs={rankedBest.ms} className={`${wideCard} lg:mt-0`} />
       )}
-      <dl className="mt-3 grid grid-cols-4 gap-2 border-line border-t pt-3">
+      <dl className="mt-3 grid grid-cols-4 gap-2 border-line border-t pt-3 lg:order-2 lg:col-span-full lg:mt-0 lg:gap-4 lg:border-t-0 lg:pt-0">
         {averageSizes.map((size) => {
           const best = overview.bestAverages[size];
           const text = best && formatResult(averageSeconds(best.value));
           return (
-            <div key={size}>
+            <div key={size} className={wideCard}>
               <dt className="text-muted text-sm">Best Ao{size}</dt>
-              <dd className="font-semibold tabular-nums">
+              <dd className="font-semibold tabular-nums lg:text-3xl">
                 {best && text ? (
                   <button
                     type="button"
@@ -226,10 +234,22 @@ function OverviewCard({
           );
         })}
       </dl>
-      <p className="mt-1 text-muted text-sm">
+      <p className="mt-1 text-muted text-sm lg:hidden">
         {count(overview.solves, 'solve', 'solves')} in{' '}
         {count(overview.sessions, 'session', 'sessions')}
       </p>
+      {/* The sentence above, as two cards in the wide layout. */}
+      {(
+        [
+          ['Solves', overview.solves],
+          ['Sessions', overview.sessions],
+        ] as const
+      ).map(([label, value]) => (
+        <div key={label} className={`hidden lg:order-1 lg:block ${wideCard}`}>
+          <p className="text-muted text-sm">{label}</p>
+          <p className="font-semibold text-3xl tabular-nums">{value.toLocaleString('en-NZ')}</p>
+        </div>
+      ))}
       <PbSheet pb={pb} onClose={() => setPb(null)} />
     </section>
   );
