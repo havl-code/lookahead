@@ -191,7 +191,7 @@ test("shows the Ao5 and Ao12 at a solve in its sheet, not in the phone's chips",
   await timeASolve(page, 3_000, 10_000);
   const solves = page.getByRole('list', { name: 'Latest solves' });
   await expect(solves.getByRole('button')).toHaveAccessibleName(/^Solve 1: 10\.[01]\d$/);
-  // The chips show only the result: the averages and their header row are in the page, unseen.
+  // The chips show only the result: the averages and their header row are in the DOM, unseen.
   await expect(solves.getByText('-', { exact: true })).toHaveCount(2);
   await expect(solves.getByText('-', { exact: true }).filter({ visible: true })).toHaveCount(0);
   await expect(page.getByText('Ao12', { exact: true }).filter({ visible: true })).toHaveCount(1);

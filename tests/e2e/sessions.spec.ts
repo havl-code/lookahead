@@ -1,5 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, type Page, test } from '@playwright/test';
+import { restore } from './practice.ts';
 
 const wcag = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
 
@@ -201,6 +202,29 @@ test('saves a WCA ID with the name the WCA has for it', async ({ page }) => {
   await expect(page.getByText('Test Person (2003POCH01)')).toBeVisible();
   await page.getByRole('button', { name: 'Remove' }).click();
   await expect(page.getByLabel('Your WCA ID')).toBeVisible();
+});
+
+test('shows the Ao5 and Ao12 at a solve in its sheet, and DNF for an Ao5 with two DNFs', async ({
+  page,
+}) => {
+  await restore(page);
+  await page.goto('./#/sessions');
+  await page
+    .getByRole('main')
+    .getByRole('listitem')
+    .filter({ hasText: '12 Oct 2026, 3x3x3' })
+    .getByRole('link')
+    .click();
+  await page.getByRole('button', { name: /^Solve 14: / }).click();
+  // Solve 14 of the practice backup's 12 October: its Ao5 drops solve 13's DNF as the worst
+  // (Regulation 9f8), and its Ao12 drops the DNF and the best, solve 9's 12.60.
+  const sheet = page.getByRole('dialog', { name: 'Solve 14' });
+  await expect(sheet.getByRole('term')).toHaveText(['Ao5', 'Ao12']);
+  await expect(sheet.getByRole('definition')).toHaveText(['13.44', '13.71']);
+
+  // A DNF for solve 14 as well puts two DNFs in both windows, so both are DNFs (Regulation 9f9).
+  await sheet.getByRole('button', { name: 'DNF' }).click();
+  await expect(sheet.getByRole('definition')).toHaveText(['DNF', 'DNF']);
 });
 
 test('has no detectable WCAG 2.2 AA violations on a session and its sheets', async ({ page }) => {
