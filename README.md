@@ -110,9 +110,10 @@ across.
 
 - **The wide layout:** from 1024 px wide, on a computer or a tablet held sideways, the tabs
   move to a bar along the top. The Timer has two columns: a much larger time on the left, and
-  the session's stats and latest solves on the right. Analytics becomes the Dashboard, a grid
-  of cards and larger charts. Sheets open in the middle of the screen. Below 1024 px it's the
-  phone layout, one column with the tabs along the bottom.
+  the session's stats and latest solves on the right, with the Ao5 and Ao12 at each solve (a
+  solve's sheet shows them on the phone). Analytics becomes the Dashboard, a grid of cards and
+  larger charts. Sheets open in the middle of the screen. Below 1024 px it's the phone layout,
+  one column with the tabs along the bottom.
 - **Light or dark:** dark by default unless your device is set to light; **Appearance** on the
   More tab keeps it light or dark, or follows the device.
 - **Personalised greeting:** add your WCA ID and the app greets you by name.

@@ -218,7 +218,8 @@ was in 4.0. It was released as
 
 ## Now
 
-Nothing is in progress. The next piece of work is picked from the table below.
+Next #1, the Ao5 and Ao12 at each solve in the timer's list and in a solve's sheet, is built
+and waits for a release. The next piece of work after it is picked from the table below.
 
 ## Next
 
@@ -227,10 +228,11 @@ Bigger features, roughly in order.
 | # | What | Why | Size |
 | --- | --- | --- | --- |
 | 1 | The Ao5 and Ao12 ending at each solve, in the timer's list of solves | Shows how an average moved solve by solve, as CSTimer's list does | S |
-| 2 | A wide layout for Sessions: a grid of cards, or the list beside the open session | In the wide layout Sessions is still a single column of cards, 768 px wide | M |
-| 3 | Goals and streaks: a daily solve target, days in a row, and a target average | Builds on a session a day, and gives a reason to come back | M |
-| 4 | Random-state scrambles, bundled so they work offline | Matches competition scrambles (Regulation 4b3); needs a scrambler whose licence fits the app's MIT Licence | L |
-| 5 | A world rank model for the whole field, beyond the top 1,000 | Most people are outside the top 1,000, so they see no rank at all today | M |
+| 2 | The Ao5 and Ao12 at each solve in the Sessions tab's list of a session's solves | The timer's list shows them for its latest 12 only; the session screen lists every solve | S |
+| 3 | A wide layout for Sessions: a grid of cards, or the list beside the open session | In the wide layout Sessions is still a single column of cards, 768 px wide | M |
+| 4 | Goals and streaks: a daily solve target, days in a row, and a target average | Builds on a session a day, and gives a reason to come back | M |
+| 5 | Random-state scrambles, bundled so they work offline | Matches competition scrambles (Regulation 4b3); needs a scrambler whose licence fits the app's MIT Licence | L |
+| 6 | A world rank model for the whole field, beyond the top 1,000 | Most people are outside the top 1,000, so they see no rank at all today | M |
 
 ## Later
 
@@ -238,11 +240,11 @@ Larger changes to how the app works, each worth a design discussion first.
 
 | # | What | Why | Size |
 | --- | --- | --- | --- |
-| 6 | Timers for every WCA event | Pyraminx, Skewb, Square-1, and Clock need scramblers of their own (4 is a start), and Fewest Moves and Multi-Blind need new flows | L |
-| 7 | Per-event training plans | Turns the insights into a weekly plan you can follow | L |
-| 8 | Stackmat timer support, through the device's audio input | The timer cubers already own and use at competitions | L |
-| 9 | Bluetooth smart cubes, through Web Bluetooth | Move-by-move solve data, but only in Chromium-based browsers | L |
-| 10 | Multiple user profiles | Families and clubs sharing one device | L |
+| 7 | Timers for every WCA event | Pyraminx, Skewb, Square-1, and Clock need scramblers of their own (4 is a start), and Fewest Moves and Multi-Blind need new flows | L |
+| 8 | Per-event training plans | Turns the insights into a weekly plan you can follow | L |
+| 9 | Stackmat timer support, through the device's audio input | The timer cubers already own and use at competitions | L |
+| 10 | Bluetooth smart cubes, through Web Bluetooth | Move-by-move solve data, but only in Chromium-based browsers | L |
+| 11 | Multiple user profiles | Families and clubs sharing one device | L |
 
 ---
 
