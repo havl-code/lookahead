@@ -1,6 +1,6 @@
 # Roadmap
 
-Where Lookahead stands after version 4.0, with 4.1 on the way, what it can't do yet, and what
+Where Lookahead stands after version 4.1, what it can't do yet, and what
 could come next, roughly in order. It's a plan, not a promise: ideas and pull requests are
 welcome (see [Contributing](../README.md#-contributing)).
 
@@ -149,9 +149,10 @@ https://havl-code.github.io/lookahead/, and retires the desktop app, which neede
 
 ## Done in 4.1
 
-Not released yet. Version 4.1 adds the wide layout: from 1024 px wide, on a computer or a tablet
-held sideways, the screens use the width, as the 3.x desktop app did. Below 1024 px the phone
-layout is as it was in 4.0.
+Version 4.1 adds the wide layout: from 1024 px wide, on a computer or a tablet held sideways,
+the screens use the width, as the 3.x desktop app did. Below 1024 px the phone layout is as it
+was in 4.0. It was released as
+[v4.1.0](https://github.com/havl-code/lookahead/releases/tag/v4.1.0) on 21 October 2026.
 
 - [`9e20544`](https://github.com/havl-code/lookahead/commit/9e20544) The tabs in a bar along the
   top, with each tab centred in a readable column
