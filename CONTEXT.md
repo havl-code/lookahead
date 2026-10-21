@@ -36,3 +36,20 @@ _Avoid_: Dashboard tab, home
 A modal panel for one task over a tab, such as a solve's details or the timer settings. It rises
 from the bottom in the phone layout and sits in the middle in the wide layout.
 _Avoid_: modal, popup, drawer
+
+### Results
+
+**Ao5, Ao12**:
+The average of a solve and the 4 (or 11) solves before it in the same session, with the best and
+the worst dropped and a DNF counted as the worst. A session's Ao5 is the one at its latest solve.
+The WCA defines only the Ao5 (Regulation 9f8); the Ao12 is a community convention.
+_Avoid_: last Ao5, current Ao5
+
+**Rolling Ao5, rolling Ao12**:
+The Ao5 (or Ao12) at each solve of a session in turn, as the timer's list and the Rolling
+averages chart show them.
+_Avoid_: running average
+
+**Running mean**:
+The mean of every solve in a session up to a given one.
+_Avoid_: rolling mean
