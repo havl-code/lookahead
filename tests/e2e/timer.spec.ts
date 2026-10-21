@@ -214,6 +214,21 @@ test('shows the Ao5 and Ao12 at a solve of a session picked from the menu', asyn
   await expect(sheet.getByRole('definition')).toHaveText(['13.44', '13.71']);
 });
 
+test('keeps a tap that starts inspection straight after coming back from another tab', async ({
+  page,
+}) => {
+  // Leaving the Timer before the Sessions tab has loaded used to keep the old screen, and swap
+  // in a new one, with an idle clock, when it loaded: in the middle of the next tap.
+  await timeASolve(page, 3_000, 10_000);
+  await expect(page.getByRole('button', { name: /^Solve 1: 10\.[01]\d$/ })).toBeVisible();
+  const nav = page.getByRole('navigation', { name: 'Main' });
+  await nav.getByRole('link', { name: 'Sessions' }).click();
+  await nav.getByRole('link', { name: 'Timer' }).click();
+  await touch(page, 'pointerdown');
+  await touch(page, 'pointerup');
+  await expect(readout(page)).toHaveText('15');
+});
+
 test('hides all but the scramble and time in fullscreen, as the desktop does', async ({ page }) => {
   await page.getByRole('button', { name: 'Fullscreen' }).click();
   await expect(page.getByRole('navigation', { name: 'Main' })).toBeHidden();

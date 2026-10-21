@@ -64,7 +64,10 @@ export function App() {
         <main
           className={`mx-auto flex w-full max-w-xl flex-1 flex-col px-4 pt-[max(1rem,env(safe-area-inset-top))] pb-6 lg:pt-6 ${pageWidths[width(detail)]}`}
         >
-          <Suspense fallback={null}>
+          {/* A boundary of its own for each tab: one shared boundary kept the Timer hidden while
+              a tab loaded, and swapped in a new Timer, its clock idle, once the tab had loaded,
+              even after going back to the Timer (in the middle of a tap, say). */}
+          <Suspense key={tab} fallback={null}>
             <Screen />
           </Suspense>
         </main>
