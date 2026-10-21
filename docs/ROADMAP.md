@@ -170,14 +170,17 @@ was in 4.0. It was released as
 
 ## Done in 4.2
 
-Not released yet. Version 4.2 shows how your Ao5 and Ao12 moved solve by solve, as CSTimer's
-list does.
+Version 4.2 adds rolling Ao5 and Ao12 to the Timer, and keeps a tap from being lost when you
+return to it after changing tabs. It was released as
+[v4.2.0](https://github.com/havl-code/lookahead/releases/tag/v4.2.0) on 21 October 2026.
 
 - [`9406ab3`](https://github.com/havl-code/lookahead/commit/9406ab3) The Ao5 and Ao12 at each
   solve in the timer's list in the wide layout, and in a solve's sheet in both layouts (also
   from the Sessions tab); `-` until there are enough solves, and DNF for an average that is one
 - [`2273455`](https://github.com/havl-code/lookahead/commit/2273455) The glossary names the Ao5
   and Ao12 at a solve, the rolling Ao5 and Ao12, and the running mean
+- [`4edf3d1`](https://github.com/havl-code/lookahead/commit/4edf3d1) A tap that starts inspection
+  just after returning to the Timer from another tab is not lost
 
 ---
 
