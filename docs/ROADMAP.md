@@ -1,6 +1,6 @@
 # Roadmap
 
-Where Lookahead stands after version 4.0, what it can't do yet, and what
+Where Lookahead stands after version 4.0, with 4.1 on the way, what it can't do yet, and what
 could come next, roughly in order. It's a plan, not a promise: ideas and pull requests are
 welcome (see [Contributing](../README.md#-contributing)).
 
@@ -118,9 +118,10 @@ on 11 October 2026.
 
 ## Done in 4.0
 
-Not released yet. Version 4.0 rebuilds Lookahead as an offline web app for the Home Screen (or
-a computer), at https://havl-code.github.io/lookahead/, and retires the desktop app, which
-needed Python and `uv run app.py`. A backup from 3.x restores into it.
+Version 4.0 rebuilds Lookahead as an offline web app for the Home Screen (or a computer), at
+https://havl-code.github.io/lookahead/, and retires the desktop app, which needed Python and
+`uv run app.py`. A backup from 3.x restores into it. It was released as
+[v4.0.0](https://github.com/havl-code/lookahead/releases/tag/v4.0.0) on 20 October 2026.
 
 - [`467d9ed`](https://github.com/havl-code/lookahead/commit/467d9ed) The app is now called Lookahead (it was Speedcube Training Explorer). Backups
   made under the old name still restore
@@ -145,6 +146,26 @@ needed Python and `uv run app.py`. A backup from 3.x restores into it.
 - [`64a9bd2`](https://github.com/havl-code/lookahead/commit/64a9bd2) Fullscreen, with only the scramble and a larger time
 - The desktop app (Flask, SQLite, and plain JavaScript) is gone; the WCA reference builder
   stays, as a maintainer tool with its own test
+
+## Done in 4.1
+
+Not released yet. Version 4.1 adds the wide layout: from 1024 px wide, on a computer or a tablet
+held sideways, the screens use the width, as the 3.x desktop app did. Below 1024 px the phone
+layout is as it was in 4.0.
+
+- [`9e20544`](https://github.com/havl-code/lookahead/commit/9e20544) The tabs in a bar along the
+  top, with each tab centred in a readable column
+- [`4c199cd`](https://github.com/havl-code/lookahead/commit/4c199cd) The Timer in two columns: the
+  scramble and a time as large as the column allows, beside a panel with the session menu,
+  the session's stats, and its latest solves, best and worst marked
+- [`54bf39c`](https://github.com/havl-code/lookahead/commit/54bf39c) Analytics as the Dashboard:
+  the overview as two rows of cards, Scores and Insights side by side, and taller charts in a grid
+- [`a3e1857`](https://github.com/havl-code/lookahead/commit/a3e1857) Sheets sit in the middle of
+  the screen
+- [`d51be54`](https://github.com/havl-code/lookahead/commit/d51be54) A glossary of the app's terms
+  (`CONTEXT.md`) and a record of why both layouts share one set of components
+- Browser tests on a computer's screen (1440 by 900, with a mouse), and a picture of the
+  Dashboard in the README
 
 ---
 
@@ -196,20 +217,19 @@ needed Python and `uv run app.py`. A backup from 3.x restores into it.
 
 ## Now
 
-**A layout for computers.** 4.0 is built phone first: every tab is one column, at most 576 px
-wide, with the tab bar along the bottom. On a computer it works but leaves most of the window
-empty. The 3.x desktop app used the room for a larger timer and a dashboard of charts side by
-side. Which screens change, and how, is being worked out first.
+Nothing is in progress. The next piece of work is picked from the table below.
 
 ## Next
 
-Bigger features, once the basics above are in.
+Bigger features, roughly in order.
 
 | # | What | Why | Size |
 | --- | --- | --- | --- |
-| 1 | Goals and streaks: a daily solve target, days in a row, and a target average | Builds on a session a day, and gives a reason to come back | M |
-| 2 | Random-state scrambles, bundled so they work offline | Matches competition scrambles (Regulation 4b3); needs a scrambler whose licence fits the app's MIT Licence | L |
-| 3 | A world rank model for the whole field, beyond the top 1,000 | Most people are outside the top 1,000, so they see no rank at all today | M |
+| 1 | The Ao5 and Ao12 ending at each solve, in the timer's list of solves | Shows how an average moved solve by solve, as CSTimer's list does | S |
+| 2 | A wide layout for Sessions: a grid of cards, or the list beside the open session | In the wide layout Sessions is still a single column of cards, 768 px wide | M |
+| 3 | Goals and streaks: a daily solve target, days in a row, and a target average | Builds on a session a day, and gives a reason to come back | M |
+| 4 | Random-state scrambles, bundled so they work offline | Matches competition scrambles (Regulation 4b3); needs a scrambler whose licence fits the app's MIT Licence | L |
+| 5 | A world rank model for the whole field, beyond the top 1,000 | Most people are outside the top 1,000, so they see no rank at all today | M |
 
 ## Later
 
@@ -217,11 +237,11 @@ Larger changes to how the app works, each worth a design discussion first.
 
 | # | What | Why | Size |
 | --- | --- | --- | --- |
-| 4 | Timers for every WCA event | Pyraminx, Skewb, Square-1, and Clock need scramblers of their own (3 is a start), and Fewest Moves and Multi-Blind need new flows | L |
-| 5 | Per-event training plans | Turns the insights into a weekly plan you can follow | L |
-| 6 | Stackmat timer support, through the device's audio input | The timer cubers already own and use at competitions | L |
-| 7 | Bluetooth smart cubes, through Web Bluetooth | Move-by-move solve data, but only in Chromium-based browsers | L |
-| 8 | Multiple user profiles | Families and clubs sharing one device | L |
+| 6 | Timers for every WCA event | Pyraminx, Skewb, Square-1, and Clock need scramblers of their own (4 is a start), and Fewest Moves and Multi-Blind need new flows | L |
+| 7 | Per-event training plans | Turns the insights into a weekly plan you can follow | L |
+| 8 | Stackmat timer support, through the device's audio input | The timer cubers already own and use at competitions | L |
+| 9 | Bluetooth smart cubes, through Web Bluetooth | Move-by-move solve data, but only in Chromium-based browsers | L |
+| 10 | Multiple user profiles | Families and clubs sharing one device | L |
 
 ---
 

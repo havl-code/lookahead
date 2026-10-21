@@ -16,9 +16,12 @@ train, and this app helps you track that training. Formerly Speedcube Training E
 
 Lookahead is a speedcubing timer and training tracker that you add to your phone's Home Screen
 (or install on a computer), at **https://havl-code.github.io/lookahead/**. It works offline,
-keeps your solves on your own device, and needs no account.
+keeps your solves on your own device, and needs no account. On a computer or a wide tablet it
+has the wide layout, which uses the width, with the tabs along the top.
 
 <img src="docs/screenshots/phone-app.png" width="840" alt="Lookahead on a phone: the timer with a scramble and today's solves and averages, the sessions list with each day's best, Ao5, Ao12, and mean, and the Analytics tab with the best single, world rank, best averages, and the Speed score">
+
+<img src="docs/screenshots/wide-dashboard.png" width="840" alt="Lookahead on a computer: the Analytics tab as the Dashboard, with the tabs in a bar along the top, a row of cards for the best single, world rank, average, solves, and sessions, a row for the best Ao5 to Ao100, and the Speed, Consistency, and Overall scores beside the insights">
 
 ---
 
@@ -105,6 +108,11 @@ across.
 
 ### 🎨 Look and Feel
 
+- **The wide layout:** from 1024 px wide, on a computer or a tablet held sideways, the tabs
+  move to a bar along the top. The Timer has two columns: a much larger time on the left, and
+  the session's stats and latest solves on the right. Analytics becomes the Dashboard, a grid
+  of cards and larger charts. Sheets open in the middle of the screen. Below 1024 px it's the
+  phone layout, one column with the tabs along the bottom.
 - **Light or dark:** dark by default unless your device is set to light; **Appearance** on the
   More tab keeps it light or dark, or follows the device.
 - **Personalised greeting:** add your WCA ID and the app greets you by name.
@@ -130,6 +138,14 @@ across.
 ---
 
 ## 🆕 What's New
+
+### 4.1
+
+- **A layout for computers and wide tablets.** In the wide layout, from 1024 px wide, the tabs
+  sit in a bar along the top, and the screens use the width: the Timer in two columns, with a
+  much larger time and a list of your solves beside it, and Analytics as the Dashboard, with its
+  cards, scores, insights, and charts in a grid. Sheets, such as a solve's details, open in the
+  middle of the screen. On a phone nothing changes.
 
 ### 4.0
 
@@ -256,8 +272,8 @@ lookahead/
 │   └── lib/               # Stats, scores, events, validation, the WCA rank, and
 │                          #   wca_reference.json, the WCA summary the scores compare with
 ├── public/                # Icons
-├── tests/e2e/             # Browser tests (Playwright), on an iPhone screen
-├── scripts/               # The bundle size check, and screenshots.ts for the README's picture
+├── tests/e2e/             # Browser tests (Playwright), on an iPhone screen and a computer's
+├── scripts/               # The bundle size check, and screenshots.ts for the README's pictures
 ├── tools/                 # Python: rebuilds wca_reference.json each month, and its tests
 ├── docs/
 │   ├── SCORES.md          # How the Analytics scores are worked out
@@ -292,7 +308,7 @@ pnpm check              # Biome lint and format check
 pnpm typecheck          # TypeScript
 pnpm test               # unit tests (Vitest)
 pnpm build && pnpm size # production build and bundle size budget
-pnpm test:e2e           # browser tests in WebKit, on an iPhone screen
+pnpm test:e2e           # browser tests: WebKit on an iPhone screen, Chromium on a computer's
 ```
 
 Playwright's WebKit needs Ubuntu or Debian system libraries; elsewhere, run

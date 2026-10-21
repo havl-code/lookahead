@@ -1,8 +1,9 @@
 /// <reference lib="dom" />
 /*
- * Retakes docs/screenshots/phone-app.png, the README's picture of the app: the Timer, Sessions,
- * and Analytics tabs side by side, in dark mode, on a phone-sized screen. Retake it whenever the
- * UI changes. From the project folder:
+ * Retakes the README's two pictures of the app, in dark mode: docs/screenshots/phone-app.png,
+ * the Timer, Sessions, and Analytics tabs side by side on a phone-sized screen, and
+ * docs/screenshots/wide-dashboard.png, the Dashboard in the wide layout at 1440 by 900. Retake
+ * them whenever the UI changes. From the project folder:
  *
  *   pnpm build && pnpm preview --port 4199 &
  *   node scripts/screenshots.ts http://localhost:4199/lookahead/
@@ -10,13 +11,18 @@
  * The solves are made up (the same every time), and the rankings are faked so the best single
  * shows outside the top 1,000, as the real ones do for it. Nothing is fetched from the internet.
  */
+import { writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
-import { chromium, type Page } from '@playwright/test';
+import { type Browser, type BrowserContextOptions, chromium, type Page } from '@playwright/test';
 
 const url = process.argv[2] ?? 'http://localhost:4199/lookahead/';
-const output = fileURLToPath(new URL('../docs/screenshots/phone-app.png', import.meta.url));
+const phoneOutput = fileURLToPath(new URL('../docs/screenshots/phone-app.png', import.meta.url));
+const wideOutput = fileURLToPath(
+  new URL('../docs/screenshots/wide-dashboard.png', import.meta.url),
+);
 // Each pane is 603 by 1022 pixels (a 402 by 681 screen at 1.5 times), 32 pixels apart.
 const viewport = { width: 402, height: 681 };
+const wideViewport = { width: 1440, height: 900 };
 const scale = 1.5;
 const gap = 32;
 const evening = new Date(2026, 9, 15, 19, 30);
@@ -105,6 +111,41 @@ function backup(): object {
   };
 }
 
+/** A page of its own, with the made-up backup restored and the rankings faked. */
+async function restoredPage(browser: Browser, options: BrowserContextOptions): Promise<Page> {
+  const context = await browser.newContext({
+    ...options,
+    colorScheme: 'dark',
+    // No service worker, so no "ready to work offline" message over the top of the picture.
+    serviceWorkers: 'block',
+  });
+  const page = await context.newPage();
+  await page.clock.setFixedTime(evening);
+  // The WCA's 3x3x3 rankings, faked: 1,000 people from 3.00 to 8.99, so 9.20 is outside them.
+  await page.route('https://raw.githubusercontent.com/**', (route) =>
+    route.fulfill({
+      json: {
+        items: Array.from({ length: 1000 }, (_, i) => ({ best: 300 + i * 0.6 })),
+        total: 250_000,
+      },
+    }),
+  );
+  await page.goto(`${url}#/more`);
+  const chooser = page.waitForEvent('filechooser');
+  await page.getByRole('button', { name: 'Restore from a backup' }).click();
+  await (await chooser).setFiles({
+    name: 'lookahead-backup.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from(JSON.stringify(backup())),
+  });
+  await page
+    .getByRole('dialog', { name: 'Restore backup' })
+    .getByRole('button', { name: 'Restore' })
+    .click();
+  await page.getByText(/^Restored /).waitFor();
+  return page;
+}
+
 async function shoot(page: Page, hash: string, ready: string): Promise<Buffer> {
   // A fresh load for each tab, so nothing is left pressed or focused from the one before.
   await page.goto('about:blank');
@@ -112,45 +153,18 @@ async function shoot(page: Page, hash: string, ready: string): Promise<Buffer> {
   await page.getByText(ready, { exact: false }).first().waitFor();
   await page.evaluate(() => document.fonts.ready);
   // Off to one side, so nothing shows as hovered.
-  await page.mouse.move(viewport.width - 1, viewport.height / 2);
+  const size = page.viewportSize() ?? viewport;
+  await page.mouse.move(size.width - 1, size.height / 2);
   return page.screenshot();
 }
 
 const browser = await chromium.launch();
-const context = await browser.newContext({
+const page = await restoredPage(browser, {
   viewport,
   deviceScaleFactor: scale,
-  colorScheme: 'dark',
   hasTouch: true,
   isMobile: true,
-  // No service worker, so no "ready to work offline" message over the top of the panes.
-  serviceWorkers: 'block',
 });
-const page = await context.newPage();
-await page.clock.setFixedTime(evening);
-// The WCA's 3x3x3 rankings, faked: 1,000 people from 3.00 to 8.99, so 9.20 is outside them.
-await page.route('https://raw.githubusercontent.com/**', (route) =>
-  route.fulfill({
-    json: {
-      items: Array.from({ length: 1000 }, (_, i) => ({ best: 300 + i * 0.6 })),
-      total: 250_000,
-    },
-  }),
-);
-
-await page.goto(`${url}#/more`);
-const chooser = page.waitForEvent('filechooser');
-await page.getByRole('button', { name: 'Restore from a backup' }).click();
-await (await chooser).setFiles({
-  name: 'lookahead-backup.json',
-  mimeType: 'application/json',
-  buffer: Buffer.from(JSON.stringify(backup())),
-});
-await page
-  .getByRole('dialog', { name: 'Restore backup' })
-  .getByRole('button', { name: 'Restore' })
-  .click();
-await page.getByText(/^Restored /).waitFor();
 
 const panes = [
   await shoot(page, '#/timer', 'Mean'),
@@ -174,6 +188,11 @@ await sheet.setContent(
     .join('')}</body>`,
 );
 await sheet.evaluate(() => Promise.all([...document.images].map((img) => img.decode())));
-await sheet.screenshot({ path: output });
+await sheet.screenshot({ path: phoneOutput });
+console.log(`Wrote ${phoneOutput}`);
+
+// The Dashboard, on a computer-sized window with a mouse rather than a touchscreen.
+const wide = await restoredPage(browser, { viewport: wideViewport });
+await writeFile(wideOutput, await shoot(wide, '#/analytics', 'World rank'));
+console.log(`Wrote ${wideOutput}`);
 await browser.close();
-console.log(`Wrote ${output}`);

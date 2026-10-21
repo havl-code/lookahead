@@ -1,6 +1,6 @@
 {
   "name": "lookahead",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "private": true,
   "description": "A speedcubing timer and training tracker that works offline on your phone.",
   "license": "MIT",
