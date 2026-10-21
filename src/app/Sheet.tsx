@@ -2,8 +2,9 @@ import { type ReactNode, useEffect, useId, useRef } from 'react';
 import { CloseIcon } from './icons.tsx';
 
 /**
- * A bottom sheet built on the native modal dialog, which traps focus, closes on Escape, and hides
- * the rest of the page from screen readers while open.
+ * A sheet built on the native modal dialog, which traps focus, closes on Escape, and hides the
+ * rest of the page from screen readers while open. It rises from the bottom in the phone layout
+ * and sits in the middle in the wide layout.
  */
 export function Sheet({
   open,
@@ -36,7 +37,8 @@ export function Sheet({
       onClick={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
-      className="fixed inset-x-0 top-auto bottom-0 m-0 mx-auto max-h-[90dvh] w-full max-w-xl overflow-y-auto rounded-t-3xl bg-raised p-0 text-ink shadow-xl backdrop:bg-black/50"
+      // In the wide layout it's a dialog in the middle of the window, 560 px at most.
+      className="fixed inset-x-0 top-auto bottom-0 m-0 mx-auto max-h-[90dvh] w-full max-w-xl overflow-y-auto rounded-t-3xl bg-raised p-0 text-ink shadow-xl backdrop:bg-black/50 lg:top-0 lg:my-auto lg:max-w-140 lg:rounded-3xl"
     >
       {open && (
         <div className="space-y-4 px-4 pt-4 pb-[max(1.5rem,env(safe-area-inset-bottom))]">

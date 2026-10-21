@@ -396,6 +396,89 @@ test('hides the top bar and the panel in fullscreen, as it hides the tab bar on 
   await expect(nav).toBeVisible();
 });
 
+test('opens a sheet as a dialog in the middle of the window, no wider than 560 px', async ({
+  page,
+}) => {
+  await page.goto('./');
+  await page.getByRole('button', { name: 'Settings' }).click();
+  const sheet = page.getByRole('dialog', { name: 'Timer settings' });
+  await expect(sheet).toBeVisible();
+  const box = await sheet.boundingBox();
+  // About 480 to 560 px wide, as the wide layout's spec (#26) asks.
+  expect(box?.width).toBeLessThanOrEqual(560);
+  expect(box?.width).toBeGreaterThanOrEqual(480);
+  expect(Math.abs((box?.x ?? 0) + (box?.width ?? 0) / 2 - 720)).toBeLessThanOrEqual(1);
+  expect(Math.abs((box?.y ?? 0) + (box?.height ?? 0) / 2 - 450)).toBeLessThanOrEqual(1);
+});
+
+test('closes a sheet with Escape, Close, or a click outside it, and returns focus', async ({
+  page,
+}) => {
+  await page.goto('./');
+  const settings = page.getByRole('button', { name: 'Settings' });
+  const sheet = page.getByRole('dialog', { name: 'Timer settings' });
+  const ways = {
+    Escape: () => page.keyboard.press('Escape'),
+    Close: () => sheet.getByRole('button', { name: 'Close' }).click(),
+    // The top left corner of the window is backdrop, well outside the centred dialog.
+    'a click outside it': () => page.mouse.click(20, 20),
+  };
+  for (const [way, close] of Object.entries(ways)) {
+    await settings.click();
+    await expect(sheet, way).toBeVisible();
+    await close();
+    await expect(sheet, way).toBeHidden();
+    await expect(settings, way).toBeFocused();
+  }
+});
+
+test('moves a sheet to the middle from 1024 px wide, with all its corners rounded', async ({
+  page,
+}) => {
+  await page.goto('./#/sessions');
+  await page.getByRole('button', { name: 'Add session' }).click();
+  const sheet = page.getByRole('dialog', { name: 'Add session' });
+  await expect(sheet).toBeVisible();
+  const corners = () =>
+    sheet.evaluate((element) => {
+      const style = getComputedStyle(element);
+      return [style.borderTopLeftRadius, style.borderBottomRightRadius];
+    });
+
+  await page.setViewportSize({ width: 1024, height: 900 });
+  expect(await corners()).toEqual(['24px', '24px']);
+  const wide = await sheet.boundingBox();
+  expect((wide?.y ?? 0) + (wide?.height ?? 0)).toBeLessThan(900);
+
+  await page.setViewportSize({ width: 1023, height: 900 });
+  expect(await corners()).toEqual(['24px', '0px']);
+  const narrow = await sheet.boundingBox();
+  expect((narrow?.y ?? 0) + (narrow?.height ?? 0)).toBe(900);
+});
+
+test('keeps a sheet open with what was typed when the window narrows and widens again', async ({
+  page,
+}) => {
+  await page.goto('./#/sessions');
+  await page.getByRole('button', { name: 'Add session' }).click();
+  const sheet = page.getByRole('dialog', { name: 'Add session' });
+  const notes = sheet.getByLabel('Notes');
+  await notes.fill('Club night');
+
+  await page.setViewportSize({ width: 800, height: 900 });
+  await expect(sheet).toBeVisible();
+  await expect(notes).toHaveValue('Club night');
+  await expect(notes).toBeFocused();
+  // On the phone layout it rises from the bottom of the window again.
+  const narrow = await sheet.boundingBox();
+  expect((narrow?.y ?? 0) + (narrow?.height ?? 0)).toBe(900);
+
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await expect(notes).toHaveValue('Club night');
+  const wide = await sheet.boundingBox();
+  expect(Math.abs((wide?.y ?? 0) + (wide?.height ?? 0) / 2 - 450)).toBeLessThanOrEqual(1);
+});
+
 for (const colorScheme of ['dark', 'light'] as const) {
   test(`has no detectable WCAG 2.2 AA violations in ${colorScheme} mode`, async ({ page }) => {
     await page.emulateMedia({ colorScheme });
@@ -416,6 +499,19 @@ for (const colorScheme of ['dark', 'light'] as const) {
     await openTimer(page);
     await timeASolve(page, 10_000, 1);
     await timeASolve(page, 12_000, 2);
+    const results = await new AxeBuilder({ page })
+      .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
+      .analyze();
+    expect(results.violations).toEqual([]);
+  });
+
+  test(`has no detectable WCAG 2.2 AA violations with a sheet open, in ${colorScheme} mode`, async ({
+    page,
+  }) => {
+    await page.emulateMedia({ colorScheme });
+    await page.goto('./#/sessions');
+    await page.getByRole('button', { name: 'Add session' }).click();
+    await expect(page.getByRole('dialog', { name: 'Add session' })).toBeVisible();
     const results = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
       .analyze();
