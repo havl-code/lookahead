@@ -19,7 +19,7 @@ import {
 import { defaultTimerSettings } from '../../db/timerSettings.ts';
 import { eventName } from '../../lib/events.ts';
 import { count, formatClock, formatResult } from '../../lib/format.ts';
-import { averageSeconds, singleMark, singleSeconds } from '../../lib/stats.ts';
+import { averageSeconds, type Result, singleMark, singleSeconds } from '../../lib/stats.ts';
 import { requestPersistence } from '../../lib/storage.ts';
 import { localDate } from '../../lib/time.ts';
 import { BackupReminder } from '../backup/BackupReminder.tsx';
@@ -49,12 +49,23 @@ import { useWakeLock } from './useWakeLock.ts';
 
 const recentCount = 12;
 
+// The width of the wide layout's Ao5 and Ao12 columns, room for 1:23.45 at the panel's text size.
+const averageColumn = 'w-16 shrink-0 text-right';
+
 /** A solve's result as the timer shows it: 12.34, 14.34 (+2), or DNF. */
 export function resultText(solve: Pick<Solve, 'time_ms' | 'penalty' | 'dnf'>): string {
   if (solve.dnf) return 'DNF';
   if (solve.penalty === '+2')
     return `${formatClock(singleSeconds(solve.time_ms + 2000) ?? 0)} (+2)`;
   return formatClock(singleSeconds(solve.time_ms) ?? 0);
+}
+
+/**
+ * An Ao5 or Ao12 (`size`) as the timer shows it, where `solveCount` is how many solves the session
+ * has up to it: a dash until there are enough solves for one, DNF for a DNF, or else hundredths.
+ */
+export function averageText(value: Result | undefined, size: number, solveCount: number): string {
+  return value == null && solveCount >= size ? 'DNF' : formatResult(averageSeconds(value ?? null));
 }
 
 /** A solve's penalty, as its buttons show it: a DNF however it's stored, then +2, then OK. */
@@ -569,13 +580,11 @@ function SessionStats({
   if (timing === undefined) return null;
   const session = timing?.session;
   const solveCount = session?.solve_count ?? 0;
-  const average = (value: number | null | undefined, size: number) =>
-    value == null && solveCount >= size ? 'DNF' : formatResult(averageSeconds(value ?? null));
   const stats: ReadonlyArray<readonly [string, string]> = [
     ['Solves', solveCount.toLocaleString('en-NZ')],
     ['Best', formatResult(singleSeconds(session?.best_single ?? null))],
-    ['Ao5', average(session?.ao5, 5)],
-    ['Ao12', average(session?.ao12, 12)],
+    ['Ao5', averageText(session?.ao5, 5, solveCount)],
+    ['Ao12', averageText(session?.ao12, 12, solveCount)],
     ['Mean', formatResult(averageSeconds(session?.session_mean ?? null))],
   ];
 
@@ -598,39 +607,72 @@ function SessionStats({
         ))}
       </dl>
       {timing && timing.solves.length > 0 ? (
-        <ol
-          aria-label="Latest solves"
-          className="flex flex-wrap gap-2 lg:min-h-0 lg:flex-col lg:flex-nowrap lg:overflow-y-auto"
-        >
-          {timing.solves.map((solve) => {
-            const mark = singleMark(solve, timing.session);
-            return (
-              <li key={solve.id}>
-                {/* A wrapped row of results on the phone; in the wide layout, one row each with
-                    the solve's number, and the best and worst marked after the result, in the
-                    same order as the name (WCAG 2.5.3). */}
-                <button
-                  type="button"
-                  onClick={() => onOpen(solve.id)}
-                  aria-label={`Solve ${solve.solve_number}: ${resultText(solve)}${mark ? `, ${mark}` : ''}`}
-                  className="min-h-11 rounded-lg border border-line bg-raised px-3 tabular-nums lg:flex lg:w-full lg:items-center lg:gap-3"
-                >
-                  <span className="hidden text-muted lg:inline">{solve.solve_number}</span>
-                  <span className="lg:ml-auto lg:font-semibold">{resultText(solve)}</span>
-                  {mark && (
-                    <span
-                      className={`hidden text-sm lg:inline ${
-                        mark === 'best' ? 'text-good-ink' : 'text-danger-ink'
-                      }`}
-                    >
-                      {mark}
+        // In the wide layout the header row scrolls with the rows, so a scroll bar narrows both.
+        <div className="lg:min-h-0 lg:overflow-y-auto">
+          {/* Each row's name says which average is which, so the header row is for the eye. */}
+          <div
+            aria-hidden="true"
+            className="sticky top-0 hidden gap-3 border border-transparent bg-surface px-3 pb-1 text-muted text-sm lg:flex lg:justify-end"
+          >
+            <span className={averageColumn}>Ao5</span>
+            <span className={averageColumn}>Ao12</span>
+          </div>
+          <ol
+            aria-label="Latest solves"
+            className="flex flex-wrap gap-2 lg:flex-col lg:flex-nowrap"
+          >
+            {timing.solves.map((solve) => {
+              const mark = singleMark(solve, timing.session);
+              const ao5 = averageText(solve.ao5, 5, solve.solve_number);
+              const ao12 = averageText(solve.ao12, 12, solve.solve_number);
+              return (
+                <li key={solve.id}>
+                  <button
+                    type="button"
+                    onClick={() => onOpen(solve.id)}
+                    className="relative min-h-11 rounded-lg border border-line bg-raised px-3 tabular-nums lg:flex lg:w-full lg:items-center lg:gap-3"
+                  >
+                    {/* The name, as one piece of hidden text so that it reads in the same order
+                        as the row shows it (WCAG 2.5.3). The averages are in it only in the wide
+                        layout, where the row shows them; on the phone it stays as before. */}
+                    <span className="sr-only">
+                      Solve {solve.solve_number}: {resultText(solve)}
+                      {mark && `, ${mark}`}
+                      <span className="hidden lg:inline">
+                        , Ao5 {ao5}, Ao12 {ao12}
+                      </span>
                     </span>
-                  )}
-                </button>
-              </li>
-            );
-          })}
-        </ol>
+                    {/* A wrapped row of results on the phone; in the wide layout, one row each
+                        with the solve's number, the result, and the best and worst marked, then
+                        the Ao5 and Ao12 at the solve under the header row. */}
+                    <span aria-hidden="true" className="hidden text-muted lg:inline">
+                      {solve.solve_number}
+                    </span>
+                    <span aria-hidden="true" className="lg:ml-auto lg:font-semibold">
+                      {resultText(solve)}
+                    </span>
+                    {mark && (
+                      <span
+                        aria-hidden="true"
+                        className={`hidden text-sm lg:inline ${
+                          mark === 'best' ? 'text-good-ink' : 'text-danger-ink'
+                        }`}
+                      >
+                        {mark}
+                      </span>
+                    )}
+                    <span aria-hidden="true" className={`hidden lg:inline ${averageColumn}`}>
+                      {ao5}
+                    </span>
+                    <span aria-hidden="true" className={`hidden lg:inline ${averageColumn}`}>
+                      {ao12}
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ol>
+        </div>
       ) : (
         <p className="text-muted text-sm">
           {!timing

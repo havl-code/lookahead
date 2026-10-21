@@ -1,13 +1,17 @@
 import { useEffect, useState } from 'react';
 import { Field, fieldStyle, secondaryButton } from '../../app/forms.tsx';
 import { Sheet } from '../../app/Sheet.tsx';
+import { useSolveAverages } from '../../db/hooks.ts';
 import type { Solve } from '../../db/schema.ts';
 import { formatMoment } from '../../lib/time.ts';
 import { maxNotes, text } from '../../lib/validation.ts';
 import type { Penalty } from './clock.ts';
-import { PenaltyButtons, resultText } from './TimerScreen.tsx';
+import { averageText, PenaltyButtons, resultText } from './TimerScreen.tsx';
 
-/** One solve: its result, scramble, and when, with its penalty, notes, and Delete. */
+/**
+ * One solve: its result, when, the Ao5 and Ao12 at it, and its scramble, with its penalty, notes,
+ * and Delete.
+ */
 export function SolveSheet({
   solve,
   onClose,
@@ -21,6 +25,9 @@ export function SolveSheet({
   readonly onNotes: (solve: Solve, notes: string) => Promise<void>;
   readonly onDelete: (solve: Solve) => void;
 }) {
+  // Left blank until they're worked out for this solve, rather than showing another solve's.
+  const loaded = useSolveAverages(solve);
+  const averages = loaded && loaded.id === solve?.id ? loaded : undefined;
   return (
     <Sheet
       open={solve !== null}
@@ -31,6 +38,21 @@ export function SolveSheet({
         <div className="space-y-4">
           <p className="font-semibold text-4xl tabular-nums">{resultText(solve)}</p>
           {solve.timestamp && <p className="text-muted text-sm">{formatMoment(solve.timestamp)}</p>}
+          <dl className="flex gap-6 text-sm">
+            {(
+              [
+                ['Ao5', averages?.ao5, 5],
+                ['Ao12', averages?.ao12, 12],
+              ] as const
+            ).map(([label, value, size]) => (
+              <div key={label}>
+                <dt className="text-muted">{label}</dt>
+                <dd className="font-semibold tabular-nums">
+                  {averages && averageText(value, size, solve.solve_number)}
+                </dd>
+              </div>
+            ))}
+          </dl>
           {solve.scramble && <p className="whitespace-pre-line break-words">{solve.scramble}</p>}
           <div className="flex flex-wrap items-center gap-2">
             <PenaltyButtons solve={solve} onChange={(penalty) => onPenalty(solve, penalty)} />

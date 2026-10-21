@@ -5,7 +5,13 @@ import { useDb } from './DbProvider.tsx';
 import type { LookaheadDb, SafetyCopy } from './database.ts';
 import { getMeta, type Meta } from './meta.ts';
 import type { Cube, Session, Solve } from './schema.ts';
-import { latestSolves, type SolveSort, sessionSolves, timerSession } from './solves.ts';
+import {
+  type SolveSort,
+  type SolveWithAverages,
+  sessionSolves,
+  solvesWithAverages,
+  timerSession,
+} from './solves.ts';
 import {
   latestSafetyCopy,
   type StoredCounts,
@@ -138,21 +144,34 @@ export function useTimerSettings(): TimerSettings | undefined {
 }
 
 /**
- * The session the timer times into, with its latest `limit` solves, newest first: the one picked
- * on the timer while it still exists, or else the event's session for today. Null when today's
- * first solve hasn't been timed yet. Undefined while loading.
+ * The session the timer times into, with its latest `limit` solves, newest first, each with the
+ * Ao5 and Ao12 at it: the one picked on the timer while it still exists, or else the event's
+ * session for today. Null when today's first solve hasn't been timed yet. Undefined while loading.
  */
 export function useTimerSession(
   eventId: string,
   today: string,
   pickedId: number | null,
   limit: number,
-): { readonly session: Session; readonly solves: Solve[] } | null | undefined {
+): { readonly session: Session; readonly solves: SolveWithAverages[] } | null | undefined {
   const db = useDb();
   return useLiveQuery(async () => {
     const session = await timerSession(db, eventId, pickedId, today);
-    return session ? { session, solves: await latestSolves(db, session.id, limit) } : null;
+    return session ? { session, solves: await solvesWithAverages(db, session.id, limit) } : null;
   }, [db, eventId, today, pickedId, limit]);
+}
+
+/** A solve with the Ao5 and Ao12 at it, for its sheet. Undefined while loading. */
+export function useSolveAverages(
+  solve: Pick<Solve, 'session_id' | 'solve_number'> | null,
+): SolveWithAverages | undefined {
+  const db = useDb();
+  const sessionId = solve?.session_id;
+  const solveNumber = solve?.solve_number;
+  return useLiveQuery(async () => {
+    if (sessionId === undefined || solveNumber === undefined) return undefined;
+    return (await solvesWithAverages(db, sessionId, 1, solveNumber))[0];
+  }, [db, sessionId, solveNumber]);
 }
 
 /** How many solves were timed since the last backup, and when the first of them was. */

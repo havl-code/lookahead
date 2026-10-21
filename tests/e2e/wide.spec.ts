@@ -272,16 +272,12 @@ test('lists the latest solves in a panel to the right of the time, newest first'
   expect(menu?.x).toBe(panel?.x);
   expect((menu?.y ?? 0) + (menu?.height ?? 0)).toBeLessThanOrEqual(panel?.y ?? 0);
 
-  // One row each, newest first, the best and the worst named.
+  // One row each, newest first, the best and the worst named, then the Ao5 and Ao12 at the solve.
   const rows = today.getByRole('list', { name: 'Latest solves' }).getByRole('button');
-  const names = await rows.evaluateAll((buttons) =>
-    buttons.map((button) => button.getAttribute('aria-label')),
-  );
-  expect(names).toEqual([
-    expect.stringMatching(/^Solve 3: 11\.[01]\d$/),
-    expect.stringMatching(/^Solve 2: 12\.[01]\d, worst$/),
-    expect.stringMatching(/^Solve 1: 10\.[01]\d, best$/),
-  ]);
+  await expect(rows).toHaveCount(3);
+  await expect(rows.nth(0)).toHaveAccessibleName(/^Solve 3: 11\.[01]\d, Ao5 -, Ao12 -$/);
+  await expect(rows.nth(1)).toHaveAccessibleName(/^Solve 2: 12\.[01]\d, worst, Ao5 -, Ao12 -$/);
+  await expect(rows.nth(2)).toHaveAccessibleName(/^Solve 1: 10\.[01]\d, best, Ao5 -, Ao12 -$/);
   await expect(rows.nth(0)).toContainText('3');
   await expect(rows.nth(1)).toContainText('worst');
   await expect(rows.nth(2)).toContainText('best');
@@ -289,6 +285,51 @@ test('lists the latest solves in a panel to the right of the time, newest first'
   for (const box of boxes) expect(box?.width).toBe(panel?.width);
   expect(boxes[0]?.y ?? 0).toBeLessThan(boxes[1]?.y ?? 0);
   expect(boxes[1]?.y ?? 0).toBeLessThan(boxes[2]?.y ?? 0);
+});
+
+test('shows the Ao5 and Ao12 at each solve under one header row, as the header counts them', async ({
+  page,
+}) => {
+  await openTimer(page);
+  for (const [i, ms] of [10_000, 12_000, 11_000, 13_000, 9_000].entries()) {
+    await timeASolve(page, ms, i + 1);
+  }
+
+  // The Ao5 at solve 5 drops the 9 and the 13; the others' windows haven't filled.
+  const today = page.getByRole('region', { name: 'Today' });
+  const rows = today.getByRole('list', { name: 'Latest solves' }).getByRole('button');
+  await expect(rows.nth(0)).toHaveAccessibleName(/^Solve 5: 9\.[01]\d, best, Ao5 11\.0\d, Ao12 -$/);
+  await expect(rows.nth(1)).toHaveAccessibleName(/^Solve 4: 13\.[01]\d, worst, Ao5 -, Ao12 -$/);
+  await expect(rows.nth(4)).toHaveAccessibleName(/^Solve 1: 10\.[01]\d, Ao5 -, Ao12 -$/);
+
+  // "Ao5" and "Ao12" once above the rows, each lined up with its column.
+  for (const [label, value] of [
+    ['Ao5', /^11\.0\d$/],
+    ['Ao12', '-'],
+  ] as const) {
+    const heading = today.getByText(label, { exact: true }).last();
+    const cell = rows.nth(0).getByText(value, { exact: true });
+    const [headingBox, cellBox, rowBox] = await Promise.all([
+      heading.boundingBox(),
+      cell.boundingBox(),
+      rows.nth(0).boundingBox(),
+    ]);
+    expect((headingBox?.y ?? 0) + (headingBox?.height ?? 0)).toBeLessThanOrEqual(rowBox?.y ?? 0);
+    expect((headingBox?.x ?? 0) + (headingBox?.width ?? 0)).toBeCloseTo(
+      (cellBox?.x ?? 0) + (cellBox?.width ?? 0),
+      0,
+    );
+  }
+
+  // Two DNFs in the window make the Ao5 a DNF (Regulation 9f9), in the row as in the header.
+  await page.keyboard.press('Control+3');
+  await expect(rows.nth(0)).toHaveAccessibleName(/^Solve 5: DNF, Ao5 12\.0\d, Ao12 -$/);
+  await rows.nth(1).click();
+  const sheet = page.getByRole('dialog', { name: 'Solve 4' });
+  await sheet.getByRole('button', { name: 'DNF' }).click();
+  await sheet.getByRole('button', { name: 'Close' }).click();
+  await expect(rows.nth(0)).toHaveAccessibleName('Solve 5: DNF, Ao5 DNF, Ao12 -');
+  await expect(today.getByRole('definition').nth(2)).toHaveText('DNF');
 });
 
 test('opens the solve sheet from a row, where penalty, note, and delete work', async ({ page }) => {
@@ -309,7 +350,7 @@ test('opens the solve sheet from a row, where penalty, note, and delete work', a
   // The session renumbers, so the 12 second solve is Solve 1 now, and the only row.
   const rows = page.getByRole('list', { name: 'Latest solves' }).getByRole('button');
   await expect(rows).toHaveCount(1);
-  await expect(rows).toHaveAccessibleName(/^Solve 1: 12\.[01]\d$/);
+  await expect(rows).toHaveAccessibleName(/^Solve 1: 12\.[01]\d, Ao5 -, Ao12 -$/);
 });
 
 test('fits a time of 1:23.45 inside its column, on one line', async ({ page }) => {
@@ -377,7 +418,9 @@ test('keeps a solve running when the window narrows to the phone layout and wide
   await expect(page.getByRole('status').filter({ hasText: 'saved' })).toHaveText(
     /^12\.[34]\d, saved\.$/,
   );
-  await expect(page.getByRole('button', { name: /^Solve 1: 12\.[34]\d$/ })).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: /^Solve 1: 12\.[34]\d, Ao5 -, Ao12 -$/ }),
+  ).toBeVisible();
 });
 
 test('hides the top bar and the panel in fullscreen, as it hides the tab bar on a phone', async ({

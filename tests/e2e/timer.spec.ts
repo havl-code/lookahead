@@ -1,5 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, type Page, test } from '@playwright/test';
+import { restore } from './practice.ts';
 
 // The page's clock is faked, so inspection and solves take no real time. It keeps ticking between
 // steps (pausing it would also pause the app's own saving), so times can come out a few
@@ -182,6 +183,35 @@ test('times into a session picked from the menu, or a new one', async ({ page })
   // The slower of the two is the session's worst, and its name says so.
   await expect(page.getByRole('button', { name: /^Solve 2: 12\.[01]\d, worst$/ })).toBeVisible();
   await expect(session.locator('option:checked')).toHaveText('Today (2 solves)');
+});
+
+test("shows the Ao5 and Ao12 at a solve in its sheet, not in the phone's chips", async ({
+  page,
+}) => {
+  await timeASolve(page, 3_000, 10_000);
+  const solves = page.getByRole('list', { name: 'Latest solves' });
+  await expect(solves.getByRole('button')).toHaveAccessibleName(/^Solve 1: 10\.[01]\d$/);
+  // The chips show only the result: the averages and their header row are in the page, unseen.
+  await expect(solves.getByText('-', { exact: true })).toHaveCount(2);
+  await expect(solves.getByText('-', { exact: true }).filter({ visible: true })).toHaveCount(0);
+  await expect(page.getByText('Ao12', { exact: true }).filter({ visible: true })).toHaveCount(1);
+
+  // Before their windows fill, the sheet shows a dash for both.
+  await solves.getByRole('button').click();
+  const sheet = page.getByRole('dialog', { name: 'Solve 1' });
+  await expect(sheet.getByRole('term')).toHaveText(['Ao5', 'Ao12']);
+  await expect(sheet.getByRole('definition')).toHaveText(['-', '-']);
+});
+
+test('shows the Ao5 and Ao12 at a solve of a session picked from the menu', async ({ page }) => {
+  await restore(page);
+  await page.goto('./');
+  await page.getByLabel('Session').selectOption({ label: '12 Oct 2026 (25 solves)' });
+  await page.getByRole('button', { name: /^Solve 14: / }).click();
+  // Solve 14 of the practice backup's 12 October: its Ao5 drops solve 13's DNF as the worst
+  // (Regulation 9f8), and its Ao12 drops the DNF and the best, solve 9's 12.60.
+  const sheet = page.getByRole('dialog', { name: 'Solve 14' });
+  await expect(sheet.getByRole('definition')).toHaveText(['13.44', '13.71']);
 });
 
 test('hides all but the scramble and time in fullscreen, as the desktop does', async ({ page }) => {
