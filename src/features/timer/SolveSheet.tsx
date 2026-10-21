@@ -6,7 +6,7 @@ import type { Solve } from '../../db/schema.ts';
 import { formatMoment } from '../../lib/time.ts';
 import { maxNotes, text } from '../../lib/validation.ts';
 import type { Penalty } from './clock.ts';
-import { averageText, PenaltyButtons, resultText } from './TimerScreen.tsx';
+import { averageText, PenaltyButtons, resultText, timerAverages } from './TimerScreen.tsx';
 
 /**
  * One solve: its result, when, the Ao5 and Ao12 at it, and its scramble, with its penalty, notes,
@@ -39,16 +39,11 @@ export function SolveSheet({
           <p className="font-semibold text-4xl tabular-nums">{resultText(solve)}</p>
           {solve.timestamp && <p className="text-muted text-sm">{formatMoment(solve.timestamp)}</p>}
           <dl className="flex gap-6 text-sm">
-            {(
-              [
-                ['Ao5', averages?.ao5, 5],
-                ['Ao12', averages?.ao12, 12],
-              ] as const
-            ).map(([label, value, size]) => (
+            {timerAverages.map(({ label, key, size }) => (
               <div key={label}>
                 <dt className="text-muted">{label}</dt>
                 <dd className="font-semibold tabular-nums">
-                  {averages && averageText(value, size, solve.solve_number)}
+                  {averages && averageText(averages[key], size, solve.solve_number)}
                 </dd>
               </div>
             ))}

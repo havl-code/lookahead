@@ -216,9 +216,9 @@ export type SolveWithAverages = Solve & { readonly ao5: Result; readonly ao12: R
 
 /**
  * A session's `limit` solves ending at solve `endAt` (its latest by default), newest first, each
- * with the Ao5 and Ao12 at it. It reads the 11 solves before the oldest one returned too, so that
- * one's Ao12 is whole, and never reads beyond the session. The Ao12 drops one result from each
- * end, as the Ao5 does (Regulation 9f8); that's a community convention, not a WCA rule.
+ * with the Ao5 and Ao12 at it. It reads the solves before the oldest one returned too, enough for
+ * that one's Ao12 to be whole, and never reads beyond the session. The Ao12 drops one result from
+ * each end, as the Ao5 does (Regulation 9f8); that's a community convention, not a WCA rule.
  */
 export async function solvesWithAverages(
   db: LookaheadDb,
@@ -226,17 +226,19 @@ export async function solvesWithAverages(
   limit: number,
   endAt?: number,
 ): Promise<SolveWithAverages[]> {
+  const ao5Size = 5;
+  const ao12Size = 12;
   const solves = (
     await db.solves
       .where('[session_id+solve_number]')
       .between([sessionId, Dexie.minKey], [sessionId, endAt ?? Dexie.maxKey], true, true)
       .reverse()
-      .limit(limit + 11)
+      .limit(limit + ao12Size - 1)
       .toArray()
   ).reverse();
   const results = solves.map(resultMs);
-  const ao5 = rollingWcaAverages(results, 5);
-  const ao12 = rollingWcaAverages(results, 12);
+  const ao5 = rollingWcaAverages(results, ao5Size);
+  const ao12 = rollingWcaAverages(results, ao12Size);
   return solves
     .map((solve, i) => ({ ...solve, ao5: ao5[i] ?? null, ao12: ao12[i] ?? null }))
     .slice(-limit)

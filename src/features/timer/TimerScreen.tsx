@@ -61,11 +61,21 @@ export function resultText(solve: Pick<Solve, 'time_ms' | 'penalty' | 'dnf'>): s
 }
 
 /**
- * An Ao5 or Ao12 (`size`) as the timer shows it, where `solveCount` is how many solves the session
- * has up to it: a dash until there are enough solves for one, DNF for a DNF, or else hundredths.
+ * The averages the timer shows for a session and at each solve: each one's name, the field that
+ * holds it (on a session, or on a solve from solvesWithAverages), and how many solves it takes.
  */
-export function averageText(value: Result | undefined, size: number, solveCount: number): string {
-  return value == null && solveCount >= size ? 'DNF' : formatResult(averageSeconds(value ?? null));
+export const timerAverages = [
+  { label: 'Ao5', key: 'ao5', size: 5 },
+  { label: 'Ao12', key: 'ao12', size: 12 },
+] as const;
+
+/**
+ * An Ao5 or Ao12 (`size`) as the timer shows it, where `solvesSoFar` is how many solves the session
+ * has up to and including the one it ends at (a solve's number, or the session's count for its
+ * latest): a dash until there are enough solves for one, DNF for a DNF, or else hundredths.
+ */
+export function averageText(value: Result | undefined, size: number, solvesSoFar: number): string {
+  return value == null && solvesSoFar >= size ? 'DNF' : formatResult(averageSeconds(value ?? null));
 }
 
 /** A solve's penalty, as its buttons show it: a DNF however it's stored, then +2, then OK. */
@@ -583,8 +593,9 @@ function SessionStats({
   const stats: ReadonlyArray<readonly [string, string]> = [
     ['Solves', solveCount.toLocaleString('en-NZ')],
     ['Best', formatResult(singleSeconds(session?.best_single ?? null))],
-    ['Ao5', averageText(session?.ao5, 5, solveCount)],
-    ['Ao12', averageText(session?.ao12, 12, solveCount)],
+    ...timerAverages.map(
+      ({ label, key, size }) => [label, averageText(session?.[key], size, solveCount)] as const,
+    ),
     ['Mean', formatResult(averageSeconds(session?.session_mean ?? null))],
   ];
 
@@ -614,8 +625,11 @@ function SessionStats({
             aria-hidden="true"
             className="sticky top-0 hidden gap-3 border border-transparent bg-surface px-3 pb-1 text-muted text-sm lg:flex lg:justify-end"
           >
-            <span className={averageColumn}>Ao5</span>
-            <span className={averageColumn}>Ao12</span>
+            {timerAverages.map(({ label }) => (
+              <span key={label} className={averageColumn}>
+                {label}
+              </span>
+            ))}
           </div>
           <ol
             aria-label="Latest solves"
@@ -623,8 +637,10 @@ function SessionStats({
           >
             {timing.solves.map((solve) => {
               const mark = singleMark(solve, timing.session);
-              const ao5 = averageText(solve.ao5, 5, solve.solve_number);
-              const ao12 = averageText(solve.ao12, 12, solve.solve_number);
+              const averages = timerAverages.map(({ label, key, size }) => ({
+                label,
+                text: averageText(solve[key], size, solve.solve_number),
+              }));
               return (
                 <li key={solve.id}>
                   <button
@@ -639,7 +655,7 @@ function SessionStats({
                       Solve {solve.solve_number}: {resultText(solve)}
                       {mark && `, ${mark}`}
                       <span className="hidden lg:inline">
-                        , Ao5 {ao5}, Ao12 {ao12}
+                        {averages.map(({ label, text }) => `, ${label} ${text}`).join('')}
                       </span>
                     </span>
                     {/* A wrapped row of results on the phone; in the wide layout, one row each
@@ -661,12 +677,15 @@ function SessionStats({
                         {mark}
                       </span>
                     )}
-                    <span aria-hidden="true" className={`hidden lg:inline ${averageColumn}`}>
-                      {ao5}
-                    </span>
-                    <span aria-hidden="true" className={`hidden lg:inline ${averageColumn}`}>
-                      {ao12}
-                    </span>
+                    {averages.map(({ label, text }) => (
+                      <span
+                        key={label}
+                        aria-hidden="true"
+                        className={`hidden lg:inline ${averageColumn}`}
+                      >
+                        {text}
+                      </span>
+                    ))}
                   </button>
                 </li>
               );
