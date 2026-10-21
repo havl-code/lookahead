@@ -1,5 +1,6 @@
 import Dexie from 'dexie';
 import type { Penalty } from '../features/timer/clock.ts';
+import { type Result, resultMs, rollingWcaAverages } from '../lib/stats.ts';
 import { localDate } from '../lib/time.ts';
 import type { LookaheadDb } from './database.ts';
 import { withStorageErrors } from './errors.ts';
@@ -208,6 +209,38 @@ export async function latestSolves(
   limit: number,
 ): Promise<Solve[]> {
   return solvesOf(db, sessionId).reverse().limit(limit).toArray();
+}
+
+/** A solve with the Ao5 and Ao12 at it, in ms: null before its window fills, or for a DNF. */
+export type SolveWithAverages = Solve & { readonly ao5: Result; readonly ao12: Result };
+
+/**
+ * A session's `limit` solves ending at solve `endAt` (its latest by default), newest first, each
+ * with the Ao5 and Ao12 at it. It reads the 11 solves before the oldest one returned too, so that
+ * one's Ao12 is whole, and never reads beyond the session. The Ao12 drops one result from each
+ * end, as the Ao5 does (Regulation 9f8); that's a community convention, not a WCA rule.
+ */
+export async function solvesWithAverages(
+  db: LookaheadDb,
+  sessionId: number,
+  limit: number,
+  endAt?: number,
+): Promise<SolveWithAverages[]> {
+  const solves = (
+    await db.solves
+      .where('[session_id+solve_number]')
+      .between([sessionId, Dexie.minKey], [sessionId, endAt ?? Dexie.maxKey], true, true)
+      .reverse()
+      .limit(limit + 11)
+      .toArray()
+  ).reverse();
+  const results = solves.map(resultMs);
+  const ao5 = rollingWcaAverages(results, 5);
+  const ao12 = rollingWcaAverages(results, 12);
+  return solves
+    .map((solve, i) => ({ ...solve, ao5: ao5[i] ?? null, ao12: ao12[i] ?? null }))
+    .slice(-limit)
+    .reverse();
 }
 
 /** Changes a solve's notes (already checked). They don't change any stats. */

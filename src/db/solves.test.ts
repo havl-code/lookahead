@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import type { Penalty } from '../features/timer/clock.ts';
 import { createTestDb } from '../test/db.ts';
 import type { LookaheadDb } from './database.ts';
 import {
@@ -7,6 +8,7 @@ import {
   restoreSolve,
   saveTimedSolve,
   setPenalty,
+  solvesWithAverages,
   startTimerSession,
 } from './solves.ts';
 import { getTimerSettings, parseTimerSettings, updateTimerSettings } from './timerSettings.ts';
@@ -20,7 +22,7 @@ async function time(
   timeMs: number,
   at = morning,
   eventId = '333',
-  penalty = 'OK' as const,
+  penalty: Penalty = 'OK',
 ) {
   return saveTimedSolve(db, { eventId, timeMs, penalty, scramble: "R U R' U'" }, at);
 }
@@ -158,6 +160,120 @@ describe('changing solves', () => {
     await deleteSolve(db, a.solveId);
     await restoreSolve(db, deleted as NonNullable<typeof deleted>);
     expect(await numbers(db, a.sessionId)).toEqual([[1, 11_000]]);
+  });
+});
+
+/** Times a day's solves in order, a time in ms or a DNF each. Returns their session and ids. */
+async function timeAll(db: LookaheadDb, results: readonly (number | 'DNF')[], at = morning) {
+  const ids: number[] = [];
+  let sessionId = 0;
+  for (const result of results) {
+    const dnf = result === 'DNF';
+    const saved = await time(db, dnf ? 10_000 : result, at, '333', dnf ? 'DNF' : 'OK');
+    ids.push(saved.solveId);
+    sessionId = saved.sessionId;
+  }
+  return { sessionId, ids };
+}
+
+/** Solves 1 to `count`, each a tenth of a second slower than the one before, from 10.10. */
+const steadily = (count: number) => Array.from({ length: count }, (_, i) => 10_000 + (i + 1) * 100);
+
+/** Each solve's number with the Ao5 and Ao12 at it, oldest first. */
+const averages = async (db: LookaheadDb, sessionId: number, limit: number, endAt?: number) =>
+  (await solvesWithAverages(db, sessionId, limit, endAt))
+    .map((s) => [s.solve_number, s.ao5, s.ao12])
+    .reverse();
+
+describe('the Ao5 and Ao12 at each solve', () => {
+  it('has none until the window fills', async () => {
+    const db = createTestDb();
+    const { sessionId } = await timeAll(db, [10_000, 11_000, 12_000, 13_000, 14_000]);
+    expect(await averages(db, sessionId, 12)).toEqual([
+      [1, null, null],
+      [2, null, null],
+      [3, null, null],
+      [4, null, null],
+      [5, 12_000, null],
+    ]);
+  });
+
+  it('drops one DNF as the worst result, and makes two a DNF (9f8, 9f9)', async () => {
+    const db = createTestDb();
+    const { sessionId } = await timeAll(db, [10_000, 11_000, 'DNF', 12_000, 13_000, 'DNF']);
+    // The Ao5 at solve 5 drops the 10 and the DNF; at solve 6 there are two DNFs.
+    expect(await averages(db, sessionId, 2)).toEqual([
+      [5, 12_000, null],
+      [6, null, null],
+    ]);
+  });
+
+  it('gives the oldest of the latest 12 its Ao12, from the 11 solves before it', async () => {
+    const db = createTestDb();
+    const { sessionId } = await timeAll(db, steadily(30));
+    const latest = await averages(db, sessionId, 12);
+    expect(latest).toHaveLength(12);
+    // The Ao5 at solve 19 is the mean of solves 16 to 18, and its Ao12 the mean of 9 to 18.
+    expect(latest[0]).toEqual([19, 11_700, 11_350]);
+    expect(latest[11]).toEqual([30, 12_800, 12_450]);
+  });
+
+  it('ends at a given solve, as its sheet shows it', async () => {
+    const db = createTestDb();
+    const { sessionId } = await timeAll(db, steadily(30));
+    expect(await averages(db, sessionId, 1, 19)).toEqual([[19, 11_700, 11_350]]);
+    expect(await averages(db, sessionId, 1, 3)).toEqual([[3, null, null]]);
+  });
+
+  it("never counts another session's solves", async () => {
+    const db = createTestDb();
+    await timeAll(db, steadily(12));
+    const { sessionId } = await timeAll(db, [10_000, 11_000, 12_000, 13_000], tomorrow);
+    expect(await averages(db, sessionId, 12)).toEqual([
+      [1, null, null],
+      [2, null, null],
+      [3, null, null],
+      [4, null, null],
+    ]);
+  });
+
+  it("matches the session's own Ao5 and Ao12 at its latest solve", async () => {
+    const db = createTestDb();
+    const { sessionId, ids } = await timeAll(db, [...steadily(10), 'DNF', 9_000, 15_000, 12_340]);
+    await setPenalty(db, ids[12] as number, '+2');
+    const [latest] = await solvesWithAverages(db, sessionId, 12);
+    const session = await db.sessions.get(sessionId);
+    expect(session?.ao5).toEqual(expect.any(Number));
+    expect(session?.ao12).toEqual(expect.any(Number));
+    expect([latest?.ao5, latest?.ao12]).toEqual([session?.ao5, session?.ao12]);
+  });
+
+  it('changes the averages after a solve when its penalty changes, or it goes', async () => {
+    const db = createTestDb();
+    const { sessionId, ids } = await timeAll(db, [10_000, 13_000, 16_000, 19_000, 22_000, 25_000]);
+    expect(await averages(db, sessionId, 2)).toEqual([
+      [5, 16_000, null],
+      [6, 19_000, null],
+    ]);
+
+    // A DNF for solve 3 is dropped as the worst, so the 16 no longer counts and the 22 or 25 does.
+    await setPenalty(db, ids[2] as number, 'DNF');
+    expect(await averages(db, sessionId, 2)).toEqual([
+      [5, 18_000, null],
+      [6, 22_000, null],
+    ]);
+
+    const deleted = await deleteSolve(db, ids[0] as number);
+    expect(await averages(db, sessionId, 2)).toEqual([
+      [4, null, null],
+      [5, 22_000, null],
+    ]);
+
+    await restoreSolve(db, deleted as NonNullable<typeof deleted>);
+    expect(await averages(db, sessionId, 2)).toEqual([
+      [5, 18_000, null],
+      [6, 22_000, null],
+    ]);
   });
 });
 
