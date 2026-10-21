@@ -309,6 +309,7 @@ pnpm typecheck          # TypeScript
 pnpm test               # unit tests (Vitest)
 pnpm build && pnpm size # production build and bundle size budget
 pnpm test:e2e           # browser tests: WebKit on an iPhone screen, Chromium on a computer's
+pnpm screenshots        # retake the README's pictures
 ```
 
 Playwright's WebKit needs Ubuntu or Debian system libraries; elsewhere, run

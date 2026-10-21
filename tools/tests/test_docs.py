@@ -1,5 +1,5 @@
 """The docs: every relative link and heading anchor works, and the writing follows the
-project's style (NZ English, with no em or en dashes)."""
+project's style (NZ English, with no em or en dashes, in the glossary's terms)."""
 
 import json
 import re
@@ -93,6 +93,26 @@ def test_prose_and_comments_are_wrapped_at_100(path):
 @pytest.mark.parametrize('doc', DOCS, ids=lambda p: p.name)
 def test_docs_use_nz_spelling(doc):
     assert re.findall(US_SPELLINGS, prose(doc.read_text(encoding='utf-8')), re.I) == []
+
+
+def avoided_phrases():
+    """The glossary's _Avoid_ terms of more than one word, such as "desktop layout". Single
+    words (page, view, home) are everyday English, so a review judges those instead."""
+    context = (PROJECT_DIR / 'CONTEXT.md').read_text(encoding='utf-8')
+    terms = (term.strip() for line in re.findall(r'^_Avoid_:(.*)$', context, re.M)
+             for term in re.sub(r'\([^)]*\)', '', line).split(','))
+    return sorted({term for term in terms if ' ' in term})
+
+
+def test_the_glossary_has_avoided_phrases():
+    assert 'desktop layout' in avoided_phrases()
+
+
+@pytest.mark.parametrize('doc', [doc for doc in DOCS if doc.name != 'CONTEXT.md'], ids=lambda p: p.name)
+def test_docs_use_the_glossary_terms(doc):
+    text = prose(doc.read_text(encoding='utf-8'))
+    assert [phrase for phrase in avoided_phrases()
+            if re.search(r'\b' + re.escape(phrase) + r'\b', text, re.I)] == []
 
 
 def test_docs_quote_the_current_wca_reference():

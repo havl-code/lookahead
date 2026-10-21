@@ -1,7 +1,8 @@
 # Coding Standards
 
 The judgement calls a review checks in a diff. Mechanical rules live in the checks instead:
-Biome, `tsc`, and `tools/tests/test_docs.py` (dashes, NZ spelling, links, and the wrap at 100).
+Biome, `tsc`, and `tools/tests/test_docs.py` (dashes, NZ spelling, links, the wrap at 100, and
+the glossary's avoided phrases).
 
 ## Re-entry
 
@@ -24,6 +25,12 @@ Statistics, scores, backups, and CSV were ported from the 3.x desktop app, and t
   make a test pass; a real change of behaviour is the owner's call (see `docs/SCORES.md`).
 - A comment naming where code came from says "the 3.x desktop app's" and its path, such as
   `speedcube/cstimer.py` or `web/js/charts.js`.
+
+## Docs
+
+- Docs and comments describe the app in `CONTEXT.md`'s terms. The check catches the avoided
+  phrases; a review catches the single words it lists (page, view, home, modal, and so on)
+  where they stand in for a glossary term.
 
 ## Tests
 

@@ -3,10 +3,9 @@
  * Retakes the README's two pictures of the app, in dark mode: docs/screenshots/phone-app.png,
  * the Timer, Sessions, and Analytics tabs side by side on a phone-sized screen, and
  * docs/screenshots/wide-dashboard.png, the Dashboard in the wide layout at 1440 by 900. Retake
- * them whenever the UI changes. From the project folder:
- *
- *   pnpm build && pnpm preview --port 4199 &
- *   node scripts/screenshots.ts http://localhost:4199/lookahead/
+ * them whenever the UI changes, with `pnpm screenshots`: it builds the app, serves the build
+ * with Vite's preview server, takes both, and stops the server. Given a URL instead
+ * (`node scripts/screenshots.ts http://localhost:4199/lookahead/`), it uses that server.
  *
  * The solves are made up (the same every time), and the rankings are faked so the best single
  * shows outside the top 1,000, as the real ones do for it. Nothing is fetched from the internet.
@@ -14,8 +13,12 @@
 import { writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { type Browser, type BrowserContextOptions, chromium, type Page } from '@playwright/test';
+import { preview } from 'vite';
 
-const url = process.argv[2] ?? 'http://localhost:4199/lookahead/';
+// Without a URL, serve the build here, on any free port, until the pictures are taken.
+const server = process.argv[2] ? null : await preview({ preview: { port: 0 } });
+const url = process.argv[2] ?? server?.resolvedUrls?.local[0];
+if (!url) throw new Error('The preview server gave no URL.');
 const phoneOutput = fileURLToPath(new URL('../docs/screenshots/phone-app.png', import.meta.url));
 const wideOutput = fileURLToPath(
   new URL('../docs/screenshots/wide-dashboard.png', import.meta.url),
@@ -196,3 +199,4 @@ const wide = await restoredPage(browser, { viewport: wideViewport });
 await writeFile(wideOutput, await shoot(wide, '#/analytics', 'World rank'));
 console.log(`Wrote ${wideOutput}`);
 await browser.close();
+await server?.close();
