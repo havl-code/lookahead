@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { importCsTimer } from '../features/import/cstimer.ts';
 import { createTestDb } from '../test/db.ts';
+import { deferred, holdNextCall } from '../test/gate.ts';
 import { SolveEditing } from './solveEditing.ts';
 import {
   addSolve,
@@ -54,16 +55,6 @@ describe('independent timed saves', () => {
     ]);
   });
 });
-
-function deferred() {
-  let resolve!: () => void;
-  let reject!: (reason: Error) => void;
-  const promise = new Promise<void>((yes, no) => {
-    resolve = yes;
-    reject = no;
-  });
-  return { promise, resolve, reject };
-}
 
 describe('save recovery', () => {
   it('requires a replacement from the original event and retains it across another deletion', async () => {
@@ -123,14 +114,11 @@ describe('save recovery', () => {
     saving.discard(a);
     expect(saving.getAttempts().map((attempt) => attempt.id)).toEqual([b]);
     add.mockRestore();
-    const gate = deferred();
-    const transaction = db.transaction.bind(db);
-    vi.spyOn(db, 'transaction').mockImplementationOnce(((...args: unknown[]) =>
-      gate.promise.then(() => Reflect.apply(transaction, db, args))) as typeof db.transaction);
+    const gate = holdNextCall(db, 'transaction');
     const retry = saving.retry(b);
     saving.discard(b);
     expect(saving.getAttempt(b)?.status).toBe('saving');
-    gate.resolve();
+    gate.release();
     await retry;
     saving.discard(b);
     expect(saving.getAttempt(b)?.status).toBe('saved');
@@ -149,17 +137,14 @@ describe('save recovery', () => {
     expect(await db.sessions.count()).toBe(0);
     add.mockRestore();
 
-    const gate = deferred();
-    const transaction = db.transaction.bind(db);
-    vi.spyOn(db, 'transaction').mockImplementationOnce(((...args: unknown[]) =>
-      gate.promise.then(() => Reflect.apply(transaction, db, args))) as typeof db.transaction);
+    const gate = holdNextCall(db, 'transaction');
     const retry = saving.retry(a);
     await saving.retry(a);
     expect(saving.getAttempt(a)?.status).toBe('saving');
     await saving.retry(b);
     expect(saving.getAttempt(b)?.status).toBe('saved');
     expect(saving.getAttempt(a)?.status).toBe('saving');
-    gate.resolve();
+    gate.release();
     await retry;
     await saving.retry(a);
     expect(await db.solves.count()).toBe(2);
@@ -287,15 +272,12 @@ describe('completion dates and atomic writes', () => {
   it('retains independent outcomes when an older pending save rejects after a newer success', async () => {
     const db = createTestDb();
     const saving = new TimerSaving(db);
-    const gate = deferred();
-    vi.spyOn(db, 'transaction').mockImplementationOnce(
-      (() => gate.promise) as unknown as typeof db.transaction,
-    );
+    const gate = holdNextCall(db, 'transaction');
     const first = saving.capture(context);
     const older = saving.finish(first, finished, completion);
     const second = saving.capture(context);
     await saving.finish(second, { timeMs: 10_000, penalty: 'OK' }, completion);
-    gate.reject(new Error('full'));
+    gate.reject();
     await older;
     expect(saving.getAttempt(first)?.status).toBe('error');
     expect(saving.getAttempt(second)?.status).toBe('saved');
@@ -370,15 +352,12 @@ it('preserves order when pending saves commit in reverse order', async () => {
   const db = createTestDb();
   const sessionId = await startTimerSession(db, '333', completion);
   const saving = new TimerSaving(db);
-  const gate = deferred();
-  const transaction = db.transaction.bind(db);
-  vi.spyOn(db, 'transaction').mockImplementationOnce(((...args: unknown[]) =>
-    gate.promise.then(() => Reflect.apply(transaction, db, args))) as typeof db.transaction);
+  const gate = holdNextCall(db, 'transaction');
   const a = saving.capture({ ...context, sessionId });
   const pending = saving.finish(a, { timeMs: 10_000, penalty: 'OK' }, completion);
   const b = saving.capture({ ...context, sessionId });
   await saving.finish(b, { timeMs: 20_000, penalty: 'OK' }, completion);
-  gate.resolve();
+  gate.release();
   await pending;
   expect((await solvesWithAverages(db, sessionId, 10)).reverse()).toMatchObject([
     { id: saving.getAttempt(a)?.solveId, solve_number: 1, time_ms: 10_000 },
@@ -490,26 +469,16 @@ describe('saved result reconciliation', () => {
 });
 
 describe('new session requests', () => {
-  function delayCreation(db: ReturnType<typeof createTestDb>) {
-    const add = db.sessions.add.bind(db.sessions);
-    const gate = deferred();
-    const spy = vi
-      .spyOn(db.sessions, 'add')
-      .mockImplementationOnce(((...args: Parameters<typeof db.sessions.add>) =>
-        gate.promise.then(() => add(...args))) as typeof db.sessions.add);
-    return { ...gate, reached: () => vi.waitFor(() => expect(spy).toHaveBeenCalled()) };
-  }
-
   it('creates one session for repeated input and selects exactly the returned one', async () => {
     const db = createTestDb();
     const saving = new TimerSaving(db);
-    const gate = delayCreation(db);
+    const gate = holdNextCall(db.sessions, 'add');
     const first = saving.startSession('333', completion);
     expect(await saving.startSession('333', completion)).toEqual({ status: 'pending' });
     expect(saving.getSessionStart()).toBe('starting');
-    await gate.reached();
+    await gate.reached;
     const newer = await startTimerSession(db, '333', completion);
-    gate.resolve();
+    gate.release();
     const started = await first;
     expect(await db.sessions.count()).toBe(2);
     expect(started).toMatchObject({ status: 'started', selected: true });
@@ -523,12 +492,12 @@ describe('new session requests', () => {
     const db = createTestDb();
     const older = await startTimerSession(db, '333', completion);
     const saving = new TimerSaving(db);
-    const gate = delayCreation(db);
+    const gate = holdNextCall(db.sessions, 'add');
     const pending = saving.startSession('333', completion);
-    await gate.reached();
+    await gate.reached;
     saving.select(older);
     const id = saving.capture({ ...context, sessionId: saving.getSelection().sessionId });
-    gate.resolve();
+    gate.release();
     expect(await pending).toMatchObject({ status: 'started', selected: false });
     expect(saving.getSelection().sessionId).toBe(older);
     await saving.finish(id, finished, completion);
@@ -543,10 +512,10 @@ describe('new session requests', () => {
     const older = await startTimerSession(db, '333', completion);
     const saving = new TimerSaving(db);
     saving.select(older);
-    const gate = delayCreation(db);
+    const gate = holdNextCall(db.sessions, 'add');
     const pending = saving.startSession('333', completion);
-    await gate.reached();
-    gate.reject(new Error('full'));
+    await gate.reached;
+    gate.reject();
     expect(await pending).toEqual({ status: 'failed' });
     expect(saving.getSelection().sessionId).toBe(older);
     expect(saving.getSessionStart()).toBe('failed');

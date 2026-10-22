@@ -4,6 +4,7 @@ import { DbProvider, useTimerSaving } from '../db/DbProvider.tsx';
 import type { LookaheadDb } from '../db/database.ts';
 import type { TimerSaving } from '../db/timerSaving.ts';
 import { createTestDb } from '../test/db.ts';
+import { holdNextCall } from '../test/gate.ts';
 import { Updater } from './Updater.tsx';
 import { holdUpdates } from './updates.ts';
 
@@ -115,11 +116,7 @@ describe('Updater', () => {
 
   it('disables Update now while a timed attempt is still saving', async () => {
     renderUpdater();
-    let release!: () => void;
-    const gate = new Promise<void>((resolve) => (release = resolve));
-    const transaction = db.transaction.bind(db);
-    vi.spyOn(db, 'transaction').mockImplementationOnce(((...args: unknown[]) =>
-      gate.then(() => Reflect.apply(transaction, db, args))) as typeof db.transaction);
+    const save = holdNextCall(db, 'transaction');
     const id = saving.capture({ eventId: '333', scramble: '', sessionId: null });
     let finishing!: Promise<void>;
     act(() => {
@@ -132,7 +129,7 @@ describe('Updater', () => {
 
     act(() => setVisibility('visible'));
     await act(async () => {
-      release();
+      save.release();
       await finishing;
     });
     expect(update).toHaveProperty('disabled', false);

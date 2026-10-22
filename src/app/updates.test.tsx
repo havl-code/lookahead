@@ -1,8 +1,8 @@
 import { renderHook } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import type { LookaheadDb } from '../db/database.ts';
 import { TimerSaving } from '../db/timerSaving.ts';
 import { createTestDb } from '../test/db.ts';
+import { holdNextCall } from '../test/gate.ts';
 import { holdUpdates, updatesHeld, useHoldUpdates } from './updates.ts';
 
 afterEach(() => {
@@ -59,26 +59,16 @@ describe('timed attempts', () => {
   const context = { eventId: '333', scramble: "R U R'", sessionId: null };
   const finished = { timeMs: 12_340, penalty: 'OK' as const };
 
-  /** Holds the next save until `release` is called. */
-  function delayNextSave(db: LookaheadDb) {
-    let release!: () => void;
-    const gate = new Promise<void>((resolve) => (release = resolve));
-    const transaction = db.transaction.bind(db);
-    vi.spyOn(db, 'transaction').mockImplementationOnce(((...args: unknown[]) =>
-      gate.then(() => Reflect.apply(transaction, db, args))) as typeof db.transaction);
-    return release;
-  }
-
   it('hold updates while a delayed write is pending, and let go once it saves', async () => {
     const db = createTestDb();
     const saving = new TimerSaving(db);
-    const release = delayNextSave(db);
+    const save = holdNextCall(db, 'transaction');
     const id = saving.capture(context);
     expect(saving.hasUnsavedAttempts()).toBe(false);
     const finishing = saving.finish(id, finished);
     expect(saving.hasUnsavedAttempts()).toBe(true);
     expect(updatesHeld()).toBe(true);
-    release();
+    save.release();
     await finishing;
     expect(saving.hasUnsavedAttempts()).toBe(false);
     expect(updatesHeld()).toBe(false);

@@ -7,6 +7,7 @@ import * as hooks from '../../db/hooks.ts';
 import { addSolve, startTimerSession } from '../../db/solves.ts';
 import { updateTimerSettings } from '../../db/timerSettings.ts';
 import { createTestDb } from '../../test/db.ts';
+import { holdNextCall } from '../../test/gate.ts';
 import { TimerScreen } from './TimerScreen.tsx';
 
 async function setup() {
@@ -25,15 +26,27 @@ async function setup() {
       </DbProvider>
     );
   }
+  // The Timer is ready for a tap once its menus and prompt have loaded.
+  async function timerReady() {
+    await screen.findByRole('combobox', { name: 'Event' });
+    await waitFor(() =>
+      expect(
+        screen.getByText('Hold the time until it turns green, then let go to start.'),
+      ).toBeDefined(),
+    );
+  }
   render(<Harness />);
-  await screen.findByRole('combobox', { name: 'Event' });
-  await waitFor(() =>
-    expect(
-      screen.getByText('Hold the time until it turns green, then let go to start.'),
-    ).toBeDefined(),
-  );
+  await timerReady();
   return {
     db,
+    leaveTimer() {
+      fireEvent.click(screen.getByRole('button', { name: 'Change tab' }));
+    },
+    /** Comes back to the Timer and waits until it's ready, so the next tap isn't lost. */
+    async returnToTimer() {
+      fireEvent.click(screen.getByRole('button', { name: 'Change tab' }));
+      await timerReady();
+    },
     start() {
       fireEvent.keyDown(document.body, { key: ' ' });
       now += 350;
@@ -103,24 +116,12 @@ describe('Timer save controls', () => {
     stop(12_340);
     await screen.findByRole('group', { name: 'Solve 1' });
     freeze = true;
-    const get = db.solves.get.bind(db.solves);
-    let release!: () => void;
-    let entered!: () => void;
-    const gate = new Promise<void>((resolve) => {
-      release = resolve;
-    });
-    const reading = new Promise<void>((resolve) => {
-      entered = resolve;
-    });
-    vi.spyOn(db.solves, 'get').mockImplementationOnce(((key: number) => {
-      entered();
-      return gate.then(() => get(key));
-    }) as typeof db.solves.get);
+    const read = holdNextCall(db.solves, 'get');
     start();
     stop(3_000);
     await screen.findByText('3.00, saved.');
     await act(async () => {
-      await reading;
+      await read.reached;
     });
     fireEvent.keyDown(document.body, { key: '2', code: 'Digit2', altKey: true });
     expect((await db.solves.toArray()).map((solve) => solve.penalty)).toEqual(['OK', 'OK']);
@@ -128,8 +129,7 @@ describe('Timer save controls', () => {
     stop(5_000);
     await screen.findByRole('group', { name: 'Solve 3' });
     await act(async () => {
-      release();
-      await gate;
+      await read.release();
     });
     fireEvent.keyDown(document.body, { key: '2', code: 'Digit2', altKey: true });
     await waitFor(async () =>
@@ -220,18 +220,11 @@ describe('Timer save controls', () => {
     start();
     stop(12_340);
     await screen.findByRole('group', { name: 'Solve 1' });
-    const put = db.meta.put.bind(db.meta);
-    let release!: () => void;
-    const gate = new Promise<void>((resolve) => {
-      release = resolve;
-    });
-    vi.spyOn(db.meta, 'put').mockImplementationOnce(((row: { key: string; value: unknown }) =>
-      gate.then(() => put(row))) as typeof db.meta.put);
+    const write = holdNextCall(db.meta, 'put');
     fireEvent.change(screen.getByRole('combobox', { name: 'Event' }), { target: { value: '222' } });
     fireEvent.keyDown(document.body, { key: '2', code: 'Digit2', altKey: true });
     await act(async () => {
-      release();
-      await gate;
+      await write.release();
     });
     await waitFor(() =>
       expect((screen.getByRole('combobox', { name: 'Event' }) as HTMLSelectElement).value).toBe(
@@ -246,13 +239,7 @@ describe('Timer save controls', () => {
     start();
     stop(12_340);
     await screen.findByRole('group', { name: 'Solve 1' });
-    const transaction = db.transaction.bind(db);
-    let releaseSave!: () => void;
-    const saveGate = new Promise<void>((resolve) => {
-      releaseSave = resolve;
-    });
-    vi.spyOn(db, 'transaction').mockImplementationOnce(((...args: unknown[]) =>
-      saveGate.then(() => Reflect.apply(transaction, db, args))) as typeof db.transaction);
+    const save = holdNextCall(db, 'transaction');
     start();
     stop(3_000);
     fireEvent.keyDown(document.body, { key: '2', code: 'Digit2', altKey: true });
@@ -261,25 +248,18 @@ describe('Timer save controls', () => {
     fireEvent.keyDown(document.body, { key: '3', code: 'Digit3', altKey: true });
     stop(5_000);
     await screen.findByRole('group', { name: 'Solve 2' });
-    let releaseEdit!: () => void;
-    const editGate = new Promise<void>((resolve) => {
-      releaseEdit = resolve;
-    });
-    vi.spyOn(db, 'transaction').mockImplementationOnce(((...args: unknown[]) =>
-      editGate.then(() => Reflect.apply(transaction, db, args))) as typeof db.transaction);
+    const edit = holdNextCall(db, 'transaction');
     fireEvent.keyDown(document.body, { key: '2', code: 'Digit2', altKey: true });
     expect((screen.getByRole('button', { name: 'Delete' }) as HTMLButtonElement).disabled).toBe(
       true,
     );
     await act(async () => {
-      releaseSave();
-      await saveGate;
+      await save.release();
     });
     await screen.findByRole('button', { name: /^Solve 3: 5.00/ });
     fireEvent.keyDown(document.body, { key: '3', code: 'Digit3', altKey: true });
     await act(async () => {
-      releaseEdit();
-      await editGate;
+      await edit.release();
     });
     await screen.findByRole('button', { name: /^Solve 3: 7.00/ });
     expect((await db.solves.toArray()).map((solve) => [solve.time_ms, solve.penalty])).toEqual([
@@ -321,13 +301,7 @@ describe('Timer save controls', () => {
     fireEvent.click(within(newer).getByRole('button', { name: 'Discard' }));
     expect(within(sheet).getAllByRole('listitem')).toHaveLength(1);
     add.mockRestore();
-    let release!: () => void;
-    const gate = new Promise<void>((resolve) => {
-      release = resolve;
-    });
-    const transaction = db.transaction.bind(db);
-    vi.spyOn(db, 'transaction').mockImplementationOnce(((...args: unknown[]) =>
-      gate.then(() => Reflect.apply(transaction, db, args))) as typeof db.transaction);
+    const save = holdNextCall(db, 'transaction');
     older = within(sheet).getByRole('listitem');
     const retry = within(older).getByRole('button', { name: 'Retry' });
     fireEvent.click(retry);
@@ -340,8 +314,7 @@ describe('Timer save controls', () => {
     stop(3_000);
     await screen.findByText('3.00, saved.');
     await act(async () => {
-      release();
-      await gate;
+      await save.release();
     });
     await waitFor(async () => expect(await db.solves.count()).toBe(2));
     expect(screen.getByText('3.00, saved.')).toBeDefined();
@@ -398,7 +371,7 @@ describe('Timer save controls', () => {
   });
 
   it('retains failed attempts and their update hold across tab changes, and retries once', async () => {
-    const { db, start, stop } = await setup();
+    const { db, start, stop, leaveTimer, returnToTimer } = await setup();
     const add = vi.spyOn(db.solves, 'add').mockRejectedValue(new Error('full'));
     start();
     stop(12_340);
@@ -407,10 +380,10 @@ describe('Timer save controls', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Close' }));
     expect(screen.queryByRole('dialog', { name: 'Unsaved attempts' })).toBeNull();
     expect(updatesHeld()).toBe(true);
-    fireEvent.click(screen.getByRole('button', { name: 'Change tab' }));
+    leaveTimer();
     expect(updatesHeld()).toBe(true);
     add.mockRestore();
-    fireEvent.click(screen.getByRole('button', { name: 'Change tab' }));
+    await returnToTimer();
     fireEvent.click(await screen.findByRole('button', { name: 'Recover 1 unsaved attempt' }));
     const retry = await screen.findByRole('button', { name: 'Retry' });
     await waitFor(() => expect((retry as HTMLButtonElement).disabled).toBe(false));
@@ -418,19 +391,13 @@ describe('Timer save controls', () => {
     fireEvent.click(retry);
     await waitFor(async () => expect(await db.solves.count()).toBe(1));
     expect(await db.solves.toArray()).toMatchObject([{ time_ms: 12_340 }]);
-    fireEvent.click(screen.getByRole('button', { name: 'Change tab' }));
+    leaveTimer();
     expect(updatesHeld()).toBe(false);
   });
 
   it('keeps a delayed save in its captured context and leaves a newer result showing', async () => {
     const { db, start, stop } = await setup();
-    let release!: () => void;
-    const gate = new Promise<void>((resolve) => {
-      release = resolve;
-    });
-    const transaction = db.transaction.bind(db);
-    vi.spyOn(db, 'transaction').mockImplementationOnce(((...args: unknown[]) =>
-      gate.then(() => Reflect.apply(transaction, db, args))) as typeof db.transaction);
+    const save = holdNextCall(db, 'transaction');
     start();
     const originalScramble = screen.getByRole('region', { name: 'Scramble' }).textContent;
     fireEvent.click(screen.getByRole('button', { name: 'New scramble' }));
@@ -445,8 +412,7 @@ describe('Timer save controls', () => {
     stop(3_000);
     await screen.findByText('3.00, saved.');
     await act(async () => {
-      release();
-      await gate;
+      await save.release();
     });
     await waitFor(async () => expect(await db.solves.count()).toBe(2));
     expect(screen.getByText('3.00, saved.')).toBeDefined();
@@ -469,21 +435,6 @@ describe('Timer save controls', () => {
 });
 
 describe('Timer new session requests', () => {
-  function delayCreation(db: Awaited<ReturnType<typeof setup>>['db']) {
-    const add = db.sessions.add.bind(db.sessions);
-    let release!: () => void;
-    let reject!: (reason: Error) => void;
-    const gate = new Promise<void>((resolve, fail) => {
-      release = resolve;
-      reject = fail;
-    });
-    const spy = vi
-      .spyOn(db.sessions, 'add')
-      .mockImplementationOnce(((...args: Parameters<typeof db.sessions.add>) =>
-        gate.then(() => add(...args))) as typeof db.sessions.add);
-    return { gate, release, reject, spy };
-  }
-
   async function sessionMenu(...ids: number[]) {
     const menu = screen.getByRole('combobox', { name: 'Session' }) as HTMLSelectElement;
     for (const id of ids)
@@ -492,20 +443,19 @@ describe('Timer new session requests', () => {
   }
 
   it('creates one session for repeated input and keeps a later choice when it finishes', async () => {
-    const { db, start, stop } = await setup();
+    const { db, start, stop, leaveTimer, returnToTimer } = await setup();
     const first = await startTimerSession(db, '333');
     const second = await startTimerSession(db, '333');
     fireEvent.change(await sessionMenu(first, second), { target: { value: String(first) } });
     await waitFor(async () => expect((await sessionMenu()).value).toBe(String(first)));
-    const creation = delayCreation(db);
+    const creation = holdNextCall(db.sessions, 'add');
     fireEvent.change(await sessionMenu(), { target: { value: 'new' } });
     fireEvent.change(await sessionMenu(), { target: { value: 'new' } });
     await waitFor(async () =>
       expect(((await sessionMenu()).options[0] as HTMLOptionElement).disabled).toBe(true),
     );
-    fireEvent.click(screen.getByRole('button', { name: 'Change tab' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Change tab' }));
-    await screen.findByText('Hold the time until it turns green, then let go to start.');
+    leaveTimer();
+    await returnToTimer();
     fireEvent.change(await sessionMenu(), { target: { value: 'new' } });
     await waitFor(async () => expect((await sessionMenu()).value).toBe(String(first)));
     start();
@@ -514,8 +464,7 @@ describe('Timer new session requests', () => {
     fireEvent.change(await sessionMenu(), { target: { value: String(second) } });
     await waitFor(async () => expect((await sessionMenu()).value).toBe(String(second)));
     await act(async () => {
-      creation.release();
-      await creation.gate;
+      await creation.release();
     });
     await waitFor(async () => expect(await db.sessions.count()).toBe(3));
     expect((await sessionMenu()).value).toBe(String(second));
@@ -528,12 +477,11 @@ describe('Timer new session requests', () => {
     const older = await startTimerSession(db, '333');
     fireEvent.change(await sessionMenu(older), { target: { value: String(older) } });
     await waitFor(async () => expect((await sessionMenu()).value).toBe(String(older)));
-    const creation = delayCreation(db);
+    const creation = holdNextCall(db.sessions, 'add');
     fireEvent.change(await sessionMenu(), { target: { value: 'new' } });
-    await waitFor(() => expect(creation.spy).toHaveBeenCalled());
+    await act(() => creation.reached);
     await act(async () => {
-      creation.reject(new Error('full'));
-      await creation.gate.catch(() => {});
+      await creation.reject();
     });
     await screen.findByText("Couldn't start a session. This device may be out of space.");
     expect((await sessionMenu()).value).toBe(String(older));
@@ -546,14 +494,13 @@ describe('Timer new session requests', () => {
 
   it('keeps a later event choice when creation finishes', async () => {
     const { db } = await setup();
-    const creation = delayCreation(db);
+    const creation = holdNextCall(db.sessions, 'add');
     fireEvent.change(await sessionMenu(), { target: { value: 'new' } });
-    await waitFor(() => expect(creation.spy).toHaveBeenCalled());
+    await act(() => creation.reached);
     const event = screen.getByRole('combobox', { name: 'Event' }) as HTMLSelectElement;
     fireEvent.change(event, { target: { value: '222' } });
     await act(async () => {
-      creation.release();
-      await creation.gate;
+      await creation.release();
     });
     await waitFor(async () => expect(await db.sessions.count()).toBe(1));
     expect(event.value).toBe('222');
@@ -562,16 +509,15 @@ describe('Timer new session requests', () => {
   });
 
   it('reports a rejection that settles while Timer is away, then permits another request', async () => {
-    const { db } = await setup();
-    const creation = delayCreation(db);
+    const { db, leaveTimer, returnToTimer } = await setup();
+    const creation = holdNextCall(db.sessions, 'add');
     fireEvent.change(await sessionMenu(), { target: { value: 'new' } });
-    await waitFor(() => expect(creation.spy).toHaveBeenCalled());
-    fireEvent.click(screen.getByRole('button', { name: 'Change tab' }));
+    await act(() => creation.reached);
+    leaveTimer();
     await act(async () => {
-      creation.reject(new Error('full'));
-      await creation.gate.catch(() => {});
+      await creation.reject();
     });
-    fireEvent.click(screen.getByRole('button', { name: 'Change tab' }));
+    await returnToTimer();
     await screen.findByText("Couldn't start a session. This device may be out of space.");
     expect(((await sessionMenu()).options[0] as HTMLOptionElement).disabled).toBe(false);
     fireEvent.change(await sessionMenu(), { target: { value: 'new' } });

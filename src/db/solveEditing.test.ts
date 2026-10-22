@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createTestDb } from '../test/db.ts';
+import { holdNextCall } from '../test/gate.ts';
 import { SolveEditing } from './solveEditing.ts';
 import { saveTimedSolve } from './solves.ts';
 
@@ -41,26 +42,14 @@ describe('shared solve editing', () => {
       new Date(2026, 9, 14, 0, 1),
     );
     const editing = new SolveEditing(db);
-    const update = db.solves.update.bind(db.solves);
-    let finish!: () => void;
-    let started!: () => void;
-    const hasStarted = new Promise<void>((resolve) => {
-      started = resolve;
-    });
-    vi.spyOn(db.solves, 'update').mockImplementation((async (...args) => {
-      await new Promise<void>((resolve) => {
-        finish = resolve;
-        started();
-      });
-      return update(...args);
-    }) as typeof db.solves.update);
+    const write = holdNextCall(db.solves, 'update');
 
     const first = editing.changePenalty(solveId, 1, '+2');
     expect(editing.isPending()).toBe(true);
-    await hasStarted;
+    await write.reached;
     // A new caller may represent another tab or a newly selected solve.
     expect(await editing.changeNotes(nextSolveId, 2, 'later')).toEqual({ status: 'busy' });
-    finish();
+    write.release();
     expect(await first).toEqual({ status: 'success', value: true });
     expect(editing.isPending()).toBe(false);
     expect(await db.solves.get(solveId)).toMatchObject({ penalty: '+2' });
@@ -216,25 +205,13 @@ describe('shared solve editing', () => {
     );
     const editing = new SolveEditing(db);
     editing.activate('timer');
-    const remove = db.solves.delete.bind(db.solves);
-    let finish!: () => void;
-    let started!: () => void;
-    const hasStarted = new Promise<void>((resolve) => {
-      started = resolve;
-    });
-    vi.spyOn(db.solves, 'delete').mockImplementation((async (...args) => {
-      await new Promise<void>((resolve) => {
-        finish = resolve;
-        started();
-      });
-      return remove(...args);
-    }) as typeof db.solves.delete);
+    const write = holdNextCall(db.solves, 'delete');
 
     const deletion = editing.remove('timer', solveId, 1);
-    await hasStarted;
+    await write.reached;
     editing.deactivate('timer');
     editing.activate('sessions');
-    finish();
+    write.release();
     expect((await deletion).status).toBe('success');
     expect(editing.getUndo('timer')).toBeNull();
     expect(editing.getUndo('sessions')).toBeNull();
@@ -253,26 +230,15 @@ describe('shared solve editing', () => {
     editing.activate('timer');
     await editing.remove('timer', solveId, 1);
     const expiredAt = editing.getUndo('timer')?.expiresAt;
-    let reject!: (reason?: unknown) => void;
-    let started!: () => void;
-    const hasStarted = new Promise<void>((resolve) => {
-      started = resolve;
-    });
-    vi.spyOn(db.solves, 'put').mockImplementation(
-      (() =>
-        new Promise((_, fail) => {
-          reject = fail;
-          started();
-        })) as unknown as typeof db.solves.put,
-    );
+    const write = holdNextCall(db.solves, 'put');
 
     const restoration = editing.restore('timer');
-    await hasStarted;
+    await write.reached;
     expect(editing.getUndo('timer')?.restoring).toBe(true);
     expect(await editing.restore('timer')).toEqual({ status: 'busy' });
     clock.advance(8_000);
     expect(editing.getUndo('timer')?.solve.id).toBe(solveId);
-    reject(new Error('restore failed'));
+    write.reject(new Error('restore failed'));
     expect(await restoration).toEqual({ status: 'error' });
     expect(editing.getUndo('timer')?.expiresAt).toBeGreaterThan(expiredAt ?? 0);
     expect(editing.getUndo('timer')?.restoring).toBe(false);
