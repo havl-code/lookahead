@@ -22,12 +22,15 @@ export function SessionMenu({
   current,
   onPick,
   onNew,
+  starting,
 }: {
   readonly eventId: string;
   readonly today: string;
   readonly current: Session | null | undefined;
   readonly onPick: (sessionId: number) => void;
   readonly onNew: () => void;
+  /** While a new session is being created, so another can't be started. */
+  readonly starting: boolean;
 }) {
   const sessions = useSessions(Number.POSITIVE_INFINITY, eventId)?.sessions ?? [];
   return (
@@ -40,7 +43,9 @@ export function SessionMenu({
         }
         className="min-h-11 w-full rounded-lg border border-control bg-raised px-3"
       >
-        <option value={newSession}>+ New session</option>
+        <option value={newSession} disabled={starting}>
+          + New session
+        </option>
         {!current && (
           <option value="" disabled>
             Today's session starts with your first solve

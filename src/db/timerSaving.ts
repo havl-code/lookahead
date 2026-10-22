@@ -5,7 +5,7 @@ import { localDate } from '../lib/time.ts';
 import type { LookaheadDb } from './database.ts';
 import { getMeta, setMeta } from './meta.ts';
 import type { Solve } from './schema.ts';
-import { findTodaysSession, latestSolves, saveTimedSolve } from './solves.ts';
+import { findTodaysSession, latestSolves, saveTimedSolve, startTimerSession } from './solves.ts';
 
 export interface AttemptContext {
   readonly eventId: string;
@@ -26,6 +26,20 @@ export interface TimedAttempt extends AttemptContext {
   readonly recoverable?: boolean;
 }
 
+/**
+ * The session picked on the timer's menu (null follows today), with a revision that changes on
+ * every choice, so a delayed result can tell whether its choice still applies.
+ */
+export interface TimerSelection {
+  readonly sessionId: number | null;
+  readonly revision: number;
+}
+
+export type StartedSession =
+  | { readonly status: 'started'; readonly sessionId: number; readonly selected: boolean }
+  | { readonly status: 'pending' }
+  | { readonly status: 'failed' };
+
 /** Owns timed attempts and their saves for the lifetime of the database provider. */
 export class TimerSaving {
   private nextId = 0;
@@ -38,6 +52,10 @@ export class TimerSaving {
   private persistence: Promise<void> | null = null;
   /** One update hold for each attempt still saving or recoverable, released once it resolves. */
   private holds = new Map<number, () => void>();
+  /** Lasts while the app is open (as on the desktop, until a reload), even on another tab. */
+  private selection: TimerSelection = { sessionId: null, revision: 0 };
+  /** Whether a New session request is pending, or failed and not yet reported. */
+  private sessionStart: 'idle' | 'starting' | 'failed' = 'idle';
 
   constructor(private readonly db: LookaheadDb) {}
 
@@ -46,10 +64,48 @@ export class TimerSaving {
   getAttempts = () => this.snapshot;
   /** Whether any attempt is still saving or recoverable, so an update would lose it. */
   hasUnsavedAttempts = () => this.holds.size > 0;
+  getSelection = () => this.selection;
+  getSessionStart = () => this.sessionStart;
   subscribe = (listener: () => void) => {
     this.listeners.add(listener);
     return () => this.listeners.delete(listener);
   };
+
+  select(sessionId: number | null): void {
+    this.selection = { sessionId, revision: this.selection.revision + 1 };
+    this.notify();
+  }
+
+  /**
+   * Starts a session for today, one request at a time. The new session is selected only if no
+   * other choice was made while it was being created. A failure stays until it's reported, so
+   * Timer can show it even if it settled while another tab was showing.
+   */
+  async startSession(eventId: string, now = new Date()): Promise<StartedSession> {
+    if (this.sessionStart === 'starting') return { status: 'pending' };
+    this.sessionStart = 'starting';
+    const { revision } = this.selection;
+    this.notify();
+    try {
+      const sessionId = await startTimerSession(this.db, eventId, now);
+      const selected = this.selection.revision === revision;
+      if (selected) this.selection = { sessionId, revision: revision + 1 };
+      this.sessionStart = 'idle';
+      return { status: 'started', sessionId, selected };
+    } catch {
+      this.sessionStart = 'failed';
+      return { status: 'failed' };
+    } finally {
+      this.notify();
+    }
+  }
+
+  /** Clears a failed New session request once Timer has reported it. */
+  reportedSessionFailure(): void {
+    if (this.sessionStart !== 'failed') return;
+    this.sessionStart = 'idle';
+    this.notify();
+  }
 
   capture(context: AttemptContext): number {
     const id = ++this.nextId;

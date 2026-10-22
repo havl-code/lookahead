@@ -7,7 +7,7 @@ import { useDb, useSolveEditing, useTimerSaving } from '../../db/DbProvider.tsx'
 import { useMeta, useTimerSession, useTimerSettings } from '../../db/hooks.ts';
 import { setMeta } from '../../db/meta.ts';
 import type { Solve } from '../../db/schema.ts';
-import { onlyDnf, startTimerSession } from '../../db/solves.ts';
+import { onlyDnf } from '../../db/solves.ts';
 import { defaultTimerSettings } from '../../db/timerSettings.ts';
 import { eventName } from '../../lib/events.ts';
 import { count, formatClock, formatResult } from '../../lib/format.ts';
@@ -45,12 +45,6 @@ const recentCount = 12;
 // The width of the wide layout's Ao5 and Ao12 columns, room for 1:23.45 at the panel's text size.
 const averageColumn = 'w-16 shrink-0 text-right';
 
-/**
- * The session picked on the timer's menu, kept outside the screen so it lasts while the app is
- * open (as on the desktop, until a reload), even when another tab is showing. Null follows today.
- */
-let pickedSession: number | null = null;
-
 export function TimerScreen() {
   const db = useDb();
   const editing = useSolveEditing();
@@ -67,7 +61,16 @@ export function TimerScreen() {
   const eventId = chosenEvent ?? (storedEvent && hasTimer(storedEvent) ? storedEvent : '333');
   const settings = useTimerSettings() ?? defaultTimerSettings;
   const [today, setToday] = useState(localDate);
-  const [picked, setPicked] = useState(pickedSession);
+  const { sessionId: picked, revision: selectionRevision } = useSyncExternalStore(
+    saving.subscribe,
+    saving.getSelection,
+    saving.getSelection,
+  );
+  const sessionStart = useSyncExternalStore(
+    saving.subscribe,
+    saving.getSessionStart,
+    saving.getSessionStart,
+  );
   const timing = useTimerSession(eventId, today, picked, recentCount);
   const [scramble, setScramble] = useState(() => generateScramble(eventId));
   const [call, setCall] = useState<string | null>(null);
@@ -81,7 +84,6 @@ export function TimerScreen() {
   const [openSolve, setOpenSolve] = useState<number | null>(null);
   const activeAttempt = useRef<number | null>(null);
   const latestAttempt = useRef<{ id: number; selection: number } | null>(null);
-  const selection = useRef(0);
   const observed = useRef(new Map<number, string>());
   const runShortcut = useRef<(action: TimerShortcut) => void>(() => {});
   const scrambleFor = useRef({ eventId, scramble, sessionId: picked });
@@ -91,21 +93,24 @@ export function TimerScreen() {
   // Picking a session (or following today again) also lets go of any solve still being saved
   // into the old one, so the shortcuts work on the new session straight away.
   function pick(sessionId: number | null) {
-    selection.current += 1;
-    pickedSession = sessionId;
-    setPicked(sessionId);
+    saving.select(sessionId);
     setShown(null);
   }
 
+  // The new session is selected only if nothing else was chosen while it was being created.
   async function startSession() {
-    setToday(localDate());
-    try {
-      await startTimerSession(db, eventId);
-      pick(null);
-    } catch {
-      setToast({ message: "Couldn't start a session. This device may be out of space." });
-    }
+    const now = new Date();
+    setToday(localDate(now));
+    const started = await saving.startSession(eventId, now);
+    if (started.status === 'started' && started.selected) setShown(null);
   }
+
+  // A failed request is reported here, even one that failed while another tab was showing.
+  useEffect(() => {
+    if (sessionStart !== 'failed') return;
+    setToast({ message: "Couldn't start a session. This device may be out of space." });
+    saving.reportedSessionFailure();
+  }, [saving, sessionStart]);
 
   useEffect(() => {
     for (const saved of attempts) {
@@ -114,7 +119,7 @@ export function TimerScreen() {
       if (saved.status === 'saved') {
         if (
           latestAttempt.current?.id !== saved.id ||
-          latestAttempt.current.selection !== selection.current
+          latestAttempt.current.selection !== saving.getSelection().revision
         )
           continue;
         setShown(saved.solveId ?? null);
@@ -131,13 +136,13 @@ export function TimerScreen() {
         });
       }
     }
-  }, [attempts]);
+  }, [attempts, saving.getSelection]);
 
   const clock = useClock({
     onStart: () => {
       const id = saving.capture(scrambleFor.current);
       activeAttempt.current = id;
-      latestAttempt.current = { id, selection: selection.current };
+      latestAttempt.current = { id, selection: saving.getSelection().revision };
       setShown(null);
     },
     onCancel: () => {
@@ -270,10 +275,10 @@ export function TimerScreen() {
 
   const solves = timing?.solves ?? [];
   const currentAttempt =
-    latestAttempt.current?.selection === selection.current
+    latestAttempt.current?.selection === selectionRevision
       ? saving.getAttempt(latestAttempt.current.id)
       : undefined;
-  const resultContext = selection.current;
+  const resultContext = selectionRevision;
   const reconciled = useLiveQuery(async () => {
     if (currentAttempt?.status !== 'saved') return null;
     return {
@@ -362,6 +367,7 @@ export function TimerScreen() {
               current={timing?.session}
               onPick={pick}
               onNew={() => void startSession()}
+              starting={sessionStart === 'starting'}
             />
             {/* A gear rather than the word, so both menus have room on a phone. */}
             <button

@@ -488,3 +488,73 @@ describe('saved result reconciliation', () => {
     expect(await saving.reconcile(id, '333', sessionId)).toBeNull();
   });
 });
+
+describe('new session requests', () => {
+  function delayCreation(db: ReturnType<typeof createTestDb>) {
+    const add = db.sessions.add.bind(db.sessions);
+    const gate = deferred();
+    const spy = vi
+      .spyOn(db.sessions, 'add')
+      .mockImplementationOnce(((...args: Parameters<typeof db.sessions.add>) =>
+        gate.promise.then(() => add(...args))) as typeof db.sessions.add);
+    return { ...gate, reached: () => vi.waitFor(() => expect(spy).toHaveBeenCalled()) };
+  }
+
+  it('creates one session for repeated input and selects exactly the returned one', async () => {
+    const db = createTestDb();
+    const saving = new TimerSaving(db);
+    const gate = delayCreation(db);
+    const first = saving.startSession('333', completion);
+    expect(await saving.startSession('333', completion)).toEqual({ status: 'pending' });
+    expect(saving.getSessionStart()).toBe('starting');
+    await gate.reached();
+    const newer = await startTimerSession(db, '333', completion);
+    gate.resolve();
+    const started = await first;
+    expect(await db.sessions.count()).toBe(2);
+    expect(started).toMatchObject({ status: 'started', selected: true });
+    if (started.status !== 'started') throw new Error('Expected a started session');
+    expect(started.sessionId).not.toBe(newer);
+    expect(saving.getSelection().sessionId).toBe(started.sessionId);
+    expect(saving.getSessionStart()).toBe('idle');
+  });
+
+  it('keeps a choice made while creation is pending and allows the next request', async () => {
+    const db = createTestDb();
+    const older = await startTimerSession(db, '333', completion);
+    const saving = new TimerSaving(db);
+    const gate = delayCreation(db);
+    const pending = saving.startSession('333', completion);
+    await gate.reached();
+    saving.select(older);
+    const id = saving.capture({ ...context, sessionId: saving.getSelection().sessionId });
+    gate.resolve();
+    expect(await pending).toMatchObject({ status: 'started', selected: false });
+    expect(saving.getSelection().sessionId).toBe(older);
+    await saving.finish(id, finished, completion);
+    expect(saving.getAttempt(id)).toMatchObject({ status: 'saved', destinationId: older });
+    const next = await saving.startSession('333', completion);
+    expect(next).toMatchObject({ status: 'started', selected: true });
+    expect(await db.sessions.count()).toBe(3);
+  });
+
+  it('reports a rejected creation without changing the choice, then permits a retry', async () => {
+    const db = createTestDb();
+    const older = await startTimerSession(db, '333', completion);
+    const saving = new TimerSaving(db);
+    saving.select(older);
+    const gate = delayCreation(db);
+    const pending = saving.startSession('333', completion);
+    await gate.reached();
+    gate.reject(new Error('full'));
+    expect(await pending).toEqual({ status: 'failed' });
+    expect(saving.getSelection().sessionId).toBe(older);
+    expect(saving.getSessionStart()).toBe('failed');
+    saving.reportedSessionFailure();
+    expect(saving.getSessionStart()).toBe('idle');
+    const next = await saving.startSession('333', completion);
+    if (next.status !== 'started') throw new Error('Expected a started session');
+    expect(saving.getSelection().sessionId).toBe(next.sessionId);
+    expect(await db.sessions.count()).toBe(2);
+  });
+});

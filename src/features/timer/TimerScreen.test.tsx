@@ -467,3 +467,114 @@ describe('Timer save controls', () => {
     expect(screen.queryByText(/saved\./)).toBeNull();
   });
 });
+
+describe('Timer new session requests', () => {
+  function delayCreation(db: Awaited<ReturnType<typeof setup>>['db']) {
+    const add = db.sessions.add.bind(db.sessions);
+    let release!: () => void;
+    let reject!: (reason: Error) => void;
+    const gate = new Promise<void>((resolve, fail) => {
+      release = resolve;
+      reject = fail;
+    });
+    const spy = vi
+      .spyOn(db.sessions, 'add')
+      .mockImplementationOnce(((...args: Parameters<typeof db.sessions.add>) =>
+        gate.then(() => add(...args))) as typeof db.sessions.add);
+    return { gate, release, reject, spy };
+  }
+
+  async function sessionMenu(...ids: number[]) {
+    const menu = screen.getByRole('combobox', { name: 'Session' }) as HTMLSelectElement;
+    for (const id of ids)
+      await waitFor(() => expect(menu.querySelector(`option[value="${id}"]`)).not.toBeNull());
+    return menu;
+  }
+
+  it('creates one session for repeated input and keeps a later choice when it finishes', async () => {
+    const { db, start, stop } = await setup();
+    const first = await startTimerSession(db, '333');
+    const second = await startTimerSession(db, '333');
+    fireEvent.change(await sessionMenu(first, second), { target: { value: String(first) } });
+    await waitFor(async () => expect((await sessionMenu()).value).toBe(String(first)));
+    const creation = delayCreation(db);
+    fireEvent.change(await sessionMenu(), { target: { value: 'new' } });
+    fireEvent.change(await sessionMenu(), { target: { value: 'new' } });
+    await waitFor(async () =>
+      expect(((await sessionMenu()).options[0] as HTMLOptionElement).disabled).toBe(true),
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Change tab' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Change tab' }));
+    await screen.findByText('Hold the time until it turns green, then let go to start.');
+    fireEvent.change(await sessionMenu(), { target: { value: 'new' } });
+    await waitFor(async () => expect((await sessionMenu()).value).toBe(String(first)));
+    start();
+    stop(12_340);
+    await screen.findByText('12.34, saved.');
+    fireEvent.change(await sessionMenu(), { target: { value: String(second) } });
+    await waitFor(async () => expect((await sessionMenu()).value).toBe(String(second)));
+    await act(async () => {
+      creation.release();
+      await creation.gate;
+    });
+    await waitFor(async () => expect(await db.sessions.count()).toBe(3));
+    expect((await sessionMenu()).value).toBe(String(second));
+    expect(await db.solves.toArray()).toMatchObject([{ session_id: first, time_ms: 12_340 }]);
+    expect(screen.queryByText(/Couldn't start a session/)).toBeNull();
+  });
+
+  it('selects the created session, and after a rejection permits another request', async () => {
+    const { db } = await setup();
+    const older = await startTimerSession(db, '333');
+    fireEvent.change(await sessionMenu(older), { target: { value: String(older) } });
+    await waitFor(async () => expect((await sessionMenu()).value).toBe(String(older)));
+    const creation = delayCreation(db);
+    fireEvent.change(await sessionMenu(), { target: { value: 'new' } });
+    await waitFor(() => expect(creation.spy).toHaveBeenCalled());
+    await act(async () => {
+      creation.reject(new Error('full'));
+      await creation.gate.catch(() => {});
+    });
+    await screen.findByText("Couldn't start a session. This device may be out of space.");
+    expect((await sessionMenu()).value).toBe(String(older));
+    expect(await db.sessions.count()).toBe(1);
+    fireEvent.change(await sessionMenu(), { target: { value: 'new' } });
+    await waitFor(async () => expect(await db.sessions.count()).toBe(2));
+    const created = (await db.sessions.toArray()).find((session) => session.id !== older);
+    await waitFor(async () => expect((await sessionMenu()).value).toBe(String(created?.id)));
+  });
+
+  it('keeps a later event choice when creation finishes', async () => {
+    const { db } = await setup();
+    const creation = delayCreation(db);
+    fireEvent.change(await sessionMenu(), { target: { value: 'new' } });
+    await waitFor(() => expect(creation.spy).toHaveBeenCalled());
+    const event = screen.getByRole('combobox', { name: 'Event' }) as HTMLSelectElement;
+    fireEvent.change(event, { target: { value: '222' } });
+    await act(async () => {
+      creation.release();
+      await creation.gate;
+    });
+    await waitFor(async () => expect(await db.sessions.count()).toBe(1));
+    expect(event.value).toBe('222');
+    await screen.findByText("Today's session starts with your first solve");
+    expect((await sessionMenu()).value).toBe('');
+  });
+
+  it('reports a rejection that settles while Timer is away, then permits another request', async () => {
+    const { db } = await setup();
+    const creation = delayCreation(db);
+    fireEvent.change(await sessionMenu(), { target: { value: 'new' } });
+    await waitFor(() => expect(creation.spy).toHaveBeenCalled());
+    fireEvent.click(screen.getByRole('button', { name: 'Change tab' }));
+    await act(async () => {
+      creation.reject(new Error('full'));
+      await creation.gate.catch(() => {});
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Change tab' }));
+    await screen.findByText("Couldn't start a session. This device may be out of space.");
+    expect(((await sessionMenu()).options[0] as HTMLOptionElement).disabled).toBe(false);
+    fireEvent.change(await sessionMenu(), { target: { value: 'new' } });
+    await waitFor(async () => expect(await db.sessions.count()).toBe(1));
+  });
+});
