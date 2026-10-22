@@ -59,6 +59,77 @@ function deferred() {
 }
 
 describe('save recovery', () => {
+  it('requires a replacement from the original event and retains it across another deletion', async () => {
+    const db = createTestDb();
+    const original = await startTimerSession(db, '333', completion);
+    const replacement = await startTimerSession(db, '333', completion);
+    const wrongEvent = await startTimerSession(db, '222', completion);
+    const saving = new TimerSaving(db);
+    const id = saving.capture({ ...context, sessionId: original });
+    await db.sessions.delete(original);
+    await saving.finish(id, finished, completion);
+    await saving.retry(id, wrongEvent);
+    expect(saving.getAttempt(id)).toMatchObject({
+      status: 'unavailable',
+      destinationId: original,
+    });
+    expect(await db.solves.count()).toBe(0);
+    const add = vi.spyOn(db.solves, 'add').mockRejectedValueOnce(new Error('full'));
+    await saving.retry(id, replacement);
+    expect(saving.getAttempt(id)).toMatchObject({
+      status: 'error',
+      destinationId: replacement,
+      eventId: '333',
+      scramble: "R U R'",
+      timeMs: 12_340,
+      penalty: 'OK',
+      timestamp: completion.toISOString(),
+      day: '2026-10-23',
+      order: 1,
+    });
+    add.mockRestore();
+    await db.sessions.delete(replacement);
+    await saving.retry(id);
+    expect(saving.getAttempt(id)?.status).toBe('unavailable');
+    expect(await db.solves.count()).toBe(0);
+    const finalDestination = await startTimerSession(db, '333', completion);
+    await saving.retry(id, finalDestination);
+    expect(await db.solves.toArray()).toMatchObject([
+      {
+        session_id: finalDestination,
+        time_ms: 12_340,
+        penalty: 'OK',
+        scramble: "R U R'",
+        timestamp: completion.toISOString(),
+      },
+    ]);
+  });
+
+  it('discards only a failed attempt and refuses to discard a pending or saved write', async () => {
+    const db = createTestDb();
+    const saving = new TimerSaving(db);
+    const add = vi.spyOn(db.solves, 'add').mockRejectedValue(new Error('full'));
+    const a = saving.capture(context);
+    const b = saving.capture(context);
+    await saving.finish(a, finished, completion);
+    await saving.finish(b, finished, completion);
+    saving.discard(a);
+    expect(saving.getAttempts().map((attempt) => attempt.id)).toEqual([b]);
+    add.mockRestore();
+    const gate = deferred();
+    const transaction = db.transaction.bind(db);
+    vi.spyOn(db, 'transaction').mockImplementationOnce(((...args: unknown[]) =>
+      gate.promise.then(() => Reflect.apply(transaction, db, args))) as typeof db.transaction);
+    const retry = saving.retry(b);
+    saving.discard(b);
+    expect(saving.getAttempt(b)?.status).toBe('saving');
+    gate.resolve();
+    await retry;
+    saving.discard(b);
+    expect(saving.getAttempt(b)?.status).toBe('saved');
+    expect(await db.solves.count()).toBe(1);
+  });
+
   it('retains separate failures and guards repeated Retry while another attempt saves', async () => {
     const db = createTestDb();
     const saving = new TimerSaving(db);

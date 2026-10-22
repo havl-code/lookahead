@@ -15,6 +15,7 @@ import { localDate } from '../../lib/time.ts';
 import { BackupReminder } from '../backup/BackupReminder.tsx';
 import { averageText, PenaltyButtons, resultText, timerAverages } from '../solves/presentation.tsx';
 import { SolveEditToast } from '../solves/SolveEditToast.tsx';
+import { AttemptRecovery } from './AttemptRecovery.tsx';
 import {
   type ClockState,
   inspection,
@@ -130,11 +131,10 @@ export function TimerScreen() {
             saved.status === 'unavailable'
               ? "Couldn't save that solve: its session is no longer available."
               : "Couldn't save that solve. This device may be out of space.",
-          action: { label: 'Retry', onClick: () => void saving.retry(saved.id) },
         });
       }
     }
-  }, [saving, attempts]);
+  }, [attempts]);
 
   const clock = useClock({
     onStart: () => {
@@ -315,6 +315,7 @@ export function TimerScreen() {
   return (
     <>
       <h1 className="sr-only">Timer</h1>
+      <AttemptRecovery attempts={attempts} />
       <div
         className={`flex flex-1 flex-col gap-4 ${
           showPanel

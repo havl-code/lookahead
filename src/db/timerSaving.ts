@@ -21,6 +21,7 @@ export interface TimedAttempt extends AttemptContext {
   readonly status: 'saving' | 'saved' | 'error' | 'unavailable';
   readonly destinationId: number | null;
   readonly solveId?: number;
+  readonly recoverable?: boolean;
 }
 
 /** Owns timed attempts and their saves for the lifetime of the database provider. */
@@ -71,25 +72,32 @@ export class TimerSaving {
     await this.save(id);
   }
 
-  async retry(id: number): Promise<void> {
+  discard(id: number): void {
+    const attempt = this.attempts.get(id);
+    if (!attempt || attempt.status === 'saving' || attempt.status === 'saved') return;
+    this.attempts.delete(id);
+    this.notify();
+  }
+
+  async retry(id: number, replacementId?: number): Promise<void> {
     const attempt = this.attempts.get(id);
     if (!attempt || attempt.status === 'saving' || attempt.status === 'saved') return;
     this.attempts.set(id, { ...attempt, status: 'saving' });
-    await this.save(id);
+    await this.save(id, replacementId);
   }
 
-  private async save(id: number): Promise<void> {
+  private async save(id: number, replacementId?: number): Promise<void> {
     this.notify();
     const attempt = this.attempts.get(id);
     if (!attempt) return;
+    const destinationId = replacementId ?? attempt.destinationId;
     try {
       const stored = await this.db.transaction('rw', this.db.sessions, this.db.solves, async () => {
         const destination =
-          attempt.destinationId === null
+          destinationId === null
             ? await findTodaysSession(this.db, attempt.eventId, attempt.day)
-            : await this.db.sessions.get(attempt.destinationId);
-        if (attempt.destinationId !== null && destination?.event_id !== attempt.eventId)
-          return null;
+            : await this.db.sessions.get(destinationId);
+        if (destinationId !== null && destination?.event_id !== attempt.eventId) return null;
         if (destination) this.attempts.set(id, { ...attempt, destinationId: destination.id });
         return saveTimedSolve(
           this.db,
@@ -111,12 +119,16 @@ export class TimerSaving {
               solveId: stored.solveId,
               destinationId: stored.sessionId,
             }
-          : { ...current, status: 'unavailable' },
+          : { ...current, status: 'unavailable', recoverable: true },
       );
       this.notify();
       if (stored) this.requestPersistence();
     } catch {
-      this.attempts.set(id, { ...(this.attempts.get(id) ?? attempt), status: 'error' });
+      this.attempts.set(id, {
+        ...(this.attempts.get(id) ?? attempt),
+        status: 'error',
+        recoverable: true,
+      });
       this.notify();
     }
   }

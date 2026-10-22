@@ -1,6 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, type Page, test } from '@playwright/test';
 import { fakeRankings, restore } from './practice.ts';
+import { checkAttemptRecovery } from './recovery.ts';
 
 // The wide layout, from 1024 px wide (CONTEXT.md). Runs only in the desktop-chromium project,
 // at 1440 by 900 with a mouse; the iPhone projects check the phone layout.
@@ -576,3 +577,9 @@ for (const colorScheme of ['dark', 'light'] as const) {
     expect(results.violations).toEqual([]);
   });
 }
+
+test('recovers failed attempts after navigation with accessible controls', async ({ page }) => {
+  await page.clock.install({ time: new Date(2026, 9, 14, 9) });
+  await page.goto('./');
+  await checkAttemptRecovery(page);
+});
