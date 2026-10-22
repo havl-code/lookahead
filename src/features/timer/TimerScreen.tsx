@@ -1,32 +1,22 @@
-import {
-  type PointerEvent,
-  useCallback,
-  useEffect,
-  useId,
-  useRef,
-  useState,
-  useSyncExternalStore,
-} from 'react';
+import { type PointerEvent, useEffect, useId, useRef, useState, useSyncExternalStore } from 'react';
 import { enterFullscreen, leaveFullscreen, useFullscreen } from '../../app/fullscreen.ts';
 import { SettingsIcon } from '../../app/icons.tsx';
 import { useHoldUpdates } from '../../app/updates.ts';
-import { useDb, useSolveEditing } from '../../db/DbProvider.tsx';
+import { useDb, useSolveEditing, useTimerSaving } from '../../db/DbProvider.tsx';
 import { useMeta, useTimerSession, useTimerSettings } from '../../db/hooks.ts';
-import { getMeta, setMeta } from '../../db/meta.ts';
+import { setMeta } from '../../db/meta.ts';
 import type { Solve } from '../../db/schema.ts';
-import { onlyDnf, saveTimedSolve, startTimerSession } from '../../db/solves.ts';
+import { onlyDnf, startTimerSession } from '../../db/solves.ts';
 import { defaultTimerSettings } from '../../db/timerSettings.ts';
 import { eventName } from '../../lib/events.ts';
 import { count, formatClock, formatResult } from '../../lib/format.ts';
 import { averageSeconds, singleMark, singleSeconds } from '../../lib/stats.ts';
-import { requestPersistence } from '../../lib/storage.ts';
 import { localDate } from '../../lib/time.ts';
 import { BackupReminder } from '../backup/BackupReminder.tsx';
 import { averageText, PenaltyButtons, resultText, timerAverages } from '../solves/presentation.tsx';
 import { SolveEditToast } from '../solves/SolveEditToast.tsx';
 import {
   type ClockState,
-  type Finished,
   inspection,
   inspectionPenalty,
   isReady,
@@ -62,6 +52,8 @@ let pickedSession: number | null = null;
 export function TimerScreen() {
   const db = useDb();
   const editing = useSolveEditing();
+  const saving = useTimerSaving();
+  const attempts = useSyncExternalStore(saving.subscribe, saving.getAttempts, saving.getAttempts);
   useSyncExternalStore(editing.subscribe, editing.getRevision, editing.getRevision);
   useEffect(() => {
     editing.activate('timer');
@@ -86,6 +78,10 @@ export function TimerScreen() {
   const [openSolve, setOpenSolve] = useState<number | null>(null);
   // A solve being saved ('saving'), or the id of one saved but not yet in the list.
   const pending = useRef<'saving' | number | null>(null);
+  const activeAttempt = useRef<number | null>(null);
+  const latestAttempt = useRef<{ id: number; selection: number } | null>(null);
+  const selection = useRef(0);
+  const observed = useRef(new Map<number, string>());
   const runShortcut = useRef<(action: TimerShortcut) => void>(() => {});
   const scrambleFor = useRef({ eventId, scramble, sessionId: picked });
   scrambleFor.current = { eventId, scramble, sessionId: picked };
@@ -94,6 +90,7 @@ export function TimerScreen() {
   // Picking a session (or following today again) also lets go of any solve still being saved
   // into the old one, so the shortcuts work on the new session straight away.
   function pick(sessionId: number | null) {
+    selection.current += 1;
     pickedSession = sessionId;
     setPicked(sessionId);
     setShown(null);
@@ -110,41 +107,58 @@ export function TimerScreen() {
     }
   }
 
-  const save = useCallback(
-    async (
-      finished: Finished,
-      attempt: { eventId: string; scramble: string; sessionId: number | null },
-    ) => {
-      pending.current = 'saving';
-      try {
-        const { solveId } = await saveTimedSolve(db, { ...attempt, ...finished });
-        if (pending.current === 'saving') pending.current = solveId;
-        setShown(solveId);
+  useEffect(() => {
+    for (const saved of attempts) {
+      if (observed.current.get(saved.id) === saved.status) continue;
+      observed.current.set(saved.id, saved.status);
+      if (saved.status === 'saved') {
+        if (
+          latestAttempt.current?.id !== saved.id ||
+          latestAttempt.current.selection !== selection.current
+        )
+          continue;
+        pending.current = saved.solveId ?? null;
+        setShown(saved.solveId ?? null);
         setAnnouncement(
-          `${resultText({ time_ms: finished.timeMs, penalty: finished.penalty, dnf: finished.penalty === 'DNF' })}, saved.`,
+          `${resultText({ time_ms: saved.timeMs, penalty: saved.penalty, dnf: saved.penalty === 'DNF' })}, saved.`,
         );
-        // Now there's something worth keeping, ask the browser to keep it, once.
-        if ((await getMeta(db, 'persistResult')) === null)
-          await setMeta(db, 'persistResult', await requestPersistence());
-      } catch {
-        if (pending.current === 'saving') pending.current = null;
+        setToast(null);
+      } else if (saved.status === 'error' || saved.status === 'unavailable') {
+        if (latestAttempt.current?.id === saved.id) pending.current = null;
         setToast({
-          message: "Couldn't save that solve. This device may be out of space.",
-          action: { label: 'Retry', onClick: () => void save(finished, attempt) },
+          message:
+            saved.status === 'unavailable'
+              ? "Couldn't save that solve: its session is no longer available."
+              : "Couldn't save that solve. This device may be out of space.",
+          action: { label: 'Retry', onClick: () => void saving.retry(saved.id) },
         });
       }
-    },
-    [db],
-  );
+    }
+  }, [saving, attempts]);
 
   const clock = useClock({
+    onStart: () => {
+      const id = saving.capture(scrambleFor.current);
+      activeAttempt.current = id;
+      latestAttempt.current = { id, selection: selection.current };
+      setShown(null);
+      pending.current = null;
+    },
+    onCancel: () => {
+      if (activeAttempt.current !== null) saving.cancel(activeAttempt.current);
+      activeAttempt.current = null;
+    },
     inspect: () => settings.inspectionEnabled && !isBlindfolded(scrambleFor.current.eventId),
     onFinish: (finished) => {
       setCall(null);
-      const attempt = scrambleFor.current;
-      setScramble(generateScramble(attempt.eventId));
+      const id = activeAttempt.current;
+      activeAttempt.current = null;
+      setScramble(generateScramble(scrambleFor.current.eventId));
       setToday(localDate());
-      void save(finished, attempt);
+      if (id !== null) {
+        pending.current = 'saving';
+        void saving.finish(id, finished);
+      }
     },
     onReady: () => navigator.vibrate?.(15),
     onCall: (seconds) => {

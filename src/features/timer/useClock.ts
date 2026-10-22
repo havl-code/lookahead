@@ -11,6 +11,8 @@ import {
 interface Handlers {
   /** Whether the next attempt starts with inspection. */
   readonly inspect: () => boolean;
+  readonly onStart?: () => void;
+  readonly onCancel?: () => void;
   readonly onFinish: (finished: Finished) => void;
   /** The hold has lasted long enough that letting go will start the solve. */
   readonly onReady?: () => void;
@@ -40,7 +42,9 @@ export function useClock(handlers: Handlers) {
     if (after.phase !== before.phase || event.type !== 'tick') wasReady.current = false;
     current.current = after;
     setState(after);
+    if (before.phase === 'idle' && after.phase !== 'idle') latest.current.onStart?.();
     if (finished) latest.current.onFinish(finished);
+    else if (before.phase !== 'idle' && after.phase === 'idle') latest.current.onCancel?.();
   }, []);
 
   useEffect(() => {
@@ -65,6 +69,8 @@ export function useClock(handlers: Handlers) {
     });
     return () => cancelAnimationFrame(frame);
   }, [state.phase, apply]);
+
+  useEffect(() => () => latest.current.onCancel?.(), []);
 
   const press = useCallback(() => {
     const at = performance.now();

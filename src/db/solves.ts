@@ -69,6 +69,7 @@ export async function startTimerSession(
   db: LookaheadDb,
   eventId: string,
   now = new Date(),
+  day = localDate(now),
 ): Promise<number> {
   const latest = (
     await db.sessions
@@ -80,7 +81,7 @@ export async function startTimerSession(
     .at(-1);
   return withStorageErrors(() =>
     db.sessions.add({
-      date: localDate(now),
+      date: day,
       event_id: eventId,
       cube_id: latest?.cube_id ?? null,
       notes: 'Live timer session',
@@ -112,6 +113,8 @@ export interface TimedSolve {
   readonly scramble: string;
   /** The session picked on the timer, if any; otherwise (or if it's gone) today's. */
   readonly sessionId?: number | null;
+  /** The retained local completion day for a timed attempt. */
+  readonly completionDay?: string;
 }
 
 /**
@@ -126,8 +129,15 @@ export async function saveTimedSolve(
   return withStorageErrors(() =>
     db.transaction('rw', db.sessions, db.solves, async () => {
       const sessionId =
-        (await timerSession(db, solve.eventId, solve.sessionId ?? null, localDate(now)))?.id ??
-        (await startTimerSession(db, solve.eventId, now));
+        (
+          await timerSession(
+            db,
+            solve.eventId,
+            solve.sessionId ?? null,
+            solve.completionDay ?? localDate(now),
+          )
+        )?.id ??
+        (await startTimerSession(db, solve.eventId, now, solve.completionDay ?? localDate(now)));
       const last = await solvesOf(db, sessionId).last();
       const solveId = await db.solves.add({
         session_id: sessionId,
