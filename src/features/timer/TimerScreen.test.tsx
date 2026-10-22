@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
+import { updatesHeld } from '../../app/updates.ts';
 import { DbProvider } from '../../db/DbProvider.tsx';
 import * as hooks from '../../db/hooks.ts';
 import { addSolve, startTimerSession } from '../../db/solves.ts';
@@ -396,14 +397,18 @@ describe('Timer save controls', () => {
     expect(await db.solves.toArray()).toMatchObject([{ session_id: replacement, time_ms: 12_340 }]);
   });
 
-  it('retains failed attempts across tab changes and retries once', async () => {
+  it('retains failed attempts and their update hold across tab changes, and retries once', async () => {
     const { db, start, stop } = await setup();
     const add = vi.spyOn(db.solves, 'add').mockRejectedValue(new Error('full'));
     start();
     stop(12_340);
     fireEvent.click(await screen.findByRole('button', { name: 'Recover 1 unsaved attempt' }));
     await screen.findByRole('button', { name: 'Retry' });
+    fireEvent.click(screen.getByRole('button', { name: 'Close' }));
+    expect(screen.queryByRole('dialog', { name: 'Unsaved attempts' })).toBeNull();
+    expect(updatesHeld()).toBe(true);
     fireEvent.click(screen.getByRole('button', { name: 'Change tab' }));
+    expect(updatesHeld()).toBe(true);
     add.mockRestore();
     fireEvent.click(screen.getByRole('button', { name: 'Change tab' }));
     fireEvent.click(await screen.findByRole('button', { name: 'Recover 1 unsaved attempt' }));
@@ -413,6 +418,8 @@ describe('Timer save controls', () => {
     fireEvent.click(retry);
     await waitFor(async () => expect(await db.solves.count()).toBe(1));
     expect(await db.solves.toArray()).toMatchObject([{ time_ms: 12_340 }]);
+    fireEvent.click(screen.getByRole('button', { name: 'Change tab' }));
+    expect(updatesHeld()).toBe(false);
   });
 
   it('keeps a delayed save in its captured context and leaves a newer result showing', async () => {

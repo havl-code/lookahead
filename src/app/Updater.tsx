@@ -1,5 +1,6 @@
 import { useRegisterSW } from 'virtual:pwa-register/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
+import { useTimerSaving } from '../db/DbProvider.tsx';
 import { updatesHeld } from './updates.ts';
 
 /** Set just before an update reloads the app, so the reloaded app can say it was updated. */
@@ -12,7 +13,8 @@ const checkEveryMs = 60 * 60 * 1000;
  * iOS resumes an installed app rather than reloading it, so new versions are looked for each time
  * the app comes back to the screen, and hourly while it stays open. A new version is applied when
  * the app is next hidden, unless that would lose work (see updates.ts), so an update never lands
- * mid-solve. "Update now" applies it straight away.
+ * mid-solve. "Update now" applies it straight away, except while a timed attempt is unsaved:
+ * the reload would lose it.
  */
 export function Updater() {
   const [notice, setNotice] = useState<'updated' | null>(readUpdated);
@@ -31,6 +33,8 @@ export function Updater() {
     },
   });
   const [dismissed, setDismissed] = useState(false);
+  const saving = useTimerSaving();
+  const unsaved = useSyncExternalStore(saving.subscribe, saving.hasUnsavedAttempts);
 
   useEffect(() => {
     if (!needRefresh) return;
@@ -70,7 +74,9 @@ export function Updater() {
       {offerUpdate ? (
         <>
           <p className="flex-1">
-            A new version is ready. It installs next time you leave Lookahead.
+            {unsaved
+              ? 'A new version is ready. It installs when you leave, once unsaved attempts are saved or discarded.'
+              : 'A new version is ready. It installs next time you leave Lookahead.'}
           </p>
           <button
             type="button"
@@ -81,11 +87,13 @@ export function Updater() {
           </button>
           <button
             type="button"
+            disabled={unsaved}
             onClick={() => {
+              if (saving.hasUnsavedAttempts()) return;
               markUpdated();
               void updateServiceWorker(true);
             }}
-            className="min-h-11 rounded-lg bg-accent px-3 font-semibold text-on-accent"
+            className="min-h-11 rounded-lg bg-accent px-3 font-semibold text-on-accent disabled:opacity-60"
           >
             Update now
           </button>

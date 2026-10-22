@@ -1,3 +1,4 @@
+import { holdUpdates } from '../app/updates.ts';
 import type { Finished } from '../features/timer/clock.ts';
 import { requestPersistence } from '../lib/storage.ts';
 import { localDate } from '../lib/time.ts';
@@ -35,12 +36,16 @@ export class TimerSaving {
   private snapshot: readonly TimedAttempt[] = [];
   private listeners = new Set<() => void>();
   private persistence: Promise<void> | null = null;
+  /** One update hold for each attempt still saving or recoverable, released once it resolves. */
+  private holds = new Map<number, () => void>();
 
   constructor(private readonly db: LookaheadDb) {}
 
   getRevision = () => this.revision;
   getAttempt = (id: number) => this.attempts.get(id);
   getAttempts = () => this.snapshot;
+  /** Whether any attempt is still saving or recoverable, so an update would lose it. */
+  hasUnsavedAttempts = () => this.holds.size > 0;
   subscribe = (listener: () => void) => {
     this.listeners.add(listener);
     return () => this.listeners.delete(listener);
@@ -169,8 +174,23 @@ export class TimerSaving {
   }
 
   private notify(): void {
+    this.syncHolds();
     this.snapshot = [...this.attempts.values()];
     this.revision += 1;
     for (const listener of this.listeners) listener();
+  }
+
+  /** Holds updates for attempts still saving or recoverable, and releases the rest. */
+  private syncHolds(): void {
+    for (const attempt of this.attempts.values())
+      if (attempt.status !== 'saved' && !this.holds.has(attempt.id))
+        this.holds.set(attempt.id, holdUpdates());
+    for (const [id, release] of this.holds) {
+      const status = this.attempts.get(id)?.status;
+      if (status === undefined || status === 'saved') {
+        release();
+        this.holds.delete(id);
+      }
+    }
   }
 }
