@@ -11,11 +11,13 @@ export function Sheet({
   onClose,
   title,
   children,
+  dismissible = true,
 }: {
   readonly open: boolean;
   readonly onClose: () => void;
   readonly title: string;
   readonly children: ReactNode;
+  readonly dismissible?: boolean;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
@@ -33,9 +35,12 @@ export function Sheet({
       ref={ref}
       aria-labelledby={titleId}
       onClose={onClose}
+      onCancel={(event) => {
+        if (!dismissible) event.preventDefault();
+      }}
       // A tap on the backdrop lands on the dialog element itself, outside its content.
       onClick={(event) => {
-        if (event.target === event.currentTarget) onClose();
+        if (dismissible && event.target === event.currentTarget) onClose();
       }}
       // In the wide layout it's a dialog in the middle of the window, 560 px at most.
       className="fixed inset-x-0 top-auto bottom-0 m-0 mx-auto max-h-[90dvh] w-full max-w-xl overflow-y-auto rounded-t-3xl bg-raised p-0 text-ink shadow-xl backdrop:bg-black/50 lg:top-0 lg:my-auto lg:max-w-140 lg:rounded-3xl"
@@ -49,6 +54,7 @@ export function Sheet({
             <button
               type="button"
               onClick={onClose}
+              disabled={!dismissible}
               aria-label="Close"
               className="-mr-2 flex size-11 items-center justify-center rounded-full text-muted"
             >

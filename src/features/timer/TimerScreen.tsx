@@ -1,28 +1,29 @@
-import { type PointerEvent, useCallback, useEffect, useId, useRef, useState } from 'react';
+import {
+  type PointerEvent,
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from 'react';
 import { enterFullscreen, leaveFullscreen, useFullscreen } from '../../app/fullscreen.ts';
 import { SettingsIcon } from '../../app/icons.tsx';
 import { Toast } from '../../app/Toast.tsx';
 import { useHoldUpdates } from '../../app/updates.ts';
-import { useDb } from '../../db/DbProvider.tsx';
+import { useDb, useSolveEditing } from '../../db/DbProvider.tsx';
 import { useMeta, useTimerSession, useTimerSettings } from '../../db/hooks.ts';
 import { getMeta, setMeta } from '../../db/meta.ts';
 import type { Solve } from '../../db/schema.ts';
-import {
-  deleteSolve,
-  onlyDnf,
-  restoreSolve,
-  saveTimedSolve,
-  setPenalty,
-  setSolveNotes,
-  startTimerSession,
-} from '../../db/solves.ts';
+import { onlyDnf, saveTimedSolve, startTimerSession } from '../../db/solves.ts';
 import { defaultTimerSettings } from '../../db/timerSettings.ts';
 import { eventName } from '../../lib/events.ts';
 import { count, formatClock, formatResult } from '../../lib/format.ts';
-import { averageSeconds, type Result, singleMark, singleSeconds } from '../../lib/stats.ts';
+import { averageSeconds, singleMark, singleSeconds } from '../../lib/stats.ts';
 import { requestPersistence } from '../../lib/storage.ts';
 import { localDate } from '../../lib/time.ts';
 import { BackupReminder } from '../backup/BackupReminder.tsx';
+import { averageText, PenaltyButtons, resultText, timerAverages } from '../solves/presentation.tsx';
 import {
   type ClockState,
   type Finished,
@@ -52,37 +53,6 @@ const recentCount = 12;
 // The width of the wide layout's Ao5 and Ao12 columns, room for 1:23.45 at the panel's text size.
 const averageColumn = 'w-16 shrink-0 text-right';
 
-/** A solve's result as the timer shows it: 12.34, 14.34 (+2), or DNF. */
-export function resultText(solve: Pick<Solve, 'time_ms' | 'penalty' | 'dnf'>): string {
-  if (solve.dnf) return 'DNF';
-  if (solve.penalty === '+2')
-    return `${formatClock(singleSeconds(solve.time_ms + 2000) ?? 0)} (+2)`;
-  return formatClock(singleSeconds(solve.time_ms) ?? 0);
-}
-
-/**
- * The averages the timer shows for a session and at each solve: each one's name, the field that
- * holds it (on a session, or on a solve from solvesWithAverages), and how many solves it takes.
- */
-export const timerAverages = [
-  { label: 'Ao5', key: 'ao5', size: 5 },
-  { label: 'Ao12', key: 'ao12', size: 12 },
-] as const;
-
-/**
- * An Ao5 or Ao12 (`size`) as the timer shows it, where `solvesSoFar` is how many solves the session
- * has up to and including the one it ends at (a solve's number, or the session's count for its
- * latest): a dash until there are enough solves for one, DNF for a DNF, or else hundredths.
- */
-export function averageText(value: Result | undefined, size: number, solvesSoFar: number): string {
-  return value == null && solvesSoFar >= size ? 'DNF' : formatResult(averageSeconds(value ?? null));
-}
-
-/** A solve's penalty, as its buttons show it: a DNF however it's stored, then +2, then OK. */
-function penaltyOf(solve: Pick<Solve, 'penalty' | 'dnf'>): Penalty {
-  return solve.dnf ? 'DNF' : solve.penalty === '+2' ? '+2' : 'OK';
-}
-
 /**
  * The session picked on the timer's menu, kept outside the screen so it lasts while the app is
  * open (as on the desktop, until a reload), even when another tab is showing. Null follows today.
@@ -91,6 +61,9 @@ let pickedSession: number | null = null;
 
 export function TimerScreen() {
   const db = useDb();
+  const editing = useSolveEditing();
+  useSyncExternalStore(editing.subscribe, editing.getRevision, editing.getRevision);
+  const editPending = editing.isPending();
   const storedEvent = useMeta('timerEvent');
   const eventId = storedEvent && hasTimer(storedEvent) ? storedEvent : '333';
   const settings = useTimerSettings() ?? defaultTimerSettings;
@@ -285,24 +258,35 @@ export function TimerScreen() {
   const shownSolve = solves.find((solve) => solve.id === shown);
 
   async function changePenalty(solve: Solve, penalty: Penalty) {
-    await setPenalty(db, solve.id, penalty);
+    const result = await editing.changePenalty(solve.id, solve.solve_number, penalty);
+    if (result.status === 'unavailable') {
+      setOpenSolve((current) => (current === solve.id ? null : current));
+    }
+    return result;
   }
 
   async function remove(solve: Solve) {
-    const deleted = await deleteSolve(db, solve.id);
-    if (shown === solve.id) setShown(null);
-    if (deleted) {
-      setToast({
-        message: `Solve ${deleted.solve_number} deleted.`,
-        action: {
-          label: 'Undo',
-          onClick: () => {
-            setToast(null);
-            void restoreSolve(db, deleted);
-          },
-        },
-      });
+    const result = await editing.remove(solve.id, solve.solve_number);
+    if (result.status !== 'success') {
+      if (result.status === 'unavailable')
+        setOpenSolve((current) => (current === solve.id ? null : current));
+      return result;
     }
+    const deleted = result.value;
+    setShown((current) => (current === solve.id ? null : current));
+    setOpenSolve((current) => (current === solve.id ? null : current));
+    setToast({
+      message: `Solve ${deleted.solve_number} deleted.`,
+      action: {
+        label: 'Undo',
+        onClick: async () => {
+          setToast(null);
+          const restored = await editing.restore(deleted);
+          if (restored.status !== 'success') setToast({ message: "Couldn't restore the solve." });
+        },
+      },
+    });
+    return result;
   }
 
   // The shortcuts wait while a solve is being timed or saved, and until it shows in the list, so
@@ -310,9 +294,12 @@ export function TimerScreen() {
   const latest = solves[0];
   if (typeof pending.current === 'number' && latest?.id === pending.current) pending.current = null;
   runShortcut.current = (action) => {
-    if (active || pending.current !== null || !latest) return;
+    if (active || pending.current !== null || editing.isPending() || !latest) return;
     if (action === 'delete') void remove(latest);
-    else if (penaltyOf(latest) !== action && !(onlyDnf(latest) && action !== 'DNF'))
+    else if (
+      (latest.dnf ? 'DNF' : latest.penalty === '+2' ? '+2' : 'OK') !== action &&
+      !(onlyDnf(latest) && action !== 'DNF')
+    )
       void changePenalty(latest, action);
   };
 
@@ -430,10 +417,12 @@ export function TimerScreen() {
             <legend className="sr-only">Solve {shownSolve.solve_number}</legend>
             <PenaltyButtons
               solve={shownSolve}
+              disabled={editPending}
               onChange={(penalty) => void changePenalty(shownSolve, penalty)}
             />
             <button
               type="button"
+              disabled={editPending}
               onClick={() => void remove(shownSolve)}
               className="min-h-11 rounded-lg border border-control px-4 font-medium text-danger-ink"
             >
@@ -472,15 +461,25 @@ export function TimerScreen() {
       <SolveSheet
         solve={solves.find((solve) => solve.id === openSolve) ?? null}
         onClose={() => setOpenSolve(null)}
-        onPenalty={(solve, penalty) => void changePenalty(solve, penalty)}
-        onNotes={(solve, notes) => setSolveNotes(db, solve.id, notes)}
-        onDelete={(solve) => {
-          setOpenSolve(null);
-          void remove(solve);
+        onPenalty={changePenalty}
+        onNotes={async (solve, notes) => {
+          const result = await editing.changeNotes(solve.id, solve.solve_number, notes);
+          if (result.status === 'unavailable')
+            setOpenSolve((current) => (current === solve.id ? null : current));
+          return result;
         }}
+        onDelete={remove}
+        pending={editPending}
       />
-      {toast && (
-        <Toast message={toast.message} action={toast.action} onDismiss={() => setToast(null)} />
+      {(toast || editing.getFeedback()) && (
+        <Toast
+          message={toast?.message ?? editing.getFeedback() ?? ''}
+          action={toast?.action}
+          onDismiss={() => {
+            setToast(null);
+            editing.clearFeedback();
+          }}
+        />
       )}
     </>
   );
@@ -544,36 +543,6 @@ function Readout({
       {text}
       {plusTwo && <span className="ml-2 align-top text-[0.3em] text-warning-ink">+2</span>}
     </p>
-  );
-}
-
-export function PenaltyButtons({
-  solve,
-  onChange,
-}: {
-  readonly solve: Solve;
-  readonly onChange: (penalty: Penalty) => void;
-}) {
-  const current = penaltyOf(solve);
-  // A solve that never started has no time, so it can only be a DNF.
-  const fixed = onlyDnf(solve);
-  return (
-    <div className="flex overflow-hidden rounded-lg border border-control">
-      {(['OK', '+2', 'DNF'] as const).map((penalty) => (
-        <button
-          key={penalty}
-          type="button"
-          aria-pressed={current === penalty}
-          disabled={fixed && penalty !== 'DNF'}
-          onClick={() => current !== penalty && onChange(penalty)}
-          className={`min-h-11 min-w-14 px-3 font-semibold disabled:text-muted disabled:opacity-60 ${
-            current === penalty ? 'bg-accent text-on-accent' : 'bg-raised'
-          }`}
-        >
-          {penalty}
-        </button>
-      ))}
-    </div>
   );
 }
 

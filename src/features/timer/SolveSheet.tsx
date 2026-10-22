@@ -3,10 +3,10 @@ import { Field, fieldStyle, secondaryButton } from '../../app/forms.tsx';
 import { Sheet } from '../../app/Sheet.tsx';
 import { useSolveAverages } from '../../db/hooks.ts';
 import type { Solve } from '../../db/schema.ts';
+import type { EditResult } from '../../db/solveEditing.ts';
 import { formatMoment } from '../../lib/time.ts';
-import { maxNotes, text } from '../../lib/validation.ts';
+import { averageText, PenaltyButtons, resultText, timerAverages } from '../solves/presentation.tsx';
 import type { Penalty } from './clock.ts';
-import { averageText, PenaltyButtons, resultText, timerAverages } from './TimerScreen.tsx';
 
 /**
  * One solve: its result, when, the Ao5 and Ao12 at it, and its scramble, with its penalty, notes,
@@ -18,12 +18,14 @@ export function SolveSheet({
   onPenalty,
   onNotes,
   onDelete,
+  pending,
 }: {
   readonly solve: Solve | null;
   readonly onClose: () => void;
-  readonly onPenalty: (solve: Solve, penalty: Penalty) => void;
-  readonly onNotes: (solve: Solve, notes: string) => Promise<void>;
-  readonly onDelete: (solve: Solve) => void;
+  readonly onPenalty: (solve: Solve, penalty: Penalty) => Promise<EditResult<boolean>>;
+  readonly onNotes: (solve: Solve, notes: string) => Promise<EditResult<string>>;
+  readonly onDelete: (solve: Solve) => Promise<EditResult<Solve>>;
+  readonly pending: boolean;
 }) {
   // Left blank until they're worked out for this solve, rather than showing another solve's.
   const loaded = useSolveAverages(solve);
@@ -33,6 +35,7 @@ export function SolveSheet({
       open={solve !== null}
       onClose={onClose}
       title={solve ? `Solve ${solve.solve_number}` : ''}
+      dismissible={!pending}
     >
       {solve && (
         <div className="space-y-4">
@@ -50,16 +53,26 @@ export function SolveSheet({
           </dl>
           {solve.scramble && <p className="whitespace-pre-line break-words">{solve.scramble}</p>}
           <div className="flex flex-wrap items-center gap-2">
-            <PenaltyButtons solve={solve} onChange={(penalty) => onPenalty(solve, penalty)} />
+            <PenaltyButtons
+              solve={solve}
+              disabled={pending}
+              onChange={(penalty) => void onPenalty(solve, penalty)}
+            />
             <button
               type="button"
-              onClick={() => onDelete(solve)}
+              disabled={pending}
+              onClick={() => void onDelete(solve)}
               className="min-h-11 rounded-lg border border-control px-4 font-medium text-danger-ink"
             >
               Delete
             </button>
           </div>
-          <NotesField key={solve.id} solve={solve} onSave={(notes) => onNotes(solve, notes)} />
+          <NotesField
+            key={solve.id}
+            solve={solve}
+            pending={pending}
+            onSave={(notes) => onNotes(solve, notes)}
+          />
         </div>
       )}
     </Sheet>
@@ -69,9 +82,11 @@ export function SolveSheet({
 function NotesField({
   solve,
   onSave,
+  pending,
 }: {
   readonly solve: Solve;
-  readonly onSave: (notes: string) => Promise<void>;
+  readonly onSave: (notes: string) => Promise<EditResult<string>>;
+  readonly pending: boolean;
 }) {
   const saved = solve.notes ?? '';
   const [notes, setNotes] = useState(saved);
@@ -80,17 +95,18 @@ function NotesField({
   useEffect(() => setNotes(saved), [saved]);
 
   async function save() {
-    const checked = text(notes, 'A note', maxNotes);
-    if (!checked.ok) {
-      setError(checked.error);
-      return;
-    }
     setError(null);
-    try {
-      await onSave(checked.value);
+    const result = await onSave(notes);
+    if (result.status === 'success') {
       setStatus('Note saved.');
-    } catch {
+    } else if (result.status === 'invalid') {
+      setError(result.message);
+    } else if (result.status === 'unavailable') {
+      setError('This solve is no longer available.');
+    } else if (result.status === 'error') {
       setError("Couldn't save the note. This device may be out of space.");
+    } else {
+      setError('Another edit is still in progress.');
     }
   }
 
@@ -107,6 +123,7 @@ function NotesField({
           <textarea
             {...ids}
             value={notes}
+            readOnly={pending}
             onChange={(event) => {
               setNotes(event.target.value);
               setStatus('');
@@ -117,7 +134,11 @@ function NotesField({
         )}
       </Field>
       <div className="flex items-center gap-3">
-        <button type="submit" disabled={notes.trim() === saved} className={secondaryButton}>
+        <button
+          type="submit"
+          disabled={pending || notes.trim() === saved}
+          className={secondaryButton}
+        >
           Save note
         </button>
         <p role="status" className="text-muted text-sm">

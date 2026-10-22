@@ -158,13 +158,15 @@ export async function setPenalty(
   db: LookaheadDb,
   solveId: number,
   penalty: Penalty,
-): Promise<void> {
-  await withStorageErrors(() =>
+): Promise<boolean> {
+  return withStorageErrors(() =>
     db.transaction('rw', db.sessions, db.solves, async () => {
       const solve = await db.solves.get(solveId);
-      if (!solve || (penalty !== 'DNF' && onlyDnf(solve))) return;
+      if (!solve || !(await db.sessions.get(solve.session_id))) return false;
+      if (penalty !== 'DNF' && onlyDnf(solve)) return true;
       await db.solves.update(solveId, { penalty, dnf: penalty === 'DNF' });
       await recomputeSessionStats(db, solve.session_id);
+      return true;
     }),
   );
 }
@@ -176,7 +178,7 @@ export async function setPenalty(
 export async function deleteSolve(db: LookaheadDb, solveId: number): Promise<Solve | undefined> {
   return db.transaction('rw', db.sessions, db.solves, async () => {
     const solve = await db.solves.get(solveId);
-    if (!solve) return undefined;
+    if (!solve || !(await db.sessions.get(solve.session_id))) return undefined;
     await db.solves.delete(solveId);
     await renumber(db, solve.session_id, solve.solve_number + 1, -1);
     await recomputeSessionStats(db, solve.session_id);
@@ -189,15 +191,16 @@ export async function deleteSolve(db: LookaheadDb, solveId: number): Promise<Sol
  * now), moving the solves after it along by one, with its old id. Nothing happens if its session
  * has gone.
  */
-export async function restoreSolve(db: LookaheadDb, solve: Solve): Promise<void> {
-  await withStorageErrors(() =>
+export async function restoreSolve(db: LookaheadDb, solve: Solve): Promise<boolean> {
+  return withStorageErrors(() =>
     db.transaction('rw', db.sessions, db.solves, async () => {
-      if (!(await db.sessions.get(solve.session_id))) return;
+      if (!(await db.sessions.get(solve.session_id))) return false;
       const last = await solvesOf(db, solve.session_id).last();
       const number = Math.min(solve.solve_number, (last?.solve_number ?? 0) + 1);
       await renumber(db, solve.session_id, number, 1);
       await db.solves.put({ ...solve, solve_number: number });
       await recomputeSessionStats(db, solve.session_id);
+      return true;
     }),
   );
 }
@@ -250,8 +253,15 @@ export async function setSolveNotes(
   db: LookaheadDb,
   solveId: number,
   notes: string,
-): Promise<void> {
-  await withStorageErrors(() => db.solves.update(solveId, { notes }));
+): Promise<boolean> {
+  return withStorageErrors(() =>
+    db.transaction('rw', db.sessions, db.solves, async () => {
+      const solve = await db.solves.get(solveId);
+      if (!solve || !(await db.sessions.get(solve.session_id))) return false;
+      await db.solves.update(solveId, { notes });
+      return true;
+    }),
+  );
 }
 
 export interface TypedSolve {

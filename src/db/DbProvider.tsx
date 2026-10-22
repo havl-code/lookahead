@@ -1,7 +1,9 @@
-import { createContext, type ReactNode, useContext } from 'react';
+import { createContext, type ReactNode, useContext, useState } from 'react';
 import type { LookaheadDb } from './database.ts';
+import { SolveEditing } from './solveEditing.ts';
 
 const DbContext = createContext<LookaheadDb | null>(null);
+const EditingContext = createContext<SolveEditing | null>(null);
 
 /** Provides the database to the app, so tests can hand in a fresh one. */
 export function DbProvider({
@@ -11,11 +13,22 @@ export function DbProvider({
   readonly db: LookaheadDb;
   readonly children: ReactNode;
 }) {
-  return <DbContext value={db}>{children}</DbContext>;
+  const [editing] = useState(() => new SolveEditing(db));
+  return (
+    <DbContext value={db}>
+      <EditingContext value={editing}>{children}</EditingContext>
+    </DbContext>
+  );
 }
 
 export function useDb(): LookaheadDb {
   const db = useContext(DbContext);
   if (!db) throw new Error('useDb must be used inside a DbProvider');
   return db;
+}
+
+export function useSolveEditing(): SolveEditing {
+  const editing = useContext(EditingContext);
+  if (!editing) throw new Error('useSolveEditing must be used inside a DbProvider');
+  return editing;
 }

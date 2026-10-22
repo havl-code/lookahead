@@ -1,4 +1,4 @@
-import { useId, useState } from 'react';
+import { useId, useState, useSyncExternalStore } from 'react';
 import { BackLink } from '../../app/BackLink.tsx';
 import { dangerButton, fieldStyle, primaryButton, secondaryButton } from '../../app/forms.tsx';
 import { PlusIcon } from '../../app/icons.tsx';
@@ -6,24 +6,18 @@ import { tabHref } from '../../app/router.ts';
 import { Sheet } from '../../app/Sheet.tsx';
 import { Toast } from '../../app/Toast.tsx';
 import { cubeName } from '../../db/cubes.ts';
-import { useDb } from '../../db/DbProvider.tsx';
+import { useDb, useSolveEditing } from '../../db/DbProvider.tsx';
 import { useCubes, useSession, useSessionSolves } from '../../db/hooks.ts';
 import type { Session, Solve } from '../../db/schema.ts';
 import { deleteSession } from '../../db/sessions.ts';
-import {
-  deleteSolve,
-  restoreSolve,
-  type SolveSort,
-  setPenalty,
-  setSolveNotes,
-} from '../../db/solves.ts';
+import type { SolveSort } from '../../db/solves.ts';
 import { eventName } from '../../lib/events.ts';
 import { count, formatResult } from '../../lib/format.ts';
 import { averageSeconds, singleSeconds } from '../../lib/stats.ts';
 import { formatDate } from '../../lib/time.ts';
 import { CsvExportButton } from '../backup/CsvExportButton.tsx';
+import { averageText, resultText } from '../solves/presentation.tsx';
 import { SolveSheet } from '../timer/SolveSheet.tsx';
-import { averageText, resultText } from '../timer/TimerScreen.tsx';
 import { AddSolveSheet } from './AddSolveSheet.tsx';
 import { SessionSheet } from './SessionSheet.tsx';
 
@@ -36,6 +30,9 @@ export function sessionTitle(session: Session): string {
 /** One session: its stats and every solve, with editing, adding solves, and deleting. */
 export function SessionScreen({ sessionId }: { readonly sessionId: number }) {
   const db = useDb();
+  const editing = useSolveEditing();
+  useSyncExternalStore(editing.subscribe, editing.getRevision, editing.getRevision);
+  const editPending = editing.isPending();
   const session = useSession(sessionId);
   const cubes = useCubes();
   const [sort, setSort] = useState<SolveSort>('number');
@@ -62,19 +59,26 @@ export function SessionScreen({ sessionId }: { readonly sessionId: number }) {
   const cube = session.cube_id === null ? undefined : cubes?.get(session.cube_id);
 
   async function remove(solve: Solve) {
-    setOpenSolve(null);
-    const deleted = await deleteSolve(db, solve.id);
-    if (!deleted) return;
+    const result = await editing.remove(solve.id, solve.solve_number);
+    if (result.status !== 'success') {
+      if (result.status === 'unavailable')
+        setOpenSolve((current) => (current === solve.id ? null : current));
+      return result;
+    }
+    const deleted = result.value;
+    setOpenSolve((current) => (current === solve.id ? null : current));
     setToast({
       message: `Solve ${deleted.solve_number} deleted.`,
       action: {
         label: 'Undo',
-        onClick: () => {
+        onClick: async () => {
           setToast(null);
-          void restoreSolve(db, deleted);
+          const restored = await editing.restore(deleted);
+          if (restored.status !== 'success') setToast({ message: "Couldn't restore the solve." });
         },
       },
     });
+    return result;
   }
 
   return (
@@ -240,12 +244,31 @@ export function SessionScreen({ sessionId }: { readonly sessionId: number }) {
       <SolveSheet
         solve={solves?.find((solve) => solve.id === openSolve) ?? null}
         onClose={() => setOpenSolve(null)}
-        onPenalty={(solve, penalty) => void setPenalty(db, solve.id, penalty)}
-        onNotes={(solve, notes) => setSolveNotes(db, solve.id, notes)}
-        onDelete={(solve) => void remove(solve)}
+        onPenalty={async (solve, penalty) => {
+          const result = await editing.changePenalty(solve.id, solve.solve_number, penalty);
+          if (result.status === 'unavailable') {
+            setOpenSolve((current) => (current === solve.id ? null : current));
+          }
+          return result;
+        }}
+        onNotes={async (solve, notes) => {
+          const result = await editing.changeNotes(solve.id, solve.solve_number, notes);
+          if (result.status === 'unavailable')
+            setOpenSolve((current) => (current === solve.id ? null : current));
+          return result;
+        }}
+        onDelete={remove}
+        pending={editPending}
       />
-      {toast && (
-        <Toast message={toast.message} action={toast.action} onDismiss={() => setToast(null)} />
+      {(toast || editing.getFeedback()) && (
+        <Toast
+          message={toast?.message ?? editing.getFeedback() ?? ''}
+          action={toast?.action}
+          onDismiss={() => {
+            setToast(null);
+            editing.clearFeedback();
+          }}
+        />
       )}
     </>
   );
