@@ -23,7 +23,7 @@ import { averageSeconds, singleSeconds } from '../../lib/stats.ts';
 import { formatDate } from '../../lib/time.ts';
 import { CsvExportButton } from '../backup/CsvExportButton.tsx';
 import { SolveSheet } from '../timer/SolveSheet.tsx';
-import { resultText } from '../timer/TimerScreen.tsx';
+import { averageText, resultText } from '../timer/TimerScreen.tsx';
 import { AddSolveSheet } from './AddSolveSheet.tsx';
 import { SessionSheet } from './SessionSheet.tsx';
 
@@ -130,34 +130,66 @@ export function SessionScreen({ sessionId }: { readonly sessionId: number }) {
             </div>
           )}
         </div>
+        <p className="mt-1 text-muted text-sm">
+          Ao5 and Ao12 use the solves in this session up to and including each solve.
+        </p>
         {solves === undefined ? null : solves.length === 0 ? (
           <p className="mt-2 text-muted">
             No solves yet. Time some on the Timer tab (today's session only), or add them here.
           </p>
         ) : (
           <>
-            <ol className="mt-3 divide-y divide-line rounded-xl border border-line bg-raised">
-              {solves.map((solve) => (
-                <li key={solve.id}>
-                  <button
-                    type="button"
-                    onClick={() => setOpenSolve(solve.id)}
-                    aria-label={`Solve ${solve.solve_number}: ${resultText(solve)}${solve.notes ? `, ${solve.notes}` : ''}`}
-                    className="flex min-h-12 w-full items-center gap-3 px-4 py-2 text-left"
-                  >
-                    <span className="w-12 shrink-0 text-muted text-sm tabular-nums">
-                      {solve.solve_number}
-                    </span>
-                    <span className="shrink-0 font-semibold tabular-nums">{resultText(solve)}</span>
-                    {solve.notes && (
-                      <span className="min-w-0 flex-1 truncate text-muted text-sm">
-                        {solve.notes}
-                      </span>
-                    )}
-                  </button>
-                </li>
-              ))}
-            </ol>
+            <div className="mt-3 overflow-hidden rounded-xl border border-line bg-raised lg:max-h-[32rem] lg:overflow-y-auto">
+              <div
+                aria-hidden="true"
+                className="sticky top-0 z-10 hidden grid-cols-[4rem_minmax(0,1fr)_minmax(4rem,max-content)_minmax(4rem,max-content)] gap-3 border-b border-line bg-raised px-4 py-2 text-muted text-sm lg:grid"
+              >
+                <span className="text-right">Solve</span>
+                <span>Result</span>
+                <span className="text-right">Ao5</span>
+                <span className="text-right">Ao12</span>
+              </div>
+              <ol className="divide-y divide-line">
+                {solves.map((solve) => {
+                  const ao5 = averageText(solve.ao5, 5, solve.solve_number);
+                  const ao12 = averageText(solve.ao12, 12, solve.solve_number);
+                  return (
+                    <li key={solve.id}>
+                      <button
+                        type="button"
+                        onClick={() => setOpenSolve(solve.id)}
+                        aria-label={`Solve ${solve.solve_number}: ${resultText(solve)}, Ao5 ${ao5}, Ao12 ${ao12}${solve.notes ? `, ${solve.notes}` : ''}`}
+                        className="grid min-h-12 w-full grid-cols-[3rem_minmax(0,1fr)] items-center gap-x-3 gap-y-1 px-4 py-2 text-left lg:grid-cols-[4rem_minmax(0,1fr)_minmax(4rem,max-content)_minmax(4rem,max-content)]"
+                      >
+                        <span className="text-right text-muted text-sm tabular-nums lg:text-base">
+                          {solve.solve_number}
+                        </span>
+                        <span className="min-w-0 font-semibold tabular-nums [overflow-wrap:anywhere]">
+                          {resultText(solve)}
+                        </span>
+                        <span className="col-span-2 flex flex-wrap gap-x-4 gap-y-1 text-sm tabular-nums lg:contents">
+                          <span className="lg:text-right lg:font-normal">
+                            <span className="text-muted lg:hidden">Ao5 </span>
+                            <span className="hidden text-muted lg:inline">{ao5}</span>
+                            <span className="lg:hidden">{ao5}</span>
+                          </span>
+                          <span className="lg:text-right lg:font-normal">
+                            <span className="text-muted lg:hidden">Ao12 </span>
+                            <span className="hidden text-muted lg:inline">{ao12}</span>
+                            <span className="lg:hidden">{ao12}</span>
+                          </span>
+                        </span>
+                        {solve.notes && (
+                          <span className="col-span-2 min-w-0 truncate text-muted text-sm lg:col-span-4">
+                            {solve.notes}
+                          </span>
+                        )}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ol>
+            </div>
             {solves.length < session.solve_count && (
               <button
                 type="button"

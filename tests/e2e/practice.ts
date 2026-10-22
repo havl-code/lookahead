@@ -4,7 +4,7 @@ import { expect, type Page } from '@playwright/test';
 // and in the wide layout.
 
 /** A backup of 12 days of 3x3x3, 25 solves each, a little faster each day, and some 2x2x2. */
-function practice() {
+function practice(solveCountPerSession = 25) {
   const sessions: object[] = [];
   const solves: object[] = [];
   let solveId = 0;
@@ -18,7 +18,7 @@ function practice() {
       notes: '',
       created_at: `${date}T08:00:00.000Z`,
     });
-    for (let n = 1; n <= 25; n++) {
+    for (let n = 1; n <= solveCountPerSession; n++) {
       solveId += 1;
       const dnf = n === 13;
       solves.push({
@@ -43,7 +43,7 @@ function practice() {
     created_at: '2026-10-12T09:00:00.000Z',
   });
   solves.push({
-    id: 999,
+    id: solveId + 1,
     session_id: 99,
     solve_number: 1,
     time_ms: 3_210,
@@ -81,18 +81,19 @@ export async function fakeRankings(page: Page) {
 }
 
 /** Restores the practice backup from the More tab. */
-export async function restore(page: Page) {
+export async function restore(page: Page, solveCountPerSession = 25) {
   await page.goto('./#/more');
   const chooser = page.waitForEvent('filechooser');
   await page.getByRole('button', { name: 'Restore from a backup' }).click();
   await (await chooser).setFiles({
     name: 'lookahead-backup-2026-10-13.json',
     mimeType: 'application/json',
-    buffer: Buffer.from(JSON.stringify(practice())),
+    buffer: Buffer.from(JSON.stringify(practice(solveCountPerSession))),
   });
   await page
     .getByRole('dialog', { name: 'Restore backup' })
     .getByRole('button', { name: 'Restore' })
     .click();
-  await expect(page.getByText('Restored 13 sessions and 301 solves.')).toBeVisible();
+  const solveCount = (12 * solveCountPerSession + 1).toLocaleString('en-NZ');
+  await expect(page.getByText(`Restored 13 sessions and ${solveCount} solves.`)).toBeVisible();
 }

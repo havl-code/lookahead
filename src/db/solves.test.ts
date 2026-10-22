@@ -7,6 +7,7 @@ import {
   latestSolves,
   restoreSolve,
   saveTimedSolve,
+  sessionSolvesWithAverages,
   setPenalty,
   solvesWithAverages,
   startTimerSession,
@@ -185,7 +186,44 @@ const averages = async (db: LookaheadDb, sessionId: number, limit: number, endAt
     .map((s) => [s.solve_number, s.ao5, s.ao12])
     .reverse();
 
+const listedAverages = async (
+  db: LookaheadDb,
+  sessionId: number,
+  sort: 'number' | 'fastest' | 'slowest',
+  limit: number,
+) =>
+  (await sessionSolvesWithAverages(db, sessionId, sort, limit)).map((solve) => [
+    solve.solve_number,
+    solve.ao5,
+    solve.ao12,
+  ]);
+
 describe('the Ao5 and Ao12 at each solve', () => {
+  it('keeps each solve with its session-order averages in every sort and page', async () => {
+    const db = createTestDb();
+    const { sessionId } = await timeAll(db, [10_000, 20_000, 30_000, 40_000, 50_000, 60_000]);
+    const newest = await listedAverages(db, sessionId, 'number', 5);
+    expect(newest.map(([number]) => number)).toEqual([6, 5, 4, 3, 2]);
+    expect(newest[1]).toEqual([5, 30_000, null]);
+    expect(await listedAverages(db, sessionId, 'fastest', 2)).toEqual([
+      [1, null, null],
+      [2, null, null],
+    ]);
+    expect(await listedAverages(db, sessionId, 'slowest', 2)).toEqual([
+      [6, 40_000, null],
+      [5, 30_000, null],
+    ]);
+  });
+
+  it('uses solves before the newest page to complete the first visible averages', async () => {
+    const db = createTestDb();
+    const { sessionId } = await timeAll(db, steadily(120));
+    const newest = await listedAverages(db, sessionId, 'number', 100);
+    expect(newest[0]).toEqual([120, 21_800, 21_450]);
+    expect(newest.at(-1)).toEqual([21, 11_900, 11_550]);
+    expect((await listedAverages(db, sessionId, 'number', 120)).slice(0, 100)).toEqual(newest);
+  });
+
   it('has none until the window fills', async () => {
     const db = createTestDb();
     const { sessionId } = await timeAll(db, [10_000, 11_000, 12_000, 13_000, 14_000]);

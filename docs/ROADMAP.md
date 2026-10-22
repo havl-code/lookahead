@@ -177,6 +177,8 @@ return to it after changing tabs. It was released as
 - [`9406ab3`](https://github.com/havl-code/lookahead/commit/9406ab3) The Ao5 and Ao12 at each
   solve in the timer's list in the wide layout, and in a solve's sheet in both layouts (also
   from the Sessions tab); `-` until there are enough solves, and DNF for an average that is one
+- The Ao5 and Ao12 at each solve in the Sessions list, tied to their solve through sorting,
+  pagination, and changes to the session
 - [`2273455`](https://github.com/havl-code/lookahead/commit/2273455) The glossary names the Ao5
   and Ao12 at a solve, the rolling Ao5 and Ao12, and the running mean
 - [`4edf3d1`](https://github.com/havl-code/lookahead/commit/4edf3d1) A tap that starts inspection
@@ -240,11 +242,10 @@ Bigger features, roughly in order.
 
 | # | What | Why | Size |
 | --- | --- | --- | --- |
-| 1 | The Ao5 and Ao12 at each solve in the Sessions tab's list of a session's solves | The timer's list shows them for its latest 12 only; the session screen lists every solve | S |
-| 2 | A wide layout for Sessions: a grid of cards, or the list beside the open session | In the wide layout Sessions is still a single column of cards, 768 px wide | M |
-| 3 | Goals and streaks: a daily solve target, days in a row, and a target average | Builds on a session a day, and gives a reason to come back | M |
-| 4 | Random-state scrambles, bundled so they work offline | Matches competition scrambles (Regulation 4b3); needs a scrambler whose licence fits the app's MIT Licence | L |
-| 5 | A world rank model for the whole field, beyond the top 1,000 | Most people are outside the top 1,000, so they see no rank at all today | M |
+| 1 | A wide layout for Sessions: a grid of cards, or the list beside the open session | In the wide layout Sessions is still a single column of cards, 768 px wide | M |
+| 2 | Goals and streaks: a daily solve target, days in a row, and a target average | Builds on a session a day, and gives a reason to come back | M |
+| 3 | Random-state scrambles, bundled so they work offline | Matches competition scrambles (Regulation 4b3); needs a scrambler whose licence fits the app's MIT Licence | L |
+| 4 | A world rank model for the whole field, beyond the top 1,000 | Most people are outside the top 1,000, so they see no rank at all today | M |
 
 ## Later
 

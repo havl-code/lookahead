@@ -313,3 +313,29 @@ export async function sessionSolves(
   solves.sort((a, b) => sign * (sortKey(a) - sortKey(b)) || a.solve_number - b.solve_number);
   return solves.slice(0, limit);
 }
+
+/** One page of a session's solves, each with its averages in solve order before display sorting. */
+export async function sessionSolvesWithAverages(
+  db: LookaheadDb,
+  sessionId: number,
+  sort: SolveSort,
+  limit: number,
+): Promise<SolveWithAverages[]> {
+  const solves = await solvesOf(db, sessionId).toArray();
+  const results = solves.map(resultMs);
+  const ao5 = rollingWcaAverages(results, 5);
+  const ao12 = rollingWcaAverages(results, 12);
+  const withAverages = solves.map((solve, i) => ({
+    ...solve,
+    ao5: ao5[i] ?? null,
+    ao12: ao12[i] ?? null,
+  }));
+  if (sort === 'number') withAverages.reverse();
+  else {
+    const sign = sort === 'fastest' ? 1 : -1;
+    withAverages.sort(
+      (a, b) => sign * (sortKey(a) - sortKey(b)) || a.solve_number - b.solve_number,
+    );
+  }
+  return withAverages.slice(0, limit);
+}

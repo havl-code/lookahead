@@ -44,18 +44,44 @@ test('adds a session by hand, types in solves, and edits them', async ({ page })
   await typeSolve(page, '12.34');
   await typeSolve(page, '1:02.5');
   await typeSolve(page, '10', '+2');
+  await typeSolve(page, '14');
+  await typeSolve(page, '13');
   await sheet.getByRole('button', { name: 'Close' }).click();
 
   const session = page.getByRole('region', { name: 'Session' });
-  await expect(session.getByRole('definition')).toHaveText(['3', '12.00', '1:02.50', '28.95']);
+  await expect(session.getByRole('definition')).toHaveText(['5', '12.00', '1:02.50', '22.77']);
   const solves = page.getByRole('main').getByRole('listitem');
   const names = () =>
     solves
       .getByRole('button')
       .evaluateAll((buttons) => buttons.map((b) => b.getAttribute('aria-label')));
-  await expect.poll(names).toEqual(['Solve 3: 12.00 (+2)', 'Solve 2: 1:02.50', 'Solve 1: 12.34']);
+  await expect
+    .poll(names)
+    .toEqual([
+      'Solve 5: 13.00, Ao5 13.11, Ao12 -',
+      'Solve 4: 14.00, Ao5 -, Ao12 -',
+      'Solve 3: 12.00 (+2), Ao5 -, Ao12 -',
+      'Solve 2: 1:02.50, Ao5 -, Ao12 -',
+      'Solve 1: 12.34, Ao5 -, Ao12 -',
+    ]);
+  const newest = solves.getByRole('button', { name: /^Solve 5:/ });
+  await newest.focus();
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('dialog', { name: 'Solve 5' })).toBeVisible();
+  await page
+    .getByRole('dialog', { name: 'Solve 5' })
+    .getByRole('button', { name: 'Close' })
+    .click();
   await page.getByLabel('Order').selectOption('Fastest first');
-  await expect.poll(names).toEqual(['Solve 3: 12.00 (+2)', 'Solve 1: 12.34', 'Solve 2: 1:02.50']);
+  await expect
+    .poll(names)
+    .toEqual([
+      'Solve 3: 12.00 (+2), Ao5 -, Ao12 -',
+      'Solve 1: 12.34, Ao5 -, Ao12 -',
+      'Solve 5: 13.00, Ao5 13.11, Ao12 -',
+      'Solve 4: 14.00, Ao5 -, Ao12 -',
+      'Solve 2: 1:02.50, Ao5 -, Ao12 -',
+    ]);
 
   await solves.filter({ hasText: '12.34' }).getByRole('button').click();
   const solve = page.getByRole('dialog', { name: 'Solve 1' });
@@ -66,7 +92,14 @@ test('adds a session by hand, types in solves, and edits them', async ({ page })
   await solve.getByRole('button', { name: 'Close' }).click();
   await expect
     .poll(names)
-    .toEqual(['Solve 3: 12.00 (+2)', 'Solve 2: 1:02.50', 'Solve 1: DNF, Popped']);
+    .toEqual([
+      'Solve 3: 12.00 (+2), Ao5 -, Ao12 -',
+      'Solve 5: 13.00, Ao5 29.83, Ao12 -',
+      'Solve 4: 14.00, Ao5 -, Ao12 -',
+      'Solve 2: 1:02.50, Ao5 -, Ao12 -',
+      'Solve 1: DNF, Ao5 -, Ao12 -, Popped',
+    ]);
+  await expect(solves.filter({ hasText: 'Popped' })).toHaveCount(1);
   await expect(session.getByRole('definition').nth(1)).toHaveText('12.00');
 
   // Delete, then Undo.
@@ -75,9 +108,13 @@ test('adds a session by hand, types in solves, and edits them', async ({ page })
     .getByRole('dialog', { name: 'Solve 2' })
     .getByRole('button', { name: 'Delete' })
     .click();
-  await expect(solves).toHaveCount(2);
+  await expect(solves).toHaveCount(4);
+  await expect(solves.getByRole('button', { name: 'Solve 4: 13.00, Ao5 -, Ao12 -' })).toBeVisible();
   await page.getByRole('status').getByRole('button', { name: 'Undo' }).click();
-  await expect(solves).toHaveCount(3);
+  await expect(solves).toHaveCount(5);
+  await expect(
+    solves.getByRole('button', { name: 'Solve 5: 13.00, Ao5 29.83, Ao12 -' }),
+  ).toBeVisible();
 
   // Edit the session's date and notes. Its event stays.
   await page.getByRole('button', { name: 'Edit session' }).click();
@@ -94,6 +131,32 @@ test('adds a session by hand, types in solves, and edits them', async ({ page })
 
   await page.getByRole('link', { name: 'Sessions' }).first().click();
   await expect(page.getByRole('main').getByRole('listitem')).toContainText(['2 Oct 2026, 3x3x3']);
+});
+
+test('loads more solves without changing their averages or losing the loaded count on sort', async ({
+  page,
+}) => {
+  await restore(page, 120);
+  await page.goto('./#/sessions');
+  await page
+    .getByRole('main')
+    .getByRole('listitem')
+    .filter({ hasText: '12 Oct 2026, 3x3x3' })
+    .getByRole('link')
+    .click();
+
+  const rows = page.getByRole('main').getByRole('listitem');
+  await expect(rows).toHaveCount(100);
+  const solve21 = rows.getByRole('button', { name: /^Solve 21:/ });
+  const originalName = await solve21.getAttribute('aria-label');
+  expect(originalName).toMatch(/, Ao5 (?!-)[^,]+, Ao12 (?!-)[^,]+$/);
+
+  await page.getByRole('button', { name: 'Show more solves' }).click();
+  await expect(rows).toHaveCount(120);
+  await expect(rows.getByRole('button', { name: originalName as string })).toBeVisible();
+  await page.getByLabel('Order').selectOption('Fastest first');
+  await expect(rows).toHaveCount(120);
+  await expect(rows.getByRole('button', { name: originalName as string })).toBeVisible();
 });
 
 test('filters and sorts the session list, and deletes a session', async ({ page }) => {
@@ -215,12 +278,61 @@ test('shows the Ao5 and Ao12 at a solve in its sheet, and DNF for an Ao5 with tw
     .filter({ hasText: '12 Oct 2026, 3x3x3' })
     .getByRole('link')
     .click();
-  await page.getByRole('button', { name: /^Solve 14: / }).click();
+  await expect(
+    page.getByText('Ao5 and Ao12 use the solves in this session up to and including each solve.'),
+  ).toBeVisible();
+  const solveRow = page.getByRole('button', { name: /^Solve 14: / });
+  await expect(solveRow).toHaveAccessibleName('Solve 14: 13.86, Ao5 13.44, Ao12 13.71');
+  await page.setViewportSize({ width: 1200, height: 900 });
+  const columnHeader = page.getByText('Solve', { exact: true });
+  await expect(columnHeader).toBeVisible();
+  await expect(page.getByText('Result', { exact: true })).toBeVisible();
+  const solveList = columnHeader.locator('..');
+  await solveList.evaluate((element) => {
+    element.scrollTop = 400;
+  });
+  await expect
+    .poll(async () => {
+      const headerBox = await columnHeader.boundingBox();
+      const listBox = await solveList.boundingBox();
+      return headerBox && listBox ? Math.abs(headerBox.y - listBox.y) : null;
+    })
+    .toBeLessThanOrEqual(12);
+  await solveList.evaluate((element) => {
+    element.scrollTop = element.scrollHeight;
+  });
+  await expect
+    .poll(async () => {
+      const headerBox = await columnHeader.boundingBox();
+      const listBox = await solveList.boundingBox();
+      return headerBox && listBox ? Math.abs(headerBox.y - listBox.y) : null;
+    })
+    .toBeLessThanOrEqual(12);
+  const appScroll = page.getByRole('main').locator('..');
+  await appScroll.evaluate((element) => {
+    element.scrollTop = element.scrollHeight;
+  });
+  await expect
+    .poll(async () => {
+      const headerBox = await columnHeader.boundingBox();
+      const listBox = await solveList.boundingBox();
+      return headerBox && listBox ? Math.abs(headerBox.y - listBox.y) : null;
+    })
+    .toBeLessThanOrEqual(12);
+  await solveRow.click();
   // Solve 14 of the practice backup's 12 October: its Ao5 drops solve 13's DNF as the worst
   // (Regulation 9f8), and its Ao12 drops the DNF and the best, solve 9's 12.60.
   const sheet = page.getByRole('dialog', { name: 'Solve 14' });
   await expect(sheet.getByRole('term')).toHaveText(['Ao5', 'Ao12']);
   await expect(sheet.getByRole('definition')).toHaveText(['13.44', '13.71']);
+
+  const close = sheet.getByRole('button', { name: 'Close' });
+  await close.focus();
+  await page.setViewportSize({ width: 1023, height: 900 });
+  await expect(close).toBeFocused();
+  await page.setViewportSize({ width: 1024, height: 900 });
+  await expect(sheet).toBeVisible();
+  await expect(close).toBeFocused();
 
   // A DNF for solve 14 as well puts two DNFs in both windows, so both are DNFs (Regulation 9f9).
   await sheet.getByRole('button', { name: 'DNF' }).click();

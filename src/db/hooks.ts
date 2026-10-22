@@ -8,7 +8,7 @@ import type { Cube, Session, Solve } from './schema.ts';
 import {
   type SolveSort,
   type SolveWithAverages,
-  sessionSolves,
+  sessionSolvesWithAverages,
   solvesWithAverages,
   timerSession,
 } from './solves.ts';
@@ -90,10 +90,10 @@ export function useSessionSolves(
   sessionId: number,
   sort: SolveSort,
   limit: number,
-): Solve[] | undefined {
+): SolveWithAverages[] | undefined {
   const db = useDb();
   return useLiveQuery(
-    () => sessionSolves(db, sessionId, sort, limit),
+    () => sessionSolvesWithAverages(db, sessionId, sort, limit),
     [db, sessionId, sort, limit],
   );
 }
