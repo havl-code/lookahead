@@ -296,6 +296,11 @@ function sortKey(solve: Solve): number {
   return solve.time_ms + (solve.penalty === '+2' ? 2000 : 0);
 }
 
+function sortByResult<T extends Solve>(solves: T[], sort: 'fastest' | 'slowest'): void {
+  const sign = sort === 'fastest' ? 1 : -1;
+  solves.sort((a, b) => sign * (sortKey(a) - sortKey(b)) || a.solve_number - b.solve_number);
+}
+
 /**
  * One page of a session's solves, in solve order (newest first) or by result, as the desktop
  * app's solves table sorts them. DNFs come last when fastest first, and first when slowest
@@ -309,8 +314,7 @@ export async function sessionSolves(
 ): Promise<Solve[]> {
   if (sort === 'number') return latestSolves(db, sessionId, limit);
   const solves = await solvesOf(db, sessionId).toArray();
-  const sign = sort === 'fastest' ? 1 : -1;
-  solves.sort((a, b) => sign * (sortKey(a) - sortKey(b)) || a.solve_number - b.solve_number);
+  sortByResult(solves, sort);
   return solves.slice(0, limit);
 }
 
@@ -331,11 +335,6 @@ export async function sessionSolvesWithAverages(
     ao12: ao12[i] ?? null,
   }));
   if (sort === 'number') withAverages.reverse();
-  else {
-    const sign = sort === 'fastest' ? 1 : -1;
-    withAverages.sort(
-      (a, b) => sign * (sortKey(a) - sortKey(b)) || a.solve_number - b.solve_number,
-    );
-  }
+  else sortByResult(withAverages, sort);
   return withAverages.slice(0, limit);
 }
