@@ -1,10 +1,9 @@
-import { useId, useState, useSyncExternalStore } from 'react';
+import { useEffect, useId, useState, useSyncExternalStore } from 'react';
 import { BackLink } from '../../app/BackLink.tsx';
 import { dangerButton, fieldStyle, primaryButton, secondaryButton } from '../../app/forms.tsx';
 import { PlusIcon } from '../../app/icons.tsx';
 import { tabHref } from '../../app/router.ts';
 import { Sheet } from '../../app/Sheet.tsx';
-import { Toast } from '../../app/Toast.tsx';
 import { cubeName } from '../../db/cubes.ts';
 import { useDb, useSolveEditing } from '../../db/DbProvider.tsx';
 import { useCubes, useSession, useSessionSolves } from '../../db/hooks.ts';
@@ -17,6 +16,7 @@ import { averageSeconds, singleSeconds } from '../../lib/stats.ts';
 import { formatDate } from '../../lib/time.ts';
 import { CsvExportButton } from '../backup/CsvExportButton.tsx';
 import { averageText, resultText } from '../solves/presentation.tsx';
+import { SolveEditToast } from '../solves/SolveEditToast.tsx';
 import { SolveSheet } from '../timer/SolveSheet.tsx';
 import { AddSolveSheet } from './AddSolveSheet.tsx';
 import { SessionSheet } from './SessionSheet.tsx';
@@ -32,6 +32,10 @@ export function SessionScreen({ sessionId }: { readonly sessionId: number }) {
   const db = useDb();
   const editing = useSolveEditing();
   useSyncExternalStore(editing.subscribe, editing.getRevision, editing.getRevision);
+  useEffect(() => {
+    editing.activate('sessions');
+    return () => editing.deactivate('sessions');
+  }, [editing]);
   const editPending = editing.isPending();
   const session = useSession(sessionId);
   const cubes = useCubes();
@@ -59,25 +63,13 @@ export function SessionScreen({ sessionId }: { readonly sessionId: number }) {
   const cube = session.cube_id === null ? undefined : cubes?.get(session.cube_id);
 
   async function remove(solve: Solve) {
-    const result = await editing.remove(solve.id, solve.solve_number);
+    const result = await editing.remove('sessions', solve.id, solve.solve_number);
     if (result.status !== 'success') {
       if (result.status === 'unavailable')
         setOpenSolve((current) => (current === solve.id ? null : current));
       return result;
     }
-    const deleted = result.value;
     setOpenSolve((current) => (current === solve.id ? null : current));
-    setToast({
-      message: `Solve ${deleted.solve_number} deleted.`,
-      action: {
-        label: 'Undo',
-        onClick: async () => {
-          setToast(null);
-          const restored = await editing.restore(deleted);
-          if (restored.status !== 'success') setToast({ message: "Couldn't restore the solve." });
-        },
-      },
-    });
     return result;
   }
 
@@ -245,14 +237,19 @@ export function SessionScreen({ sessionId }: { readonly sessionId: number }) {
         solve={solves?.find((solve) => solve.id === openSolve) ?? null}
         onClose={() => setOpenSolve(null)}
         onPenalty={async (solve, penalty) => {
-          const result = await editing.changePenalty(solve.id, solve.solve_number, penalty);
+          const result = await editing.changePenalty(
+            solve.id,
+            solve.solve_number,
+            penalty,
+            'sessions',
+          );
           if (result.status === 'unavailable') {
             setOpenSolve((current) => (current === solve.id ? null : current));
           }
           return result;
         }}
         onNotes={async (solve, notes) => {
-          const result = await editing.changeNotes(solve.id, solve.solve_number, notes);
+          const result = await editing.changeNotes(solve.id, solve.solve_number, notes, 'sessions');
           if (result.status === 'unavailable')
             setOpenSolve((current) => (current === solve.id ? null : current));
           return result;
@@ -260,16 +257,12 @@ export function SessionScreen({ sessionId }: { readonly sessionId: number }) {
         onDelete={remove}
         pending={editPending}
       />
-      {(toast || editing.getFeedback()) && (
-        <Toast
-          message={toast?.message ?? editing.getFeedback() ?? ''}
-          action={toast?.action}
-          onDismiss={() => {
-            setToast(null);
-            editing.clearFeedback();
-          }}
-        />
-      )}
+      <SolveEditToast
+        editing={editing}
+        origin="sessions"
+        toast={toast}
+        onDismiss={() => setToast(null)}
+      />
     </>
   );
 }

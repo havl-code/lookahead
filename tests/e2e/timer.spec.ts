@@ -140,6 +140,28 @@ test('changes a penalty, and deletes with undo', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Solve 1: DNF' })).toBeVisible();
 });
 
+test('Undo expires on schedule while the next attempt is running', async ({ page }) => {
+  await timeASolve(page, 3_000, 10_000);
+  await expect(page.getByRole('button', { name: /^Solve 1: 10\.[01]\d$/ })).toBeVisible();
+  await page.getByRole('button', { name: 'Delete' }).click();
+  await expect(page.getByRole('button', { name: 'Undo' })).toBeVisible();
+
+  await touch(page, 'pointerdown');
+  await touch(page, 'pointerup');
+  await expect(readout(page)).toHaveText('15');
+  await touch(page, 'pointerdown');
+  await page.clock.runFor(300);
+  await expect(readout(page)).toHaveClass(/text-good-ink/);
+  await touch(page, 'pointerup');
+  await expect(readout(page)).toHaveText(/^0\.0\d$/);
+
+  await page.clock.runFor(7_000);
+  await expect(page.getByRole('button', { name: 'Undo' })).toBeVisible();
+  await page.clock.runFor(1_500);
+  await expect(page.getByRole('button', { name: 'Undo' })).toHaveCount(0);
+  await expect(readout(page)).toHaveText(/^8\./);
+});
+
 test('changes and deletes the latest solve from the keyboard, as the desktop does', async ({
   page,
 }) => {

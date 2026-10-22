@@ -9,7 +9,6 @@ import {
 } from 'react';
 import { enterFullscreen, leaveFullscreen, useFullscreen } from '../../app/fullscreen.ts';
 import { SettingsIcon } from '../../app/icons.tsx';
-import { Toast } from '../../app/Toast.tsx';
 import { useHoldUpdates } from '../../app/updates.ts';
 import { useDb, useSolveEditing } from '../../db/DbProvider.tsx';
 import { useMeta, useTimerSession, useTimerSettings } from '../../db/hooks.ts';
@@ -24,6 +23,7 @@ import { requestPersistence } from '../../lib/storage.ts';
 import { localDate } from '../../lib/time.ts';
 import { BackupReminder } from '../backup/BackupReminder.tsx';
 import { averageText, PenaltyButtons, resultText, timerAverages } from '../solves/presentation.tsx';
+import { SolveEditToast } from '../solves/SolveEditToast.tsx';
 import {
   type ClockState,
   type Finished,
@@ -63,6 +63,10 @@ export function TimerScreen() {
   const db = useDb();
   const editing = useSolveEditing();
   useSyncExternalStore(editing.subscribe, editing.getRevision, editing.getRevision);
+  useEffect(() => {
+    editing.activate('timer');
+    return () => editing.deactivate('timer');
+  }, [editing]);
   const editPending = editing.isPending();
   const storedEvent = useMeta('timerEvent');
   const eventId = storedEvent && hasTimer(storedEvent) ? storedEvent : '333';
@@ -258,7 +262,7 @@ export function TimerScreen() {
   const shownSolve = solves.find((solve) => solve.id === shown);
 
   async function changePenalty(solve: Solve, penalty: Penalty) {
-    const result = await editing.changePenalty(solve.id, solve.solve_number, penalty);
+    const result = await editing.changePenalty(solve.id, solve.solve_number, penalty, 'timer');
     if (result.status === 'unavailable') {
       setOpenSolve((current) => (current === solve.id ? null : current));
     }
@@ -266,26 +270,14 @@ export function TimerScreen() {
   }
 
   async function remove(solve: Solve) {
-    const result = await editing.remove(solve.id, solve.solve_number);
+    const result = await editing.remove('timer', solve.id, solve.solve_number);
     if (result.status !== 'success') {
       if (result.status === 'unavailable')
         setOpenSolve((current) => (current === solve.id ? null : current));
       return result;
     }
-    const deleted = result.value;
     setShown((current) => (current === solve.id ? null : current));
     setOpenSolve((current) => (current === solve.id ? null : current));
-    setToast({
-      message: `Solve ${deleted.solve_number} deleted.`,
-      action: {
-        label: 'Undo',
-        onClick: async () => {
-          setToast(null);
-          const restored = await editing.restore(deleted);
-          if (restored.status !== 'success') setToast({ message: "Couldn't restore the solve." });
-        },
-      },
-    });
     return result;
   }
 
@@ -463,7 +455,7 @@ export function TimerScreen() {
         onClose={() => setOpenSolve(null)}
         onPenalty={changePenalty}
         onNotes={async (solve, notes) => {
-          const result = await editing.changeNotes(solve.id, solve.solve_number, notes);
+          const result = await editing.changeNotes(solve.id, solve.solve_number, notes, 'timer');
           if (result.status === 'unavailable')
             setOpenSolve((current) => (current === solve.id ? null : current));
           return result;
@@ -471,16 +463,12 @@ export function TimerScreen() {
         onDelete={remove}
         pending={editPending}
       />
-      {(toast || editing.getFeedback()) && (
-        <Toast
-          message={toast?.message ?? editing.getFeedback() ?? ''}
-          action={toast?.action}
-          onDismiss={() => {
-            setToast(null);
-            editing.clearFeedback();
-          }}
-        />
-      )}
+      <SolveEditToast
+        editing={editing}
+        origin="timer"
+        toast={toast}
+        onDismiss={() => setToast(null)}
+      />
     </>
   );
 }

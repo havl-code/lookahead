@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 
 /** A short message at the top of the screen, with an optional action such as Undo. */
 export function Toast({
@@ -12,10 +12,13 @@ export function Toast({
   readonly onDismiss: () => void;
   readonly durationMs?: number;
 }) {
+  const dismiss = useRef(onDismiss);
+  dismiss.current = onDismiss;
+  const timeout = useMemo(() => ({ message, durationMs }), [message, durationMs]);
   useEffect(() => {
-    const timer = window.setTimeout(onDismiss, durationMs);
+    const timer = window.setTimeout(() => dismiss.current(), timeout.durationMs);
     return () => window.clearTimeout(timer);
-  }, [onDismiss, durationMs]);
+  }, [timeout]);
 
   return (
     <div

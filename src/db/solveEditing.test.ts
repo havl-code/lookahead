@@ -3,6 +3,30 @@ import { createTestDb } from '../test/db.ts';
 import { SolveEditing } from './solveEditing.ts';
 import { saveTimedSolve } from './solves.ts';
 
+function manualClock() {
+  let now = 0;
+  let id = 0;
+  const timers = new Map<number, { readonly at: number; readonly callback: () => void }>();
+  return {
+    now: () => now,
+    setTimeout: (callback: () => void, delayMs: number) => {
+      const timerId = ++id;
+      timers.set(timerId, { at: now + delayMs, callback });
+      return timerId;
+    },
+    clearTimeout: (timer: unknown) => timers.delete(timer as number),
+    advance: (duration: number) => {
+      now += duration;
+      for (const [timerId, timer] of timers) {
+        if (timer.at <= now) {
+          timers.delete(timerId);
+          timer.callback();
+        }
+      }
+    },
+  };
+}
+
 describe('shared solve editing', () => {
   it('rejects another target while the original edit is pending', async () => {
     const db = createTestDb();
@@ -103,16 +127,18 @@ describe('shared solve editing', () => {
     const editing = new SolveEditing(db);
 
     vi.spyOn(db.solves, 'delete').mockRejectedValue(new Error('delete failed'));
-    expect(await editing.remove(solveId, 1)).toEqual({ status: 'error' });
+    editing.activate('timer');
+    expect(await editing.remove('timer', solveId, 1)).toEqual({ status: 'error' });
     expect(editing.getFeedback()).toBe("Couldn't delete Solve 1. Please try again.");
     vi.restoreAllMocks();
 
     const solve = await db.solves.get(solveId);
     expect(solve).toBeDefined();
+    expect((await editing.remove('timer', solveId, 1)).status).toBe('success');
     vi.spyOn(db.solves, 'put').mockRejectedValue(new Error('restore failed'));
-    expect(await editing.restore(solve as NonNullable<typeof solve>)).toEqual({ status: 'error' });
+    expect(await editing.restore('timer')).toEqual({ status: 'error' });
     expect(editing.getFeedback()).toBe("Couldn't restore Solve 1. Please try again.");
-    expect(await db.solves.get(solveId)).toMatchObject({ time_ms: 12_340 });
+    expect(await db.solves.get(solveId)).toBeUndefined();
   });
 
   it('reports Undo as unavailable when its session has disappeared', async () => {
@@ -123,13 +149,136 @@ describe('shared solve editing', () => {
       new Date(2026, 9, 14),
     );
     const editing = new SolveEditing(db);
-    const deleted = await editing.remove(solveId, 1);
+    editing.activate('timer');
+    const deleted = await editing.remove('timer', solveId, 1);
     expect(deleted.status).toBe('success');
     if (deleted.status !== 'success') return;
 
     await db.sessions.delete(sessionId);
-    expect(await editing.restore(deleted.value)).toEqual({ status: 'unavailable' });
+    expect(await editing.restore('timer')).toEqual({ status: 'unavailable' });
     expect(editing.getFeedback()).toBe("Couldn't restore Solve 1: it is no longer available.");
     expect(await db.solves.get(solveId)).toBeUndefined();
+  });
+
+  it('does not offer Undo when the solve disappears before deletion', async () => {
+    const db = createTestDb();
+    const { solveId } = await saveTimedSolve(
+      db,
+      { eventId: '333', timeMs: 12_340, penalty: 'OK', scramble: '' },
+      new Date(2026, 9, 14),
+    );
+    const editing = new SolveEditing(db);
+    editing.activate('sessions');
+    await db.solves.delete(solveId);
+
+    expect(await editing.remove('sessions', solveId, 1)).toEqual({ status: 'unavailable' });
+    expect(editing.getFeedback('sessions')).toBe(
+      "Couldn't delete Solve 1: it is no longer available.",
+    );
+    expect(editing.getUndo('sessions')).toBeNull();
+  });
+
+  it('starts expiry on deletion success and replaces Undo with a later deletion', async () => {
+    const db = createTestDb();
+    const first = await saveTimedSolve(
+      db,
+      { eventId: '333', timeMs: 12_340, penalty: 'OK', scramble: '' },
+      new Date(2026, 9, 14),
+    );
+    const second = await saveTimedSolve(
+      db,
+      { eventId: '333', timeMs: 12_500, penalty: 'OK', scramble: '' },
+      new Date(2026, 9, 14, 0, 1),
+    );
+    const clock = manualClock();
+    const editing = new SolveEditing(db, clock);
+    editing.activate('timer');
+
+    await editing.remove('timer', first.solveId, 1);
+    const originalExpiry = editing.getUndo('timer')?.expiresAt;
+    expect(editing.getUndo('timer')?.message).toBe('Solve 1 deleted.');
+    clock.advance(3_000);
+    expect(editing.getUndo('timer')?.expiresAt).toBe(originalExpiry);
+    await editing.remove('timer', second.solveId, 2);
+    expect(editing.getUndo('timer')?.solve.id).toBe(second.solveId);
+    clock.advance(7_999);
+    expect(editing.getUndo('timer')?.solve.id).toBe(second.solveId);
+    clock.advance(1);
+    expect(editing.getUndo('timer')).toBeNull();
+  });
+
+  it('does not transfer a deletion that finishes after leaving its tab', async () => {
+    const db = createTestDb();
+    const { solveId } = await saveTimedSolve(
+      db,
+      { eventId: '333', timeMs: 12_340, penalty: 'OK', scramble: '' },
+      new Date(2026, 9, 14),
+    );
+    const editing = new SolveEditing(db);
+    editing.activate('timer');
+    const remove = db.solves.delete.bind(db.solves);
+    let finish!: () => void;
+    let started!: () => void;
+    const hasStarted = new Promise<void>((resolve) => {
+      started = resolve;
+    });
+    vi.spyOn(db.solves, 'delete').mockImplementation((async (...args) => {
+      await new Promise<void>((resolve) => {
+        finish = resolve;
+        started();
+      });
+      return remove(...args);
+    }) as typeof db.solves.delete);
+
+    const deletion = editing.remove('timer', solveId, 1);
+    await hasStarted;
+    editing.deactivate('timer');
+    editing.activate('sessions');
+    finish();
+    expect((await deletion).status).toBe('success');
+    expect(editing.getUndo('timer')).toBeNull();
+    expect(editing.getUndo('sessions')).toBeNull();
+    expect(await db.solves.get(solveId)).toBeUndefined();
+  });
+
+  it('retains recovery while Undo is writing and renews expiry after failure', async () => {
+    const db = createTestDb();
+    const { solveId } = await saveTimedSolve(
+      db,
+      { eventId: '333', timeMs: 12_340, penalty: 'OK', scramble: '' },
+      new Date(2026, 9, 14),
+    );
+    const clock = manualClock();
+    const editing = new SolveEditing(db, clock);
+    editing.activate('timer');
+    await editing.remove('timer', solveId, 1);
+    const expiredAt = editing.getUndo('timer')?.expiresAt;
+    let reject!: (reason?: unknown) => void;
+    let started!: () => void;
+    const hasStarted = new Promise<void>((resolve) => {
+      started = resolve;
+    });
+    vi.spyOn(db.solves, 'put').mockImplementation(
+      (() =>
+        new Promise((_, fail) => {
+          reject = fail;
+          started();
+        })) as unknown as typeof db.solves.put,
+    );
+
+    const restoration = editing.restore('timer');
+    await hasStarted;
+    expect(editing.getUndo('timer')?.restoring).toBe(true);
+    expect(await editing.restore('timer')).toEqual({ status: 'busy' });
+    clock.advance(8_000);
+    expect(editing.getUndo('timer')?.solve.id).toBe(solveId);
+    reject(new Error('restore failed'));
+    expect(await restoration).toEqual({ status: 'error' });
+    expect(editing.getUndo('timer')?.expiresAt).toBeGreaterThan(expiredAt ?? 0);
+    expect(editing.getUndo('timer')?.restoring).toBe(false);
+
+    vi.restoreAllMocks();
+    expect(await editing.restore('timer')).toMatchObject({ status: 'success' });
+    expect(await db.solves.get(solveId)).toBeDefined();
   });
 });
