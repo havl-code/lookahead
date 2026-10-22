@@ -10,8 +10,9 @@ For every `await` reached from a touch, a key, or a browser event (saving a solv
 write, `fullscreenchange`), ask what happens when the same input, or another one, arrives
 before it settles. A second tap, a shortcut, a session pick, or Escape can all land mid-save.
 
-- Guard the window with a ref that says what's in flight, as the timer's `pending` ref does
-  (`'saving'`, then the new solve's id, then `null`), and check it before acting.
+- Guard the window with state that says what's in flight, and check it before acting. The
+  Timer's shortcuts wait for its latest attempt to save and be found in the current session,
+  and the shared editing guard holds them while an edit is being written.
 - A state change that cancels an attempt (leaving full screen, switching tabs) cancels it
   before anything else runs.
 - A fix for a re-entry bug comes with a test that fires the second input mid-flight.

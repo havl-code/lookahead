@@ -155,10 +155,23 @@ export function useTimerSession(
   limit: number,
 ): { readonly session: Session; readonly solves: SolveWithAverages[] } | null | undefined {
   const db = useDb();
-  return useLiveQuery(async () => {
+  const observed = useLiveQuery(async () => {
     const session = await timerSession(db, eventId, pickedId, today);
-    return session ? { session, solves: await solvesWithAverages(db, session.id, limit) } : null;
+    return {
+      eventId,
+      today,
+      pickedId,
+      limit,
+      timing: session ? { session, solves: await solvesWithAverages(db, session.id, limit) } : null,
+    };
   }, [db, eventId, today, pickedId, limit]);
+  // A live query retains its previous value while new dependencies load.
+  return observed?.eventId === eventId &&
+    observed.today === today &&
+    observed.pickedId === pickedId &&
+    observed.limit === limit
+    ? observed.timing
+    : undefined;
 }
 
 /** A solve with the Ao5 and Ao12 at it, for its sheet. Undefined while loading. */

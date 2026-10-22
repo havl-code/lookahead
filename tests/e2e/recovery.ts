@@ -139,3 +139,86 @@ export async function checkRecoveredOrder(page: Page) {
     page.getByRole('button', { name: /^Solve 106: 30\..*, Ao5 13\.[67]\d/ }),
   ).toBeVisible();
 }
+
+/** Keeps real shortcuts attached to the latest result through recovery and deletion. */
+export async function checkResultShortcuts(page: Page) {
+  await page.getByRole('button', { name: 'Settings' }).click();
+  await page.getByRole('switch', { name: 'WCA inspection (15 seconds)' }).uncheck();
+  await page.getByRole('button', { name: 'Close' }).click();
+  const readout = page.locator('.touch-pad').last().locator('p').first();
+  const time = async (milliseconds: number) => {
+    await page.keyboard.down(' ');
+    await page.clock.runFor(350);
+    await page.keyboard.up(' ');
+    await page.clock.runFor(milliseconds);
+    await page.keyboard.down(' ');
+    await page.keyboard.up(' ');
+  };
+  await page.evaluate(() => {
+    const add = IDBObjectStore.prototype.add;
+    IDBObjectStore.prototype.add = function (...args) {
+      if (this.name === 'solves') {
+        IDBObjectStore.prototype.add = add;
+        throw new DOMException('Storage full', 'QuotaExceededError');
+      }
+      return Reflect.apply(add, this, args);
+    };
+  });
+  await time(12_340);
+  await expect(page.getByRole('button', { name: 'Recover 1 unsaved attempt' })).toBeVisible();
+  await time(3_000);
+  await expect(page.getByRole('group', { name: 'Solve 1' })).toBeVisible();
+  await page.getByRole('button', { name: 'Recover 1 unsaved attempt' }).click();
+  const recovery = page.getByRole('dialog', { name: 'Unsaved attempts' });
+  await recovery.getByRole('button', { name: 'Retry' }).click();
+  await expect(recovery.getByText('No unsaved attempts.')).toBeVisible();
+  await recovery.getByRole('button', { name: 'Close' }).click();
+  await expect(page.getByRole('group', { name: 'Solve 2' })).toBeVisible();
+  await expect(readout).toHaveText(/^3\.\d\d$/);
+  await page.keyboard.press('Alt+2');
+  await expect(page.getByRole('button', { name: /^Solve 2: 5\..*\(\+2\)/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: /^Solve 1: 12\./ })).toBeVisible();
+  await expect(readout).toHaveText(/^5\.\d\d\+2$/);
+
+  await page.getByRole('button', { name: /^Solve 2: 5\./ }).click();
+  const sheet = page.getByRole('dialog', { name: 'Solve 2' });
+  await sheet.getByRole('textbox', { name: 'Note' }).fill('Keep this draft');
+  await page.keyboard.press('Alt+1');
+  await page.keyboard.press('Control+z');
+  await expect(sheet).toBeVisible();
+  await expect(sheet.getByRole('button', { name: '+2', exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await sheet.getByRole('button', { name: 'Close' }).click();
+  await expect(page.getByRole('button', { name: 'Delete' })).toBeEnabled();
+  await page.keyboard.press('Alt+1');
+  await expect(page.getByRole('button', { name: /^Solve 2: 3\./ })).toBeVisible();
+  await page.getByRole('button', { name: '+2', exact: true }).click();
+  await expect(readout).toHaveText(/^5\.\d\d\+2$/);
+  // The list can update before an edit finishes, and shortcuts wait for it, so wait for its
+  // enabled controls and its Undo before the next shortcut.
+  await expect(page.getByRole('button', { name: 'Delete' })).toBeEnabled();
+  await page.keyboard.press('Control+z');
+  await expect(page.getByRole('button', { name: /^Solve 2:/ })).toHaveCount(0);
+  await expect(page.getByText('Solve 2 deleted.')).toBeVisible();
+  await page.keyboard.press('Alt+2');
+  await expect(page.getByRole('button', { name: /^Solve 1: 14\..*\(\+2\)/ })).toBeVisible();
+
+  await page.keyboard.down(' ');
+  await page.clock.runFor(350);
+  await page.keyboard.up(' ');
+  await page.keyboard.press('Alt+3');
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('button', { name: /^Solve 1: 14\./ })).toBeVisible();
+  const nav = page.getByRole('navigation', { name: 'Main' });
+  await nav.getByRole('link', { name: 'Sessions' }).click();
+  await page.getByRole('link').filter({ hasText: '1 solve' }).click();
+  await expect(page.getByRole('button', { name: /^Solve 1: 14\..*\(\+2\)/ })).toBeVisible();
+  await nav.getByRole('link', { name: 'Timer' }).click();
+  // Sessions shows the same row, so wait for the Timer's own list before the shortcut.
+  const latest = page.getByRole('list', { name: 'Latest solves' });
+  await expect(latest.getByRole('button', { name: /^Solve 1: 14\./ })).toBeVisible();
+  await page.keyboard.press('Alt+1');
+  await expect(page.getByRole('button', { name: /^Solve 1: 12\./ })).toBeVisible();
+}

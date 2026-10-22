@@ -3,7 +3,8 @@ import { requestPersistence } from '../lib/storage.ts';
 import { localDate } from '../lib/time.ts';
 import type { LookaheadDb } from './database.ts';
 import { getMeta, setMeta } from './meta.ts';
-import { findTodaysSession, saveTimedSolve } from './solves.ts';
+import type { Solve } from './schema.ts';
+import { findTodaysSession, latestSolves, saveTimedSolve } from './solves.ts';
 
 export interface AttemptContext {
   readonly eventId: string;
@@ -70,6 +71,23 @@ export class TimerSaving {
       status: 'saving',
     });
     await this.save(id);
+  }
+
+  /** Observes the committed identity, falling back to the current list after its deletion. */
+  async reconcile(id: number, eventId: string, sessionId: number | null): Promise<Solve | null> {
+    const attempt = this.attempts.get(id);
+    if (attempt?.status !== 'saved' || sessionId === null) return null;
+    const session = await this.db.sessions.get(sessionId);
+    if (session?.event_id !== eventId) return null;
+    const solve =
+      attempt.eventId === eventId &&
+      attempt.destinationId === sessionId &&
+      attempt.solveId !== undefined
+        ? await this.db.solves.get(attempt.solveId)
+        : undefined;
+    return solve?.session_id === sessionId
+      ? solve
+      : ((await latestSolves(this.db, sessionId, 1))[0] ?? null);
   }
 
   discard(id: number): void {

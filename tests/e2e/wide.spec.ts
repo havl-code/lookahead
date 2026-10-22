@@ -1,7 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, type Page, test } from '@playwright/test';
 import { fakeRankings, restore } from './practice.ts';
-import { checkAttemptRecovery, checkRecoveredOrder } from './recovery.ts';
+import { checkAttemptRecovery, checkRecoveredOrder, checkResultShortcuts } from './recovery.ts';
 
 // The wide layout, from 1024 px wide (CONTEXT.md). Runs only in the desktop-chromium project,
 // at 1440 by 900 with a mouse; the iPhone projects check the phone layout.
@@ -589,4 +589,12 @@ test('preserves recovered attempt order and averages through editing', async ({ 
   await page.clock.install({ time: new Date(2026, 9, 14, 9) });
   await page.goto('./');
   await checkRecoveredOrder(page);
+});
+
+test('keeps editing shortcuts on the current result through recovery and deletion', async ({
+  page,
+}) => {
+  await page.clock.install({ time: new Date(2026, 9, 14, 9) });
+  await page.goto('./');
+  await checkResultShortcuts(page);
 });

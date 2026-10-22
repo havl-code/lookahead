@@ -1,3 +1,4 @@
+import { useLiveQuery } from 'dexie-react-hooks';
 import { type PointerEvent, useEffect, useId, useRef, useState, useSyncExternalStore } from 'react';
 import { enterFullscreen, leaveFullscreen, useFullscreen } from '../../app/fullscreen.ts';
 import { SettingsIcon } from '../../app/icons.tsx';
@@ -62,7 +63,8 @@ export function TimerScreen() {
   }, [editing]);
   const editPending = editing.isPending();
   const storedEvent = useMeta('timerEvent');
-  const eventId = storedEvent && hasTimer(storedEvent) ? storedEvent : '333';
+  const [chosenEvent, setChosenEvent] = useState<string | null>(null);
+  const eventId = chosenEvent ?? (storedEvent && hasTimer(storedEvent) ? storedEvent : '333');
   const settings = useTimerSettings() ?? defaultTimerSettings;
   const [today, setToday] = useState(localDate);
   const [picked, setPicked] = useState(pickedSession);
@@ -77,8 +79,6 @@ export function TimerScreen() {
   } | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [openSolve, setOpenSolve] = useState<number | null>(null);
-  // A solve being saved ('saving'), or the id of one saved but not yet in the list.
-  const pending = useRef<'saving' | number | null>(null);
   const activeAttempt = useRef<number | null>(null);
   const latestAttempt = useRef<{ id: number; selection: number } | null>(null);
   const selection = useRef(0);
@@ -95,7 +95,6 @@ export function TimerScreen() {
     pickedSession = sessionId;
     setPicked(sessionId);
     setShown(null);
-    pending.current = null;
   }
 
   async function startSession() {
@@ -118,14 +117,12 @@ export function TimerScreen() {
           latestAttempt.current.selection !== selection.current
         )
           continue;
-        pending.current = saved.solveId ?? null;
         setShown(saved.solveId ?? null);
         setAnnouncement(
           `${resultText({ time_ms: saved.timeMs, penalty: saved.penalty, dnf: saved.penalty === 'DNF' })}, saved.`,
         );
         setToast(null);
       } else if (saved.status === 'error' || saved.status === 'unavailable') {
-        if (latestAttempt.current?.id === saved.id) pending.current = null;
         setToast({
           message:
             saved.status === 'unavailable'
@@ -142,7 +139,6 @@ export function TimerScreen() {
       activeAttempt.current = id;
       latestAttempt.current = { id, selection: selection.current };
       setShown(null);
-      pending.current = null;
     },
     onCancel: () => {
       if (activeAttempt.current !== null) saving.cancel(activeAttempt.current);
@@ -156,7 +152,6 @@ export function TimerScreen() {
       setScramble(generateScramble(scrambleFor.current.eventId));
       setToday(localDate());
       if (id !== null) {
-        pending.current = 'saving';
         void saving.finish(id, finished);
       }
     },
@@ -267,13 +262,34 @@ export function TimerScreen() {
 
   function chooseEvent(next: string) {
     pick(null);
+    setChosenEvent(next);
     void setMeta(db, 'timerEvent', next);
     setScramble(generateScramble(next));
     setShown(null);
   }
 
   const solves = timing?.solves ?? [];
-  const shownSolve = solves.find((solve) => solve.id === shown);
+  const currentAttempt =
+    latestAttempt.current?.selection === selection.current
+      ? saving.getAttempt(latestAttempt.current.id)
+      : undefined;
+  const resultContext = selection.current;
+  const reconciled = useLiveQuery(async () => {
+    if (currentAttempt?.status !== 'saved') return null;
+    return {
+      attemptId: currentAttempt.id,
+      context: resultContext,
+      sessionId: timing?.session.id,
+      solve: await saving.reconcile(currentAttempt.id, eventId, timing?.session.id ?? null),
+    };
+  }, [saving, currentAttempt, resultContext, eventId, timing]);
+  const acknowledged =
+    reconciled?.attemptId === currentAttempt?.id &&
+    reconciled?.context === resultContext &&
+    reconciled?.sessionId === timing?.session.id
+      ? reconciled
+      : undefined;
+  const shownSolve = acknowledged?.solve?.id === shown ? acknowledged.solve : undefined;
 
   async function changePenalty(solve: Solve, penalty: Penalty) {
     const result = await editing.changePenalty(solve.id, solve.solve_number, penalty, 'timer');
@@ -295,12 +311,10 @@ export function TimerScreen() {
     return result;
   }
 
-  // The shortcuts wait while a solve is being timed or saved, and until it shows in the list, so
-  // they can't change the wrong one.
-  const latest = solves[0];
-  if (typeof pending.current === 'number' && latest?.id === pending.current) pending.current = null;
+  // A completed attempt owns shortcuts until reconciled, even if a different row arrives first.
+  const latest = currentAttempt ? acknowledged?.solve : solves[0];
   runShortcut.current = (action) => {
-    if (active || pending.current !== null || editing.isPending() || !latest) return;
+    if (active || editing.isPending() || !latest) return;
     if (action === 'delete') void remove(latest);
     else if (
       (latest.dnf ? 'DNF' : latest.penalty === '+2' ? '+2' : 'OK') !== action &&

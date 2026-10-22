@@ -465,3 +465,26 @@ it('recovers into an imported session without sorting imported timestamps or oth
     { solve_number: 1, time_ms: 30_000 },
   ]);
 });
+
+describe('saved result reconciliation', () => {
+  it('acknowledges an identity below the newest row and settles deletion and context changes', async () => {
+    const db = createTestDb();
+    const saving = new TimerSaving(db);
+    const id = saving.capture(context);
+    await saving.finish(id, finished, completion);
+    const saved = saving.getAttempt(id);
+    if (saved?.destinationId == null || saved.solveId === undefined)
+      throw new Error('Expected a committed attempt');
+    const sessionId = saved.destinationId;
+    await addSolve(db, sessionId, { timeMs: 3_000, penalty: 'OK', scramble: '', notes: '' });
+    const list = await solvesWithAverages(db, sessionId, 12);
+    expect(list[0]?.time_ms).toBe(3_000);
+    expect((await saving.reconcile(id, '333', sessionId))?.id).toBe(saved.solveId);
+    expect(await saving.reconcile(id, '222', sessionId)).toBeNull();
+    expect(await saving.reconcile(id, '333', null)).toBeNull();
+    await db.solves.delete(saved.solveId);
+    expect((await saving.reconcile(id, '333', sessionId))?.time_ms).toBe(3_000);
+    await db.solves.clear();
+    expect(await saving.reconcile(id, '333', sessionId)).toBeNull();
+  });
+});
