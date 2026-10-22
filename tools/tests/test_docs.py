@@ -10,7 +10,7 @@ import pytest
 
 PROJECT_DIR = Path(__file__).resolve().parents[2]
 DOCS = [PROJECT_DIR / 'README.md', PROJECT_DIR / 'INSTALLATION.md',
-        PROJECT_DIR / 'CODING_STANDARDS.md', PROJECT_DIR / 'CONTEXT.md',
+        PROJECT_DIR / 'CODING_STANDARDS.md', *sorted(PROJECT_DIR.glob('CONTEXT.md')),
         *sorted((PROJECT_DIR / 'docs').glob('*.md')), *sorted((PROJECT_DIR / 'docs' / 'adr').glob('*.md'))]
 # Everything the project writes itself (not the golden files, the lock files, or the fonts)
 OWN_TEXT = [*DOCS, PROJECT_DIR / 'pyproject.toml', PROJECT_DIR / 'package.json',
@@ -98,7 +98,10 @@ def test_docs_use_nz_spelling(doc):
 def avoided_phrases():
     """The glossary's _Avoid_ terms of more than one word, such as "desktop layout". Single
     words (page, view, home) are everyday English, so a review judges those instead."""
-    context = (PROJECT_DIR / 'CONTEXT.md').read_text(encoding='utf-8')
+    context_path = PROJECT_DIR / 'CONTEXT.md'
+    if not context_path.exists():
+        pytest.skip('The local domain glossary is not present.')
+    context = context_path.read_text(encoding='utf-8')
     terms = (term.strip() for line in re.findall(r'^_Avoid_:(.*)$', context, re.M)
              for term in re.sub(r'\([^)]*\)', '', line).split(','))
     return sorted({term for term in terms if ' ' in term})
@@ -113,6 +116,14 @@ def test_docs_use_the_glossary_terms(doc):
     text = prose(doc.read_text(encoding='utf-8'))
     assert [phrase for phrase in avoided_phrases()
             if re.search(r'\b' + re.escape(phrase) + r'\b', text, re.I)] == []
+
+
+def test_glossary_checks_skip_when_local_file_is_absent(tmp_path, monkeypatch):
+    monkeypatch.setitem(globals(), 'PROJECT_DIR', tmp_path)
+    doc = tmp_path / 'example.md'
+    doc.write_text('A desktop layout.\n', encoding='utf-8')
+    with pytest.raises(pytest.skip.Exception, match='local domain glossary'):
+        test_docs_use_the_glossary_terms(doc)
 
 
 def test_docs_quote_the_current_wca_reference():
