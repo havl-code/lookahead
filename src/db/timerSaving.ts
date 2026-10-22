@@ -105,6 +105,11 @@ export class TimerSaving {
             ...attempt,
             sessionId: destination?.id ?? null,
             completionDay: attempt.day,
+            beforeSolveIds: [...this.attempts.values()].flatMap((later) =>
+              later.order > attempt.order && later.status === 'saved' && later.solveId !== undefined
+                ? [later.solveId]
+                : [],
+            ),
           },
           new Date(attempt.timestamp),
         );

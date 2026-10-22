@@ -115,6 +115,8 @@ export interface TimedSolve {
   readonly sessionId?: number | null;
   /** The retained local completion day for a timed attempt. */
   readonly completionDay?: string;
+  /** Surviving later attempts to insert before, within the destination session. */
+  readonly beforeSolveIds?: readonly number[];
 }
 
 /**
@@ -139,9 +141,15 @@ export async function saveTimedSolve(
         )?.id ??
         (await startTimerSession(db, solve.eventId, now, solve.completionDay ?? localDate(now)));
       const last = await solvesOf(db, sessionId).last();
+      const later = await db.solves.bulkGet([...(solve.beforeSolveIds ?? [])]);
+      const number = later.reduce(
+        (first, row) => (row?.session_id === sessionId ? Math.min(first, row.solve_number) : first),
+        (last?.solve_number ?? 0) + 1,
+      );
+      await renumber(db, sessionId, number, 1);
       const solveId = await db.solves.add({
         session_id: sessionId,
-        solve_number: (last?.solve_number ?? 0) + 1,
+        solve_number: number,
         time_ms: solve.timeMs,
         scramble: solve.scramble,
         penalty: solve.penalty,

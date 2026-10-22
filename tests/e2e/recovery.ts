@@ -1,5 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, type Page } from '@playwright/test';
+import { restore } from './practice.ts';
 
 /** Exercises recovery through visible controls with failed IndexedDB solve writes. */
 export async function checkAttemptRecovery(page: Page) {
@@ -56,4 +57,85 @@ export async function checkAttemptRecovery(page: Page) {
   await sheet.getByRole('button', { name: 'Close' }).click();
   await expect(page.getByRole('button', { name: /^Solve 1:/ })).toBeVisible();
   await expect(page.getByRole('button', { name: /Recover/ })).toHaveCount(0);
+}
+
+/** Checks renumbering, averages, and editing after an older attempt is recovered. */
+export async function checkRecoveredOrder(page: Page) {
+  await restore(page, 100);
+  await page.goto('./#/timer');
+  await page.getByRole('combobox', { name: 'Session', exact: true }).selectOption({
+    label: '12 Oct 2026 (100 solves)',
+  });
+  await page.getByRole('button', { name: 'Settings' }).click();
+  await page.getByRole('switch', { name: 'WCA inspection (15 seconds)' }).uncheck();
+  await page.getByRole('button', { name: 'Close' }).click();
+  async function time(seconds: number) {
+    await page.keyboard.down(' ');
+    await page.clock.runFor(350);
+    await page.keyboard.up(' ');
+    await page.clock.runFor(seconds * 1_000);
+    await page.keyboard.down(' ');
+    await page.keyboard.up(' ');
+  }
+  for (const [index, seconds] of [10, 11, 12, 13].entries()) {
+    await time(seconds);
+    await expect(
+      page.getByRole('button', { name: new RegExp(`^Solve ${index + 101}:`) }),
+    ).toBeVisible();
+  }
+  await page.evaluate(() => {
+    const add = IDBObjectStore.prototype.add;
+    IDBObjectStore.prototype.add = function (...args) {
+      if (this.name === 'solves') {
+        IDBObjectStore.prototype.add = add;
+        throw new DOMException('Storage full', 'QuotaExceededError');
+      }
+      return Reflect.apply(add, this, args);
+    };
+  });
+  await time(14);
+  await expect(page.getByRole('button', { name: 'Recover 1 unsaved attempt' })).toBeVisible();
+  await time(30);
+  await expect(page.getByRole('button', { name: /^Solve 105: 30\./ })).toBeVisible();
+  const readout = page.locator('.touch-pad').last().locator('p').first();
+  await expect(readout).toHaveText(/^30\.[01]\d$/);
+  const newerResult = await readout.textContent();
+  await page.getByRole('button', { name: 'Recover 1 unsaved attempt' }).click();
+  const recovery = page.getByRole('dialog', { name: 'Unsaved attempts' });
+  await recovery.getByRole('button', { name: 'Retry' }).click();
+  await expect(recovery.getByText('No unsaved attempts.')).toBeVisible();
+  await recovery.getByRole('button', { name: 'Close' }).click();
+  await expect(readout).toHaveText(newerResult ?? '');
+  await expect(page.getByRole('button', { name: /^Solve 106: 30\./ })).toBeVisible();
+  await page.getByRole('button', { name: /^Solve 105: 14\./ }).click();
+  const a = page.getByRole('dialog', { name: 'Solve 105' });
+  await expect(a.getByRole('definition').first()).toHaveText(/^12\.[01]\d$/);
+  await a.getByRole('button', { name: 'Close' }).click();
+  await page.getByRole('button', { name: /^Solve 106: 30\./ }).click();
+  const b = page.getByRole('dialog', { name: 'Solve 106' });
+  await expect(b.getByRole('definition').first()).toHaveText(/^13\.[01]\d$/);
+  await b.getByRole('button', { name: 'Close' }).click();
+  await page
+    .getByRole('navigation', { name: 'Main' })
+    .getByRole('link', { name: 'Sessions' })
+    .click();
+  await page.getByRole('link').filter({ hasText: '106 solves' }).click();
+  await page.getByLabel('Order', { exact: true }).selectOption('fastest');
+  await expect(page.getByRole('button', { name: /^Solve 105: 14\..*, Ao5 12\./ })).toBeVisible();
+  await expect(page.getByRole('button', { name: /^Solve 106:/ })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Show more solves' }).click();
+  await expect(page.getByRole('button', { name: /^Solve 106: 30\..*, Ao5 13\./ })).toBeVisible();
+  await page.getByRole('button', { name: /^Solve 105: 14\./ }).click();
+  await a.getByRole('button', { name: '+2', exact: true }).click();
+  await expect(a).toContainText('(+2)');
+  await a.getByRole('button', { name: 'Delete', exact: true }).click();
+  await expect(a).toBeHidden();
+  await expect(page.getByRole('button', { name: /^Solve 105: 30\..*, Ao5 12\./ })).toBeVisible();
+  await page.getByRole('button', { name: 'Undo', exact: true }).click();
+  await expect(
+    page.getByRole('button', { name: /^Solve 105: 16\..*\(\+2\), Ao5 12\./ }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: /^Solve 106: 30\..*, Ao5 13\.[67]\d/ }),
+  ).toBeVisible();
 }

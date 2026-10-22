@@ -1,7 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, type Page, test } from '@playwright/test';
 import { restore } from './practice.ts';
-import { checkAttemptRecovery } from './recovery.ts';
+import { checkAttemptRecovery, checkRecoveredOrder } from './recovery.ts';
 
 // The page's clock is faked, so inspection and solves take no real time. It keeps ticking between
 // steps (pausing it would also pause the app's own saving), so times can come out a few
@@ -313,4 +313,9 @@ for (const colorScheme of ['dark', 'light'] as const) {
 
 test('recovers failed attempts after navigation with accessible controls', async ({ page }) => {
   await checkAttemptRecovery(page);
+});
+
+test('preserves recovered attempt order and averages through editing', async ({ page }) => {
+  test.setTimeout(60_000);
+  await checkRecoveredOrder(page);
 });

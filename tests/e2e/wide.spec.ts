@@ -1,7 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, type Page, test } from '@playwright/test';
 import { fakeRankings, restore } from './practice.ts';
-import { checkAttemptRecovery } from './recovery.ts';
+import { checkAttemptRecovery, checkRecoveredOrder } from './recovery.ts';
 
 // The wide layout, from 1024 px wide (CONTEXT.md). Runs only in the desktop-chromium project,
 // at 1440 by 900 with a mouse; the iPhone projects check the phone layout.
@@ -582,4 +582,11 @@ test('recovers failed attempts after navigation with accessible controls', async
   await page.clock.install({ time: new Date(2026, 9, 14, 9) });
   await page.goto('./');
   await checkAttemptRecovery(page);
+});
+
+test('preserves recovered attempt order and averages through editing', async ({ page }) => {
+  test.setTimeout(60_000);
+  await page.clock.install({ time: new Date(2026, 9, 14, 9) });
+  await page.goto('./');
+  await checkRecoveredOrder(page);
 });
