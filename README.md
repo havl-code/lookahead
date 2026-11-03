@@ -339,7 +339,7 @@ the same numbers.
 - **WCA:** the World Cube Association, for their official database, results export and rankings.
   The Analytics scores use the results export: this information is based on competition
   results owned and maintained by the World Cube Association, published at
-  <https://worldcubeassociation.org/results> as of October 11, 2026.
+  <https://worldcubeassociation.org/results> as of November 3, 2026.
 - **CSTimer:** for the inspiration and the export format
 - **uPlot:** for the fast charts
 - **Space Grotesk:** by Florian Karsten, the font the app uses
